@@ -100,12 +100,12 @@ const Home = () => {
               </Link>
             </div>
             <div className="lg:order-first">
-              <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
+              <div className="bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 rounded-3xl p-8 glass backdrop-blur-sm border border-electric-blue/20">
                 <div className="flex justify-center items-center">
                   <img 
-                    src="/lovable-uploads/10967d19-2fe9-4ab6-aa70-39ba0280a4a2.png" 
+                    src="/lovable-uploads/b08873ce-6e3a-412a-aae2-2dc08fe8f75c.png" 
                     alt="WellnessGeni app interface showing AI wellness companion Isabella"
-                    className="w-full max-w-sm h-auto rounded-2xl shadow-lg"
+                    className="w-full max-w-sm h-auto rounded-xl shadow-2xl border border-electric-blue/30"
                   />
                 </div>
               </div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
@@ -42,16 +43,16 @@ const Home = () => {
           <div className="absolute inset-0 z-0">
             <VideoPlayer
               src={isabellaVideoUrl}
-              className="w-full h-full rounded-3xl"
+              className="w-full h-full"
               autoplay={true}
               loop={true}
               muted={true}
               controls={false}
-              title="Isabella AI Brand Ambassador Introduction"
-              description="Meet Isabella, the world's first AI marketing companion"
+              title="Isabella AI Introduction – Ovela Interactive"
+              description="Video of Isabella, the world's first AI companion, introducing Ovela Interactive"
             />
             {/* Gradient overlay for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 via-charcoal/40 to-transparent rounded-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 via-charcoal/40 to-transparent" />
           </div>
           
           <div className="container-custom relative z-10">

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, Target, Zap, Users } from 'lucide-react';
@@ -53,8 +54,8 @@ const Isabella = () => {
                 loop={true}
                 muted={true}
                 controls={true}
-                title="Isabella AI Brand Ambassador Introduction"
-                description="Meet Isabella, originally from Andorra la Vella, working as a model, promoter, and marketing specialist"
+                title="Isabella AI Introduction – Ovela Interactive"
+                description="Video of Isabella, the world's first AI companion, introducing Ovela Interactive"
               />
             </div>
 

@@ -29,20 +29,20 @@ const VideoPlayer = ({
   const isGoogleDriveEmbed = src.includes('drive.google.com') && src.includes('/preview');
   
   if (isGoogleDriveEmbed) {
-    // For Google Drive embeds, we need to use iframe
-    const embedUrl = `${src}${autoplay ? '&autoplay=1' : ''}${loop ? '&loop=1' : ''}${muted ? '&mute=1' : ''}`;
-    
+    // For Google Drive embeds, we need to use iframe with proper responsive container
     return (
-      <div className={cn("relative overflow-hidden", className)}>
-        <iframe
-          className="w-full h-full object-cover"
-          src={embedUrl}
-          title={title}
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-          style={{ border: 'none' }}
-          loading="lazy"
-        />
+      <div className={cn("relative w-full", className)}>
+        <div className="aspect-video w-full">
+          <iframe
+            className="w-full h-full rounded-lg"
+            src={src}
+            title={title || "Isabella AI Introduction – Ovela Interactive"}
+            aria-label={description || "Video of Isabella, the world's first AI companion, introducing Ovela Interactive"}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+            style={{ border: 'none' }}
+          />
+        </div>
       </div>
     );
   }
@@ -60,7 +60,6 @@ const VideoPlayer = ({
         poster={poster}
         title={title}
         aria-label={description}
-        loading="lazy"
       >
         <source src={src} type="video/mp4" />
         <source src={src.replace('.mp4', '.webm')} type="video/webm" />

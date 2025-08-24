@@ -103,7 +103,7 @@ const Home = () => {
               <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
                 <div className="flex justify-center items-center">
                   <img 
-                    src="/lovable-uploads/3548b4f8-b4f5-410a-a3cd-669f8d922534.png" 
+                    src="/lovable-uploads/10967d19-2fe9-4ab6-aa70-39ba0280a4a2.png" 
                     alt="WellnessGeni app interface showing AI wellness companion Isabella"
                     className="w-full max-w-sm h-auto rounded-2xl shadow-lg"
                   />

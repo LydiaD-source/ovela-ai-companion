@@ -6,7 +6,7 @@ import VideoPlayer from '@/components/UI/VideoPlayer';
 import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
-  const isabellaVideoUrl = "https://drive.google.com/uc?export=download&id=1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M";
+  const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
 
   return (
     <>

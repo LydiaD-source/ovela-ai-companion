@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
@@ -129,9 +130,11 @@ const Home = () => {
             </div>
             <div>
               <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
-                <div className="text-center text-soft-white/70">
-                  [Isabella portrait or short looping video - Placeholder for Isabella video content]
-                </div>
+                <img 
+                  src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
+                  alt="Isabella - AI Brand Ambassador and Model"
+                  className="w-full h-auto rounded-2xl shadow-2xl"
+                />
               </div>
             </div>
           </div>

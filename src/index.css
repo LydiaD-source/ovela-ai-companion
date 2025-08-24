@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -188,6 +187,33 @@
 
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-xl;
+  }
+
+  /* Video Enhancements */
+  .video-container {
+    @apply relative overflow-hidden bg-charcoal rounded-3xl;
+  }
+
+  .video-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-charcoal/80 via-charcoal/40 to-transparent pointer-events-none;
+  }
+
+  /* Enhanced shadows for video containers */
+  .shadow-3xl {
+    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Responsive video scaling */
+  @media (max-width: 768px) {
+    .video-hero {
+      @apply h-[70vh] min-h-[500px];
+    }
+  }
+
+  @media (min-width: 769px) {
+    .video-hero {
+      @apply h-[90vh] min-h-[600px];
+    }
   }
 }
 

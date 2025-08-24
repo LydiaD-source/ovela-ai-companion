@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
@@ -100,14 +99,12 @@ const Home = () => {
               </Link>
             </div>
             <div className="lg:order-first">
-              <div className="bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 rounded-3xl p-8 glass backdrop-blur-sm border border-electric-blue/20">
-                <div className="flex justify-center items-center">
-                  <img 
-                    src="/lovable-uploads/b08873ce-6e3a-412a-aae2-2dc08fe8f75c.png" 
-                    alt="WellnessGeni app interface showing AI wellness companion Isabella"
-                    className="w-full max-w-sm h-auto rounded-xl shadow-2xl border border-electric-blue/30"
-                  />
-                </div>
+              <div className="w-full h-full flex justify-center items-center">
+                <img 
+                  src="/lovable-uploads/b06efdff-127f-4fcd-9e95-9dcf24e4b22f.png" 
+                  alt="WellnessGeni app interface showing AI wellness companion Isabella"
+                  className="w-full h-auto rounded-2xl shadow-2xl"
+                />
               </div>
             </div>
           </div>

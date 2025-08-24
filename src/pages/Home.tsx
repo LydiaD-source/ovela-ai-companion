@@ -101,8 +101,12 @@ const Home = () => {
             </div>
             <div className="lg:order-first">
               <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
-                <div className="text-center text-muted-foreground">
-                  [App screenshot mockup on phone - Placeholder for WellnessGeni screenshots]
+                <div className="flex justify-center items-center">
+                  <img 
+                    src="/wellnessgeni-screenshot.png" 
+                    alt="WellnessGeni app interface showing AI wellness companion Isabella"
+                    className="w-full max-w-sm h-auto rounded-2xl shadow-lg"
+                  />
                 </div>
               </div>
             </div>

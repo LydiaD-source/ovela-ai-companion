@@ -5,6 +5,8 @@ import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const WellnessGeni = () => {
+  const wellnessGeniUrl = "https://isabela-soul-connect.lovable.app/landing";
+
   return (
     <div className="pt-16">
       <Section className="text-center">
@@ -40,7 +42,7 @@ const WellnessGeni = () => {
               ))}
             </div>
 
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href={wellnessGeniUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="default" className="btn-gradient">
                 Explore WellnessGeni
                 <ArrowRight className="ml-2 w-4 h-4" />
@@ -114,9 +116,9 @@ const WellnessGeni = () => {
           <p className="body-md text-soft-white/80 mb-8">
             Experience firsthand how Isabella creates meaningful connections and provides personalized support through WellnessGeni.
           </p>
-          <a href="#" target="_blank" rel="noopener noreferrer">
+          <a href={wellnessGeniUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="default" size="lg" className="btn-gradient">
-              Download WellnessGeni
+              Launch WellnessGeni App
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </a>

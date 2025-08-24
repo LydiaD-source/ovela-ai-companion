@@ -17,6 +17,13 @@ const Projects = () => {
       description: 'Veronica Ristulescu\'s therapy group used Isabella as an "after-hours companion." Acting as a first-line contact, Isabella helped people express their needs when therapists weren\'t available, ensuring engagement and support outside office hours.',
       logoPlaceholder: 'Veronica Ristulescu Psychology Group Logo',
       videoPlaceholder: 'Isabella Animation Clip for Psychology Group'
+    },
+    {
+      id: 3,
+      name: 'HeShave',
+      description: 'Isabella partnered with HeShave to revolutionize men\'s grooming experiences. Through personalized product recommendations and interactive campaigns, Isabella helped connect with modern men seeking premium shaving solutions, driving engagement and brand loyalty.',
+      logoPlaceholder: 'HeShave Logo',
+      videoPlaceholder: 'Isabella Animation Clip for HeShave'
     }
   ];
 

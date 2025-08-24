@@ -29,7 +29,7 @@ const Navigation = () => {
               <span className="gradient-text">v</span>
               <span className="text-charcoal">ela</span>
             </div>
-            <div className="text-sm text-muted-foreground font-medium">Interactive</div>
+            <div className="text-sm text-charcoal font-medium">Interactive</div>
           </Link>
 
           {/* Desktop Navigation */}

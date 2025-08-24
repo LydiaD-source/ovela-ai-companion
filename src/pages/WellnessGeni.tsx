@@ -2,7 +2,7 @@
 import React from 'react';
 import { ArrowRight, CheckCircle, Heart, Brain, Clock, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
-import Button from '@/components/UI/Button';
+import { Button } from '@/components/ui/button';
 
 const WellnessGeni = () => {
   return (
@@ -41,7 +41,7 @@ const WellnessGeni = () => {
             </div>
 
             <a href="#" target="_blank" rel="noopener noreferrer">
-              <Button variant="gradient">
+              <Button variant="default" className="btn-gradient">
                 Explore WellnessGeni
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
@@ -115,7 +115,7 @@ const WellnessGeni = () => {
             Experience firsthand how Isabella creates meaningful connections and provides personalized support through WellnessGeni.
           </p>
           <a href="#" target="_blank" rel="noopener noreferrer">
-            <Button variant="gradient" size="lg">
+            <Button variant="default" size="lg" className="btn-gradient">
               Download WellnessGeni
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>

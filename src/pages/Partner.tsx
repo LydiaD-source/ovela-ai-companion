@@ -2,7 +2,7 @@
 import React from 'react';
 import { ArrowRight, CheckCircle, Clock, DollarSign, Zap, Globe, Users, Target } from 'lucide-react';
 import Section from '@/components/UI/Section';
-import Button from '@/components/UI/Button';
+import { Button } from '@/components/ui/button';
 
 const Partner = () => {
   return (
@@ -100,7 +100,7 @@ const Partner = () => {
             {
               step: '03',
               title: 'Launch & Deliver',
-              desc: 'Isabella activates campaigns while Qvela ensures integration'
+              desc: 'Isabella activates campaigns while Ovela ensures integration'
             }
           ].map((step, idx) => (
             <div key={idx} className="text-center">
@@ -114,7 +114,7 @@ const Partner = () => {
         </div>
 
         <div className="text-center">
-          <Button variant="gradient" size="lg" className="group">
+          <Button variant="default" size="lg" className="btn-gradient group">
             Start Your Project Today
             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>

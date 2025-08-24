@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, Target, Zap, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
-import Button from '@/components/UI/Button';
+import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
   return (
@@ -43,7 +43,7 @@ const Isabella = () => {
           </p>
           
           <div className="space-y-4">
-            <Button variant="gradient" size="lg" className="w-full sm:w-auto">
+            <Button variant="default" size="lg" className="btn-gradient w-full sm:w-auto">
               Hire Isabella
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>

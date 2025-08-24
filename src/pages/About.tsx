@@ -9,10 +9,10 @@ const About = () => {
       <Section className="text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="heading-xl mb-8">
-            About <span className="gradient-text">Qvela Interactive</span>
+            About <span className="gradient-text">Ovela Interactive</span>
           </h1>
           <p className="body-lg text-muted-foreground leading-relaxed">
-            Qvela Interactive was created to solve a challenge: traditional marketing was becoming slower, more costly, and less effective as the digital world accelerated. Our answer? AI-driven marketing that is fast, interactive, and adaptive.
+            Ovela Interactive was created to solve a challenge: traditional marketing was becoming slower, more costly, and less effective as the digital world accelerated. Our answer? AI-driven marketing that is fast, interactive, and adaptive.
           </p>
         </div>
       </Section>

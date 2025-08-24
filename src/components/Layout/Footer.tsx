@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Logo */}
           <div className="flex items-center justify-center space-x-2 mb-6">
             <div className="text-2xl font-bold">
-              <span className="text-soft-white">Q</span>
+              <span className="text-soft-white">O</span>
               <span className="gradient-text">v</span>
               <span className="text-soft-white">ela</span>
             </div>
@@ -44,7 +44,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-soft-white/70 text-sm">
-            Qvela Interactive © 2025. All rights reserved.
+            Ovela Interactive © 2025. All rights reserved.
           </p>
         </div>
       </div>

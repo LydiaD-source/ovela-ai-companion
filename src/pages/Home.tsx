@@ -38,37 +38,38 @@ const Home = () => {
       />
 
       <div className="pt-16">
-        {/* Hero Section with Isabella Video */}
-        <Section className="relative min-h-[90vh] flex items-center overflow-hidden p-0">
-          <div className="absolute inset-0 z-0">
-            <VideoPlayer
-              src={isabellaVideoUrl}
-              className="w-full h-full"
-              autoplay={true}
-              loop={true}
-              muted={true}
-              controls={false}
-              title="Isabella AI Introduction – Ovela Interactive"
-              description="Video of Isabella, the world's first AI companion, introducing Ovela Interactive"
-            />
-            {/* Gradient overlay for text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 via-charcoal/40 to-transparent" />
-          </div>
-          
-          <div className="container-custom relative z-10">
-            <div className="max-w-2xl animate-fade-up text-left">
-              <h1 className="heading-xl mb-6 text-soft-white">
+        {/* Hero Section with Text and Video */}
+        <Section className="relative min-h-[90vh] flex flex-col justify-center items-center overflow-hidden">
+          <div className="container-custom relative z-10 text-center mb-8">
+            <div className="max-w-4xl mx-auto animate-fade-up">
+              <h1 className="heading-xl mb-6 text-foreground">
                 <span className="gradient-text">Ovela Interactive</span>
               </h1>
-              <p className="body-lg text-soft-white/90 mb-8">
+              <p className="body-lg text-muted-foreground mb-8">
                 Where AI Becomes Your Brand's Voice.
               </p>
               <Link to="/partner">
-                <Button variant="default" size="lg" className="btn-gradient group">
+                <Button variant="default" size="lg" className="btn-gradient group mb-12">
                   Work With Us
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
+            </div>
+          </div>
+          
+          {/* Isabella Video Below Text */}
+          <div className="w-full max-w-4xl mx-auto px-4">
+            <div className="rounded-3xl overflow-hidden shadow-2xl">
+              <VideoPlayer
+                src={isabellaVideoUrl}
+                className="w-full aspect-video"
+                autoplay={true}
+                loop={true}
+                muted={true}
+                controls={false}
+                title="Isabella AI Introduction – Ovela Interactive"
+                description="Video of Isabella, the world's first AI companion, introducing Ovela Interactive"
+              />
             </div>
           </div>
         </Section>

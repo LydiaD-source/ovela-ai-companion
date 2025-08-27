@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app?source=ovela&ref=ovela";
+  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest/isabella?source=ovela&ref=ovela";
 
   return (
     <>
@@ -71,18 +71,18 @@ const Isabella = () => {
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="heading-lg mb-6">Ready to Work Together?</h2>
             <p className="body-md text-muted-foreground mb-8">
-              Click below to hire Isabella and get detailed information about projects, industries, pricing, and terms of cooperation.
+              Click below to chat with Isabella and get detailed information about projects, industries, pricing, and terms of cooperation.
             </p>
             
             <div className="space-y-4">
-              <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+              <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="default" size="lg" className="btn-gradient w-full sm:w-auto">
-                  Hire Isabella
+                  Chat with Isabella
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </a>
               <p className="text-sm text-muted-foreground">
-                Connects to WellnessGeni "Promoter Template" chat integration
+                Direct access to Isabella Navia - No signup required
               </p>
             </div>
           </div>

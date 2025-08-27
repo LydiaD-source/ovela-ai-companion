@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
@@ -8,8 +7,8 @@ import { Button } from '@/components/ui/button';
 
 const Home = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
-  const isabellaNaviaUrl = "/guest/isabella?source=ovela&ref=ovela";
+  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors
+  const isabellaNaviaUrl = "https://wellnessgeni.app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
 
   return (
     <>
@@ -187,4 +186,3 @@ const Home = () => {
 };
 
 export default Home;
-

@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { ArrowRight, CheckCircle, Heart, Brain, Clock, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const WellnessGeni = () => {
-  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
-  const isabellaGuestUrl = "/guest/isabella?source=ovela&ref=ovela";
+  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors
+  const isabellaGuestUrl = "https://wellnessgeni.app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
 
   return (
     <div className="pt-16">
@@ -130,4 +129,3 @@ const WellnessGeni = () => {
 };
 
 export default WellnessGeni;
-

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ArrowRight, DollarSign, Zap, Palette, CheckCircle, Star, Globe, Mic, BarChart3, Sparkles } from 'lucide-react';
 import Section from '@/components/UI/Section';
@@ -5,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Pricing = () => {
-  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors
-  const isabellaNaviaUrl = "https://wellnessgeni.app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
+  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors (live deployed app)
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
 
   const scrollToPlans = () => {
     const plansSection = document.getElementById('pricing-plans');

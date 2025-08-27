@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { ArrowRight, CheckCircle, Clock, DollarSign, Zap, Globe, Users, Target } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const Partner = () => {
-  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
-  const isabellaNaviaUrl = "/guest/isabella?source=ovela&ref=ovela";
+  // Direct link to WellnessGeni Promoter persona for Ovela visitors (live deployed app)
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
 
   return (
     <div className="pt-16">
@@ -133,4 +132,3 @@ const Partner = () => {
 };
 
 export default Partner;
-

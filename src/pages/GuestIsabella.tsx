@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import ChatInterface from '@/components/Chat/ChatInterface';
+import GuestChatInterface from '@/components/Chat/GuestChatInterface';
 
 const GuestIsabella = () => {
   const [searchParams] = useSearchParams();
@@ -21,7 +21,7 @@ const GuestIsabella = () => {
           <p className="text-muted-foreground">Chat with Isabella Navia - Your AI Information Ambassador</p>
         </div>
         
-        <ChatInterface 
+        <GuestChatInterface 
           isGuestMode={true}
           allowedPersonas={['isabella-navia']}
           defaultPersona="isabella-navia"

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Pricing = () => {
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app?source=ovela&ref=ovela";
+
   const scrollToPlans = () => {
     const plansSection = document.getElementById('pricing-plans');
     if (plansSection) {
@@ -138,12 +140,14 @@ const Pricing = () => {
                     <span className="text-sm">{feature}</span>
                   </div>
                 ))}
-                <Button 
-                  className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
-                  size="lg"
-                >
-                  Work With Isabella
-                </Button>
+                <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+                  <Button 
+                    className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
+                    size="lg"
+                  >
+                    Work With Isabella
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           ))}
@@ -175,7 +179,9 @@ const Pricing = () => {
                   <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold">{service.price}</span>
-                    <Button variant="outline" size="sm">Work With Isabella</Button>
+                    <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" size="sm">Work With Isabella</Button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -255,10 +261,12 @@ const Pricing = () => {
             <br />
             <span className="gradient-text">Let Isabella elevate your story.</span>
           </h2>
-          <Button size="lg" className="btn-gradient group text-lg px-12 py-6 animate-glow">
-            Work With Isabella Today
-            <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+            <Button size="lg" className="btn-gradient group text-lg px-12 py-6 animate-glow">
+              Work With Isabella Today
+              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
           <p className="text-soft-white/70 mt-6 text-lg">
             Connect with Isabella through WellnessGeni integration
           </p>

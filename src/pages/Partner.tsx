@@ -5,6 +5,8 @@ import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const Partner = () => {
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app?source=ovela&ref=ovela";
+
   return (
     <div className="pt-16">
       <Section className="text-center">
@@ -114,10 +116,12 @@ const Partner = () => {
         </div>
 
         <div className="text-center">
-          <Button variant="default" size="lg" className="btn-gradient group">
-            Start Your Project Today
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+            <Button variant="default" size="lg" className="btn-gradient group">
+              Start Your Project Today
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
           <p className="text-sm text-muted-foreground mt-4">
             Connect with Isabella through WellnessGeni integration
           </p>

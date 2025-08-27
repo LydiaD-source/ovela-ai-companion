@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app?source=ovela&ref=ovela";
 
   return (
     <>
@@ -74,10 +75,12 @@ const Isabella = () => {
             </p>
             
             <div className="space-y-4">
-              <Button variant="default" size="lg" className="btn-gradient w-full sm:w-auto">
-                Hire Isabella
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="default" size="lg" className="btn-gradient w-full sm:w-auto">
+                  Hire Isabella
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </a>
               <p className="text-sm text-muted-foreground">
                 Connects to WellnessGeni "Promoter Template" chat integration
               </p>

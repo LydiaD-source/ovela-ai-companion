@@ -13,6 +13,7 @@ import Isabella from "./pages/Isabella";
 import Projects from "./pages/Projects";
 import WellnessGeni from "./pages/WellnessGeni";
 import Partner from "./pages/Partner";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => {
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/wellnessgeni" element={<WellnessGeni />} />
                 <Route path="/partner" element={<Partner />} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Pricing = () => {
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app?source=ovela&ref=ovela";
+  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
+  const isabellaNaviaUrl = "/guest/isabella?source=ovela&ref=ovela";
 
   const scrollToPlans = () => {
     const plansSection = document.getElementById('pricing-plans');
@@ -279,3 +280,4 @@ const Pricing = () => {
 };
 
 export default Pricing;
+

@@ -1,10 +1,12 @@
+
 import React from 'react';
 import { ArrowRight, CheckCircle, Heart, Brain, Clock, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const WellnessGeni = () => {
-  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest/isabella?source=ovela&ref=ovela";
+  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
+  const isabellaGuestUrl = "/guest/isabella?source=ovela&ref=ovela";
 
   return (
     <div className="pt-16">
@@ -128,3 +130,4 @@ const WellnessGeni = () => {
 };
 
 export default WellnessGeni;
+

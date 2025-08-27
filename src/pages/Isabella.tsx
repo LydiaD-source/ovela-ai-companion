@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest/isabella?source=ovela&ref=ovela";
+  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
+  const isabellaGuestUrl = "/guest/isabella?source=ovela&ref=ovela";
 
   return (
     <>
@@ -156,3 +157,4 @@ const Isabella = () => {
 };
 
 export default Isabella;
+

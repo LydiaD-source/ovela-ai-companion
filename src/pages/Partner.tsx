@@ -5,7 +5,8 @@ import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const Partner = () => {
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app?source=ovela&ref=ovela";
+  // Updated to internal guest route so Ovela visitors land directly in the promoter chat
+  const isabellaNaviaUrl = "/guest/isabella?source=ovela&ref=ovela";
 
   return (
     <div className="pt-16">
@@ -132,3 +133,4 @@ const Partner = () => {
 };
 
 export default Partner;
+

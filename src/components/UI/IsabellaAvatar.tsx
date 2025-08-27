@@ -19,7 +19,7 @@ const IsabellaAvatar: React.FC<IsabellaAvatarProps> = ({
 
   return (
     <Avatar className={`${sizeClasses[size]} ${className}`}>
-      <AvatarImage src="/placeholder.svg" alt="Isabella Navia" />
+      <AvatarImage src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" alt="Isabella Navia" />
       <AvatarFallback className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 text-electric-blue font-semibold">
         IN
       </AvatarFallback>

@@ -5,8 +5,8 @@ import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const WellnessGeni = () => {
-  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors (live deployed app)
-  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
+  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
+  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 
   return (
     <div className="pt-16">

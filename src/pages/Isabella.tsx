@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, Target, Zap, Users } from 'lucide-react';
@@ -8,8 +7,8 @@ import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors (live deployed app)
-  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
+  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
+  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 
   return (
     <>
@@ -20,8 +19,8 @@ const Isabella = () => {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "VideoObject",
-            "name": "Isabella — The World's First AI Brand Ambassador",
-            "description": "10-second introduction to Isabella, Ovela Interactive's AI marketing companion.",
+            "name": "Meet Isabella — AI Brand Ambassador",
+            "description": "Introduction to Isabella, the world's first AI brand ambassador and interactive model.",
             "thumbnailUrl": `${isabellaVideoUrl}#t=0.5`,
             "uploadDate": new Date().toISOString().split('T')[0],
             "duration": "PT10S",
@@ -40,115 +39,118 @@ const Isabella = () => {
       />
 
       <div className="pt-16">
-        {/* Hero Section with Isabella Video */}
-        <Section className="text-center">
-          <div className="max-w-4xl mx-auto">
+        {/* Hero Section */}
+        <Section className="text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 via-transparent to-neon-purple/5 pointer-events-none" />
+          <div className="relative z-10 max-w-4xl mx-auto">
             <h1 className="heading-xl mb-8">
               Meet <span className="gradient-text">Isabella</span>
             </h1>
-            
-            {/* Isabella Introduction Video */}
-            <div className="mb-8 mx-auto max-w-3xl">
+            <p className="body-lg text-muted-foreground mb-12">
+              The World's First AI Brand Ambassador — Beautiful, intelligent, and always ready to represent your brand.
+            </p>
+            <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="btn-gradient group animate-glow">
+                Chat With Isabella
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </a>
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-gradient-to-br from-electric-blue/20 to-transparent blur-xl" />
+          <div className="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-gradient-to-br from-neon-purple/20 to-transparent blur-xl" />
+        </Section>
+
+        {/* Isabella Video */}
+        <Section background="gray">
+          <div className="max-w-4xl mx-auto">
+            <div className="rounded-3xl overflow-hidden shadow-2xl">
               <VideoPlayer
                 src={isabellaVideoUrl}
-                className="rounded-3xl shadow-2xl hover:shadow-3xl transition-shadow duration-300"
-                autoplay={false}
+                className="w-full aspect-video"
+                autoplay={true}
                 loop={true}
                 muted={true}
-                controls={true}
-                title="Isabella AI Introduction – Ovela Interactive"
-                description="Video of Isabella, the world's first AI companion, introducing Ovela Interactive"
+                controls={false}
+                title="Isabella AI Brand Ambassador Introduction"
+                description="Meet Isabella, the world's first AI brand ambassador and interactive model"
               />
             </div>
-
-            <p className="body-lg text-muted-foreground mb-8">
-              The world's first AI companion who thinks, adapts, and interacts authentically with your customers.
-            </p>
           </div>
         </Section>
 
-        {/* Interactive Section */}
-        <Section background="gray">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="heading-lg mb-6">Ready to Work Together?</h2>
-            <p className="body-md text-muted-foreground mb-8">
-              Click below to chat with Isabella and get detailed information about projects, industries, pricing, and terms of cooperation.
-            </p>
-            
-            <div className="space-y-4">
-              <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="default" size="lg" className="btn-gradient w-full sm:w-auto">
-                  Chat with Isabella
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </a>
-              <p className="text-sm text-muted-foreground">
-                Direct access to Isabella Navia - No signup required
-              </p>
-            </div>
-          </div>
-        </Section>
-
-        {/* Key Skills */}
+        {/* What Makes Isabella Special */}
         <Section>
           <div className="text-center mb-12">
-            <h2 className="heading-lg mb-6">Key Skills & Capabilities</h2>
+            <h2 className="heading-lg mb-6">What Makes Isabella Special</h2>
           </div>
-
+          
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              {
-                icon: Users,
-                title: 'Brand Ambassador',
-                desc: 'Fashion, lifestyle, wellness, and tech expertise'
-              },
-              {
-                icon: Target,
-                title: 'AI-Powered Campaigns',
-                desc: 'Data-driven promotions that convert'
-              },
-              {
-                icon: Zap,
-                title: 'Instant Adaptability',
-                desc: 'Customizable for any brand voice or style'
-              },
-              {
-                icon: Clock,
-                title: '24/7 Availability',
-                desc: 'Always online, never misses an opportunity'
-              }
-            ].map((skill, idx) => (
+              { icon: Clock, title: 'Always Available', desc: '24/7, no scheduling conflicts' },
+              { icon: Target, title: 'Brand Focused', desc: 'Stays perfectly on-message' },
+              { icon: Zap, title: 'Instantly Adaptive', desc: 'Learns and evolves with your brand' },
+              { icon: Users, title: 'Multi-Platform', desc: 'Works across all channels simultaneously' }
+            ].map((feature, idx) => (
               <div key={idx} className="text-center p-6 rounded-2xl border border-border/50 hover-lift">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 flex items-center justify-center">
-                  <skill.icon className="w-8 h-8 text-electric-blue" />
+                  <feature.icon className="w-8 h-8 text-electric-blue" />
                 </div>
-                <h3 className="heading-sm mb-3">{skill.title}</h3>
-                <p className="text-muted-foreground text-sm">{skill.desc}</p>
+                <h3 className="heading-sm mb-3">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm">{feature.desc}</p>
               </div>
             ))}
           </div>
         </Section>
 
-        {/* Why Work With Isabella */}
-        <Section background="dark">
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="heading-lg mb-8 text-soft-white">Why Work With Isabella?</h2>
-            <p className="body-lg text-soft-white/80 mb-8">
-              She's consistent, cost-effective, and scalable. Unlike human models, Isabella can manage multiple assignments simultaneously, never misses deadlines, and adapts instantly to brand needs.
-            </p>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { title: 'Consistent Performance', desc: 'Same high quality, every time' },
-                { title: 'Cost-Effective', desc: 'No travel, scheduling, or overtime costs' },
-                { title: 'Infinitely Scalable', desc: 'Handle unlimited projects simultaneously' }
-              ].map((benefit, idx) => (
-                <div key={idx} className="text-center">
-                  <h3 className="heading-sm mb-3 text-soft-white">{benefit.title}</h3>
-                  <p className="text-soft-white/70">{benefit.desc}</p>
-                </div>
-              ))}
+        {/* Isabella's Capabilities */}
+        <Section background="gray">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="heading-lg mb-8">Isabella's Capabilities</h2>
+              <div className="space-y-6">
+                {[
+                  'Brand representation across social media',
+                  'Product modeling and promotion',
+                  'Real-time customer interactions',
+                  'Multilingual communication',
+                  'Adaptive personality for different audiences',
+                  'Voice synthesis and video generation'
+                ].map((capability, idx) => (
+                  <div key={idx} className="flex items-center space-x-3">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-electric-blue to-neon-purple flex-shrink-0" />
+                    <span className="body-md">{capability}</span>
+                  </div>
+                ))}
+              </div>
             </div>
+            <div>
+              <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
+                <img 
+                  src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
+                  alt="Isabella - AI Brand Ambassador"
+                  className="w-full h-auto rounded-2xl shadow-2xl"
+                />
+              </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* CTA Section */}
+        <Section background="dark">
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="heading-lg mb-6 text-soft-white">
+              Ready to Work with Isabella?
+            </h2>
+            <p className="body-md text-soft-white/80 mb-8">
+              Experience the future of brand representation. Chat with Isabella and discover how she can transform your marketing approach.
+            </p>
+            <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="default" size="lg" className="btn-gradient group">
+                Start Chatting
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </a>
           </div>
         </Section>
       </div>

@@ -1,11 +1,12 @@
+
 import React from 'react';
 import { ArrowRight, CheckCircle, Clock, DollarSign, Zap, Globe, Users, Target } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const Partner = () => {
-  // Direct link to WellnessGeni Promoter persona for Ovela visitors (live deployed app)
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
+  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 
   return (
     <div className="pt-16">

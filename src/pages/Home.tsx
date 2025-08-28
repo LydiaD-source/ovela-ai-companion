@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
@@ -8,8 +7,8 @@ import { Button } from '@/components/ui/button';
 
 const Home = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  // Direct link to WellnessGeni with Promoter persona and clean UI for Ovela visitors (live deployed app)
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/app/promoter?source=ovela&ref=ovela&persona=isabella-navia&hide_personas=true&marketing_mode=true";
+  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 
   return (
     <>

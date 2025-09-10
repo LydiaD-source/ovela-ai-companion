@@ -22,8 +22,8 @@ class IsabellaAPI {
   private baseUrl: string;
 
   constructor() {
-    // Direct call to Wellness Geni API
-    this.baseUrl = 'https://isabela-soul-connect.lovable.app';
+    // Use your Supabase edge function to proxy requests and avoid CORS
+    this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
   }
 
   /**
@@ -31,12 +31,11 @@ class IsabellaAPI {
    */
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/chat`, {
+      const response = await fetch(`${this.baseUrl}/isabella-chat`, {
         method: 'POST',
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
           message,

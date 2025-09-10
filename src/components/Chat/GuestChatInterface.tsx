@@ -38,12 +38,12 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
   }, [isGuestMode]);
 
   return (
-    <div className="flex h-[600px] bg-background rounded-lg border">
+    <div className="flex h-[520px] bg-background rounded-lg border">
       {/* Simplified sidebar - only Isabella Navia */}
       <div className="w-64 border-r bg-muted/30 p-4">
         <div className="space-y-4">
           <div className="text-center">
-            <IsabellaAvatar size="large" />
+            <IsabellaAvatar size="large" className="w-24 h-24" />
             <h3 className="font-semibold mt-2">Isabella Navia</h3>
             <p className="text-sm text-muted-foreground">Information Ambassador</p>
           </div>
@@ -80,7 +80,7 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
           <ChatMessages messages={messages} />
         </div>
         
-        <div className="border-t p-4">
+        <div className="border-t p-3">
           <ChatInput 
             onSendMessage={async (message) => {
               // Add user message immediately

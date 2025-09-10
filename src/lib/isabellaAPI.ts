@@ -32,6 +32,7 @@ class IsabellaAPI {
   private getAuthHeaders() {
     return {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.SUPABASE_ANON_KEY || ''}`,
     };
   }
 

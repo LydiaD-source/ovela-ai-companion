@@ -22,8 +22,8 @@ class IsabellaAPI {
   private baseUrl: string;
 
   constructor() {
-    // Use a CORS proxy service temporarily
-    this.baseUrl = 'https://cors-anywhere.herokuapp.com/https://isabela-soul-connect.lovable.app';
+    // Direct call to Wellness Geni API
+    this.baseUrl = 'https://isabela-soul-connect.lovable.app';
   }
 
   /**
@@ -33,8 +33,10 @@ class IsabellaAPI {
     try {
       const response = await fetch(`${this.baseUrl}/api/chat`, {
         method: 'POST',
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
           message,

@@ -22,7 +22,7 @@ class IsabellaAPI {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.VITE_ISABELLA_API_URL || 'https://isabela-soul-connect.lovable.app';
+    this.baseUrl = import.meta.env.VITE_ISABELLA_API_URL || 'https://isabela-soul-connect.lovable.app';
   }
 
   /**

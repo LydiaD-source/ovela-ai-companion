@@ -23,7 +23,13 @@ class IsabellaAPI {
 
   constructor() {
     // Use Supabase proxy to avoid CORS issues
-    this.baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (supabaseUrl) {
+      this.baseUrl = `${supabaseUrl}/functions/v1`;
+    } else {
+      // Fallback to direct API for now
+      this.baseUrl = 'https://isabela-soul-connect.lovable.app/api';
+    }
   }
 
   /**
@@ -31,7 +37,8 @@ class IsabellaAPI {
    */
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella-chat`, {
+      const endpoint = this.baseUrl.includes('functions/v1') ? 'isabella-chat' : 'chat';
+      const response = await fetch(`${this.baseUrl}/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

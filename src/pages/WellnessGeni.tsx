@@ -1,12 +1,13 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Heart, Brain, Clock, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const WellnessGeni = () => {
-  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
-  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
+  // Internal route to our Ovela guest Isabella interface
+  const isabellaGuestUrl = "/guest/isabella?source=ovela";
 
   return (
     <div className="pt-16">
@@ -43,12 +44,12 @@ const WellnessGeni = () => {
               ))}
             </div>
 
-            <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
+            <Link to={isabellaGuestUrl}>
               <Button variant="default" className="btn-gradient">
                 Explore WellnessGeni
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
-            </a>
+            </Link>
           </div>
           
           <div>
@@ -117,12 +118,12 @@ const WellnessGeni = () => {
           <p className="body-md text-soft-white/80 mb-8">
             Experience firsthand how Isabella creates meaningful connections and provides personalized support through WellnessGeni.
           </p>
-          <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
+          <Link to={isabellaGuestUrl}>
             <Button variant="default" size="lg" className="btn-gradient">
               Launch WellnessGeni App
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-          </a>
+          </Link>
         </div>
       </Section>
     </div>

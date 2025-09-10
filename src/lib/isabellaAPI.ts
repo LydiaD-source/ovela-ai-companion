@@ -12,10 +12,13 @@ export interface IsabellaMessage {
 }
 
 export interface IsabellaResponse {
-  message: string;
+  message?: string;
+  response?: string;
   audioUrl?: string;
   videoUrl?: string;
   emotion?: string;
+  persona?: string;
+  timestamp?: string;
 }
 
 class IsabellaAPI {

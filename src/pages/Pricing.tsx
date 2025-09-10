@@ -1,12 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, DollarSign, Zap, Palette, CheckCircle, Star, Globe, Mic, BarChart3, Sparkles } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Pricing = () => {
-  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
+  // Internal route to our Ovela guest Isabella interface
+  const isabellaNaviaUrl = "/guest/isabella?source=ovela";
 
   const scrollToPlans = () => {
     const plansSection = document.getElementById('pricing-plans');
@@ -140,14 +141,14 @@ const Pricing = () => {
                     <span className="text-sm">{feature}</span>
                   </div>
                 ))}
-                <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+                <Link to={isabellaNaviaUrl}>
                   <Button 
                     className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
                     size="lg"
                   >
                     Work With Isabella
                   </Button>
-                </a>
+                </Link>
               </CardContent>
             </Card>
           ))}
@@ -179,9 +180,9 @@ const Pricing = () => {
                   <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold">{service.price}</span>
-                    <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+                    <Link to={isabellaNaviaUrl}>
                       <Button variant="outline" size="sm">Work With Isabella</Button>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -261,12 +262,12 @@ const Pricing = () => {
             <br />
             <span className="gradient-text">Let Isabella elevate your story.</span>
           </h2>
-          <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+          <Link to={isabellaNaviaUrl}>
             <Button size="lg" className="btn-gradient group text-lg px-12 py-6 animate-glow">
               Work With Isabella Today
               <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
-          </a>
+          </Link>
           <p className="text-soft-white/70 mt-6 text-lg">
             Connect with Isabella through WellnessGeni integration
           </p>

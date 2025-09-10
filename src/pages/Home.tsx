@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 
 const Home = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
+  // Internal route to our Ovela guest Isabella interface
+  const isabellaNaviaUrl = "/guest/isabella?source=ovela";
 
   return (
     <>
@@ -49,12 +49,12 @@ const Home = () => {
               <p className="body-lg text-muted-foreground mb-8">
                 Where AI Becomes Your Brand's Voice.
               </p>
-              <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+              <Link to={isabellaNaviaUrl}>
                 <Button variant="default" size="lg" className="btn-gradient group mb-12">
                   Work With Us
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
           
@@ -162,12 +162,12 @@ const Home = () => {
           </div>
 
           <div className="text-center">
-            <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+            <Link to={isabellaNaviaUrl}>
               <Button variant="default" className="btn-gradient">
                 Partner With Isabella
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
-            </a>
+            </Link>
           </div>
         </Section>
 

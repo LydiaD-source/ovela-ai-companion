@@ -23,7 +23,7 @@ class IsabellaAPI {
 
   constructor() {
     // Use your Supabase edge function to proxy requests and avoid CORS
-  this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
+this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
   }
 
   /**
@@ -32,17 +32,11 @@ class IsabellaAPI {
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/isabella-basic`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message,
-          persona: persona || 'isabella-navia',
-          source: 'ovela'
-        }),
-      });
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, persona, source: 'ovela' }),
+});
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

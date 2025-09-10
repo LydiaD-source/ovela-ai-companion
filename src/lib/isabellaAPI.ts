@@ -32,7 +32,6 @@ class IsabellaAPI {
   private getAuthHeaders() {
     return {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.SUPABASE_ANON_KEY || ''}`,
     };
   }
 
@@ -41,7 +40,7 @@ class IsabellaAPI {
    */
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella_basic`, {
+      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
         method: 'POST',
         mode: 'cors',
         headers: this.getAuthHeaders(),
@@ -68,7 +67,7 @@ class IsabellaAPI {
    */
   async getPersonaInfo(persona: string = 'isabella-navia') {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella_basic`, {
+      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
         method: 'POST',
         mode: 'cors',
         headers: this.getAuthHeaders(),
@@ -91,7 +90,7 @@ class IsabellaAPI {
    */
   async initGuestSession(source: string = 'ovela') {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella_basic`, {
+      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify({ source }),

@@ -22,8 +22,8 @@ class IsabellaAPI {
   private baseUrl: string;
 
   constructor() {
-    // Use your Supabase edge function to proxy requests and avoid CORS
-this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
+    // Utilise directement ta fonction Edge Supabase
+    this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
   }
 
   /**
@@ -32,11 +32,19 @@ this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/isabella_basic`, {
-    method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, persona, source: 'ovela' }),
-});
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          // Si Ovela fournit un token, tu peux l'ajouter ici
+          // 'Authorization': 'Bearer TON_TOKEN_ICI',
+        },
+        body: JSON.stringify({
+          message,
+          persona: persona || 'isabella-navia',
+          mode: 'promoter', // requis pour Ovela
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -54,8 +62,15 @@ this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
    */
   async getPersonaInfo(persona: string = 'isabella-navia') {
     try {
-      const response = await fetch(`${this.baseUrl}/api/personas/${persona}`);
-      
+      const response = await fetch(`${this.baseUrl}/isabella_basic`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ persona }),
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -72,7 +87,7 @@ this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
    */
   async initGuestSession(source: string = 'ovela') {
     try {
-      const response = await fetch(`${this.baseUrl}/api/guest/init`, {
+      const response = await fetch(`${this.baseUrl}/isabella_basic`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -23,7 +23,7 @@ class IsabellaAPI {
 
   constructor() {
     // Use your Supabase edge function to proxy requests and avoid CORS
-    this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
+  this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
   }
 
   /**

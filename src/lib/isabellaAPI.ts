@@ -31,7 +31,7 @@ class IsabellaAPI {
    */
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella-chat`, {
+      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
         method: 'POST',
         mode: 'cors',
         headers: {

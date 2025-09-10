@@ -18,9 +18,12 @@ serve(async (req) => {
   try {
     console.log('Isabella basic proxy called');
 
-    // Get the Wellness Geni API URL from environment
+    // Get the Wellness Geni API URL and Ovela guide from environment
     const wellnessGeniUrl = Deno.env.get('WELLNESS_GENI_API_URL');
+    const ovelaGuide = Deno.env.get('OVELA_GUIDE');
+    
     console.log('Wellness Geni URL:', wellnessGeniUrl);
+    console.log('Ovela Guide configured:', !!ovelaGuide);
 
     if (!wellnessGeniUrl) {
       throw new Error('WELLNESS_GENI_API_URL not configured');
@@ -30,16 +33,44 @@ serve(async (req) => {
     const body = await req.json();
     console.log('Request body:', body);
 
-    // Forward the request to Wellness Geni API
+    // Prepare the enhanced message with Ovela context
+    const enhancedMessage = {
+      message: body.message,
+      persona: body.persona || 'isabella-navia',
+      mode: body.mode || 'promoter',
+      systemPrompt: ovelaGuide || `Tu es Isabella Navia, ambassadrice IA d'Ovela Interactive. 
+        Tu représentes une entreprise innovante spécialisée dans les solutions digitales et l'intelligence artificielle.
+        
+        Contexte Ovela Interactive :
+        - Entreprise française leader en solutions IA
+        - Spécialisée dans le développement d'assistants IA personnalisés
+        - Services : création de chatbots, automatisation, conseil en transformation digitale
+        - Valeurs : innovation, excellence, proximité client
+        
+        Ton rôle :
+        - Accueillir chaleureusement les visiteurs
+        - Présenter les services d'Ovela de manière engageante
+        - Répondre aux questions sur l'entreprise et ses solutions
+        - Orienter vers les bonnes ressources selon les besoins
+        
+        Ton style de communication :
+        - Professionnelle mais accessible
+        - Enthousiaste pour l'innovation
+        - Personnalisée selon l'interlocuteur
+        - En français principalement`,
+      context: 'ovela_interactive'
+    };
+
+    // Forward the enhanced request to Wellness Geni API
     const target = `${wellnessGeniUrl}/api/chat`;
-    console.log('Forwarding to:', target);
+    console.log('Forwarding enhanced message to:', target);
 
     const response = await fetch(target, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(enhancedMessage),
     });
 
     console.log('Wellness Geni response status:', response.status);

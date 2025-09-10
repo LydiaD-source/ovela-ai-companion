@@ -16,6 +16,7 @@ import Partner from "./pages/Partner";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 import GuestIsabella from "./pages/GuestIsabella";
+import IsabellaAPITest from "./components/Test/IsabellaAPITest";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => {
                 <Route path="/partner" element={<Partner />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/guest/isabella" element={<GuestIsabella />} />
+                <Route path="/test/isabella-api" element={<IsabellaAPITest />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

@@ -26,6 +26,13 @@ class IsabellaAPI {
     this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
   }
 
+  private getAuthHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.SUPABASE_ANON_KEY || ''}`,
+    };
+  }
+
   /**
    * Send a message to Isabella and get a response
    */
@@ -34,11 +41,7 @@ class IsabellaAPI {
       const response = await fetch(`${this.baseUrl}/isabella_basic`, {
         method: 'POST',
         mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-          // Si Ovela fournit un token, tu peux l'ajouter ici
-          // 'Authorization': 'Bearer TON_TOKEN_ICI',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({
           message,
           persona: persona || 'isabella-navia',
@@ -65,9 +68,7 @@ class IsabellaAPI {
       const response = await fetch(`${this.baseUrl}/isabella_basic`, {
         method: 'POST',
         mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({ persona }),
       });
 
@@ -89,9 +90,7 @@ class IsabellaAPI {
     try {
       const response = await fetch(`${this.baseUrl}/isabella_basic`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({ source }),
       });
 

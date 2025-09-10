@@ -13,8 +13,11 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Isabella chat proxy called');
+    
     // Get the Wellness Geni API URL from environment
     const wellnessGeniUrl = Deno.env.get('WELLNESS_GENI_API_URL');
+    console.log('Wellness Geni URL:', wellnessGeniUrl);
     
     if (!wellnessGeniUrl) {
       throw new Error('WELLNESS_GENI_API_URL not configured');
@@ -22,8 +25,10 @@ serve(async (req) => {
 
     // Parse the request body
     const body = await req.json();
+    console.log('Request body:', body);
     
     // Forward the request to Wellness Geni API
+    console.log('Forwarding to:', `${wellnessGeniUrl}/api/chat`);
     const response = await fetch(`${wellnessGeniUrl}/api/chat`, {
       method: 'POST',
       headers: {
@@ -32,11 +37,16 @@ serve(async (req) => {
       body: JSON.stringify(body),
     });
 
+    console.log('Wellness Geni response status:', response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Wellness Geni API error:', errorText);
       throw new Error(`Wellness Geni API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('Wellness Geni response data:', data);
 
     return new Response(
       JSON.stringify(data),

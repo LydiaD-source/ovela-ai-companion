@@ -12,28 +12,17 @@ export interface IsabellaMessage {
 }
 
 export interface IsabellaResponse {
-  message?: string;
-  response?: string;
+  message: string;
   audioUrl?: string;
   videoUrl?: string;
   emotion?: string;
-  persona?: string;
-  timestamp?: string;
 }
 
 class IsabellaAPI {
   private baseUrl: string;
 
   constructor() {
-    // Utilise directement ta fonction Edge Supabase
-    this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
-  }
-
-  private getAuthHeaders() {
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.SUPABASE_ANON_KEY || ''}`,
-    };
+    this.baseUrl = process.env.VITE_ISABELLA_API_URL || 'https://isabela-soul-connect.lovable.app';
   }
 
   /**
@@ -41,14 +30,15 @@ class IsabellaAPI {
    */
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
+      const response = await fetch(`${this.baseUrl}/api/chat`, {
         method: 'POST',
-        mode: 'cors',
-        headers: this.getAuthHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           message,
           persona: persona || 'isabella-navia',
-          mode: 'promoter', // requis pour Ovela
+          source: 'ovela'
         }),
       });
 
@@ -68,13 +58,8 @@ class IsabellaAPI {
    */
   async getPersonaInfo(persona: string = 'isabella-navia') {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ persona }),
-      });
-
+      const response = await fetch(`${this.baseUrl}/api/personas/${persona}`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -91,9 +76,11 @@ class IsabellaAPI {
    */
   async initGuestSession(source: string = 'ovela') {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
+      const response = await fetch(`${this.baseUrl}/api/guest/init`, {
         method: 'POST',
-        headers: this.getAuthHeaders(),
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ source }),
       });
 

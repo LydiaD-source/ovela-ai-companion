@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Clock, DollarSign, Zap, Globe, Users, Target } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 
 const Partner = () => {
-  // Internal route to our Ovela guest Isabella interface
-  const isabellaNaviaUrl = "/guest/isabella?source=ovela";
+  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
+  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 
   return (
     <div className="pt-16">
@@ -118,12 +117,12 @@ const Partner = () => {
         </div>
 
         <div className="text-center">
-          <Link to={isabellaNaviaUrl}>
+          <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="default" size="lg" className="btn-gradient group">
               Start Your Project Today
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-          </Link>
+          </a>
           <p className="text-sm text-muted-foreground mt-4">
             Connect with Isabella through WellnessGeni integration
           </p>

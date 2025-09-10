@@ -3,8 +3,6 @@ import React, { useState, useEffect } from 'react';
 import IsabellaAvatar from '@/components/UI/IsabellaAvatar';
 import ChatMessages from '@/components/Chat/ChatMessages';
 import ChatInput from '@/components/Chat/ChatInput';
-import { isabellaAPI } from '@/lib/isabellaAPI';
-import { useToast } from '@/hooks/use-toast';
 
 interface GuestChatInterfaceProps {
   isGuestMode?: boolean;
@@ -21,8 +19,6 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
 }) => {
   const [messages, setMessages] = useState([]);
   const [currentPersona, setCurrentPersona] = useState(defaultPersona);
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     // Initialize with Isabella Navia welcome message for Ovela visitors
@@ -38,12 +34,12 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
   }, [isGuestMode]);
 
   return (
-    <div className="flex h-[520px] bg-background rounded-lg border">
+    <div className="flex h-[600px] bg-background rounded-lg border">
       {/* Simplified sidebar - only Isabella Navia */}
       <div className="w-64 border-r bg-muted/30 p-4">
         <div className="space-y-4">
           <div className="text-center">
-            <IsabellaAvatar size="large" className="w-24 h-24" />
+            <IsabellaAvatar size="large" />
             <h3 className="font-semibold mt-2">Isabella Navia</h3>
             <p className="text-sm text-muted-foreground">Information Ambassador</p>
           </div>
@@ -80,65 +76,19 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
           <ChatMessages messages={messages} />
         </div>
         
-        <div className="border-t p-3">
+        <div className="border-t p-4">
           <ChatInput 
-            onSendMessage={async (message) => {
-              // Add user message immediately
-              const userMessage = {
+            onSendMessage={(message) => {
+              // Handle message sending logic here
+              setMessages(prev => [...prev, {
                 id: Date.now().toString(),
                 text: message,
-                sender: 'user' as const,
+                sender: 'user',
                 timestamp: new Date(),
                 persona: currentPersona
-              };
-              
-              setMessages(prev => [...prev, userMessage]);
-              setIsLoading(true);
-
-              try {
-                // Send to Isabella API with Ovela context
-                const response = await isabellaAPI.sendMessage(message, 'isabella-navia');
-                
-                // Add Isabella's response
-                const isabellaMessage = {
-                  id: (Date.now() + 1).toString(),
-                  text: response.response || response.message || 'Je suis désolée, je n\'ai pas pu traiter votre message.',
-                  sender: 'assistant' as const,
-                  timestamp: new Date(),
-                  persona: 'isabella-navia'
-                };
-                
-                setMessages(prev => [...prev, isabellaMessage]);
-                
-                toast({
-                  title: "Message envoyé",
-                  description: "Isabella a répondu à votre message.",
-                });
-              } catch (error) {
-                console.error('Error sending message:', error);
-                
-                // Add error message
-                const errorMessage = {
-                  id: (Date.now() + 1).toString(),
-                  text: 'Je suis désolée, je rencontre des difficultés techniques. Veuillez réessayer dans un moment.',
-                  sender: 'assistant' as const,
-                  timestamp: new Date(),
-                  persona: 'isabella-navia'
-                };
-                
-                setMessages(prev => [...prev, errorMessage]);
-                
-                toast({
-                  title: "Erreur",
-                  description: "Impossible de contacter Isabella. Veuillez réessayer.",
-                  variant: "destructive",
-                });
-              } finally {
-                setIsLoading(false);
-              }
+              }]);
             }}
             placeholder="Ask Isabella about Ovela Interactive services..."
-            disabled={isLoading}
           />
         </div>
       </div>

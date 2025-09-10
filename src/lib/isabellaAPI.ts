@@ -31,7 +31,7 @@ this.baseUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1';
    */
   async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/isabella-basic`, {
+      const response = await fetch(`${this.baseUrl}/isabella_basic`, {
     method: 'POST',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },

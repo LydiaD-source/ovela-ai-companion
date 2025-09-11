@@ -15,23 +15,34 @@ serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const wellnessGeniApiKey = Deno.env.get('WELLNESS_GENI_API_KEY')!;
+    const supabaseServiceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const wellnessGeniApiKey = Deno.env.get('WELLNESS_GENI_API_KEY');
     const wellnessGeniApiUrl = Deno.env.get('WELLNESS_GENI_API_URL') || 'https://api.wellnessgeni.com';
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    if (!wellnessGeniApiKey) {
+      return new Response(JSON.stringify({ success: false, error: 'Missing WELLNESS_GENI_API_KEY secret' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Use service role for any internal logging if needed (RLS-safe)
+    const supabase = supabaseServiceRole
+      ? createClient(supabaseUrl, supabaseServiceRole, { auth: { persistSession: false, autoRefreshToken: false } })
+      : null;
 
     const { action, payload } = await req.json();
 
     console.log('WellnessGeni API Request:', { action, payload });
 
-    // Log API usage
-    await supabase.from('api_usage_logs').insert({
-      client_id: (await supabase.from('clients').select('id').eq('name', 'Ovela Interactive').single()).data?.id,
-      endpoint: `/wellness-geni-api/${action}`,
-      status_code: 200,
-      tokens_used: 0
-    });
+    // Prepare headers for WellnessGeni (support both Authorization and x-api-key)
+    const wgHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${wellnessGeniApiKey}`,
+      'x-api-key': wellnessGeniApiKey,
+    };
+
+    // (Optional) Add internal logging here if needed
 
     let wellnessGeniResponse;
 
@@ -39,10 +50,7 @@ serve(async (req) => {
       case 'chat':
         wellnessGeniResponse = await fetch(`${wellnessGeniApiUrl}/chat`, {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${wellnessGeniApiKey}`,
-            'Content-Type': 'application/json',
-          },
+          headers: wgHeaders,
           body: JSON.stringify({
             message: payload.message,
             persona: payload.persona || 'isabella-navia',
@@ -54,30 +62,21 @@ serve(async (req) => {
       case 'persona-info':
         wellnessGeniResponse = await fetch(`${wellnessGeniApiUrl}/personas/${payload.persona}`, {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${wellnessGeniApiKey}`,
-            'Content-Type': 'application/json',
-          },
+          headers: wgHeaders,
         });
         break;
 
       case 'services-info':
         wellnessGeniResponse = await fetch(`${wellnessGeniApiUrl}/services`, {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${wellnessGeniApiKey}`,
-            'Content-Type': 'application/json',
-          },
+          headers: wgHeaders,
         });
         break;
 
       case 'pricing-info':
         wellnessGeniResponse = await fetch(`${wellnessGeniApiUrl}/pricing`, {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${wellnessGeniApiKey}`,
-            'Content-Type': 'application/json',
-          },
+          headers: wgHeaders,
         });
         break;
 
@@ -85,15 +84,31 @@ serve(async (req) => {
         throw new Error(`Unknown action: ${action}`);
     }
 
-    if (!wellnessGeniResponse.ok) {
-      throw new Error(`WellnessGeni API error: ${wellnessGeniResponse.status}`);
+    // Try to parse JSON, otherwise return raw text for debugging
+    const contentType = wellnessGeniResponse.headers.get('content-type') || '';
+    let responseBody: any;
+    if (contentType.includes('application/json')) {
+      responseBody = await wellnessGeniResponse.json();
+    } else {
+      const text = await wellnessGeniResponse.text();
+      responseBody = { raw: text };
     }
 
-    const data = await wellnessGeniResponse.json();
+    if (!wellnessGeniResponse.ok) {
+      console.error('WellnessGeni API non-200', { status: wellnessGeniResponse.status, body: responseBody });
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: `WellnessGeni API error ${wellnessGeniResponse.status}`,
+        details: responseBody
+      }), {
+        status: 502,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-    console.log('WellnessGeni API Response:', data);
+    console.log('WellnessGeni API Response:', responseBody);
 
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify(responseBody), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 

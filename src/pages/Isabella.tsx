@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, Target, Zap, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import VideoPlayer from '@/components/UI/VideoPlayer';
+import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
-  const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
+  const { startChat, isConnecting } = useWellnessGeniChat();
 
   return (
     <>
@@ -49,12 +49,15 @@ const Isabella = () => {
             <p className="body-lg text-muted-foreground mb-12">
               The World's First AI Brand Ambassador — Beautiful, intelligent, and always ready to represent your brand.
             </p>
-            <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" className="btn-gradient group animate-glow">
-                Chat With Isabella
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </a>
+            <Button 
+              size="lg" 
+              className="btn-gradient group animate-glow"
+              onClick={() => startChat('isabella-navia', 'isabella-page')}
+              disabled={isConnecting}
+            >
+              {isConnecting ? 'Connecting...' : 'Chat With Isabella'}
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
           {/* Decorative elements */}
           <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-gradient-to-br from-electric-blue/20 to-transparent blur-xl" />
@@ -145,12 +148,16 @@ const Isabella = () => {
             <p className="body-md text-soft-white/80 mb-8">
               Experience the future of brand representation. Chat with Isabella and discover how she can transform your marketing approach.
             </p>
-            <a href={isabellaGuestUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="default" size="lg" className="btn-gradient group">
-                Start Chatting
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </a>
+            <Button 
+              variant="default" 
+              size="lg" 
+              className="btn-gradient group"
+              onClick={() => startChat('isabella-navia', 'isabella-cta')}
+              disabled={isConnecting}
+            >
+              {isConnecting ? 'Connecting...' : 'Start Chatting'}
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
         </Section>
       </div>

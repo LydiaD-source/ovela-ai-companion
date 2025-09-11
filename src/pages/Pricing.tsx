@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { ArrowRight, DollarSign, Zap, Palette, CheckCircle, Star, Globe, Mic, BarChart3, Sparkles } from 'lucide-react';
 import Section from '@/components/UI/Section';
+import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import QuickPricingMenu from '@/components/UI/QuickPricingMenu';
 
 const Pricing = () => {
   const [showPricingMenu, setShowPricingMenu] = useState(false);
-  // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
-  const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
+  const { startChat, isConnecting } = useWellnessGeniChat();
 
   return (
     <div className="pt-16">
@@ -142,14 +142,14 @@ const Pricing = () => {
                     <span className="text-sm">{feature}</span>
                   </div>
                 ))}
-                <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
-                  <Button 
-                    className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
-                    size="lg"
-                  >
-                    Work With Isabella
-                  </Button>
-                </a>
+                <Button 
+                  className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
+                  size="lg"
+                  onClick={() => startChat('isabella-navia', 'pricing-plan')}
+                  disabled={isConnecting}
+                >
+                  {isConnecting ? 'Connecting...' : 'Work With Isabella'}
+                </Button>
               </CardContent>
             </Card>
           ))}
@@ -181,9 +181,14 @@ const Pricing = () => {
                   <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold">{service.price}</span>
-                    <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
-                      <Button variant="outline" size="sm">Work With Isabella</Button>
-                    </a>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => startChat('isabella-navia', 'pricing-service')}
+                      disabled={isConnecting}
+                    >
+                      {isConnecting ? 'Connecting...' : 'Work With Isabella'}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -263,12 +268,15 @@ const Pricing = () => {
             <br />
             <span className="gradient-text">Let Isabella elevate your story.</span>
           </h2>
-          <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
-            <Button size="lg" className="btn-gradient group text-lg px-12 py-6 animate-glow">
-              Work With Isabella Today
-              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </a>
+          <Button 
+            size="lg" 
+            className="btn-gradient group text-lg px-12 py-6 animate-glow"
+            onClick={() => startChat('isabella-navia', 'pricing-cta')}
+            disabled={isConnecting}
+          >
+            {isConnecting ? 'Connecting...' : 'Work With Isabella Today'}
+            <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </Button>
           <p className="text-soft-white/70 mt-6 text-lg">
             Connect with Isabella through WellnessGeni integration
           </p>

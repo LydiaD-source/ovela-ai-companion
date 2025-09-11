@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import IsabellaAvatar from '@/components/UI/IsabellaAvatar';
 import ChatMessages from '@/components/Chat/ChatMessages';
 import ChatInput from '@/components/Chat/ChatInput';
+import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
+import { useToast } from '@/hooks/use-toast';
 
 interface GuestChatInterfaceProps {
   isGuestMode?: boolean;
@@ -19,6 +21,8 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
 }) => {
   const [messages, setMessages] = useState([]);
   const [currentPersona, setCurrentPersona] = useState(defaultPersona);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Initialize with Isabella Navia welcome message for Ovela visitors
@@ -78,17 +82,60 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
         
         <div className="border-t p-4">
           <ChatInput 
-            onSendMessage={(message) => {
-              // Handle message sending logic here
-              setMessages(prev => [...prev, {
+            onSendMessage={async (message) => {
+              // Add user message
+              const userMessage = {
                 id: Date.now().toString(),
                 text: message,
-                sender: 'user',
+                sender: 'user' as const,
                 timestamp: new Date(),
                 persona: currentPersona
-              }]);
+              };
+              
+              setMessages(prev => [...prev, userMessage]);
+              setIsLoading(true);
+
+              try {
+                // Send to WellnessGeni API
+                const response = await wellnessGeniAPI.sendChatMessage(message, currentPersona);
+                
+                if (response.success && response.data) {
+                  const assistantMessage = {
+                    id: (Date.now() + 1).toString(),
+                    text: response.data.message || response.data.response || 'I received your message!',
+                    sender: 'assistant' as const,
+                    timestamp: new Date(),
+                    persona: currentPersona
+                  };
+                  
+                  setMessages(prev => [...prev, assistantMessage]);
+                } else {
+                  throw new Error(response.error || 'Failed to get response');
+                }
+              } catch (error) {
+                console.error('Chat error:', error);
+                toast({
+                  title: "Connection Error",
+                  description: "Unable to connect to WellnessGeni. Please try again.",
+                  variant: "destructive",
+                });
+                
+                // Add error message
+                const errorMessage = {
+                  id: (Date.now() + 1).toString(),
+                  text: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+                  sender: 'assistant' as const,
+                  timestamp: new Date(),
+                  persona: currentPersona
+                };
+                
+                setMessages(prev => [...prev, errorMessage]);
+              } finally {
+                setIsLoading(false);
+              }
             }}
             placeholder="Ask Isabella about Ovela Interactive services..."
+            disabled={isLoading}
           />
         </div>
       </div>

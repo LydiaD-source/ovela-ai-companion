@@ -10,10 +10,19 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
   const fallback = 'https://api.wellnessgeni.com';
   if (!raw) return { url: fallback, reason: 'missing' };
   const trimmed = raw.trim();
-  if (!/^https?:\/\//i.test(trimmed)) return { url: fallback, reason: 'no-protocol' };
+  if (!/^https?:\/\//i.test(trimmed)) {
+    // If no protocol, add https://
+    const withProtocol = `https://${trimmed}`;
+    try {
+      const u = new URL(withProtocol);
+      return { url: u.origin, reason: 'no-protocol-added' };
+    } catch {
+      return { url: fallback, reason: 'invalid-url-after-protocol' };
+    }
+  }
   try {
     const u = new URL(trimmed);
-    return { url: `${u.origin}` };
+    return { url: u.origin };
   } catch {
     return { url: fallback, reason: 'invalid-url' };
   }
@@ -55,8 +64,10 @@ serve(async (req) => {
         'Authorization': `Bearer ${apiKey}`,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'User-Agent': 'Ovela-Supabase-Function/1.0',
       },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(30000), // 30 second timeout
     });
 
     const contentType = wgRes.headers.get('content-type') || '';

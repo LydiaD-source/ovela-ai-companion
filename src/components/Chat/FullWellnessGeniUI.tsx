@@ -102,11 +102,26 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       // Extract assistant response text
       let assistantText = 'I received your message.';
-      if (data?.data) {
-        if (typeof data.data === 'string') {
-          assistantText = data.data;
-        } else if (data.data.response || data.data.message || data.data.text) {
-          assistantText = data.data.response || data.data.message || data.data.text;
+      let audioUrl = '';
+      let videoUrl = '';
+      
+      if (data) {
+        // Handle direct response from WellnessGeni API
+        if (typeof data === 'string') {
+          assistantText = data;
+        } else if (data.response || data.message || data.text) {
+          assistantText = data.response || data.message || data.text;
+          audioUrl = data.audioUrl || data.audio_url || '';
+          videoUrl = data.videoUrl || data.video_url || '';
+        } else if (data.data) {
+          // Handle nested data structure
+          if (typeof data.data === 'string') {
+            assistantText = data.data;
+          } else if (data.data.response || data.data.message || data.data.text) {
+            assistantText = data.data.response || data.data.message || data.data.text;
+            audioUrl = data.data.audioUrl || data.data.audio_url || '';
+            videoUrl = data.data.videoUrl || data.data.video_url || '';
+          }
         }
       }
 
@@ -115,8 +130,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         text: assistantText,
         sender: 'assistant',
         timestamp: new Date(),
-        audioUrl: data?.audioUrl,
-        videoUrl: data?.videoUrl
+        audioUrl: audioUrl,
+        videoUrl: videoUrl
       };
 
       setMessages(prev => [...prev, assistantMessage]);

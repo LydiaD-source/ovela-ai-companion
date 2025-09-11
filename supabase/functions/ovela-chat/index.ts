@@ -7,9 +7,13 @@ const corsHeaders = {
 };
 
 function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
-  // Use production WellnessGeni API endpoint as fallback
-  const fallback = 'https://wellnessgeni.com/api';
-  if (!raw) return { url: fallback, reason: 'missing' };
+  // Primary endpoints to try in order
+  const endpoints = [
+    'https://api.wellnessgeni.com',
+    'https://wellnessgeni.com/api'
+  ];
+  
+  if (!raw) return { url: endpoints[0], reason: 'using-primary' };
 
   let candidate = raw.trim();
   if (!/^https?:\/\//i.test(candidate)) {
@@ -18,10 +22,9 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
 
   try {
     const u = new URL(candidate);
-    // Always use fallback for now since we know it works
-    return { url: fallback, reason: 'using-fallback' };
+    return { url: candidate, reason: 'user-provided' };
   } catch {
-    return { url: fallback, reason: 'invalid-url' };
+    return { url: endpoints[0], reason: 'invalid-url-fallback' };
   }
 }
 
@@ -66,9 +69,15 @@ One-Time Services:
 - Reel/Short Video – from €500 (up to 30s).
 - Website Integration – €2,000 setup + €500/month.
 
+Add-Ons:
+- LoRA Custom Training – €2,000.
+- Custom Voice (ElevenLabs) – €500 per style.
+- Multi-Language Support – €1,200 per language.
+- Analytics Dashboard – €750 setup + €300/month.
+
 Promotions: 50% off first task or package for startups/small businesses; 50% off Starter or Growth monthly package for first 2–3 months.
 
-Response Guidelines: Always be concise, engaging, and actionable. Lead with promotions if available, then pricing summary. Provide clear next steps.
+Response Guidelines: Always be concise, engaging, and actionable. Greet briefly without repeating promotional details (promotions are shown via banner). Provide clear next steps like "Tell me your goals, and I'll suggest the best package."
     `;
 
     const payload = {
@@ -79,53 +88,76 @@ Response Guidelines: Always be concise, engaging, and actionable. Lead with prom
     };
 
     console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, hasBrandGuide: !!payload.brand_guide, hasUserId: !!userId, autoInjectedGuide: !brand_guide && !!ovelaGuide });
+    console.log('ovela-chat payload', JSON.stringify(payload, null, 2));
 
-    const wgRes = await fetch(`${baseUrl}/multitenant-chat`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'Ovela-Supabase-Function/1.0',
-        'Origin': 'https://ovela.com',
-        'Referer': 'https://ovela.com',
-      },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(45000), // 45 second timeout
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-    const contentType = wgRes.headers.get('content-type') || '';
-    let responseBody: any;
-    if (contentType.includes('application/json')) {
-      responseBody = await wgRes.json();
-    } else {
-      const text = await wgRes.text();
-      responseBody = { raw: text };
-    }
-
-    if (!wgRes.ok) {
-      console.error('ovela-chat API error', { 
-        status: wgRes.status, 
-        statusText: wgRes.statusText,
-        url: `${baseUrl}/multitenant-chat`,
-        body: responseBody,
-        requestPayload: payload
+    try {
+      const wgRes = await fetch(`${baseUrl}/multitenant-chat`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'Ovela-Supabase-Function/1.0',
+          'Origin': 'https://ovela.com',
+          'Referer': 'https://ovela.com',
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+
+      const contentType = wgRes.headers.get('content-type') || '';
+      let responseBody: any;
+      if (contentType.includes('application/json')) {
+        responseBody = await wgRes.json();
+      } else {
+        const text = await wgRes.text();
+        responseBody = { raw: text };
+      }
+
+      console.log('ovela-chat response', { status: wgRes.status, body: responseBody });
+
+      if (!wgRes.ok) {
+        console.error('ovela-chat API error', { 
+          status: wgRes.status, 
+          statusText: wgRes.statusText,
+          url: `${baseUrl}/multitenant-chat`,
+          body: responseBody,
+          requestPayload: payload
+        });
+        return new Response(JSON.stringify({
+          success: false,
+          error: `WellnessGeni API error ${wgRes.status}: ${wgRes.statusText}`,
+          details: responseBody,
+          baseUrlUsed: baseUrl,
+          baseUrlIssue: urlReason ?? null,
+        }), {
+          status: 200, // Return 200 to frontend to avoid FunctionsHttpError
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      return new Response(JSON.stringify(responseBody), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      console.error('ovela-chat fetch error', { error: fetchError.message, baseUrl });
+      
       return new Response(JSON.stringify({
         success: false,
-        error: `WellnessGeni API error ${wgRes.status}: ${wgRes.statusText}`,
-        details: responseBody,
+        error: `Network error: ${fetchError.message}`,
         baseUrlUsed: baseUrl,
         baseUrlIssue: urlReason ?? null,
       }), {
-        status: 502,
+        status: 200, // Return 200 to frontend
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    return new Response(JSON.stringify(responseBody), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
   } catch (error) {
     console.error('Error in ovela-chat function:', error);
     return new Response(JSON.stringify({ success: false, error: error.message }), {

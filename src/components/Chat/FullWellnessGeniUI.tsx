@@ -3,7 +3,7 @@ import { Mic, MicOff, Volume2, VolumeX, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {
@@ -89,21 +89,18 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('ovela-chat', {
-        body: {
-          message: text,
-          persona: selectedPersona,
-          userId: isGuestMode ? 'ovela-guest' : 'guest-user',
-          brand_guide: null // Let the function use OVELA_GUIDE
-        }
-      });
+      const response = await wellnessGeniAPI.sendChatMessage(
+        text,
+        selectedPersona,
+        null,
+        isGuestMode ? 'ovela-guest' : 'guest-user'
+      );
 
-      if (error) throw error;
-
-      // Check if the response indicates an error
-      if (data && data.success === false) {
-        throw new Error(data.error || 'API request failed');
+      if (!response.success) {
+        throw new Error(response.error || 'API request failed');
       }
+
+      const data = response.data;
 
       // Extract assistant response text
       let assistantText = 'I received your message.';

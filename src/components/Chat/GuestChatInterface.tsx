@@ -6,6 +6,22 @@ import ChatInput from '@/components/Chat/ChatInput';
 import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { useToast } from '@/hooks/use-toast';
 
+// Extract assistant text robustly from various API response shapes
+const extractAssistantText = (data: any): string => {
+  const candidates = [
+    data?.message,
+    data?.response,
+    data?.data?.message,
+    data?.data?.response,
+    data?.answer,
+    data?.data?.answer,
+    data?.text,
+    data?.content,
+    data?.choices?.[0]?.message?.content,
+  ].filter((v) => typeof v === 'string' && v.trim().length > 0) as string[];
+  return candidates[0] || '';
+};
+
 interface GuestChatInterfaceProps {
   isGuestMode?: boolean;
   allowedPersonas?: string[];
@@ -100,9 +116,10 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
                 const response = await wellnessGeniAPI.sendChatMessage(message, currentPersona);
                 
                 if (response.success && response.data) {
+                  const assistantText = extractAssistantText(response.data);
                   const assistantMessage = {
                     id: (Date.now() + 1).toString(),
-                    text: response.data.message || response.data.response || 'I received your message!',
+                    text: assistantText || "I'm sorry — I didn't get the details. Please try again or ask another question.",
                     sender: 'assistant' as const,
                     timestamp: new Date(),
                     persona: currentPersona

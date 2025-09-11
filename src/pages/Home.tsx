@@ -162,21 +162,13 @@ const Home = () => {
             ))}
           </div>
 
-          <div className="text-center space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="default" className="btn-gradient">
-                  Partner With Isabella
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </a>
-              <Link to="/pricing">
-                <Button variant="outline" className="btn-outline">
-                  See Plans
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
+          <div className="text-center">
+            <a href={isabellaNaviaUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="default" className="btn-gradient">
+                Partner With Isabella
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </a>
           </div>
         </Section>
 

@@ -48,7 +48,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     const welcomeMessage: Message = {
       id: '1',
       text: isGuestMode 
-        ? "Hi! I'm Isabella Navia, model and brand ambassador for Ovela Interactive. How can I help you today?"
+        ? "Hi! I'm Isabella Navia, your AI brand ambassador. How can I help you today?"
         : "Welcome to WellnessGeni! I'm Isabella, your AI wellness companion. How can I help you today?",
       sender: 'assistant',
       timestamp: new Date()
@@ -337,7 +337,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         )}
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 max-h-96">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-xl p-3 ${

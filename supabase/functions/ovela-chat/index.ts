@@ -16,6 +16,12 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
   if (!raw) return { url: endpoints[0], reason: 'using-primary' };
 
   let candidate = raw.trim();
+  
+  // If it looks like an API key instead of URL, use primary endpoint
+  if (candidate.startsWith('wg_') || !candidate.includes('.')) {
+    return { url: endpoints[0], reason: 'api-key-not-url-fallback' };
+  }
+  
   if (!/^https?:\/\//i.test(candidate)) {
     candidate = `https://${candidate}`;
   }
@@ -75,9 +81,14 @@ Add-Ons:
 - Multi-Language Support – €1,200 per language.
 - Analytics Dashboard – €750 setup + €300/month.
 
+Comparison:
+- Lil Miquela – €10k/post
+- Aitana Lopez – €10k/month  
+- Isabella – from €250/post or €1,500/month
+
 Promotions: 50% off first task or package for startups/small businesses; 50% off Starter or Growth monthly package for first 2–3 months.
 
-Response Guidelines: Always be concise, engaging, and actionable. Greet briefly without repeating promotional details (promotions are shown via banner). Provide clear next steps like "Tell me your goals, and I'll suggest the best package."
+Response Guidelines: Always be concise, engaging, and actionable. Keep greetings brief - just say hello and ask how you can help. Never repeat promotional details in text (promotions are shown via banner). Provide clear next steps like "Tell me your goals, and I'll suggest the best package."
     `;
 
     const payload = {

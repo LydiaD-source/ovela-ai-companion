@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, VolumeX, Settings, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,10 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -35,29 +31,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true
 }) => {
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const [inputText, setInputText] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isRecording, setIsRecording] = React.useState(false);
-  const [isMuted, setIsMuted] = React.useState(false);
-  const [selectedPersona, setSelectedPersona] = React.useState(defaultPersona);
-  const [audioContext, setAudioContext] = React.useState<AudioContext | null>(null);
-  const [mediaRecorder, setMediaRecorder] = React.useState<MediaRecorder | null>(null);
-  const [recordingChunks, setRecordingChunks] = React.useState<Blob[]>([]);
-  // Settings state
-  const [voiceStyle, setVoiceStyle] = React.useState<'feminine' | 'neutral' | 'energetic'>('feminine');
-  const [avatarEnabled, setAvatarEnabled] = React.useState(true);
-  const [volume, setVolume] = React.useState(1);
-
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [recordingChunks, setRecordingChunks] = useState<Blob[]>([]);
+  
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Initialize with welcome message
-  React.useEffect(() => {
+  useEffect(() => {
     const welcomeMessage: Message = {
       id: '1',
       text: isGuestMode 
-        ? "Hi! I'm Isabella Navia, your AI companion from Ovela Interactive. I can help with strategy, content and campaigns. Current promos: Starter €1,500/mo, Growth €3,500/mo (Most Popular), Premium €6,000/mo. Ask me about Ambassador Videos from €750 and Shoutouts from €250. How can I assist you today?"
+        ? "Hi! I'm Isabella Navia, your AI companion from Ovela Interactive. I'm here to help you discover how our interactive AI solutions can transform your business. How can I assist you today?"
         : "Welcome to WellnessGeni! I'm Isabella, your AI wellness companion. How can I help you today?",
       sender: 'assistant',
       timestamp: new Date()
@@ -66,12 +58,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   }, [isGuestMode]);
 
   // Auto-scroll to bottom when new messages arrive
-  React.useEffect(() => {
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Initialize audio context
-  React.useEffect(() => {
+  useEffect(() => {
     const initAudio = async () => {
       try {
         const context = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -168,10 +160,17 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   };
 
   const playAudio = async (audioUrl: string) => {
+    if (!audioContext) return;
+    
     try {
-      const audio = new Audio(audioUrl);
-      audio.volume = isMuted ? 0 : volume;
-      await audio.play();
+      const response = await fetch(audioUrl);
+      const audioData = await response.arrayBuffer();
+      const audioBuffer = await audioContext.decodeAudioData(audioData);
+      
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+      source.start(0);
     } catch (error) {
       console.error('Error playing audio:', error);
     }
@@ -272,41 +271,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </Button>
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2" aria-label="Settings">
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Isabella Settings</DialogTitle>
-                  <DialogDescription>Adjust voice, avatar and playback</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-2 items-center">
-                    <Label htmlFor="voice-style">Voice style</Label>
-                    <Select value={voiceStyle} onValueChange={(v) => setVoiceStyle(v as any)}>
-                      <SelectTrigger id="voice-style"><SelectValue placeholder="Select style" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="feminine">Feminine</SelectItem>
-                        <SelectItem value="neutral">Neutral</SelectItem>
-                        <SelectItem value="energetic">Energetic</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="avatar-enabled">Animated avatar</Label>
-                    <Switch id="avatar-enabled" checked={avatarEnabled} onCheckedChange={setAvatarEnabled} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Playback volume</Label>
-                    <Slider value={[Math.round(volume * 100)]} onValueChange={(vals) => setVolume((vals[0] ?? 100) / 100)} max={100} step={1} />
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
           </div>
         </div>
       </CardHeader>
@@ -343,26 +307,24 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       </CardContent>
 
       {/* D-ID Video Avatar (Hidden by default, shows when video available) */}
-      {avatarEnabled && (
-        <div className="px-4">
-          <video
-            ref={videoRef}
-            className="w-full h-32 object-cover rounded-lg hidden"
-            autoPlay
-            muted={isMuted}
-            onLoadedData={() => {
-              if (videoRef.current) {
-                videoRef.current.classList.remove('hidden');
-              }
-            }}
-            onEnded={() => {
-              if (videoRef.current) {
-                videoRef.current.classList.add('hidden');
-              }
-            }}
-          />
-        </div>
-      )}
+      <div className="px-4">
+        <video
+          ref={videoRef}
+          className="w-full h-32 object-cover rounded-lg hidden"
+          autoPlay
+          muted={isMuted}
+          onLoadedData={() => {
+            if (videoRef.current) {
+              videoRef.current.classList.remove('hidden');
+            }
+          }}
+          onEnded={() => {
+            if (videoRef.current) {
+              videoRef.current.classList.add('hidden');
+            }
+          }}
+        />
+      </div>
 
       {/* Input Area */}
       <div className="p-4 border-t bg-muted/30 rounded-b-xl">

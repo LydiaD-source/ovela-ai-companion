@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
 import Section from '@/components/UI/Section';
@@ -8,9 +8,8 @@ import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import { Button } from '@/components/ui/button';
 
 const Home = () => {
-  const [isConnecting, setIsConnecting] = React.useState(false);
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
-  const { startChat } = useWellnessGeniChat();
+  const { startChat, isConnecting } = useWellnessGeniChat();
 
   return (
     <>

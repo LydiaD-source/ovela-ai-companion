@@ -10,18 +10,18 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
   const fallback = 'https://api.wellnessgeni.com';
   if (!raw) return { url: fallback, reason: 'missing' };
   const trimmed = raw.trim();
-
-  // Always ensure protocol
-  let candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-
-  try {
-    const u = new URL(candidate);
-    const host = u.hostname.toLowerCase();
-    // Basic hostname sanity checks to avoid accidentally using an API key as a URL
-    const invalidHost = host.includes('_') || !host.includes('.') || host.length < 4;
-    if (invalidHost) {
-      return { url: fallback, reason: 'invalid-hostname' };
+  if (!/^https?:\/\//i.test(trimmed)) {
+    // If no protocol, add https://
+    const withProtocol = `https://${trimmed}`;
+    try {
+      const u = new URL(withProtocol);
+      return { url: u.origin, reason: 'no-protocol-added' };
+    } catch {
+      return { url: fallback, reason: 'invalid-url-after-protocol' };
     }
+  }
+  try {
+    const u = new URL(trimmed);
     return { url: u.origin };
   } catch {
     return { url: fallback, reason: 'invalid-url' };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import GuestChatInterface from '@/components/Chat/GuestChatInterface';
+import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -31,8 +31,8 @@ const GuestIsabella = () => {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          <GuestChatInterface 
+        <div className="max-w-6xl mx-auto" style={{ height: '600px' }}>
+          <FullWellnessGeniUI 
             isGuestMode={true}
             defaultPersona={persona}
             allowedPersonas={[persona]}

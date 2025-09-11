@@ -69,10 +69,16 @@ serve(async (req) => {
     }
 
     if (!wgRes.ok) {
-      console.error('ovela-chat non-200', { status: wgRes.status, body: responseBody });
+      console.error('ovela-chat API error', { 
+        status: wgRes.status, 
+        statusText: wgRes.statusText,
+        url: `${baseUrl}/multitenant-chat`,
+        body: responseBody,
+        requestPayload: payload
+      });
       return new Response(JSON.stringify({
         success: false,
-        error: `WellnessGeni API error ${wgRes.status}`,
+        error: `WellnessGeni API error ${wgRes.status}: ${wgRes.statusText}`,
         details: responseBody,
         baseUrlUsed: baseUrl,
         baseUrlIssue: urlReason ?? null,

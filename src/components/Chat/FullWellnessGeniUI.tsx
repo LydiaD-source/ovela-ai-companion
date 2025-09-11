@@ -230,39 +230,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full max-w-4xl mx-auto bg-background rounded-xl border shadow-lg">
-      {/* Header */}
-      <CardHeader className="border-b bg-muted/50 rounded-t-xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="w-12 h-12">
-              <AvatarImage src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" alt="Isabella Navia" />
-              <AvatarFallback className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 text-electric-blue font-semibold">
-                IN
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle className="text-lg">Isabella Navia</CardTitle>
-              <p className="text-sm text-muted-foreground">AI Companion - Ovela Interactive</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            {allowedPersonas.length > 1 && (
-              <Select value={selectedPersona} onValueChange={setSelectedPersona}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {allowedPersonas.map(persona => (
-                    <SelectItem key={persona} value={persona}>
-                      {persona.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            
+    <div className="flex h-full max-w-6xl mx-auto bg-background rounded-xl border shadow-lg overflow-hidden">
+      {/* Left side - Large Isabella Image */}
+      <div className="w-1/3 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-sm">
+          <img 
+            src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
+            alt="Isabella Navia - AI Brand Ambassador"
+            className="w-full h-auto rounded-2xl shadow-2xl"
+          />
+        </div>
+        <div className="text-center mt-4">
+          <h3 className="text-xl font-semibold text-foreground">Isabella Navia</h3>
+          <p className="text-sm text-muted-foreground">AI Brand Ambassador</p>
+          <p className="text-xs text-muted-foreground mt-1">Ovela Interactive</p>
+        </div>
+        
+        {/* Audio controls and video display */}
+        <div className="mt-4 w-full">
+          <div className="flex justify-center mb-3">
             <Button
               variant="ghost"
               size="sm"
@@ -270,107 +256,119 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               className="p-2"
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              <span className="ml-2 text-sm">{isMuted ? 'Unmute' : 'Mute'}</span>
             </Button>
           </div>
+          
+          {/* D-ID Video Avatar */}
+          <video
+            ref={videoRef}
+            className="w-full h-32 object-cover rounded-lg hidden"
+            autoPlay
+            muted={isMuted}
+            onLoadedData={() => {
+              if (videoRef.current) {
+                videoRef.current.classList.remove('hidden');
+              }
+            }}
+            onEnded={() => {
+              if (videoRef.current) {
+                videoRef.current.classList.add('hidden');
+              }
+            }}
+          />
         </div>
-      </CardHeader>
-
-      {/* Chat Messages */}
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: '400px' }}>
-        {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] rounded-xl p-3 ${
-              message.sender === 'user' 
-                ? 'bg-primary text-primary-foreground ml-4' 
-                : 'bg-muted mr-4'
-            }`}>
-              <p className="text-sm">{message.text}</p>
-              <p className="text-xs opacity-70 mt-1">
-                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </p>
-            </div>
-          </div>
-        ))}
-        
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-muted rounded-xl p-3 mr-4">
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-sm">Isabella is thinking...</span>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <div ref={messagesEndRef} />
-      </CardContent>
-
-      {/* D-ID Video Avatar (Hidden by default, shows when video available) */}
-      <div className="px-4">
-        <video
-          ref={videoRef}
-          className="w-full h-32 object-cover rounded-lg hidden"
-          autoPlay
-          muted={isMuted}
-          onLoadedData={() => {
-            if (videoRef.current) {
-              videoRef.current.classList.remove('hidden');
-            }
-          }}
-          onEnded={() => {
-            if (videoRef.current) {
-              videoRef.current.classList.add('hidden');
-            }
-          }}
-        />
       </div>
 
-      {/* Input Area */}
-      <div className="p-4 border-t bg-muted/30 rounded-b-xl">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type your message or use voice..."
-            disabled={isLoading || isRecording}
-            className="flex-1"
-          />
-          
-          <Button
-            type="button"
-            variant={isRecording ? "destructive" : "outline"}
-            size="sm"
-            onClick={isRecording ? stopRecording : startRecording}
-            disabled={isLoading}
-            className="p-2"
-          >
-            {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </Button>
-          
-          <Button 
-            type="submit" 
-            disabled={isLoading || !inputText.trim()}
-            size="sm"
-            className="p-2"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-        
-        {isRecording && (
-          <div className="flex items-center justify-center mt-2">
-            <Badge variant="destructive" className="animate-pulse">
-              Recording... Click mic to stop
-            </Badge>
+      {/* Right side - Chat Interface */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="border-b bg-muted/50 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Chat with Isabella</h2>
+              <p className="text-sm text-muted-foreground">Ask me about Ovela Interactive services</p>
+            </div>
           </div>
-        )}
-        
-        {isGuestMode && (
-          <p className="text-xs text-center text-muted-foreground mt-2">
-            Powered by Ovela Interactive & WellnessGeni
-          </p>
-        )}
+        </div>
+
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: '500px' }}>
+          {messages.map((message) => (
+            <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-xl p-3 ${
+                message.sender === 'user' 
+                  ? 'bg-primary text-primary-foreground ml-4' 
+                  : 'bg-muted mr-4'
+              }`}>
+                <p className="text-sm">{message.text}</p>
+                <p className="text-xs opacity-70 mt-1">
+                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            </div>
+          ))}
+          
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-muted rounded-xl p-3 mr-4">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">Isabella is thinking...</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div className="p-4 border-t bg-muted/30">
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <Input
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Type your message or use voice..."
+              disabled={isLoading || isRecording}
+              className="flex-1"
+            />
+            
+            <Button
+              type="button"
+              variant={isRecording ? "destructive" : "outline"}
+              size="sm"
+              onClick={isRecording ? stopRecording : startRecording}
+              disabled={isLoading}
+              className="p-2"
+            >
+              {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            </Button>
+            
+            <Button 
+              type="submit" 
+              disabled={isLoading || !inputText.trim()}
+              size="sm"
+              className="p-2"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </form>
+          
+          {isRecording && (
+            <div className="flex items-center justify-center mt-2">
+              <Badge variant="destructive" className="animate-pulse">
+                Recording... Click mic to stop
+              </Badge>
+            </div>
+          )}
+          
+          {isGuestMode && (
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              Powered by Ovela Interactive & WellnessGeni
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

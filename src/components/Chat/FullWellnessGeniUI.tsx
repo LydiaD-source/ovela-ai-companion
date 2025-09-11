@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Settings, Send, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -40,7 +37,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [recordingChunks, setRecordingChunks] = useState<Blob[]>([]);
-  
+  const [isActivated, setIsActivated] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -136,13 +134,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Play audio if available and not muted
-      if (assistantMessage.audioUrl && !isMuted) {
+      // Play audio if available and not muted and activated
+      if (assistantMessage.audioUrl && !isMuted && isActivated) {
         playAudio(assistantMessage.audioUrl);
       }
 
-      // Play video if available
-      if (assistantMessage.videoUrl && videoRef.current) {
+      // Play video if available and activated
+      if (assistantMessage.videoUrl && videoRef.current && isActivated) {
         videoRef.current.src = assistantMessage.videoUrl;
         videoRef.current.play();
       }
@@ -173,6 +171,23 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       source.start(0);
     } catch (error) {
       console.error('Error playing audio:', error);
+    }
+};
+
+  const activate = async () => {
+    try {
+      if (audioContext) {
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume();
+        }
+      } else {
+        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(context);
+      }
+      setIsActivated(true);
+      toast({ title: 'Activated', description: 'Animated responses enabled.' });
+    } catch (error) {
+      console.error('Activation error:', error);
     }
   };
 
@@ -281,7 +296,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       </div>
 
       {/* Right side - Chat Interface */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Header */}
         <div className="border-b bg-muted/50 p-4">
           <div className="flex items-center justify-between">
@@ -289,11 +304,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               <h2 className="text-lg font-semibold">Chat with Isabella</h2>
               <p className="text-sm text-muted-foreground">Ask me about Ovela Interactive services</p>
             </div>
+            {!isActivated && (
+              <Button size="sm" onClick={activate} className="hover-scale">
+                Activate animated response
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: '500px' }}>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-xl p-3 ${

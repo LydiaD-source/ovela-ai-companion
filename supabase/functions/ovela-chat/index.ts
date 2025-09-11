@@ -9,19 +9,20 @@ const corsHeaders = {
 function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
   const fallback = 'https://api.wellnessgeni.com';
   if (!raw) return { url: fallback, reason: 'missing' };
-  const trimmed = raw.trim();
-  if (!/^https?:\/\//i.test(trimmed)) {
-    // If no protocol, add https://
-    const withProtocol = `https://${trimmed}`;
-    try {
-      const u = new URL(withProtocol);
-      return { url: u.origin, reason: 'no-protocol-added' };
-    } catch {
-      return { url: fallback, reason: 'invalid-url-after-protocol' };
-    }
+
+  let candidate = raw.trim();
+  if (!/^https?:\/\//i.test(candidate)) {
+    candidate = `https://${candidate}`;
   }
+
   try {
-    const u = new URL(trimmed);
+    const u = new URL(candidate);
+    const host = u.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1';
+    const hasDot = host.includes('.');
+    if (!isLocal && !hasDot) {
+      return { url: fallback, reason: 'invalid-hostname' };
+    }
     return { url: u.origin };
   } catch {
     return { url: fallback, reason: 'invalid-url' };

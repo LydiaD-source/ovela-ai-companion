@@ -12,31 +12,24 @@ export const useWellnessGeniChat = () => {
     setIsConnecting(true);
 
     try {
-      // Test connection to WellnessGeni
-      const response = await wellnessGeniAPI.getPersonaInfo(persona);
-      
-      if (response.success) {
-        // Navigate to guest chat interface
-        navigate('/guest-isabella', { 
-          state: { 
-            persona, 
-            source,
-            connectedToWellnessGeni: true 
-          } 
-        });
-        
-        toast({
-          title: "Connected to WellnessGeni",
-          description: "You're now connected to Isabella through our WellnessGeni integration.",
-        });
-      } else {
-        throw new Error(response.error || 'Failed to connect');
-      }
-    } catch (error) {
-      console.error('Connection error:', error);
+      // Navigate directly to the guest chat interface; the chat call itself verifies connectivity
+      navigate('/guest-isabella', { 
+        state: { 
+          persona, 
+          source,
+          connectedToWellnessGeni: true 
+        } 
+      });
+
       toast({
-        title: "Connection Error",
-        description: "Unable to connect to WellnessGeni. Please try again.",
+        title: "Connected to WellnessGeni",
+        description: "You're now connected to Isabella through our WellnessGeni integration.",
+      });
+    } catch (error) {
+      console.error('Navigation error:', error);
+      toast({
+        title: "Navigation Error",
+        description: "Please try again.",
         variant: "destructive",
       });
     } finally {

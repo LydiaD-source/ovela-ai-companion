@@ -7,16 +7,16 @@ export interface WellnessGeniResponse {
 }
 
 export class WellnessGeniAPI {
-  async sendChatMessage(message: string, persona: string = 'isabella-navia'): Promise<WellnessGeniResponse> {
+  async sendChatMessage(message: string, persona: string = 'isabella-navia', brand_guide?: string, userId?: string): Promise<WellnessGeniResponse> {
     try {
-      const { data, error } = await supabase.functions.invoke('wellness-geni-api', {
+      const { data: userInfo } = await supabase.auth.getUser();
+      const uid = userId ?? userInfo?.user?.id;
+      const { data, error } = await supabase.functions.invoke('ovela-chat', {
         body: {
-          action: 'chat',
-          payload: {
-            message,
-            persona,
-            context: 'ovela-interactive'
-          }
+          message,
+          persona,
+          brand_guide,
+          userId: uid,
         }
       });
 

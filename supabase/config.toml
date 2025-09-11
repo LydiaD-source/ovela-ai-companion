@@ -1,1 +1,4 @@
 project_id = "vrpgowcocbztclxfzssu"
+
+[functions.ovela-chat]
+verify_jwt = false

@@ -7,16 +7,19 @@ const corsHeaders = {
 };
 
 function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
-  // Use the correct WellnessGeni multi-tenant endpoint
-  const primaryEndpoint = 'https://wellnessgeni.com/api';
+  // Primary endpoints to try in order
+  const endpoints = [
+    'https://api.wellnessgeni.com',
+    'https://wellnessgeni.com/api'
+  ];
   
-  if (!raw) return { url: primaryEndpoint, reason: 'using-primary' };
+  if (!raw) return { url: endpoints[0], reason: 'using-primary' };
 
   let candidate = raw.trim();
   
   // If it looks like an API key instead of URL, use primary endpoint
   if (candidate.startsWith('wg_') || !candidate.includes('.')) {
-    return { url: primaryEndpoint, reason: 'api-key-not-url-fallback' };
+    return { url: endpoints[0], reason: 'api-key-not-url-fallback' };
   }
   
   if (!/^https?:\/\//i.test(candidate)) {
@@ -27,7 +30,7 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
     const u = new URL(candidate);
     return { url: candidate, reason: 'user-provided' };
   } catch {
-    return { url: primaryEndpoint, reason: 'invalid-url-fallback' };
+    return { url: endpoints[0], reason: 'invalid-url-fallback' };
   }
 }
 

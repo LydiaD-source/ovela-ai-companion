@@ -29,6 +29,31 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
   }
 }
 
+// Extract assistant text robustly from various API response shapes
+function extractAssistantText(body: any): string {
+  try {
+    const candidates = [
+      body?.message,
+      body?.response,
+      body?.text,
+      body?.content,
+      body?.answer,
+      body?.reply,
+      body?.output,
+      body?.result,
+      body?.data?.message,
+      body?.data?.response,
+      body?.data?.text,
+      body?.choices?.[0]?.message?.content,
+      typeof body === 'string' ? body : '',
+      body?.raw && typeof body.raw === 'string' ? body.raw : ''
+    ].filter((v) => typeof v === 'string' && v.trim().length > 0);
+    return candidates[0] || '';
+  } catch {
+    return '';
+  }
+}
+
 serve(async (req) => {
   // CORS preflight
   if (req.method === 'OPTIONS') {
@@ -58,6 +83,8 @@ serve(async (req) => {
       persona,
       ...(effectiveGuide ? { brand_guide: effectiveGuide } : {}),
       userId: userId || 'ovela-guest',
+      source: 'ovela',
+      context: 'ovela-interactive',
     };
 
     console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, hasBrandGuide: !!payload.brand_guide, hasUserId: !!userId, autoInjectedGuide: !brand_guide && !!ovelaGuide });
@@ -98,7 +125,7 @@ serve(async (req) => {
         console.error('ovela-chat API error', { 
           status: wgRes.status, 
           statusText: wgRes.statusText,
-          url: `${baseUrl}/multitenant-chat`,
+          url: baseUrl,
           body: responseBody,
           requestPayload: payload
         });
@@ -114,7 +141,13 @@ serve(async (req) => {
         });
       }
 
-      return new Response(JSON.stringify(responseBody), {
+      const assistantText = extractAssistantText(responseBody);
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: assistantText,
+        data: responseBody
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (fetchError: any) {

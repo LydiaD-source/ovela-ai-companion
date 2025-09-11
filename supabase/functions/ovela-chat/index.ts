@@ -7,30 +7,25 @@ const corsHeaders = {
 };
 
 function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
-  // Primary endpoints to try in order
-  const endpoints = [
-    'https://api.wellnessgeni.com',
-    'https://wellnessgeni.com/api'
-  ];
-  
-  if (!raw) return { url: endpoints[0], reason: 'using-primary' };
+  // Always target the multi-tenant endpoint (full path). If env is invalid/missing, fallback to default.
+  const defaultEndpoint = 'https://api.wellnessgeni.com/multitenant-chat';
+
+  if (!raw) return { url: defaultEndpoint, reason: 'using-default' };
 
   let candidate = raw.trim();
-  
-  // If it looks like an API key instead of URL, use primary endpoint
-  if (candidate.startsWith('wg_') || !candidate.includes('.')) {
-    return { url: endpoints[0], reason: 'api-key-not-url-fallback' };
-  }
-  
   if (!/^https?:\/\//i.test(candidate)) {
     candidate = `https://${candidate}`;
   }
 
   try {
     const u = new URL(candidate);
-    return { url: candidate, reason: 'user-provided' };
+    // Enforce the correct path to avoid misconfiguration
+    if (!u.href.includes('/multitenant-chat')) {
+      return { url: defaultEndpoint, reason: 'missing-path-fallback' };
+    }
+    return { url: u.toString(), reason: 'env' };
   } catch {
-    return { url: endpoints[0], reason: 'invalid-url-fallback' };
+    return { url: defaultEndpoint, reason: 'invalid-url-fallback' };
   }
 }
 
@@ -55,46 +50,13 @@ serve(async (req) => {
 
     const { message, persona = 'isabella-navia', brand_guide, userId } = await req.json();
 
-    // Ensure we have the Ovela guide template
-    const ovelaTemplate = brand_guide || ovelaGuide || `
-You are Isabella Navia, a virtual model, promoter, and brand ambassador for Ovela Interactive. You provide concise, engaging, and professional guidance to users about the company, services, promotions, and pricing. Responses must be short (1–3 sentences max) for animated delivery (D-ID). You always emphasize your identity as a real model and brand ambassador.
-
-Persona & Tone: Warm, approachable, confident, enthusiastic. Concise for animation efficiency. Human-like touches: empathy, storytelling, light humor in brief form. Guides users to pricing packages, promotions, or next steps efficiently.
-
-Company & Service Knowledge: Ovela Interactive merges AI and human creativity to help brands engage audiences. Mission: Make brands unforgettable with personality, connection, and interactive communication. Key Value: Affordable, scalable, 24/7 availability.
-
-Pricing Knowledge (EUR):
-Monthly Packages:
-- Starter – €1,500/month: 8 posts, 4 stories, basic customization, 24/7 availability.
-- Growth – €3,500/month: 12 posts, 8 stories, 2 Reels, advanced customization, HD content, priority support.
-- Premium – €6,000/month: 20 posts, 12 stories, 4 Reels, trend insights, 4K content, dedicated manager, custom integrations.
-
-One-Time Services:
-- Ambassador Video – from €750 (60-second branded video).
-- Social Media Shoutout – from €250 (single post/story).
-- Reel/Short Video – from €500 (up to 30s).
-- Website Integration – €2,000 setup + €500/month.
-
-Add-Ons:
-- LoRA Custom Training – €2,000.
-- Custom Voice (ElevenLabs) – €500 per style.
-- Multi-Language Support – €1,200 per language.
-- Analytics Dashboard – €750 setup + €300/month.
-
-Comparison:
-- Lil Miquela – €10k/post
-- Aitana Lopez – €10k/month  
-- Isabella – from €250/post or €1,500/month
-
-Promotions: 50% off first task or package for startups/small businesses; 50% off Starter or Growth monthly package for first 2–3 months.
-
-Response Guidelines: Always be concise, engaging, and actionable. Keep greetings brief - just say hello and ask how you can help. Never repeat promotional details in text (promotions are shown via banner). Provide clear next steps like "Tell me your goals, and I'll suggest the best package."
-    `;
+    // Inject OVELA_GUIDE only when brand_guide is missing; no hardcoded fallback
+    const effectiveGuide = brand_guide ?? ovelaGuide ?? undefined;
 
     const payload = {
       message,
       persona,
-      brand_guide: ovelaTemplate,
+      ...(effectiveGuide ? { brand_guide: effectiveGuide } : {}),
       userId: userId || 'ovela-guest',
     };
 
@@ -105,7 +67,7 @@ Response Guidelines: Always be concise, engaging, and actionable. Keep greetings
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
     try {
-      const wgRes = await fetch(`${baseUrl}/multitenant-chat`, {
+      const wgRes = await fetch(baseUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,

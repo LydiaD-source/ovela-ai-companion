@@ -29,6 +29,7 @@ serve(async (req) => {
     const rawBaseUrl = Deno.env.get('WELLNESS_GENI_API_URL');
     const { url: baseUrl, reason: urlReason } = sanitizeBaseUrl(rawBaseUrl);
     const apiKey = Deno.env.get('WELLNESS_GENI_API_KEY');
+    const ovelaGuide = Deno.env.get('OVELA_GUIDE');
 
     if (!apiKey) {
       return new Response(JSON.stringify({ success: false, error: 'Missing WELLNESS_GENI_API_KEY secret' }), {
@@ -42,11 +43,11 @@ serve(async (req) => {
     const payload = {
       message,
       persona,
-      brand_guide,
+      brand_guide: brand_guide || ovelaGuide, // Auto-inject OVELA_GUIDE if not provided
       userId,
     };
 
-    console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, hasBrandGuide: !!brand_guide, hasUserId: !!userId });
+    console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, hasBrandGuide: !!payload.brand_guide, hasUserId: !!userId, autoInjectedGuide: !brand_guide && !!ovelaGuide });
 
     const wgRes = await fetch(`${baseUrl}/multitenant-chat`, {
       method: 'POST',

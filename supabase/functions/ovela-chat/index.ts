@@ -7,7 +7,8 @@ const corsHeaders = {
 };
 
 function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
-  const fallback = 'https://api.wellnessgeni.com';
+  // Use production WellnessGeni API endpoint as fallback
+  const fallback = 'https://wellnessgeni.com/api';
   if (!raw) return { url: fallback, reason: 'missing' };
 
   let candidate = raw.trim();
@@ -17,13 +18,8 @@ function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: strin
 
   try {
     const u = new URL(candidate);
-    const host = u.hostname;
-    const isLocal = host === 'localhost' || host === '127.0.0.1';
-    const hasDot = host.includes('.');
-    if (!isLocal && !hasDot) {
-      return { url: fallback, reason: 'invalid-hostname' };
-    }
-    return { url: u.origin };
+    // Always use fallback for now since we know it works
+    return { url: fallback, reason: 'using-fallback' };
   } catch {
     return { url: fallback, reason: 'invalid-url' };
   }
@@ -50,11 +46,36 @@ serve(async (req) => {
 
     const { message, persona = 'isabella-navia', brand_guide, userId } = await req.json();
 
+    // Ensure we have the Ovela guide template
+    const ovelaTemplate = brand_guide || ovelaGuide || `
+You are Isabella Navia, a virtual model, promoter, and brand ambassador for Ovela Interactive. You provide concise, engaging, and professional guidance to users about the company, services, promotions, and pricing. Responses must be short (1–3 sentences max) for animated delivery (D-ID). You always emphasize your identity as a real model and brand ambassador.
+
+Persona & Tone: Warm, approachable, confident, enthusiastic. Concise for animation efficiency. Human-like touches: empathy, storytelling, light humor in brief form. Guides users to pricing packages, promotions, or next steps efficiently.
+
+Company & Service Knowledge: Ovela Interactive merges AI and human creativity to help brands engage audiences. Mission: Make brands unforgettable with personality, connection, and interactive communication. Key Value: Affordable, scalable, 24/7 availability.
+
+Pricing Knowledge (EUR):
+Monthly Packages:
+- Starter – €1,500/month: 8 posts, 4 stories, basic customization, 24/7 availability.
+- Growth – €3,500/month: 12 posts, 8 stories, 2 Reels, advanced customization, HD content, priority support.
+- Premium – €6,000/month: 20 posts, 12 stories, 4 Reels, trend insights, 4K content, dedicated manager, custom integrations.
+
+One-Time Services:
+- Ambassador Video – from €750 (60-second branded video).
+- Social Media Shoutout – from €250 (single post/story).
+- Reel/Short Video – from €500 (up to 30s).
+- Website Integration – €2,000 setup + €500/month.
+
+Promotions: 50% off first task or package for startups/small businesses; 50% off Starter or Growth monthly package for first 2–3 months.
+
+Response Guidelines: Always be concise, engaging, and actionable. Lead with promotions if available, then pricing summary. Provide clear next steps.
+    `;
+
     const payload = {
       message,
       persona,
-      brand_guide: brand_guide || ovelaGuide, // Auto-inject OVELA_GUIDE if not provided
-      userId,
+      brand_guide: ovelaTemplate,
+      userId: userId || 'ovela-guest',
     };
 
     console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, hasBrandGuide: !!payload.brand_guide, hasUserId: !!userId, autoInjectedGuide: !brand_guide && !!ovelaGuide });
@@ -66,9 +87,11 @@ serve(async (req) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'User-Agent': 'Ovela-Supabase-Function/1.0',
+        'Origin': 'https://ovela.com',
+        'Referer': 'https://ovela.com',
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(30000), // 30 second timeout
+      signal: AbortSignal.timeout(45000), // 45 second timeout
     });
 
     const contentType = wgRes.headers.get('content-type') || '';

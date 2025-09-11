@@ -38,16 +38,17 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [recordingChunks, setRecordingChunks] = useState<Blob[]>([]);
   const [isActivated, setIsActivated] = useState(false);
+  const [showPromotions, setShowPromotions] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Initialize with welcome message
+  // Initialize with welcome message including promotions
   useEffect(() => {
     const welcomeMessage: Message = {
       id: '1',
       text: isGuestMode 
-        ? "Hi! I'm Isabella Navia, your AI companion from Ovela Interactive. I'm here to help you discover how our interactive AI solutions can transform your business. How can I assist you today?"
+        ? "Hi! I'm Isabella Navia, model and brand ambassador for Ovela Interactive. Right now, we're celebrating our launch with special promotions: • Startups & small businesses: 50% off your first task or package (limited spots!) • Monthly packages: 50% off Starter or Growth for the first 2 months. Want me to help you pick the perfect option?"
         : "Welcome to WellnessGeni! I'm Isabella, your AI wellness companion. How can I help you today?",
       sender: 'assistant',
       timestamp: new Date()
@@ -92,7 +93,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         body: {
           message: text,
           persona: selectedPersona,
-          userId: isGuestMode ? undefined : 'guest-user'
+          userId: isGuestMode ? 'ovela-guest' : 'guest-user',
+          brand_guide: null // Let the function use OVELA_GUIDE
         }
       });
 
@@ -302,15 +304,32 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold">Chat with Isabella</h2>
-              <p className="text-sm text-muted-foreground">Ask me about Ovela Interactive services</p>
+              <p className="text-sm text-muted-foreground">Ask me about Ovela Interactive services & pricing</p>
             </div>
-            {!isActivated && (
-              <Button size="sm" onClick={activate} className="hover-scale">
-                Activate animated response
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {!isActivated && (
+                <Button size="sm" onClick={activate} className="hover-scale">
+                  Activate animated response
+                </Button>
+              )}
+              {showPromotions && (
+                <Button size="sm" variant="outline" onClick={() => setShowPromotions(false)}>
+                  Hide Promotions
+                </Button>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Promotions Banner */}
+        {showPromotions && isGuestMode && (
+          <div className="bg-gradient-to-r from-electric-blue/10 to-neon-purple/10 border-b p-3">
+            <div className="text-sm text-center">
+              <span className="font-semibold text-electric-blue">🎉 Launch Special:</span>
+              <span className="ml-2">50% off for startups & first-time clients</span>
+            </div>
+          </div>
+        )}
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">

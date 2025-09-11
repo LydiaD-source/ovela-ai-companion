@@ -1,19 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, DollarSign, Zap, Palette, CheckCircle, Star, Globe, Mic, BarChart3, Sparkles } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import QuickPricingMenu from '@/components/UI/QuickPricingMenu';
 
 const Pricing = () => {
+  const [showPricingMenu, setShowPricingMenu] = useState(false);
   // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
   const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
-
-  const scrollToPlans = () => {
-    const plansSection = document.getElementById('pricing-plans');
-    if (plansSection) {
-      plansSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   return (
     <div className="pt-16">
@@ -30,13 +25,20 @@ const Pricing = () => {
             Give your brand a face that never sleeps, never cancels, and always shines.
           </p>
           <Button 
-            onClick={scrollToPlans}
+            onClick={() => setShowPricingMenu(!showPricingMenu)}
             size="lg" 
             className="btn-gradient group animate-glow"
           >
             See Plans
             <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
+          
+          {/* Quick Pricing Menu */}
+          {showPricingMenu && (
+            <div className="animate-fade-in mt-8">
+              <QuickPricingMenu />
+            </div>
+          )}
         </div>
         {/* Decorative elements */}
         <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-gradient-to-br from-electric-blue/20 to-transparent blur-xl" />

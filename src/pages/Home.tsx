@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import VideoPlayer from '@/components/UI/VideoPlayer';
-import QuickPricingMenu from '@/components/UI/QuickPricingMenu';
+
 import { Button } from '@/components/ui/button';
 
 const Home = () => {
-  const [showPricingMenu, setShowPricingMenu] = useState(false);
   const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
   // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
   const isabellaNaviaUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
@@ -171,22 +170,13 @@ const Home = () => {
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </a>
-              <Button 
-                variant="outline" 
-                className="btn-outline"
-                onClick={() => setShowPricingMenu(!showPricingMenu)}
-              >
-                See Plans
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
+              <Link to="/pricing">
+                <Button variant="outline" className="btn-outline">
+                  See Plans
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
             </div>
-            
-            {/* Quick Pricing Menu */}
-            {showPricingMenu && (
-              <div className="animate-fade-in">
-                <QuickPricingMenu />
-              </div>
-            )}
           </div>
         </Section>
 

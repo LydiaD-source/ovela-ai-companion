@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
 import { Mic, MicOff, Volume2, VolumeX, Settings, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,25 +35,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true
 }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputText, setInputText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [recordingChunks, setRecordingChunks] = useState<Blob[]>([]);
+  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [inputText, setInputText] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(false);
+  const [selectedPersona, setSelectedPersona] = React.useState(defaultPersona);
+  const [audioContext, setAudioContext] = React.useState<AudioContext | null>(null);
+  const [mediaRecorder, setMediaRecorder] = React.useState<MediaRecorder | null>(null);
+  const [recordingChunks, setRecordingChunks] = React.useState<Blob[]>([]);
   // Settings state
-  const [voiceStyle, setVoiceStyle] = useState<'feminine' | 'neutral' | 'energetic'>('feminine');
-  const [avatarEnabled, setAvatarEnabled] = useState(true);
-  const [volume, setVolume] = useState(1);
+  const [voiceStyle, setVoiceStyle] = React.useState<'feminine' | 'neutral' | 'energetic'>('feminine');
+  const [avatarEnabled, setAvatarEnabled] = React.useState(true);
+  const [volume, setVolume] = React.useState(1);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   // Initialize with welcome message
-  useEffect(() => {
+  React.useEffect(() => {
     const welcomeMessage: Message = {
       id: '1',
       text: isGuestMode 
@@ -66,12 +66,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   }, [isGuestMode]);
 
   // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
+  React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Initialize audio context
-  useEffect(() => {
+  React.useEffect(() => {
     const initAudio = async () => {
       try {
         const context = new (window.AudioContext || (window as any).webkitAudioContext)();

@@ -7,6 +7,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
+  const fallback = 'https://api.wellnessgeni.com';
+  if (!raw) return { url: fallback, reason: 'missing' };
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('wg_')) return { url: fallback, reason: 'api-key-instead-of-url' };
+  if (!/^https?:\/\//i.test(trimmed)) return { url: fallback, reason: 'no-protocol' };
+  try {
+    const u = new URL(trimmed);
+    return { url: `${u.origin}` };
+  } catch {
+    return { url: fallback, reason: 'invalid-url' };
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -17,8 +31,9 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const wellnessGeniApiKey = Deno.env.get('WELLNESS_GENI_API_KEY');
-    const wellnessGeniApiUrl = Deno.env.get('WELLNESS_GENI_API_URL') || 'https://api.wellnessgeni.com';
-
+    const rawBaseUrl = Deno.env.get('WELLNESS_GENI_API_URL');
+    const { url: wellnessGeniApiUrl, reason: urlReason } = sanitizeBaseUrl(rawBaseUrl);
+    const ovelaGuide = Deno.env.get('OVELA_GUIDE');
     if (!wellnessGeniApiKey) {
       return new Response(JSON.stringify({ success: false, error: 'Missing WELLNESS_GENI_API_KEY secret' }), {
         status: 500,
@@ -33,11 +48,12 @@ serve(async (req) => {
 
     const { action, payload } = await req.json();
 
-    console.log('WellnessGeni API Request:', { action, payload });
+    console.log('WellnessGeni API Request:', { action, payload, baseUrl: wellnessGeniApiUrl, baseUrlReason: urlReason ?? 'ok' });
 
     // Prepare headers for WellnessGeni (support both Authorization and x-api-key)
     const wgHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
       'Authorization': `Bearer ${wellnessGeniApiKey}`,
       'x-api-key': wellnessGeniApiKey,
     };
@@ -54,13 +70,19 @@ serve(async (req) => {
           body: JSON.stringify({
             message: payload.message,
             persona: payload.persona || 'isabella-navia',
-            context: payload.context || 'ovela-interactive'
+            context: payload.context || 'ovela-interactive',
+            source: 'ovela',
+            metadata: {
+              site: 'ovela',
+              origin: req.headers.get('origin') || 'unknown'
+            },
+            ...(ovelaGuide ? { brand_guide: ovelaGuide } : {})
           }),
         });
         break;
 
       case 'persona-info':
-        wellnessGeniResponse = await fetch(`${wellnessGeniApiUrl}/personas/${payload.persona}`, {
+        wellnessGeniResponse = await fetch(`${wellnessGeniApiUrl}/personas/${encodeURIComponent(payload.persona)}`, {
           method: 'GET',
           headers: wgHeaders,
         });
@@ -99,7 +121,9 @@ serve(async (req) => {
       return new Response(JSON.stringify({ 
         success: false, 
         error: `WellnessGeni API error ${wellnessGeniResponse.status}`,
-        details: responseBody
+        details: responseBody,
+        baseUrlUsed: wellnessGeniApiUrl,
+        baseUrlIssue: urlReason ?? null
       }), {
         status: 502,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

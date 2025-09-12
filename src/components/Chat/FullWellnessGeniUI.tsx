@@ -48,7 +48,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     const welcomeMessage: Message = {
       id: '1',
       text: isGuestMode 
-        ? "Hi! I'm Isabella Navia, your AI brand ambassador. How can I help you today?"
+        ? "Hello! I'm Isabella. How can I help you learn about Ovela Interactive today?"
         : "Welcome to WellnessGeni! I'm Isabella, your AI wellness companion. How can I help you today?",
       sender: 'assistant',
       timestamp: new Date()

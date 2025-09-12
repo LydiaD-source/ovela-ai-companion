@@ -10,17 +10,19 @@ export class WellnessGeniAPI {
   async sendChatMessage(message: string, persona: string = 'isabella-navia', brand_guide?: string, userId?: string): Promise<WellnessGeniResponse> {
     try {
       const { data: userInfo } = await supabase.auth.getUser();
-      const uid = userId ?? userInfo?.user?.id;
+      const uid = userId ?? userInfo?.user?.id ?? 'ovela-guest';
+      
+      const payload = {
+        prompt: message,
+        client_id: 'ovela_client_001',
+        user_id: uid,
+        brand_guide: brand_guide || null
+      };
+
+      console.log('Sending to ovela-chat:', payload);
+      
       const { data, error } = await supabase.functions.invoke('ovela-chat', {
-        body: {
-          message,
-          prompt: message,
-          persona,
-          brand_guide,
-          userId: uid,
-          user_id: uid,
-          client_id: 'ovela_client_001'
-        }
+        body: payload
       });
 
       if (error) {
@@ -28,6 +30,7 @@ export class WellnessGeniAPI {
         return { success: false, error: error.message };
       }
 
+      console.log('ovela-chat response:', data);
       return { success: true, data };
     } catch (error) {
       console.error('Chat message error:', error);

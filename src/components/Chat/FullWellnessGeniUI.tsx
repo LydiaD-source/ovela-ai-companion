@@ -102,28 +102,19 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       const data = response.data;
 
-      // Extract assistant response text
+      // Extract assistant response text from standardized ovela-chat response
       let assistantText = "I'm sorry — I didn't get the details. Please try again or ask another question.";
       let audioUrl = '';
       let videoUrl = '';
       
       if (data) {
-        // Handle direct response from WellnessGeni API
-        if (typeof data === 'string') {
+        // Handle ovela-chat response format: { success: true, message: "...", data: {} }
+        if (data.message) {
+          assistantText = data.message;
+          audioUrl = data.audioUrl || '';
+          videoUrl = data.videoUrl || '';
+        } else if (typeof data === 'string') {
           assistantText = data;
-        } else if (data.response || data.message || data.text) {
-          assistantText = data.response || data.message || data.text;
-          audioUrl = data.audioUrl || data.audio_url || '';
-          videoUrl = data.videoUrl || data.video_url || '';
-        } else if (data.data) {
-          // Handle nested data structure
-          if (typeof data.data === 'string') {
-            assistantText = data.data;
-          } else if (data.data.response || data.data.message || data.data.text) {
-            assistantText = data.data.response || data.data.message || data.data.text;
-            audioUrl = data.data.audioUrl || data.data.audio_url || '';
-            videoUrl = data.data.videoUrl || data.data.video_url || '';
-          }
         }
       }
 

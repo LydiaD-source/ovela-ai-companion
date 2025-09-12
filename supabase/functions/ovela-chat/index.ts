@@ -73,22 +73,30 @@ serve(async (req) => {
       });
     }
 
-    const { message, persona = 'isabella-navia', brand_guide, userId } = await req.json();
+    const body: any = await req.json().catch(() => ({}));
+
+    const incomingMessage = (body?.message ?? body?.prompt ?? '').toString();
+    const persona = body?.persona ?? 'isabella-navia';
+    const brand_guide_in = body?.brand_guide;
+    const userId = body?.userId ?? body?.user_id ?? 'ovela-guest';
+    const clientId = body?.client_id ?? 'ovela_client_001';
 
     // Inject OVELA_GUIDE only when brand_guide is missing; no hardcoded fallback
-    const effectiveGuide = brand_guide ?? ovelaGuide ?? undefined;
+    const effectiveGuide = brand_guide_in ?? ovelaGuide ?? undefined;
 
     const payload = {
-      message,
+      message: incomingMessage,
       persona,
       ...(effectiveGuide ? { brand_guide: effectiveGuide } : {}),
-      userId: userId || 'ovela-guest',
+      userId,
+      user_id: userId,
+      client_id: clientId,
       source: 'ovela',
       context: 'ovela-interactive',
     };
 
-    console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, hasBrandGuide: !!payload.brand_guide, hasUserId: !!userId, autoInjectedGuide: !brand_guide && !!ovelaGuide });
-    console.log('ovela-chat payload', JSON.stringify(payload, null, 2));
+    console.log('ovela-chat request', { baseUrl, urlReason: urlReason ?? 'ok', persona, clientId, hasBrandGuide: !!payload.brand_guide, hasUserId: !!userId, autoInjectedGuide: !brand_guide_in && !!ovelaGuide });
+    console.log('ovela-chat payload', JSON.stringify({ ...payload, brand_guide: effectiveGuide ? '[injected]' : undefined }, null, 2));
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
@@ -131,12 +139,10 @@ serve(async (req) => {
         });
         return new Response(JSON.stringify({
           success: false,
-          error: `WellnessGeni API error ${wgRes.status}: ${wgRes.statusText}`,
-          details: responseBody,
-          baseUrlUsed: baseUrl,
-          baseUrlIssue: urlReason ?? null,
+          message: `WellnessGeni API error ${wgRes.status}: ${wgRes.statusText}`,
+          data: {}
         }), {
-          status: 200, // Return 200 to frontend to avoid FunctionsHttpError
+          status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
@@ -146,7 +152,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({
         success: true,
         message: assistantText,
-        data: responseBody
+        data: {}
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -156,18 +162,17 @@ serve(async (req) => {
       
       return new Response(JSON.stringify({
         success: false,
-        error: `Network error: ${fetchError.message}`,
-        baseUrlUsed: baseUrl,
-        baseUrlIssue: urlReason ?? null,
+        message: `Network error: ${fetchError.message}`,
+        data: {}
       }), {
-        status: 200, // Return 200 to frontend
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
   } catch (error) {
     console.error('Error in ovela-chat function:', error);
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
-      status: 500,
+    return new Response(JSON.stringify({ success: false, message: error.message, data: {} }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

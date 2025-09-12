@@ -14,9 +14,12 @@ export class WellnessGeniAPI {
       const { data, error } = await supabase.functions.invoke('ovela-chat', {
         body: {
           message,
+          prompt: message,
           persona,
           brand_guide,
           userId: uid,
+          user_id: uid,
+          client_id: 'ovela_client_001'
         }
       });
 

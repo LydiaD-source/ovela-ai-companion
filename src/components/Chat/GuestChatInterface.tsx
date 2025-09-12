@@ -45,7 +45,7 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
     if (isGuestMode) {
       setMessages([{
         id: '1',
-        text: "Hi! I'm Isabella Navia, your AI information ambassador from Ovela Interactive. I'm here to help you learn about our services, pricing, and how we can work together. What would you like to know?",
+        text: "Hello! I'm Isabella. How can I help you learn about Ovela Interactive today?",
         sender: 'assistant',
         timestamp: new Date(),
         persona: 'isabella-navia'

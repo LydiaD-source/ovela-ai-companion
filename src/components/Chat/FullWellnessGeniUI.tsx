@@ -103,7 +103,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const data = response.data;
 
       // Extract assistant response text
-      let assistantText = 'I received your message.';
+      let assistantText = "I'm sorry — I didn't get the details. Please try again or ask another question.";
       let audioUrl = '';
       let videoUrl = '';
       

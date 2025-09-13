@@ -8,7 +8,7 @@ const corsHeaders = {
 
 function sanitizeBaseUrl(raw: string | undefined): { url: string; reason?: string } {
   // Always target the multi-tenant endpoint (full path). If env is invalid/missing, fallback to default.
-  const defaultEndpoint = 'https://api.wellnessgeni.com/multitenant-chat';
+  const defaultEndpoint = Deno.env.get('WELLNESS_GENI_API_URL') || 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/ovela-chat';
 
   if (!raw) return { url: defaultEndpoint, reason: 'using-default' };
 

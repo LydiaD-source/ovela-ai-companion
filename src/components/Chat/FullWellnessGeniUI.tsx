@@ -43,17 +43,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Initialize with welcome message
+  // No initial greeting to keep chat minimal on load
   useEffect(() => {
-    const welcomeMessage: Message = {
-      id: '1',
-      text: isGuestMode 
-        ? "Hello! I'm Isabella. How can I help you learn about Ovela Interactive today?"
-        : "Welcome to WellnessGeni! I'm Isabella, your AI wellness companion. How can I help you today?",
-      sender: 'assistant',
-      timestamp: new Date()
-    };
-    setMessages([welcomeMessage]);
+    setMessages([]);
   }, [isGuestMode]);
 
   // Auto-scroll to bottom when new messages arrive
@@ -395,11 +387,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             </div>
           )}
           
-          {isGuestMode && (
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              Powered by Ovela Interactive & WellnessGeni
-            </p>
-          )}
+            {isGuestMode && (
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                Powered by Ovela Interactive
+              </p>
+            )}
         </div>
       </div>
     </div>

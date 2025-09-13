@@ -41,16 +41,7 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
   const { toast } = useToast();
 
   useEffect(() => {
-    // Initialize with Isabella Navia welcome message for Ovela visitors
-    if (isGuestMode) {
-      setMessages([{
-        id: '1',
-        text: "Hello! I'm Isabella. How can I help you learn about Ovela Interactive today?",
-        sender: 'assistant',
-        timestamp: new Date(),
-        persona: 'isabella-navia'
-      }]);
-    }
+    // Keep chat minimal: no initial greeting message
   }, [isGuestMode]);
 
   return (
@@ -133,7 +124,7 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
                 console.error('Chat error:', error);
                 toast({
                   title: "Connection Error",
-                  description: "Unable to connect to WellnessGeni. Please try again.",
+                  description: "Unable to connect right now. Please try again.",
                   variant: "destructive",
                 });
                 

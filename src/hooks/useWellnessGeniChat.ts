@@ -22,8 +22,8 @@ export const useWellnessGeniChat = () => {
       });
 
       toast({
-        title: "Connected to WellnessGeni",
-        description: "You're now connected to Isabella through our WellnessGeni integration.",
+        title: "Connected to Isabella",
+        description: "You're now chatting with Isabella.",
       });
     } catch (error) {
       console.error('Navigation error:', error);

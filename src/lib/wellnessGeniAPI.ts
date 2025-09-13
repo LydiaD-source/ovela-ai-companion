@@ -16,7 +16,9 @@ export class WellnessGeniAPI {
         prompt: message,
         client_id: 'ovela_client_001',
         user_id: uid,
-        brand_guide: brand_guide || null
+        brand_guide: brand_guide || null,
+        source: 'ovela',
+        context: 'ovela-interactive'
       };
 
       console.log('Sending to ovela-chat:', payload);

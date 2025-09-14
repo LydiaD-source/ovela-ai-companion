@@ -68,10 +68,10 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const incomingMessage = (body?.message ?? body?.prompt ?? "").toString();
+    const incomingMessage = (body?.prompt ?? body?.message ?? "").toString();
     const persona = body?.persona ?? "isabella-navia";
     const brandGuideIn = body?.brand_guide;
-    const userId = body?.userId ?? body?.user_id ?? "ovela-guest";
+    const userId = body?.user_id ?? body?.userId ?? "ovela-guest";
     const clientId = body?.client_id ?? "ovela_client_001";
 
     const effectiveGuide = brandGuideIn ?? ovelaGuide ?? undefined;

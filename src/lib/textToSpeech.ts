@@ -3,9 +3,19 @@ import { supabase } from '@/integrations/supabase/client';
 export class TextToSpeechService {
   private audioContext: AudioContext | null = null;
   private isPlaying = false;
+  private htmlAudio: HTMLAudioElement | null = null;
 
   constructor() {
     // Initialize audio context when first needed
+    if (typeof window !== 'undefined') {
+      const unlock = () => {
+        this.initAudioContext().catch(() => {});
+        window.removeEventListener('click', unlock);
+        window.removeEventListener('touchstart', unlock);
+      };
+      window.addEventListener('click', unlock);
+      window.addEventListener('touchstart', unlock);
+    }
   }
 
   private async initAudioContext(): Promise<AudioContext> {
@@ -55,41 +65,49 @@ export class TextToSpeechService {
       return;
     }
 
+    // Prefer HTMLAudioElement for broader autoplay compatibility
     try {
       this.isPlaying = true;
+      if (!this.htmlAudio) {
+        this.htmlAudio = new Audio();
+      } else {
+        try { this.htmlAudio.pause(); } catch {}
+      }
+      this.htmlAudio.src = audioUrl;
+      this.htmlAudio.onended = () => { this.isPlaying = false; };
+      this.htmlAudio.onerror = () => { this.isPlaying = false; };
+      await this.htmlAudio.play();
+      console.log('Playing audio (HTMLAudio)...');
+      return;
+    } catch (htmlErr) {
+      console.warn('HTMLAudio playback failed, falling back to WebAudio', htmlErr);
+    }
+
+    // Fallback to WebAudio API
+    try {
       const audioContext = await this.initAudioContext();
 
-      // For data URLs, we need to extract the base64 part
       let audioData: ArrayBuffer;
-      
-      if (audioUrl.startsWith('data:audio/mpeg;base64,')) {
+      if (audioUrl.startsWith('data:audio')) {
         const base64Data = audioUrl.split(',')[1];
         const binaryString = atob(base64Data);
         const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
+        for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
         audioData = bytes.buffer;
       } else {
-        // Regular URL
         const response = await fetch(audioUrl);
         audioData = await response.arrayBuffer();
       }
 
       const audioBuffer = await audioContext.decodeAudioData(audioData);
-      
       const source = audioContext.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(audioContext.destination);
-      
-      source.onended = () => {
-        this.isPlaying = false;
-      };
-      
+      source.onended = () => { this.isPlaying = false; };
       source.start(0);
-      console.log('Playing audio...');
+      console.log('Playing audio (WebAudio)...');
     } catch (error) {
-      console.error('Error playing audio:', error);
+      console.error('Error playing audio (fallback failed):', error);
       this.isPlaying = false;
     }
   }
@@ -102,12 +120,15 @@ export class TextToSpeechService {
   }
 
   stopAudio(): void {
-    if (this.audioContext) {
-      // Note: We can't stop individual sources once started,
-      // but we can suspend the entire context
-      this.audioContext.suspend();
-      this.isPlaying = false;
+    if (this.htmlAudio) {
+      try { this.htmlAudio.pause(); } catch {}
+      this.htmlAudio.currentTime = 0;
     }
+    if (this.audioContext) {
+      // Suspend the entire context as a fallback
+      this.audioContext.suspend();
+    }
+    this.isPlaying = false;
   }
 
   get isCurrentlyPlaying(): boolean {

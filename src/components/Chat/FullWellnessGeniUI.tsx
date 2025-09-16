@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { toast } from '@/hooks/use-toast';
+import { textToSpeechService } from '@/lib/textToSpeech';
 
 interface Message {
   id: string;
@@ -121,7 +122,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Play audio if available and not muted and activated
+      // Generate and play speech if not muted and activated
+      if (!isMuted && isActivated && assistantText) {
+        try {
+          await textToSpeechService.speakText(assistantText);
+        } catch (error) {
+          console.error('Error playing speech:', error);
+        }
+      }
+
+      // Play audio if available and not muted and activated (legacy support)
       if (assistantMessage.audioUrl && !isMuted && isActivated) {
         playAudio(assistantMessage.audioUrl);
       }

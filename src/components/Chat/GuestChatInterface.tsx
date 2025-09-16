@@ -5,6 +5,9 @@ import ChatMessages from '@/components/Chat/ChatMessages';
 import ChatInput from '@/components/Chat/ChatInput';
 import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { useToast } from '@/hooks/use-toast';
+import { textToSpeechService } from '@/lib/textToSpeech';
+import { Volume2, VolumeX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Extract assistant text robustly from various API response shapes
 const extractAssistantText = (data: any): string => {
@@ -38,6 +41,7 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
   const [messages, setMessages] = useState([]);
   const [currentPersona, setCurrentPersona] = useState(defaultPersona);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -78,6 +82,19 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
               </p>
             </div>
           )}
+
+          {/* Audio controls */}
+          <div className="mt-4 pt-4 border-t">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMuted(!isMuted)}
+              className="w-full justify-center"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4 mr-2" /> : <Volume2 className="w-4 h-4 mr-2" />}
+              <span className="text-sm">{isMuted ? 'Enable Voice' : 'Disable Voice'}</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -117,6 +134,15 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
                   };
                   
                   setMessages(prev => [...prev, assistantMessage]);
+
+                  // Generate and play speech if not muted
+                  if (!isMuted && assistantText) {
+                    try {
+                      await textToSpeechService.speakText(assistantText);
+                    } catch (error) {
+                      console.error('Error playing speech:', error);
+                    }
+                  }
                 } else {
                   throw new Error(response.error || 'Failed to get response');
                 }

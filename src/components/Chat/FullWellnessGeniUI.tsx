@@ -37,9 +37,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [recordingChunks, setRecordingChunks] = useState<Blob[]>([]);
   const [isActivated, setIsActivated] = useState(false);
   const [showPromotions, setShowPromotions] = useState(true);
+  const [isInVoiceMode, setIsInVoiceMode] = useState(false);
+  const [voiceStream, setVoiceStream] = useState<MediaStream | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,9 +50,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setMessages([]);
   }, [isGuestMode]);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom when new messages arrive - only scroll the chat container
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const chatContainer = messagesEndRef.current?.parentElement;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
   }, [messages]);
 
   // Initialize audio context
@@ -183,51 +187,196 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
   };
 
-  const startRecording = async () => {
+  const startVoiceMode = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           sampleRate: 24000,
           channelCount: 1,
           echoCancellation: true,
-          noiseSuppression: true
+          noiseSuppression: true,
+          autoGainControl: true
         }
       });
       
+      setVoiceStream(stream);
+      setIsInVoiceMode(true);
+      
+      // Start continuous voice recording with speech detection
       const recorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus'
       });
       
+      let chunks: Blob[] = [];
+      let silenceTimer: NodeJS.Timeout;
+      let isRecordingVoice = false;
+      
+      // Speech detection using audio analysis
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      const checkAudioLevel = () => {
+        if (!isInVoiceMode) return;
+        
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+        
+        // Detect speech (adjust threshold as needed)
+        if (average > 25 && !isRecordingVoice) {
+          // Start recording
+          chunks = [];
+          recorder.start();
+          isRecordingVoice = true;
+          setIsRecording(true);
+          clearTimeout(silenceTimer);
+        } else if (average <= 25 && isRecordingVoice) {
+          // Silence detected, set timer to stop recording
+          clearTimeout(silenceTimer);
+          silenceTimer = setTimeout(() => {
+            if (isRecordingVoice && recorder.state === 'recording') {
+              recorder.stop();
+              isRecordingVoice = false;
+              setIsRecording(false);
+            }
+          }, 1000); // Stop after 1 second of silence
+        }
+        
+        requestAnimationFrame(checkAudioLevel);
+      };
+      
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          setRecordingChunks(prev => [...prev, event.data]);
+          chunks.push(event.data);
         }
       };
       
-      recorder.onstop = () => {
-        const audioBlob = new Blob(recordingChunks, { type: 'audio/webm' });
-        sendMessage('', audioBlob);
-        setRecordingChunks([]);
+      recorder.onstop = async () => {
+        if (chunks.length > 0) {
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          // Convert audio to text and send message
+          await processVoiceInput(audioBlob);
+        }
       };
       
       setMediaRecorder(recorder);
-      recorder.start();
-      setIsRecording(true);
+      checkAudioLevel();
+      
+      toast({
+        title: "Voice Mode Active",
+        description: "Start speaking naturally - I'll respond with voice!",
+      });
+      
     } catch (error) {
-      console.error('Error starting recording:', error);
+      console.error('Error starting voice mode:', error);
       toast({
         title: "Error",
-        description: "Failed to access microphone.",
+        description: "Failed to access microphone for voice mode.",
         variant: "destructive"
       });
     }
   };
 
-  const stopRecording = () => {
+  const stopVoiceMode = () => {
+    setIsInVoiceMode(false);
+    setIsRecording(false);
+    
+    if (voiceStream) {
+      voiceStream.getTracks().forEach(track => track.stop());
+      setVoiceStream(null);
+    }
+    
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach(track => track.stop());
-      setIsRecording(false);
+    }
+    
+    toast({
+      title: "Voice Mode Disabled",
+      description: "Switched back to text chat mode.",
+    });
+  };
+
+  const processVoiceInput = async (audioBlob: Blob) => {
+    try {
+      // For now, we'll send the audio blob as before but enhance UX
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: '🎤 Voice message',
+        sender: 'user',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setIsLoading(true);
+
+      // For now, send a placeholder message for voice input
+      // TODO: Implement speech-to-text conversion
+      const response = await wellnessGeniAPI.sendChatMessage(
+        'I just sent a voice message. Please respond naturally as if I spoke to you.',
+        selectedPersona,
+        undefined,
+        isGuestMode ? 'ovela-guest' : 'guest-user'
+      );
+
+      if (!response.success) {
+        throw new Error(response.error || 'API request failed');
+      }
+
+      const data = response.data;
+      let assistantText = "I'm sorry — I didn't get the details. Please try again or ask another question.";
+      let audioUrl = '';
+      let videoUrl = '';
+      
+      if (data) {
+        if (data.message) {
+          assistantText = data.message;
+          audioUrl = data.audioUrl || '';
+          videoUrl = data.videoUrl || '';
+        } else if (typeof data === 'string') {
+          assistantText = data;
+        }
+      }
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: assistantText,
+        sender: 'assistant',
+        timestamp: new Date(),
+        audioUrl: audioUrl,
+        videoUrl: videoUrl
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+
+      // Always play speech in voice mode
+      if (assistantText) {
+        try {
+          await textToSpeechService.speakText(assistantText);
+        } catch (error) {
+          console.error('Error playing speech:', error);
+        }
+      }
+
+      // Play video if available and activated
+      if (assistantMessage.videoUrl && videoRef.current && isActivated) {
+        videoRef.current.src = assistantMessage.videoUrl;
+        videoRef.current.play();
+      }
+
+    } catch (error) {
+      console.error('Error processing voice input:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process voice message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -365,13 +514,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             
             <Button
               type="button"
-              variant={isRecording ? "destructive" : "outline"}
+              variant={isInVoiceMode ? "destructive" : isRecording ? "secondary" : "outline"}
               size="sm"
-              onClick={isRecording ? stopRecording : startRecording}
+              onClick={isInVoiceMode ? stopVoiceMode : startVoiceMode}
               disabled={isLoading}
               className="p-2"
             >
-              {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              {isInVoiceMode ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </Button>
             
             <Button 
@@ -384,10 +533,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             </Button>
           </form>
           
-          {isRecording && (
+          {isInVoiceMode && (
             <div className="flex items-center justify-center mt-2">
-              <Badge variant="destructive" className="animate-pulse">
-                Recording... Click mic to stop
+              <Badge variant={isRecording ? "destructive" : "secondary"} className={isRecording ? "animate-pulse" : ""}>
+                {isRecording ? "🎤 Listening..." : "🔊 Voice Mode Active - Start Speaking"}
               </Badge>
             </div>
           )}

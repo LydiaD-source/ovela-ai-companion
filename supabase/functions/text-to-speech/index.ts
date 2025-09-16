@@ -25,10 +25,10 @@ serve(async (req) => {
       throw new Error('ElevenLabs API key not configured');
     }
 
-    console.log('Generating speech for text:', { textLength: text.length, voice: voice || 'Alice' });
+    console.log('Generating speech for text:', { textLength: text.length, voice: voice || 'Isabella' });
 
-    // Use Alice voice (Xb7hH8MSUJpSbSDYk0k2) as default for Isabella
-    const voiceId = voice || 'Xb7hH8MSUJpSbSDYk0k2';
+    // Use Isabella voice (t0IcnDolatli2xhqgLgn) as default
+    const voiceId = voice || 't0IcnDolatli2xhqgLgn';
 
     // Generate speech from text using ElevenLabs
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {

@@ -27,7 +27,7 @@ export class TextToSpeechService {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: { 
           text: text.trim(),
-          voice: voice || 'Xb7hH8MSUJpSbSDYk0k2' // Alice voice for Isabella
+          voice: voice || 't0IcnDolatli2xhqgLgn' // Isabella voice
         }
       });
 

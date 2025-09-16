@@ -122,18 +122,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Generate and play speech if not muted and activated
-      if (!isMuted && isActivated && assistantText) {
+      // Generate and play speech if not muted
+      if (!isMuted && assistantText) {
         try {
           await textToSpeechService.speakText(assistantText);
         } catch (error) {
           console.error('Error playing speech:', error);
         }
-      }
-
-      // Play audio if available and not muted and activated (legacy support)
-      if (assistantMessage.audioUrl && !isMuted && isActivated) {
-        playAudio(assistantMessage.audioUrl);
       }
 
       // Play video if available and activated

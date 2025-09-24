@@ -68,7 +68,7 @@ const Home = () => {
             <div className="rounded-3xl overflow-hidden shadow-2xl">
               <VideoPlayer
                 src={isabellaVideoUrl}
-                className="w-full aspect-video"
+                className="w-full aspect-[9/16] max-w-sm mx-auto"
                 autoplay={true}
                 loop={true}
                 muted={true}

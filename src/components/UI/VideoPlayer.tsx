@@ -51,7 +51,7 @@ const VideoPlayer = ({
   return (
     <div className={cn("relative overflow-hidden", className)}>
       <video
-        className="w-full h-full object-cover"
+        className="w-full h-full object-contain bg-background"
         autoPlay={autoplay}
         loop={loop}
         muted={muted}

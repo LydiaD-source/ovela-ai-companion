@@ -129,10 +129,15 @@ const Isabella = () => {
             </div>
             <div>
               <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
-                <img 
-                  src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
-                  alt="Isabella - AI Brand Ambassador"
-                  className="w-full h-auto rounded-2xl shadow-2xl"
+                <VideoPlayer
+                  src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4"
+                  className="w-full rounded-2xl shadow-2xl"
+                  autoplay={true}
+                  loop={true}
+                  muted={true}
+                  controls={false}
+                  title="Isabella AI Capabilities Demonstration"
+                  description="Isabella AI brand ambassador showcasing her capabilities and features"
                 />
               </div>
             </div>

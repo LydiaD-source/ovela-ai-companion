@@ -7,7 +7,7 @@ import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import { Button } from '@/components/ui/button';
 
 const Isabella = () => {
-  const isabellaVideoUrl = "https://drive.google.com/file/d/1WqpBQPgWTLcFXm3mZSYNDg0wLDjR1t3M/preview";
+  const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758907652/Ovela_2_hiufkv.mp4";
   const { startChat, isConnecting } = useWellnessGeniChat();
 
   return (

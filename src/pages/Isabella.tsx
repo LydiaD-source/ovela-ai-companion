@@ -130,7 +130,7 @@ const Isabella = () => {
             <div>
               <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass">
                 <VideoPlayer
-                  src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4"
+                  src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1758907652/Ovela_2_hiufkv.mp4"
                   className="w-full rounded-2xl shadow-2xl"
                   autoplay={true}
                   loop={true}

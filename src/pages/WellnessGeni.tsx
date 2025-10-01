@@ -3,6 +3,8 @@ import React from 'react';
 import { ArrowRight, CheckCircle, Heart, Brain, Clock, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
+import placeholder1 from '@/assets/wellnessgeni-placeholder1.png';
+import placeholder2 from '@/assets/wellnessgeni-placeholder2.png';
 
 const WellnessGeni = () => {
   // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
@@ -53,17 +55,19 @@ const WellnessGeni = () => {
           
           <div>
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 rounded-3xl p-8 glass text-center">
-                <div className="text-4xl mb-4">📱</div>
-                <p className="text-muted-foreground text-sm">
-                  [Placeholder: WellnessGeni Screenshot 1]
-                </p>
+              <div className="rounded-3xl overflow-hidden shadow-2xl">
+                <img 
+                  src={placeholder1} 
+                  alt="WellnessGeni Welcome Screen - Always Present, Always Personal, Always For You"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="bg-gradient-to-br from-neon-purple/20 to-electric-blue/20 rounded-3xl p-8 glass text-center mt-8">
-                <div className="text-4xl mb-4">📱</div>
-                <p className="text-muted-foreground text-sm">
-                  [Placeholder: WellnessGeni Screenshot 2]
-                </p>
+              <div className="rounded-3xl overflow-hidden shadow-2xl mt-8">
+                <img 
+                  src={placeholder2} 
+                  alt="WellnessGeni Chat Interface - Isabella Trainer Mode Active"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>

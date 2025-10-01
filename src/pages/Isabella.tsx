@@ -73,8 +73,8 @@ const Isabella = () => {
                 className="w-full aspect-video"
                 autoplay={true}
                 loop={true}
-                muted={true}
-                controls={false}
+                muted={false}
+                controls={true}
                 title="Isabella AI Brand Ambassador Introduction"
                 description="Meet Isabella, the world's first AI brand ambassador and interactive model"
               />
@@ -134,8 +134,8 @@ const Isabella = () => {
                   className="w-full rounded-2xl shadow-2xl"
                   autoplay={true}
                   loop={true}
-                  muted={true}
-                  controls={false}
+                  muted={false}
+                  controls={true}
                   title="Isabella AI Capabilities Demonstration"
                   description="Isabella AI brand ambassador showcasing her capabilities and features"
                 />

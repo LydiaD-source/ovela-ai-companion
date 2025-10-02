@@ -140,8 +140,9 @@ const Home = () => {
             <div 
               className="flex flex-col justify-center z-20"
               style={{ 
-                maxWidth: '450px',
-                marginRight: '12%'
+                width: 'min(60vw, 720px)',
+                marginRight: '18%',
+                transform: 'translateX(-6vw)'
               }}
             >
               {/* Initial State - Text & CTAs */}

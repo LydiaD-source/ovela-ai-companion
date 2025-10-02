@@ -14,27 +14,25 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-transparent transition-all duration-300">
-      <div className="max-w-screen-2xl mx-auto px-12 py-6">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold">
-              <span className="gradient-text">Ovela</span>
-            </div>
-            <div className="text-sm font-medium" style={{ color: 'hsl(var(--champagne-gold))' }}>Interactive</div>
-          </Link>
+    <nav className="fixed top-0 w-full z-50 pointer-events-none">
+      <div className="flex items-center justify-between" style={{ padding: '40px 60px' }}>
+        {/* Logo */}
+        <Link to="/" className="pointer-events-auto flex items-center space-x-2">
+          <div className="text-2xl font-bold">
+            <span className="gradient-text">Ovela</span>
+          </div>
+          <div className="text-sm font-medium" style={{ color: 'hsl(var(--champagne-gold))' }}>Interactive</div>
+        </Link>
 
-          {/* Hamburger Menu Button */}
-          <button
-            className="p-2 transition-colors duration-200"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-            style={{ color: 'white' }}
-          >
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </div>
+        {/* Hamburger Menu Button */}
+        <button
+          className="pointer-events-auto p-2 transition-colors duration-200"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
+          style={{ color: 'white' }}
+        >
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
 
       {/* Full-Screen Overlay Menu */}

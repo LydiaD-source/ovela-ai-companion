@@ -152,7 +152,7 @@ const Home = () => {
                 <h1 
                   style={{ 
                     fontFamily: 'Playfair Display, serif',
-                    fontSize: 'clamp(38px, 3.5vw, 42px)',
+                    fontSize: 'clamp(42px, 3.5vw, 46px)',
                     fontWeight: '400',
                     fontStyle: 'italic',
                     lineHeight: '1.2',
@@ -160,31 +160,41 @@ const Home = () => {
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    marginBottom: '24px',
-                    whiteSpace: 'nowrap',
-                    marginLeft: '-4.5cm'
+                    marginBottom: '20px',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  Meet Isabella — The Future of Modeling is Interactive
+                  The Future of Modeling is Interactive
                 </h1>
                 
                 {/* Supporting Text - Two Lines */}
                 <div 
                   style={{ 
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: '17px',
-                    fontWeight: '300',
-                    color: '#E5E5E5',
-                    lineHeight: '1.5',
-                    marginBottom: '60px',
-                    marginLeft: '-2.5cm'
+                    maxWidth: '450px',
+                    marginBottom: '30px'
                   }}
                 >
-                  <p style={{ marginBottom: '8px' }}>
-                    Isabella is Ovela's first AI model ambassador.
+                  {/* Line 1: Isabella ✨ */}
+                  <p style={{ 
+                    fontSize: '36px',
+                    fontWeight: '700',
+                    color: '#FFD700',
+                    marginBottom: '12px',
+                    textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
+                  }}>
+                    Isabella ✨
                   </p>
-                  <p style={{ whiteSpace: 'nowrap' }}>
-                    Ask questions, explore her portfolio, book a project — live.
+                  
+                  {/* Line 2: Description */}
+                  <p style={{ 
+                    fontSize: '19px',
+                    fontWeight: '300',
+                    color: '#F7F7F7',
+                    lineHeight: '1.6',
+                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                  }}>
+                    Ovela's first AI model ambassador. Ask questions, explore her portfolio, book a project — live.
                   </p>
                 </div>
                 
@@ -195,26 +205,27 @@ const Home = () => {
                     onClick={activateChat}
                     className="transition-all duration-300"
                     style={{
-                      width: '70%',
-                      maxWidth: '224px',
-                      height: '48px',
+                      width: '28vw',
+                      maxWidth: '280px',
+                      height: '52px',
                       borderRadius: '16px',
-                      background: 'transparent',
-                      border: '1.5px solid #D4AF37',
-                      color: '#F7E7CE',
+                      background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
+                      border: 'none',
+                      color: '#0A0A2A',
                       fontFamily: 'Inter, sans-serif',
                       fontSize: '15px',
-                      fontWeight: '400',
+                      fontWeight: '600',
                       letterSpacing: '0.5px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
-                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.15)';
+                      e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 175, 55, 0.7)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 175, 55, 0.3)';
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     Start Chatting with Isabella

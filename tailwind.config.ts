@@ -106,8 +106,9 @@ export default {
 				'glow': 'glow 2s ease-in-out infinite alternate'
 			},
 			fontFamily: {
-				'heading': ['Inter', 'system-ui', 'sans-serif'],
-				'body': ['Inter', 'system-ui', 'sans-serif']
+				'heading': ['Playfair Display', 'serif'],
+				'body': ['Inter', 'system-ui', 'sans-serif'],
+				'display': ['Playfair Display', 'serif']
 			}
 		}
 	},

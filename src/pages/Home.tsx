@@ -93,28 +93,80 @@ const Home = () => {
         }}
       />
 
-      <div className="pt-20">
-        {/* Hero Section - Isabella Interactive Chat (Moved up close to nav) */}
-        <Section className="relative overflow-hidden py-6">
-          <div className="container-custom relative z-10">
-            {/* Full Width Isabella Chat Interface */}
-            <div className="w-full" style={{ height: '550px' }}>
-              <FullWellnessGeniUI
-                isGuestMode={true}
-                defaultPersona="isabella-navia"
-                allowedPersonas={["isabella-navia"]}
-                showOnlyPromoter={true}
-              />
+      <div>
+        {/* Premium Hero Section - Fullscreen */}
+        <section className="hero-gradient min-h-screen relative overflow-hidden flex items-center">
+          <div className="container-custom relative z-10 w-full">
+            <div className="grid lg:grid-cols-12 gap-8 items-center min-h-[calc(100vh-80px)]">
+              {/* Left - Isabella Full Body Image */}
+              <div className="lg:col-span-4 flex items-end justify-center lg:justify-start">
+                <img 
+                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
+                  alt="Isabella - AI Model Ambassador"
+                  className="h-[85vh] max-h-[800px] w-auto object-contain spotlight-glow"
+                  style={{ objectPosition: 'bottom' }}
+                />
+              </div>
+
+              {/* Middle - Glassmorphism Chat Panel */}
+              <div className="lg:col-span-4 flex items-center justify-center">
+                <div className="glass-premium rounded-[24px] p-6 w-full max-w-[500px] h-[600px] shadow-2xl">
+                  <FullWellnessGeniUI
+                    isGuestMode={true}
+                    defaultPersona="isabella-navia"
+                    allowedPersonas={["isabella-navia"]}
+                    showOnlyPromoter={true}
+                  />
+                </div>
+              </div>
+
+              {/* Right - Headline & CTAs */}
+              <div className="lg:col-span-4 flex flex-col justify-center space-y-6 text-center lg:text-left px-4">
+                <h1 className="font-display text-5xl lg:text-6xl font-bold text-soft-white leading-tight">
+                  ✨ Meet Isabella
+                </h1>
+                <p className="font-display text-3xl lg:text-4xl text-champagne-gold/90">
+                  The World's First AI Model Ambassador
+                </p>
+                <p className="text-xl text-soft-white/80 leading-relaxed">
+                  Isabella is the world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or even design your own AI-powered ambassador.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                  <Button 
+                    variant="default" 
+                    className="btn-gradient text-lg px-8 py-6 rounded-2xl"
+                    onClick={() => document.querySelector('.glass-premium')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    Start Chatting with Isabella
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="text-lg px-8 py-6 rounded-2xl bg-transparent border-2 border-champagne-gold text-champagne-gold hover:bg-champagne-gold/10"
+                    onClick={() => document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    See Isabella in Action
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* Floating background elements */}
-          <div className="absolute top-1/4 -left-20 w-64 h-64 bg-electric-blue/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-neon-purple/10 rounded-full blur-3xl animate-pulse" />
-        </Section>
+        {/* Elegant Separator */}
+        <div className="relative py-8 bg-gradient-to-r from-transparent via-champagne-gold/20 to-transparent">
+          <div className="text-center">
+            <button 
+              onClick={() => document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-champagne-gold text-lg font-semibold hover:text-champagne-gold/80 transition-colors"
+            >
+              ↓ Explore Isabella's Portfolio ↓
+            </button>
+          </div>
+        </div>
 
         {/* Lookbook / Media Showcase */}
-        <Section background="gray">
+        <Section background="gray" id="portfolio">
           <div className="text-center mb-12">
             <h2 className="heading-lg mb-4">Isabella's Portfolio</h2>
             <p className="body-lg text-muted-foreground max-w-2xl mx-auto">

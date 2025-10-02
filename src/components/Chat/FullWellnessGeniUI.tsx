@@ -202,7 +202,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       setVoiceStream(stream);
       setIsInVoiceMode(true);
       
-      // Start continuous voice recording with speech detection
       const recorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus'
       });
@@ -211,7 +210,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       let silenceTimer: NodeJS.Timeout;
       let isRecordingVoice = false;
       
-      // Speech detection using audio analysis
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
@@ -227,16 +225,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         analyser.getByteFrequencyData(dataArray);
         const average = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
         
-        // Detect speech (adjust threshold as needed)
         if (average > 25 && !isRecordingVoice) {
-          // Start recording
           chunks = [];
           recorder.start();
           isRecordingVoice = true;
           setIsRecording(true);
           clearTimeout(silenceTimer);
         } else if (average <= 25 && isRecordingVoice) {
-          // Silence detected, set timer to stop recording
           clearTimeout(silenceTimer);
           silenceTimer = setTimeout(() => {
             if (isRecordingVoice && recorder.state === 'recording') {
@@ -244,7 +239,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               isRecordingVoice = false;
               setIsRecording(false);
             }
-          }, 1000); // Stop after 1 second of silence
+          }, 1000);
         }
         
         requestAnimationFrame(checkAudioLevel);
@@ -259,7 +254,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       recorder.onstop = async () => {
         if (chunks.length > 0) {
           const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-          // Convert audio to text and send message
           await processVoiceInput(audioBlob);
         }
       };
@@ -303,7 +297,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const processVoiceInput = async (audioBlob: Blob) => {
     try {
-      // For now, we'll send the audio blob as before but enhance UX
       const userMessage: Message = {
         id: Date.now().toString(),
         text: '🎤 Voice message',
@@ -314,8 +307,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       setMessages(prev => [...prev, userMessage]);
       setIsLoading(true);
 
-      // For now, send a placeholder message for voice input
-      // TODO: Implement speech-to-text conversion
       const response = await wellnessGeniAPI.sendChatMessage(
         'I just sent a voice message. Please respond naturally as if I spoke to you.',
         selectedPersona,
@@ -353,7 +344,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Always play speech in voice mode
       if (assistantText) {
         try {
           await textToSpeechService.speakText(assistantText);
@@ -362,7 +352,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         }
       }
 
-      // Play video if available and activated
       if (assistantMessage.videoUrl && videoRef.current && isActivated) {
         videoRef.current.src = assistantMessage.videoUrl;
         videoRef.current.play();
@@ -386,170 +375,96 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   };
 
   return (
-    <div className="flex h-full max-w-6xl mx-auto bg-background rounded-xl border shadow-lg overflow-hidden">
-      {/* Left side - Isabella Image (Compact, no bottom padding) */}
-      <div className="w-2/5 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-start p-6 pb-0">
-        <div className="w-full max-w-md">
-          <img 
-            src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
-            alt="Isabella Navia - AI Brand Ambassador"
-            className="w-full h-auto rounded-2xl shadow-2xl"
-          />
-        </div>
-        
-        {/* Audio controls - Directly below image */}
-        <div className="mt-3 w-full">
-          <div className="flex justify-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMuted(!isMuted)}
-              className="p-2"
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              <span className="ml-2 text-sm">{isMuted ? 'Unmute' : 'Mute'}</span>
-            </Button>
+    <div className="relative w-full h-full flex flex-col bg-transparent">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between p-3 border-b border-soft-white/10">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-champagne-gold/20 to-soft-purple/20 flex items-center justify-center">
+            <span className="text-lg">✨</span>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-soft-white">Isabella</h3>
+            <p className="text-xs text-soft-white/60">AI Brand Ambassador</p>
           </div>
         </div>
         
-        {/* Text info - Directly below mute button, no bottom padding */}
-        <div className="text-center mt-2 mb-0">
-          <h3 className="text-xl font-semibold text-foreground">Isabella Navia</h3>
-          <p className="text-sm text-muted-foreground">AI Brand Ambassador</p>
-          <p className="text-xs text-muted-foreground">Ovela Interactive</p>
-        </div>
-        
-        {/* D-ID Video Avatar */}
-        <video
-          ref={videoRef}
-          className="w-full h-32 object-cover rounded-lg hidden mt-2"
-          autoPlay
-          muted={isMuted}
-          onLoadedData={() => {
-            if (videoRef.current) {
-              videoRef.current.classList.remove('hidden');
-            }
-          }}
-          onEnded={() => {
-            if (videoRef.current) {
-              videoRef.current.classList.add('hidden');
-            }
-          }}
-        />
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
+          title={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? (
+            <VolumeX className="w-4 h-4 text-soft-white" />
+          ) : (
+            <Volume2 className="w-4 h-4 text-soft-white" />
+          )}
+        </button>
       </div>
 
-      {/* Right side - Chat Interface (Positioned to align input with Isabella's name) */}
-      <div className="flex-1 flex flex-col min-h-0">
-        {/* Header - More compact */}
-        <div className="border-b bg-muted/50 p-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold">Chat with Isabella</h2>
-              <p className="text-xs text-muted-foreground">Ask about services & pricing</p>
-            </div>
-            <div className="flex gap-2">
-              {!isActivated && (
-                <Button size="sm" onClick={activate} className="hover-scale text-xs px-2 py-1">
-                  Activate Animation
-                </Button>
-              )}
-              {showPromotions && (
-                <Button size="sm" variant="outline" onClick={() => setShowPromotions(false)} className="text-xs px-2 py-1">
-                  Hide Promo
-                </Button>
-              )}
+      {/* Chat Messages */}
+      <div 
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+        style={{ 
+          maxHeight: 'calc(100% - 140px)',
+          minHeight: '300px'
+        }}
+      >
+        {messages.map((message) => (
+          <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[80%] rounded-xl p-3 ${
+              message.sender === 'user' 
+                ? 'bg-soft-white/20 text-soft-white ml-4' 
+                : 'bg-soft-white/10 text-soft-white mr-4'
+            }`}>
+              <p className="text-sm">{message.text}</p>
+              <p className="text-xs opacity-70 mt-1">
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
             </div>
           </div>
-        </div>
-
-        {/* Promotions Banner */}
-        {showPromotions && isGuestMode && (
-          <div className="bg-gradient-to-r from-electric-blue/10 to-neon-purple/10 border-b p-3">
-            <div className="text-sm text-center">
-              <span className="font-semibold text-electric-blue">🎉 Launch Special:</span>
-              <span className="ml-2">50% off for startups & first-time clients</span>
+        ))}
+        
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-soft-white/10 rounded-xl p-3 mr-4">
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-soft-white" />
+                <span className="text-sm text-soft-white">Isabella is thinking...</span>
+              </div>
             </div>
           </div>
         )}
-
-        {/* Chat Messages - Reduced to align input with Isabella's name */}
-        <div className="overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent" style={{ height: 'calc(100% - 250px)' }}>
-          {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-xl p-3 ${
-                message.sender === 'user' 
-                  ? 'bg-primary text-primary-foreground ml-4' 
-                  : 'bg-muted mr-4'
-              }`}>
-                <p className="text-sm">{message.text}</p>
-                <p className="text-xs opacity-70 mt-1">
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-            </div>
-          ))}
-          
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-muted rounded-xl p-3 mr-4">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm">Isabella is thinking...</span>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Area - Positioned higher */}
-        <div className="p-3 border-t bg-muted/30 mt-auto">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <Input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Type your message or use voice..."
-              disabled={isLoading || isRecording}
-              className="flex-1"
-            />
-            
-            <Button
-              type="button"
-              variant={isInVoiceMode ? "destructive" : isRecording ? "secondary" : "outline"}
-              size="sm"
-              onClick={isInVoiceMode ? stopVoiceMode : startVoiceMode}
-              disabled={isLoading}
-              className="p-2"
-            >
-              {isInVoiceMode ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            </Button>
-            
-            <Button 
-              type="submit" 
-              disabled={isLoading || !inputText.trim()}
-              size="sm"
-              className="p-2"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </form>
-          
-          {isInVoiceMode && (
-            <div className="flex items-center justify-center mt-2">
-              <Badge variant={isRecording ? "destructive" : "secondary"} className={isRecording ? "animate-pulse" : ""}>
-                {isRecording ? "🎤 Listening..." : "🔊 Voice Mode Active - Start Speaking"}
-              </Badge>
-            </div>
-          )}
-          
-            {isGuestMode && (
-              <p className="text-xs text-center text-muted-foreground mt-2">
-                Powered by Ovela Interactive
-              </p>
-            )}
-        </div>
+        <div ref={messagesEndRef} />
       </div>
+
+      {/* Chat Input */}
+      <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <Input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Ask Isabella about modeling, pricing, availability..."
+            className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
+            disabled={isLoading}
+          />
+          <Button 
+            type="submit" 
+            disabled={isLoading || !inputText.trim()}
+            className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </form>
+      </div>
+
+      {/* Hidden video element */}
+      <video
+        ref={videoRef}
+        className="hidden"
+        autoPlay
+        muted={isMuted}
+      />
     </div>
   );
 };

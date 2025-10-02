@@ -15,7 +15,7 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 pointer-events-none">
-      <div className="flex items-center justify-between" style={{ padding: '30px 40px' }}>
+      <div className="flex items-center justify-between" style={{ padding: '20px 30px 30px 30px' }}>
         {/* Logo */}
         <Link to="/" className="pointer-events-auto flex items-center space-x-2">
           <div className="text-2xl font-bold">
@@ -37,9 +37,22 @@ const Navigation = () => {
 
       {/* Full-Screen Overlay Menu */}
       {isOpen && (
-        <div className="fixed inset-0 z-40 backdrop-blur-lg flex items-center justify-center" style={{
-          background: 'rgba(30, 41, 59, 0.95)'
-        }}>
+        <div 
+          className="fixed inset-0 z-40 backdrop-blur-lg flex items-center justify-center pointer-events-auto" 
+          style={{ background: 'rgba(30, 41, 59, 0.95)' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsOpen(false);
+          }}
+        >
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute top-6 right-8 p-2 transition-colors duration-200"
+            aria-label="Close menu"
+            style={{ color: 'white' }}
+          >
+            <X size={32} />
+          </button>
+          
           <div className="flex flex-col items-center space-y-8">
             <Link
               to="/"

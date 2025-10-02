@@ -128,7 +128,7 @@ const Home = () => {
                   alt="Isabella Navia - The World's First AI Model Ambassador"
                   className="relative object-contain object-bottom"
                   style={{ 
-                    height: '85vh',
+                    height: '90vh',
                     width: 'auto',
                     transformOrigin: 'bottom center'
                   }}
@@ -162,7 +162,7 @@ const Home = () => {
                     backgroundClip: 'text',
                     marginBottom: '24px',
                     whiteSpace: 'nowrap',
-                    marginLeft: '-4cm'
+                    marginLeft: '-1.5cm'
                   }}
                 >
                   Meet Isabella — The Future of Modeling is Interactive
@@ -177,7 +177,7 @@ const Home = () => {
                     color: '#E5E5E5',
                     lineHeight: '1.5',
                     marginBottom: '60px',
-                    marginLeft: '-3cm'
+                    marginLeft: '-1.5cm'
                   }}
                 >
                   <p style={{ marginBottom: '8px' }}>
@@ -252,12 +252,12 @@ const Home = () => {
               <div 
                 className={`transition-all duration-700 ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
                 style={{ 
-                  width: '380px',
-                  height: '580px'
+                  width: '420px',
+                  height: '620px'
                 }}
               >
                 <div 
-                  className="overflow-hidden h-full relative"
+                  className="h-full relative flex flex-col"
                   style={{ 
                     background: 'rgba(10, 10, 42, 0.75)',
                     backdropFilter: 'blur(24px)',

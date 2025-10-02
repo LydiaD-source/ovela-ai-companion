@@ -106,28 +106,27 @@ const Home = () => {
       <div>
         {/* Premium Hero Section - Fullscreen (100vh) */}
         <section className="hero-gradient h-screen w-full relative overflow-hidden">
-          <div className="w-full h-full flex items-center justify-between" style={{ padding: '40px 60px' }}>
+          <div className="w-full h-full flex items-end justify-between" style={{ padding: '60px 60px 40px 60px' }}>
             
             {/* Left - Isabella Full Body Image */}
-            <div className="relative flex items-end h-full" style={{ flexBasis: '30%', flexShrink: 0 }}>
+            <div className="relative flex items-end" style={{ flexBasis: '28%', flexShrink: 0, paddingBottom: '20px' }}>
               <img 
                 src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
                 alt="Isabella Navia - AI Model Ambassador"
                 className="spotlight-glow object-contain object-bottom"
                 style={{ 
-                  height: '85vh',
+                  height: '80vh',
                   width: 'auto',
-                  maxWidth: '100%',
-                  marginBottom: '0'
+                  maxWidth: '100%'
                 }}
               />
             </div>
 
             {/* Middle - Glassmorphism Chat Box */}
-            <div className="flex items-center justify-center" style={{ flexBasis: '35%', flexShrink: 0 }}>
+            <div className="flex items-center justify-center" style={{ flexBasis: '28%', flexShrink: 0 }}>
               <div 
                 className="glass-premium rounded-3xl shadow-2xl overflow-hidden"
-                style={{ width: '500px', height: '550px', maxWidth: '100%' }}
+                style={{ width: '350px', height: '550px', maxWidth: '100%' }}
               >
                 <FullWellnessGeniUI 
                   isGuestMode={true}
@@ -139,22 +138,22 @@ const Home = () => {
             </div>
 
             {/* Right - Headline & CTAs */}
-            <div className="flex flex-col gap-5 justify-center" style={{ flexBasis: '35%', flexShrink: 1, maxWidth: '480px' }}>
+            <div className="flex flex-col gap-5 justify-center" style={{ flexBasis: '38%', flexShrink: 1, maxWidth: '500px' }}>
               <h1 
-                className="font-playfair text-4xl font-bold leading-tight"
+                className="font-playfair text-5xl font-bold leading-tight"
                 style={{ color: 'hsl(var(--champagne-gold))' }}
               >
-                Meet Isabella — The World's First Interactive AI Model Ambassador
+                Meet Isabella — Your AI Model Ambassador
               </h1>
               
-              <h3 className="font-sans text-lg font-light leading-relaxed text-white/85">
-                Talk to Isabella about Ovela, book photoshoots, explore pricing, or even design your own AI-powered ambassador.
+              <h3 className="font-sans text-xl font-light leading-relaxed" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+                The world's first interactive AI model — explore Ovela, book photoshoots, or design your own AI-powered ambassador.
               </h3>
               
-              <div className="flex flex-col gap-3 mt-2">
+              <div className="flex flex-col gap-4 mt-2">
                 <Button 
                   onClick={focusChat}
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold px-6 py-5 rounded-2xl hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all duration-300 text-sm w-full"
+                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold px-8 py-6 rounded-2xl hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all duration-300 text-base w-full"
                 >
                   ✨ Start Chatting with Isabella
                 </Button>
@@ -162,7 +161,7 @@ const Home = () => {
                 <Button 
                   onClick={scrollToPortfolio}
                   variant="outline"
-                  className="border-2 text-sm font-semibold px-6 py-5 rounded-2xl transition-all duration-300 w-full"
+                  className="border-2 text-base font-semibold px-8 py-6 rounded-2xl transition-all duration-300 w-full"
                   style={{ 
                     borderColor: 'hsl(var(--champagne-gold))',
                     color: 'hsl(var(--champagne-gold))',

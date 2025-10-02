@@ -387,23 +387,23 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   return (
     <div className="flex h-full max-w-6xl mx-auto bg-background rounded-xl border shadow-lg overflow-hidden">
-      {/* Left side - Large Isabella Image */}
-      <div className="w-1/3 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      {/* Left side - Isabella Image (Larger, more prominent) */}
+      <div className="w-2/5 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-start p-6 pt-8">
+        <div className="w-full max-w-md">
           <img 
             src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
             alt="Isabella Navia - AI Brand Ambassador"
             className="w-full h-auto rounded-2xl shadow-2xl"
           />
         </div>
-        <div className="text-center mt-4">
+        <div className="text-center mt-6">
           <h3 className="text-xl font-semibold text-foreground">Isabella Navia</h3>
           <p className="text-sm text-muted-foreground">AI Brand Ambassador</p>
           <p className="text-xs text-muted-foreground mt-1">Ovela Interactive</p>
         </div>
         
         {/* Audio controls and video display */}
-        <div className="mt-4 w-full">
+        <div className="mt-6 w-full">
           <div className="flex justify-center mb-3">
             <Button
               variant="ghost"
@@ -436,24 +436,24 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         </div>
       </div>
 
-      {/* Right side - Chat Interface */}
+      {/* Right side - Chat Interface (More compact) */}
       <div className="flex-1 flex flex-col min-h-0">
-        {/* Header */}
-        <div className="border-b bg-muted/50 p-4">
+        {/* Header - More compact */}
+        <div className="border-b bg-muted/50 p-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Chat with Isabella</h2>
-              <p className="text-sm text-muted-foreground">Ask me about Ovela Interactive services & pricing</p>
+              <h2 className="text-base font-semibold">Chat with Isabella</h2>
+              <p className="text-xs text-muted-foreground">Ask about services & pricing</p>
             </div>
             <div className="flex gap-2">
               {!isActivated && (
-                <Button size="sm" onClick={activate} className="hover-scale">
-                  Activate animated response
+                <Button size="sm" onClick={activate} className="hover-scale text-xs px-3 py-1">
+                  Activate Animation
                 </Button>
               )}
               {showPromotions && (
-                <Button size="sm" variant="outline" onClick={() => setShowPromotions(false)}>
-                  Hide Promotions
+                <Button size="sm" variant="outline" onClick={() => setShowPromotions(false)} className="text-xs px-3 py-1">
+                  Hide Promo
                 </Button>
               )}
             </div>
@@ -470,8 +470,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         )}
 
-        {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+        {/* Chat Messages - Adjusted height for better face visibility */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent" style={{ maxHeight: 'calc(100% - 200px)' }}>
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-xl p-3 ${
@@ -501,8 +501,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
-        <div className="p-4 border-t bg-muted/30">
+        {/* Input Area - Positioned higher */}
+        <div className="p-3 border-t bg-muted/30 mt-auto">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               value={inputText}

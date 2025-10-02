@@ -93,27 +93,33 @@ const Home = () => {
         }}
       />
 
-      <div className="pt-16">
-        {/* Hero Section - Isabella Interactive Chat (Full UI) */}
-        <Section className="relative overflow-hidden">
+      <div className="pt-20">
+        {/* Hero Section - Isabella Interactive Chat (Moved up close to nav) */}
+        <Section className="relative overflow-hidden py-6">
           <div className="container-custom relative z-10">
-            <div className="text-center mb-8 animate-fade-up">
-              <h1 className="heading-xl mb-4 text-foreground">
-                Meet <span className="gradient-text">Isabella</span>
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Ovela Interactive's Prime AI Model — Ask me anything about modeling, projects, pricing, or hiring me directly
-              </p>
-            </div>
+            {/* Full Isabella Chat Interface with Right Text */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Chat Interface - Takes most space */}
+              <div className="lg:col-span-9" style={{ height: '650px' }}>
+                <FullWellnessGeniUI
+                  isGuestMode={true}
+                  defaultPersona="isabella-navia"
+                  allowedPersonas={["isabella-navia"]}
+                  showOnlyPromoter={true}
+                />
+              </div>
 
-            {/* Full Isabella Chat Interface */}
-            <div className="w-full" style={{ height: '700px' }}>
-              <FullWellnessGeniUI
-                isGuestMode={true}
-                defaultPersona="isabella-navia"
-                allowedPersonas={["isabella-navia"]}
-                showOnlyPromoter={true}
-              />
+              {/* Right Side Text */}
+              <div className="lg:col-span-3 flex items-start justify-center pt-8">
+                <div className="text-center lg:text-left">
+                  <h2 className="heading-lg mb-4 gradient-text">
+                    Ask Our Model Isabella
+                  </h2>
+                  <p className="body-md text-muted-foreground leading-relaxed">
+                    Anything about modeling, pricing, availability and projects
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 

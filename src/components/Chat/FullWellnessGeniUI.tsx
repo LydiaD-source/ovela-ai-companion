@@ -387,8 +387,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   return (
     <div className="flex h-full max-w-6xl mx-auto bg-background rounded-xl border shadow-lg overflow-hidden">
-      {/* Left side - Isabella Image (Larger, more prominent) */}
-      <div className="w-2/5 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-start p-6 pt-8">
+      {/* Left side - Isabella Image (Compact, no extra space) */}
+      <div className="w-2/5 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-start p-6">
         <div className="w-full max-w-md">
           <img 
             src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
@@ -396,15 +396,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             className="w-full h-auto rounded-2xl shadow-2xl"
           />
         </div>
-        <div className="text-center mt-6">
-          <h3 className="text-xl font-semibold text-foreground">Isabella Navia</h3>
-          <p className="text-sm text-muted-foreground">AI Brand Ambassador</p>
-          <p className="text-xs text-muted-foreground mt-1">Ovela Interactive</p>
-        </div>
         
-        {/* Audio controls and video display */}
-        <div className="mt-6 w-full">
-          <div className="flex justify-center mb-3">
+        {/* Audio controls - Directly below image */}
+        <div className="mt-3 w-full">
+          <div className="flex justify-center">
             <Button
               variant="ghost"
               size="sm"
@@ -415,25 +410,32 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               <span className="ml-2 text-sm">{isMuted ? 'Unmute' : 'Mute'}</span>
             </Button>
           </div>
-          
-          {/* D-ID Video Avatar */}
-          <video
-            ref={videoRef}
-            className="w-full h-32 object-cover rounded-lg hidden"
-            autoPlay
-            muted={isMuted}
-            onLoadedData={() => {
-              if (videoRef.current) {
-                videoRef.current.classList.remove('hidden');
-              }
-            }}
-            onEnded={() => {
-              if (videoRef.current) {
-                videoRef.current.classList.add('hidden');
-              }
-            }}
-          />
         </div>
+        
+        {/* Text info - Directly below mute button */}
+        <div className="text-center mt-2">
+          <h3 className="text-xl font-semibold text-foreground">Isabella Navia</h3>
+          <p className="text-sm text-muted-foreground">AI Brand Ambassador</p>
+          <p className="text-xs text-muted-foreground mt-1">Ovela Interactive</p>
+        </div>
+        
+        {/* D-ID Video Avatar */}
+        <video
+          ref={videoRef}
+          className="w-full h-32 object-cover rounded-lg hidden mt-2"
+          autoPlay
+          muted={isMuted}
+          onLoadedData={() => {
+            if (videoRef.current) {
+              videoRef.current.classList.remove('hidden');
+            }
+          }}
+          onEnded={() => {
+            if (videoRef.current) {
+              videoRef.current.classList.add('hidden');
+            }
+          }}
+        />
       </div>
 
       {/* Right side - Chat Interface (More compact) */}
@@ -470,8 +472,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         )}
 
-        {/* Chat Messages - Adjusted height for better face visibility */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent" style={{ maxHeight: 'calc(100% - 200px)' }}>
+        {/* Chat Messages - Flexible height to align input with image bottom */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-xl p-3 ${

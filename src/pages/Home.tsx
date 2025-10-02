@@ -1,15 +1,71 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
+import { ArrowRight, CheckCircle, Zap, Users, Globe, MessageCircle, X } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import VideoPlayer from '@/components/UI/VideoPlayer';
 import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
+import IsabellaAvatar from '@/components/UI/IsabellaAvatar';
+import GuestChatInterface from '@/components/Chat/GuestChatInterface';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 import { Button } from '@/components/ui/button';
 
 const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
+  const isabellaCapabilitiesVideo = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4";
   const { startChat, isConnecting } = useWellnessGeniChat();
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const lookbookItems = [
+    {
+      type: 'video',
+      src: isabellaVideoUrl,
+      title: 'Isabella Introduction',
+      description: 'Meet the world\'s first AI brand ambassador',
+      context: 'Tell me about Isabella\'s introduction video and her role as an AI brand ambassador'
+    },
+    {
+      type: 'video',
+      src: isabellaCapabilitiesVideo,
+      title: 'Isabella in Green Dress',
+      description: 'Professional modeling showcase',
+      context: 'Tell me about Isabella\'s modeling capabilities and this green dress photoshoot'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png',
+      title: 'Isabella Portrait',
+      description: 'Premium brand photography',
+      context: 'Tell me about Isabella\'s portrait photography and brand representation work'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/b06efdff-127f-4fcd-9e95-9dcf24e4b22f.png',
+      title: 'WellnessGeni Integration',
+      description: 'AI wellness companion platform',
+      context: 'Tell me about Isabella\'s role in WellnessGeni and how she helps with wellness'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/10967d19-2fe9-4ab6-aa70-39ba0280a4a2.png',
+      title: 'Interactive Campaigns',
+      description: 'Real-time customer engagement',
+      context: 'Tell me about interactive marketing campaigns Isabella can run for brands'
+    },
+    {
+      type: 'image',
+      src: '/lovable-uploads/3548b4f8-b4f5-410a-a3cd-669f8d922534.png',
+      title: 'Brand Partnerships',
+      description: 'Multi-brand representation',
+      context: 'Tell me about how Isabella can represent multiple brands simultaneously'
+    }
+  ];
 
   return (
     <>
@@ -40,44 +96,146 @@ const Home = () => {
       />
 
       <div className="pt-16">
-        {/* Hero Section with Text and Video */}
-        <Section className="relative min-h-[90vh] flex flex-col justify-center items-center overflow-hidden">
-          <div className="container-custom relative z-10 text-center mb-8">
-            <div className="max-w-4xl mx-auto animate-fade-up">
-              <h1 className="heading-xl mb-6 text-foreground">
-                <span className="gradient-text">Ovela Interactive</span>
-              </h1>
-              <p className="body-lg text-muted-foreground mb-8">
-                Where AI Becomes Your Brand's Voice.
-              </p>
-              <Button 
-                variant="default" 
-                size="lg" 
-                className="btn-gradient group mb-12"
-                onClick={() => startChat('isabella-navia', 'ovela-home')}
-                disabled={isConnecting}
+        {/* Hero Section - Isabella Interactive Chat */}
+        <Section className="relative min-h-[90vh] flex items-center overflow-hidden">
+          <div className="container-custom relative z-10">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              {/* Left: Isabella Avatar */}
+              <div className="order-2 lg:order-1 flex justify-center">
+                <div className="relative w-full max-w-md animate-fade-up">
+                  <div className="rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 p-4">
+                    <VideoPlayer
+                      src={isabellaVideoUrl}
+                      className="w-full aspect-[9/16] rounded-2xl"
+                      autoplay={true}
+                      loop={true}
+                      muted={true}
+                      controls={false}
+                      title="Isabella - Your AI Brand Ambassador"
+                      description="Interactive video of Isabella ready to help with your needs"
+                    />
+                  </div>
+                  {/* Animated glow effect */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-electric-blue/20 to-neon-purple/20 rounded-3xl blur-2xl -z-10 animate-pulse" />
+                </div>
+              </div>
+
+              {/* Right: Text & CTA */}
+              <div className="order-1 lg:order-2 text-center lg:text-left animate-fade-up">
+                <h1 className="heading-xl mb-4 text-foreground">
+                  Meet <span className="gradient-text">Isabella</span>
+                </h1>
+                <p className="text-xl mb-3 text-muted-foreground">
+                  Ovela Interactive's Prime AI Model
+                </p>
+                <p className="body-lg text-muted-foreground mb-8 max-w-xl">
+                  Ask me anything about modeling, projects, pricing, or hiring me directly. I'm here to help your brand shine.
+                </p>
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="btn-gradient group text-lg px-8 py-6"
+                  onClick={() => setIsChatOpen(true)}
+                >
+                  <MessageCircle className="mr-2 w-6 h-6" />
+                  Chat with Isabella
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating background elements */}
+          <div className="absolute top-1/4 -left-20 w-64 h-64 bg-electric-blue/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-neon-purple/10 rounded-full blur-3xl animate-pulse" />
+        </Section>
+
+        {/* Chat Overlay */}
+        {isChatOpen && (
+          <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="relative w-full max-w-6xl h-[90vh] max-h-[800px] bg-background rounded-2xl shadow-2xl border border-border overflow-hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-4 z-10"
+                onClick={() => setIsChatOpen(false)}
               >
-                {isConnecting ? 'Connecting...' : 'Work With Us'}
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <X className="w-5 h-5" />
               </Button>
+              <div className="h-full p-6">
+                <GuestChatInterface
+                  isGuestMode={true}
+                  defaultPersona="isabella-navia"
+                  allowedPersonas={["isabella-navia"]}
+                  showOnlyPromoter={true}
+                />
+              </div>
             </div>
           </div>
-          
-          {/* Isabella Video Below Text */}
-          <div className="w-full max-w-4xl mx-auto px-4">
-            <div className="rounded-3xl overflow-hidden shadow-2xl">
-              <VideoPlayer
-                src={isabellaVideoUrl}
-                className="w-full aspect-[9/16] max-w-sm mx-auto"
-                autoplay={true}
-                loop={true}
-                muted={true}
-                controls={false}
-                title="Isabella AI Introduction – Ovela Interactive"
-                description="Video of Isabella, the world's first AI companion, introducing Ovela Interactive"
-              />
-            </div>
+        )}
+
+        {/* Lookbook / Media Showcase */}
+        <Section background="gray">
+          <div className="text-center mb-12">
+            <h2 className="heading-lg mb-4">Isabella's Portfolio</h2>
+            <p className="body-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore my work across campaigns, photoshoots, and interactive projects
+            </p>
           </div>
+
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <CarouselContent>
+              {lookbookItems.map((item, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover-lift cursor-pointer h-[400px]">
+                    {/* Media */}
+                    {item.type === 'video' ? (
+                      <VideoPlayer
+                        src={item.src}
+                        className="w-full h-full object-cover"
+                        autoplay={false}
+                        loop={true}
+                        muted={true}
+                        controls={false}
+                      />
+                    ) : (
+                      <img
+                        src={item.src}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    )}
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                      <h3 className="heading-sm text-soft-white mb-2">{item.title}</h3>
+                      <p className="text-soft-white/80 text-sm mb-4">{item.description}</p>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="btn-gradient w-fit"
+                        onClick={() => {
+                          setIsChatOpen(true);
+                          // Pre-fill chat context would go here
+                        }}
+                      >
+                        Ask Isabella about this
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </Section>
 
         {/* Who We Are */}

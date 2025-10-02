@@ -140,8 +140,8 @@ const Home = () => {
             <div 
               className="flex flex-col justify-center z-20"
               style={{ 
-                maxWidth: '450px',
-                marginRight: '12%'
+                maxWidth: '720px',
+                marginRight: '6%'
               }}
             >
               {/* Initial State - Text & CTAs */}
@@ -161,7 +161,8 @@ const Home = () => {
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                     marginBottom: '20px',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    transform: 'translateX(-3cm)'
                   }}
                 >
                   The Future of Modeling is Interactive
@@ -176,23 +177,25 @@ const Home = () => {
                   }}
                 >
                   {/* Line 1: Isabella ✨ */}
-                  <p style={{ 
+                   <p style={{ 
                     fontSize: '36px',
                     fontWeight: '700',
                     color: '#FFD700',
                     marginBottom: '12px',
+                    marginLeft: '-2cm',
                     textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
                   }}>
                     Isabella ✨
                   </p>
                   
                   {/* Line 2: Description */}
-                  <p style={{ 
+                   <p style={{ 
                     fontSize: '19px',
                     fontWeight: '300',
                     color: '#F7F7F7',
                     lineHeight: '1.6',
-                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    marginLeft: '-2cm'
                   }}>
                     Ovela's first AI model ambassador. Ask questions, explore her portfolio, book a project — live.
                   </p>
@@ -204,21 +207,22 @@ const Home = () => {
                   <button 
                     onClick={activateChat}
                     className="transition-all duration-300"
-                    style={{
-                      width: '28vw',
-                      maxWidth: '280px',
-                      height: '52px',
-                      borderRadius: '16px',
-                      background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
-                      border: 'none',
-                      color: '#0A0A2A',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '15px',
-                      fontWeight: '600',
-                      letterSpacing: '0.5px',
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
-                    }}
+                     style={{
+                       width: '28vw',
+                       maxWidth: '280px',
+                       height: '52px',
+                       borderRadius: '16px',
+                       background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
+                       border: 'none',
+                       color: '#0A0A2A',
+                       fontFamily: 'Inter, sans-serif',
+                       fontSize: '15px',
+                       fontWeight: '600',
+                       letterSpacing: '0.5px',
+                       marginLeft: '-1cm',
+                       cursor: 'pointer',
+                       boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 175, 55, 0.7)';
                       e.currentTarget.style.transform = 'translateY(-2px)';
@@ -235,18 +239,19 @@ const Home = () => {
                   <button 
                     onClick={scrollToPortfolio}
                     className="transition-all duration-300"
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#D4AF37',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '15px',
-                      fontWeight: '400',
-                      letterSpacing: '0.5px',
-                      cursor: 'pointer',
-                      padding: '0',
-                      textAlign: 'left'
-                    }}
+                     style={{
+                       background: 'transparent',
+                       border: 'none',
+                       color: '#D4AF37',
+                       fontFamily: 'Inter, sans-serif',
+                       fontSize: '15px',
+                       fontWeight: '400',
+                       letterSpacing: '0.5px',
+                       cursor: 'pointer',
+                       padding: '0',
+                       textAlign: 'left',
+                       marginLeft: '-1cm'
+                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#F7E7CE';
                     }}

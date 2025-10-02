@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
+import { ArrowRight, Zap, Users, Globe } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import VideoPlayer from '@/components/UI/VideoPlayer';
 import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
@@ -19,6 +19,16 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaCapabilitiesVideo = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4";
   const { startChat, isConnecting } = useWellnessGeniChat();
+  const portfolioRef = useRef<HTMLDivElement>(null);
+
+  const scrollToPortfolio = () => {
+    portfolioRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const focusChat = () => {
+    const chatInput = document.querySelector('input[placeholder*="Ask Isabella"]') as HTMLInputElement;
+    if (chatInput) chatInput.focus();
+  };
 
   const lookbookItems = [
     {
@@ -94,71 +104,86 @@ const Home = () => {
       />
 
       <div>
-        {/* Premium Hero Section - Fullscreen */}
-        <section className="hero-gradient min-h-screen relative overflow-hidden flex items-center">
-          <div className="container-custom relative z-10 w-full">
-            <div className="grid lg:grid-cols-12 gap-8 items-center min-h-[calc(100vh-80px)]">
-              {/* Left - Isabella Full Body Image */}
-              <div className="lg:col-span-4 flex items-end justify-center lg:justify-start">
-                <img 
-                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
-                  alt="Isabella - AI Model Ambassador"
-                  className="h-[85vh] max-h-[800px] w-auto object-contain spotlight-glow"
-                  style={{ objectPosition: 'bottom' }}
+        {/* Premium Hero Section - Fullscreen (100vh) */}
+        <section className="hero-gradient h-screen w-full relative overflow-hidden flex items-center">
+          <div className="w-full h-full max-w-[1600px] mx-auto flex items-center justify-between" style={{ padding: '40px 80px 40px 60px' }}>
+            
+            {/* Left - Isabella Full Body Image */}
+            <div className="relative h-full flex items-end" style={{ marginBottom: '40px' }}>
+              <img 
+                src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
+                alt="Isabella Navia - AI Model Ambassador"
+                className="spotlight-glow object-contain object-bottom"
+                style={{ height: '90vh', width: 'auto', maxWidth: '450px' }}
+              />
+            </div>
+
+            {/* Middle-Right - Glassmorphism Chat Box */}
+            <div className="flex-shrink-0" style={{ width: '520px', height: '650px' }}>
+              <div className="glass-premium rounded-3xl shadow-2xl h-full overflow-hidden">
+                <FullWellnessGeniUI 
+                  isGuestMode={true}
+                  defaultPersona="isabella-navia"
+                  allowedPersonas={['isabella-navia']}
+                  showOnlyPromoter={true}
                 />
               </div>
+            </div>
 
-              {/* Middle - Glassmorphism Chat Panel */}
-              <div className="lg:col-span-4 flex items-center justify-center">
-                <div className="glass-premium rounded-[24px] p-6 w-full max-w-[500px] h-[600px] shadow-2xl">
-                  <FullWellnessGeniUI
-                    isGuestMode={true}
-                    defaultPersona="isabella-navia"
-                    allowedPersonas={["isabella-navia"]}
-                    showOnlyPromoter={true}
-                  />
-                </div>
-              </div>
-
-              {/* Right - Headline & CTAs */}
-              <div className="lg:col-span-4 flex flex-col justify-center space-y-6 text-center lg:text-left px-4">
-                <h1 className="font-display text-5xl lg:text-6xl font-bold text-soft-white leading-tight">
-                  ✨ Meet Isabella
-                </h1>
-                <p className="font-display text-3xl lg:text-4xl text-champagne-gold/90">
-                  The World's First AI Model Ambassador
-                </p>
-                <p className="text-xl text-soft-white/80 leading-relaxed">
-                  Isabella is the world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or even design your own AI-powered ambassador.
-                </p>
+            {/* Right - Headline & CTAs */}
+            <div className="flex flex-col gap-6 max-w-[520px]">
+              <h1 className="font-playfair text-5xl font-bold leading-tight" style={{ color: 'hsl(var(--champagne-gold))' }}>
+                Meet Isabella — The World's First Interactive AI Model Ambassador
+              </h1>
+              
+              <h3 className="font-sans text-2xl font-light leading-relaxed text-white/85">
+                Talk to Isabella about Ovela, book photoshoots, explore pricing, or even design your own AI-powered ambassador.
+              </h3>
+              
+              <div className="flex flex-col gap-4 mt-4">
+                <Button 
+                  onClick={focusChat}
+                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold px-8 py-6 rounded-2xl hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all duration-300 text-base"
+                >
+                  ✨ Start Chatting with Isabella
+                </Button>
                 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                  <Button 
-                    variant="default" 
-                    className="btn-gradient text-lg px-8 py-6 rounded-2xl"
-                    onClick={() => document.querySelector('.glass-premium')?.scrollIntoView({ behavior: 'smooth' })}
-                  >
-                    Start Chatting with Isabella
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="text-lg px-8 py-6 rounded-2xl bg-transparent border-2 border-champagne-gold text-champagne-gold hover:bg-champagne-gold/10"
-                    onClick={() => document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' })}
-                  >
-                    See Isabella in Action
-                  </Button>
-                </div>
+                <Button 
+                  onClick={scrollToPortfolio}
+                  variant="outline"
+                  className="border-2 text-base font-semibold px-8 py-6 rounded-2xl transition-all duration-300"
+                  style={{ 
+                    borderColor: 'hsl(var(--champagne-gold))',
+                    color: 'hsl(var(--champagne-gold))',
+                    background: 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'hsla(var(--champagne-gold) / 0.1)';
+                    e.currentTarget.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  See Isabella in Action
+                </Button>
               </div>
             </div>
+
           </div>
         </section>
 
         {/* Elegant Separator */}
-        <div className="relative py-8 bg-gradient-to-r from-transparent via-champagne-gold/20 to-transparent">
-          <div className="text-center">
-            <button 
-              onClick={() => document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-champagne-gold text-lg font-semibold hover:text-champagne-gold/80 transition-colors"
+        <div className="w-full py-12 bg-gradient-to-b from-midnight-blue/40 via-soft-purple/20 to-midnight-blue/40">
+          <div className="max-w-6xl mx-auto text-center">
+            <div className="h-px bg-gradient-to-r from-transparent via-champagne-gold to-transparent mb-6"></div>
+            <button
+              onClick={scrollToPortfolio}
+              className="text-lg font-medium transition-colors duration-300 hover:scale-105 transform"
+              style={{ color: 'hsl(var(--champagne-gold))' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#FFE55C'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'hsl(var(--champagne-gold))'}
             >
               ↓ Explore Isabella's Portfolio ↓
             </button>
@@ -166,65 +191,69 @@ const Home = () => {
         </div>
 
         {/* Lookbook / Media Showcase */}
-        <Section background="gray" id="portfolio">
-          <div className="text-center mb-12">
-            <h2 className="heading-lg mb-4">Isabella's Portfolio</h2>
-            <p className="body-lg text-muted-foreground max-w-2xl mx-auto">
-              Explore my work across campaigns, photoshoots, and interactive projects
-            </p>
-          </div>
+        <div ref={portfolioRef} className="w-full py-20 px-4" style={{ marginTop: '60px' }}>
+          <div className="max-w-[90%] mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-5xl font-playfair font-bold mb-4" style={{ color: 'hsl(var(--champagne-gold))' }}>
+                Isabella's Portfolio
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Explore my work across campaigns, photoshoots, and interactive projects
+              </p>
+            </div>
 
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full max-w-6xl mx-auto"
-          >
-            <CarouselContent>
-              {lookbookItems.map((item, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover-lift cursor-pointer h-[400px]">
-                    {/* Media */}
-                    {item.type === 'video' ? (
-                      <VideoPlayer
-                        src={item.src}
-                        className="w-full h-full object-cover"
-                        autoplay={false}
-                        loop={true}
-                        muted={true}
-                        controls={false}
-                      />
-                    ) : (
-                      <img
-                        src={item.src}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    )}
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full mx-auto"
+            >
+              <CarouselContent>
+                {lookbookItems.map((item, index) => (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="group relative overflow-hidden rounded-2xl bg-card border border-border hover-lift cursor-pointer h-[450px]">
+                      {/* Media */}
+                      {item.type === 'video' ? (
+                        <VideoPlayer
+                          src={item.src}
+                          className="w-full h-full object-cover"
+                          autoplay={false}
+                          loop={true}
+                          muted={true}
+                          controls={false}
+                        />
+                      ) : (
+                        <img
+                          src={item.src}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      )}
 
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                      <h3 className="heading-sm text-soft-white mb-2">{item.title}</h3>
-                      <p className="text-soft-white/80 text-sm mb-4">{item.description}</p>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="btn-gradient w-fit"
-                        onClick={() => startChat('isabella-navia', 'ovela-lookbook')}
-                      >
-                        Ask Isabella about this
-                        <ArrowRight className="ml-2 w-4 h-4" />
-                      </Button>
+                      {/* Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-midnight-blue/90 via-soft-purple/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+                        <h3 className="heading-sm text-soft-white mb-2">{item.title}</h3>
+                        <p className="text-soft-white/80 text-sm mb-4">{item.description}</p>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="btn-gradient w-fit"
+                          onClick={() => startChat('isabella-navia', 'ovela-lookbook')}
+                        >
+                          Ask Isabella about this
+                          <ArrowRight className="ml-2 w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-4" />
-            <CarouselNext className="right-4" />
-          </Carousel>
-        </Section>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-4" />
+              <CarouselNext className="right-4" />
+            </Carousel>
+          </div>
+        </div>
 
         {/* Who We Are */}
         <Section background="gray">

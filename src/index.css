@@ -46,7 +46,7 @@
     /* Hero Premium Colors */
     --midnight-blue: 230 45% 15%;
     --soft-purple: 270 40% 50%;
-    --champagne-gold: 45 50% 70%;
+    --champagne-gold: 45 100% 60%;
 
     /* Typography Scale */
     --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -121,32 +121,18 @@
 
   /* Hero Premium Gradient */
   .hero-gradient {
-    background: linear-gradient(135deg, 
-      hsl(var(--midnight-blue)) 0%,
-      hsl(var(--soft-purple)) 50%,
-      hsl(var(--midnight-blue)) 100%
+    background: radial-gradient(ellipse at 30% 50%, 
+      hsl(var(--midnight-blue)) 0%, 
+      hsl(var(--soft-purple) / 0.4) 40%, 
+      hsl(var(--midnight-blue)) 70%,
+      hsl(var(--champagne-gold) / 0.2) 100%
     );
-    position: relative;
-  }
-
-  .hero-gradient::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 50%, 
-      hsl(var(--champagne-gold) / 0.15) 0%,
-      transparent 50%
-    );
-    pointer-events: none;
   }
 
   /* Spotlight Glow */
   .spotlight-glow {
-    filter: drop-shadow(0 0 80px rgba(217, 188, 138, 0.4))
-            drop-shadow(0 0 40px rgba(255, 255, 255, 0.2));
+    filter: drop-shadow(0 0 80px hsla(var(--champagne-gold) / 0.5))
+            drop-shadow(0 30px 60px rgba(0, 0, 0, 0.4));
   }
 
   /* Animations */

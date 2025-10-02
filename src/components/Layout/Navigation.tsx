@@ -11,13 +11,14 @@ const Navigation = () => {
     { name: 'About', path: '/about' },
     { name: 'WellnessGeni', path: '/wellnessgeni' },
     { name: 'Projects', path: '/projects' },
-    { name: 'Work With Us', path: '/partner' },
+    { name: 'Pricing', path: '/pricing' },
+    { name: 'Meet Isabella', path: '/#chat' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-border/50">
+    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-champagne-gold/20">
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -34,8 +35,8 @@ const Navigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm font-medium transition-colors duration-200 hover:text-electric-blue ${
-                  isActive(item.path) ? 'text-electric-blue' : 'text-foreground'
+                className={`text-sm font-medium transition-colors duration-200 hover:text-champagne-gold ${
+                  isActive(item.path) ? 'text-champagne-gold' : 'text-foreground'
                 }`}
               >
                 {item.name}
@@ -61,8 +62,8 @@ const Navigation = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`text-sm font-medium transition-colors duration-200 hover:text-electric-blue ${
-                    isActive(item.path) ? 'text-electric-blue' : 'text-foreground'
+                  className={`text-sm font-medium transition-colors duration-200 hover:text-champagne-gold ${
+                    isActive(item.path) ? 'text-champagne-gold' : 'text-foreground'
                   }`}
                   onClick={() => setIsOpen(false)}
                 >

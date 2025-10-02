@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Zap, Users, Globe, MessageCircle, X } from 'lucide-react';
+import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import VideoPlayer from '@/components/UI/VideoPlayer';
 import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
-import IsabellaAvatar from '@/components/UI/IsabellaAvatar';
-import GuestChatInterface from '@/components/Chat/GuestChatInterface';
+import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import {
   Carousel,
   CarouselContent,
@@ -20,7 +19,6 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaCapabilitiesVideo = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4";
   const { startChat, isConnecting } = useWellnessGeniChat();
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const lookbookItems = [
     {
@@ -96,52 +94,26 @@ const Home = () => {
       />
 
       <div className="pt-16">
-        {/* Hero Section - Isabella Interactive Chat */}
-        <Section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Hero Section - Isabella Interactive Chat (Full UI) */}
+        <Section className="relative overflow-hidden">
           <div className="container-custom relative z-10">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-              {/* Left: Isabella Avatar */}
-              <div className="order-2 lg:order-1 flex justify-center">
-                <div className="relative w-full max-w-md animate-fade-up">
-                  <div className="rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 p-4">
-                    <VideoPlayer
-                      src={isabellaVideoUrl}
-                      className="w-full aspect-[9/16] rounded-2xl"
-                      autoplay={true}
-                      loop={true}
-                      muted={true}
-                      controls={false}
-                      title="Isabella - Your AI Brand Ambassador"
-                      description="Interactive video of Isabella ready to help with your needs"
-                    />
-                  </div>
-                  {/* Animated glow effect */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-electric-blue/20 to-neon-purple/20 rounded-3xl blur-2xl -z-10 animate-pulse" />
-                </div>
-              </div>
+            <div className="text-center mb-8 animate-fade-up">
+              <h1 className="heading-xl mb-4 text-foreground">
+                Meet <span className="gradient-text">Isabella</span>
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Ovela Interactive's Prime AI Model — Ask me anything about modeling, projects, pricing, or hiring me directly
+              </p>
+            </div>
 
-              {/* Right: Text & CTA */}
-              <div className="order-1 lg:order-2 text-center lg:text-left animate-fade-up">
-                <h1 className="heading-xl mb-4 text-foreground">
-                  Meet <span className="gradient-text">Isabella</span>
-                </h1>
-                <p className="text-xl mb-3 text-muted-foreground">
-                  Ovela Interactive's Prime AI Model
-                </p>
-                <p className="body-lg text-muted-foreground mb-8 max-w-xl">
-                  Ask me anything about modeling, projects, pricing, or hiring me directly. I'm here to help your brand shine.
-                </p>
-                <Button 
-                  variant="default" 
-                  size="lg" 
-                  className="btn-gradient group text-lg px-8 py-6"
-                  onClick={() => setIsChatOpen(true)}
-                >
-                  <MessageCircle className="mr-2 w-6 h-6" />
-                  Chat with Isabella
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
+            {/* Full Isabella Chat Interface */}
+            <div className="w-full" style={{ height: '700px' }}>
+              <FullWellnessGeniUI
+                isGuestMode={true}
+                defaultPersona="isabella-navia"
+                allowedPersonas={["isabella-navia"]}
+                showOnlyPromoter={true}
+              />
             </div>
           </div>
 
@@ -149,30 +121,6 @@ const Home = () => {
           <div className="absolute top-1/4 -left-20 w-64 h-64 bg-electric-blue/10 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-neon-purple/10 rounded-full blur-3xl animate-pulse" />
         </Section>
-
-        {/* Chat Overlay */}
-        {isChatOpen && (
-          <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="relative w-full max-w-6xl h-[90vh] max-h-[800px] bg-background rounded-2xl shadow-2xl border border-border overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-4 right-4 z-10"
-                onClick={() => setIsChatOpen(false)}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-              <div className="h-full p-6">
-                <GuestChatInterface
-                  isGuestMode={true}
-                  defaultPersona="isabella-navia"
-                  allowedPersonas={["isabella-navia"]}
-                  showOnlyPromoter={true}
-                />
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Lookbook / Media Showcase */}
         <Section background="gray">
@@ -220,10 +168,7 @@ const Home = () => {
                         variant="default"
                         size="sm"
                         className="btn-gradient w-fit"
-                        onClick={() => {
-                          setIsChatOpen(true);
-                          // Pre-fill chat context would go here
-                        }}
+                        onClick={() => startChat('isabella-navia', 'ovela-lookbook')}
                       >
                         Ask Isabella about this
                         <ArrowRight className="ml-2 w-4 h-4" />

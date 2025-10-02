@@ -128,7 +128,7 @@ const Home = () => {
                   alt="Isabella Navia - The World's First AI Model Ambassador"
                   className="relative object-contain object-bottom"
                   style={{ 
-                    height: '90vh',
+                    height: '99vh',
                     width: 'auto',
                     transformOrigin: 'bottom center'
                   }}
@@ -162,7 +162,7 @@ const Home = () => {
                     backgroundClip: 'text',
                     marginBottom: '20px',
                     whiteSpace: 'nowrap',
-                    transform: 'translateX(-3cm)'
+                    transform: 'translateX(calc(-3cm + 8mm))'
                   }}
                 >
                   The Future of Modeling is Interactive
@@ -177,25 +177,26 @@ const Home = () => {
                   }}
                 >
                   {/* Line 1: Isabella ✨ */}
-                   <p style={{ 
+                  <p style={{ 
                     fontSize: '36px',
                     fontWeight: '700',
                     color: '#FFD700',
                     marginBottom: '12px',
-                    marginLeft: '-2cm',
+                    marginLeft: 'calc(-2cm + 5mm)',
                     textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
                   }}>
                     Isabella ✨
                   </p>
                   
                   {/* Line 2: Description */}
-                   <p style={{ 
+                  <p style={{ 
                     fontSize: '19px',
                     fontWeight: '300',
                     color: '#F7F7F7',
                     lineHeight: '1.6',
                     textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                    marginLeft: '-2cm'
+                    marginLeft: '-2cm',
+                    maxWidth: '450px'
                   }}>
                     Ovela's first AI model ambassador. Ask questions, explore her portfolio, book a project — live.
                   </p>

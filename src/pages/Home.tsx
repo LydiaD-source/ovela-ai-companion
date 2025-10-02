@@ -168,22 +168,21 @@ const Home = () => {
                   The Future of Modeling is Interactive
                 </h1>
                 
-                {/* Supporting Text - Two Lines */}
+                {/* Supporting Text - Single Line */}
                 <div 
                   style={{ 
                     fontFamily: 'Inter, sans-serif',
-                    maxWidth: '450px',
+                    maxWidth: '600px',
                     marginBottom: '30px'
                   }}
                 >
-                  {/* Line 1: Isabella Ovela's first AI model ambassador. Ask questions */}
                   <p style={{ 
                     fontSize: '19px',
                     fontWeight: '300',
                     color: '#F7F7F7',
-                    marginBottom: '8px',
                     marginLeft: 'calc(-2cm + 5mm)',
-                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    lineHeight: '1.6'
                   }}>
                     <span style={{ 
                       fontSize: '36px',
@@ -194,19 +193,7 @@ const Home = () => {
                     }}>
                       Isabella
                     </span>
-                    {" Ovela's first AI model ambassador. Ask questions,"}
-                  </p>
-                  
-                  {/* Line 2: explore her portfolio... */}
-                  <p style={{ 
-                    fontSize: '19px',
-                    fontWeight: '300',
-                    color: '#F7F7F7',
-                    lineHeight: '1.6',
-                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                    marginLeft: 'calc(-2cm + 5mm)'
-                  }}>
-                    explore her portfolio, book a project — live.
+                    {"Ovela's first AI model ambassador. Ask questions, explore her portfolio, book a project — live."}
                   </p>
                 </div>
                 
@@ -248,19 +235,19 @@ const Home = () => {
                   <button 
                     onClick={scrollToPortfolio}
                     className="transition-all duration-300"
-                     style={{
-                       background: 'transparent',
-                       border: 'none',
-                       color: '#D4AF37',
-                       fontFamily: 'Inter, sans-serif',
-                       fontSize: '15px',
-                       fontWeight: '400',
-                       letterSpacing: '0.5px',
-                       cursor: 'pointer',
-                       padding: '0',
-                       textAlign: 'left',
-                       marginLeft: '-1cm'
-                     }}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#D4AF37',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '15px',
+                      fontWeight: '400',
+                      letterSpacing: '0.5px',
+                      cursor: 'pointer',
+                      padding: '0',
+                      textAlign: 'left',
+                      marginLeft: 'calc(-1cm + 8mm)'
+                    }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#F7E7CE';
                     }}

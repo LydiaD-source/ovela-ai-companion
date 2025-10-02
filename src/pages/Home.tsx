@@ -162,7 +162,7 @@ const Home = () => {
                     backgroundClip: 'text',
                     marginBottom: '24px',
                     whiteSpace: 'nowrap',
-                    marginLeft: '-1.5cm'
+                    marginLeft: '-4.5cm'
                   }}
                 >
                   Meet Isabella — The Future of Modeling is Interactive
@@ -177,7 +177,7 @@ const Home = () => {
                     color: '#E5E5E5',
                     lineHeight: '1.5',
                     marginBottom: '60px',
-                    marginLeft: '-1.5cm'
+                    marginLeft: '-2.5cm'
                   }}
                 >
                   <p style={{ marginBottom: '8px' }}>

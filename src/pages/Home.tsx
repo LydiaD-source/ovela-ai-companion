@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Users, Globe } from 'lucide-react';
 import Section from '@/components/UI/Section';
@@ -20,14 +20,14 @@ const Home = () => {
   const isabellaCapabilitiesVideo = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4";
   const { startChat, isConnecting } = useWellnessGeniChat();
   const portfolioRef = useRef<HTMLDivElement>(null);
+  const [isChatActive, setIsChatActive] = useState(false);
 
   const scrollToPortfolio = () => {
     portfolioRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const focusChat = () => {
-    const chatInput = document.querySelector('input[placeholder*="Ask Isabella"]') as HTMLInputElement;
-    if (chatInput) chatInput.focus();
+  const activateChat = () => {
+    setIsChatActive(true);
   };
 
   const lookbookItems = [
@@ -106,126 +106,138 @@ const Home = () => {
       <div>
         {/* Premium Hero Section - Fullscreen Interactive */}
         <section className="h-screen w-full relative overflow-hidden">
-          {/* Radial Spotlight Gradient Background */}
+          {/* Radial Spotlight Gradient Background - Navy → Midnight Blue → Champagne */}
           <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse at 30% 50%, rgba(253, 230, 138, 0.2) 0%, rgba(11, 13, 23, 1) 40%, rgba(109, 90, 255, 0.3) 100%)'
+            background: 'radial-gradient(ellipse at 30% 50%, rgba(253, 230, 138, 0.15) 0%, rgba(11, 13, 23, 1) 30%, rgba(30, 41, 59, 1) 60%, rgba(109, 90, 255, 0.2) 100%)'
           }}></div>
           
-          <div className="relative w-full h-full flex items-center" style={{ padding: '0 50px' }}>
+          <div className="relative w-full h-full flex items-center" style={{ padding: '0 60px' }}>
             
             {/* Left - Isabella with Spotlight Glow */}
             <div className="absolute left-12 bottom-0 flex items-end" style={{ height: '100%' }}>
               <div className="relative">
                 {/* Spotlight halo behind Isabella */}
-                <div className="absolute inset-0 blur-[200px] opacity-40" style={{
-                  background: 'radial-gradient(circle, rgba(253, 230, 138, 0.4) 0%, rgba(255, 255, 255, 0.1) 40%, transparent 70%)',
-                  transform: 'scale(1.2)'
+                <div className="absolute inset-0 blur-[200px] opacity-30" style={{
+                  background: 'radial-gradient(circle, rgba(253, 230, 138, 0.5) 0%, rgba(255, 255, 255, 0.15) 35%, transparent 65%)',
+                  transform: 'scale(1.3)'
                 }}></div>
                 
                 <img 
                   src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
                   alt="Isabella Navia - AI Model Ambassador"
-                  className="relative object-contain object-bottom"
+                  className="relative object-contain object-bottom spotlight-glow"
                   style={{ 
-                    height: '85vh',
+                    height: '88vh',
                     width: 'auto',
-                    transform: 'scale(1.1) translateY(15px)',
-                    transformOrigin: 'bottom center',
-                    filter: 'drop-shadow(0 0 40px rgba(253, 230, 138, 0.15))'
+                    transform: 'scale(1.1)',
+                    transformOrigin: 'bottom center'
                   }}
                 />
               </div>
             </div>
 
-            {/* Middle-Right - Glassmorphism Chat Box */}
+            {/* Right Side - Two State Layout */}
             <div 
-              className="absolute z-10"
-              style={{ 
-                left: 'calc(50% - 120px)',
-                top: '50%',
-                transform: 'translateY(-50%)'
-              }}
-            >
-              <div 
-                className="rounded-3xl overflow-hidden"
-                style={{ 
-                  width: '400px',
-                  height: '500px',
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(253, 230, 138, 0.1)',
-                  border: '1px solid rgba(253, 230, 138, 0.2)'
-                }}
-              >
-                <FullWellnessGeniUI 
-                  isGuestMode={true}
-                  defaultPersona="isabella-navia"
-                  allowedPersonas={['isabella-navia']}
-                  showOnlyPromoter={true}
-                />
-              </div>
-            </div>
-
-            {/* Far Right - Headline & CTA */}
-            <div 
-              className="absolute right-12 flex flex-col gap-6 z-10"
+              className="absolute right-12 z-10 flex flex-col justify-center"
               style={{ 
                 top: '50%',
                 transform: 'translateY(-50%)',
-                maxWidth: '420px'
+                maxWidth: '500px',
+                minHeight: '600px'
               }}
             >
-              <h1 
-                className="font-playfair text-5xl font-bold leading-tight"
-                style={{ color: 'hsl(var(--champagne-gold))' }}
+              {/* Initial State - Tagline & CTA */}
+              <div 
+                className={`transition-all duration-700 ${isChatActive ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}
               >
-                Meet Isabella — Your AI Model Ambassador
-              </h1>
-              
-              <h3 
-                className="font-sans text-2xl font-light leading-relaxed"
-                style={{ color: '#FFF5E1' }}
-              >
-                Isabella is the world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or even design your own AI-powered ambassador.
-              </h3>
-              
-              <div className="flex flex-col gap-4 mt-2">
-                <Button 
-                  onClick={focusChat}
-                  className="text-black font-bold px-8 py-6 text-base w-full transition-all duration-300 hover:-translate-y-1"
-                  style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #FDE68A 0%, #FFD700 100%)',
-                    boxShadow: '0 4px 15px rgba(253, 230, 138, 0.3)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(253, 230, 138, 0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(253, 230, 138, 0.3)';
+                <h1 
+                  className="text-5xl font-bold leading-tight mb-6"
+                  style={{ 
+                    color: 'white',
+                    fontFamily: 'Playfair Display, serif'
                   }}
                 >
-                  Start Chatting with Isabella
-                </Button>
+                  Meet Isabella — Your AI Model Ambassador
+                </h1>
                 
-                <Button 
-                  onClick={scrollToPortfolio}
-                  className="text-black font-bold px-8 py-6 text-base w-full transition-all duration-300 hover:-translate-y-1"
-                  style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #FDE68A 0%, #FBBF24 100%)',
-                    boxShadow: '0 4px 15px rgba(251, 191, 36, 0.3)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(251, 191, 36, 0.5)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.3)';
+                <h3 
+                  className="text-2xl font-light leading-snug mb-8"
+                  style={{ 
+                    color: 'hsl(var(--champagne-gold))',
+                    maxWidth: '480px'
                   }}
                 >
-                  See Isabella in Action
-                </Button>
+                  The world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or design your own AI-powered ambassador.
+                </h3>
+                
+                <div className="flex flex-col gap-4">
+                  <Button 
+                    onClick={activateChat}
+                    className="text-black font-bold px-8 py-6 text-lg w-full transition-all duration-300 hover:-translate-y-1"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, hsl(var(--champagne-gold)) 0%, #FFD700 100%)',
+                      boxShadow: '0 4px 20px hsla(var(--champagne-gold) / 0.4)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 8px 30px hsla(var(--champagne-gold) / 0.6)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 20px hsla(var(--champagne-gold) / 0.4)';
+                    }}
+                  >
+                    Start Chatting with Isabella
+                  </Button>
+                  
+                  <Button 
+                    onClick={scrollToPortfolio}
+                    className="text-black font-bold px-8 py-6 text-lg w-full transition-all duration-300 hover:-translate-y-1"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, #FFF5E1 0%, #FBBF24 100%)',
+                      boxShadow: '0 4px 15px rgba(251, 191, 36, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(251, 191, 36, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.3)';
+                    }}
+                  >
+                    See Isabella in Action
+                  </Button>
+                </div>
+              </div>
+
+              {/* Active State - Chat Box */}
+              <div 
+                className={`transition-all duration-700 ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
+                style={{ 
+                  width: '400px',
+                  height: '500px'
+                }}
+              >
+                <div 
+                  className="rounded-3xl overflow-hidden h-full"
+                  style={{ 
+                    background: 'rgba(30, 41, 59, 0.6)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    boxShadow: `
+                      0 25px 50px rgba(0, 0, 0, 0.4),
+                      0 0 0 1px hsla(var(--champagne-gold) / 0.3),
+                      inset 0 0 30px hsla(var(--champagne-gold) / 0.08)
+                    `,
+                    border: '1px solid hsla(var(--champagne-gold) / 0.25)'
+                  }}
+                >
+                  <FullWellnessGeniUI 
+                    isGuestMode={true}
+                    defaultPersona="isabella-navia"
+                    allowedPersonas={['isabella-navia']}
+                    showOnlyPromoter={true}
+                  />
+                </div>
               </div>
             </div>
 

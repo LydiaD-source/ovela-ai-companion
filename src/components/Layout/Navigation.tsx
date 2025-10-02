@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
 
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'WellnessGeni', path: '/wellnessgeni' },
-    { name: 'Projects', path: '/projects' },
+    { name: 'About Us', path: '/about' },
     { name: 'Pricing', path: '/pricing' },
-    { name: 'Meet Isabella', path: '/#chat' },
+    { name: 'Projects', path: '/projects' },
+    { name: 'WellnessGeni', path: '/wellnessgeni' },
+    { name: 'Work With Us', path: '/partner' },
   ];
-
-  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-transparent transition-all duration-300">
-      <div className="max-w-screen-2xl mx-auto px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-screen-2xl mx-auto px-12 py-6">
+        <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="text-2xl font-bold">
@@ -29,12 +25,12 @@ const Navigation = () => {
             <div className="text-sm font-medium" style={{ color: 'hsl(var(--champagne-gold))' }}>Interactive</div>
           </Link>
 
-          {/* Hamburger Menu Button (Always Visible) */}
+          {/* Hamburger Menu Button */}
           <button
-            className="p-2 transition-colors duration-200 hover:text-champagne-gold"
+            className="p-2 transition-colors duration-200"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
-            style={{ color: 'hsl(var(--champagne-gold))' }}
+            style={{ color: 'white' }}
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -43,15 +39,16 @@ const Navigation = () => {
 
       {/* Full-Screen Overlay Menu */}
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-midnight-blue/95 backdrop-blur-lg flex items-center justify-center">
+        <div className="fixed inset-0 z-40 backdrop-blur-lg flex items-center justify-center" style={{
+          background: 'rgba(30, 41, 59, 0.95)'
+        }}>
           <div className="flex flex-col items-center space-y-8">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-3xl font-medium transition-all duration-200 hover:text-champagne-gold hover:scale-110 ${
-                  isActive(item.path) ? 'text-champagne-gold' : 'text-soft-white'
-                }`}
+                className="text-4xl font-light transition-all duration-300 hover:scale-110"
+                style={{ color: 'hsl(var(--champagne-gold))' }}
                 onClick={() => setIsOpen(false)}
               >
                 {item.name}

@@ -106,27 +106,29 @@ const Home = () => {
       <div>
         {/* Premium Hero Section - Fullscreen (100vh) */}
         <section className="hero-gradient h-screen w-full relative overflow-hidden">
-          <div className="w-full h-full flex items-end justify-between" style={{ padding: '60px 60px 40px 60px' }}>
+          <div className="w-full h-full flex items-center justify-between px-12">
             
-            {/* Left - Isabella Full Body Image */}
-            <div className="relative flex items-end" style={{ flexBasis: '28%', flexShrink: 0, paddingBottom: '20px' }}>
+            {/* Left - Isabella Full Body Image (Scaled up 10%) */}
+            <div className="relative flex items-end h-full" style={{ flexBasis: '30%', flexShrink: 0, paddingBottom: '40px' }}>
               <img 
                 src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
                 alt="Isabella Navia - AI Model Ambassador"
                 className="spotlight-glow object-contain object-bottom"
                 style={{ 
-                  height: '80vh',
+                  height: '85vh',
                   width: 'auto',
-                  maxWidth: '100%'
+                  maxWidth: '100%',
+                  transform: 'scale(1.1)',
+                  transformOrigin: 'bottom left'
                 }}
               />
             </div>
 
-            {/* Middle - Glassmorphism Chat Box */}
-            <div className="flex items-center justify-center" style={{ flexBasis: '28%', flexShrink: 0 }}>
+            {/* Center-Right - Glassmorphism Chat Box */}
+            <div className="flex items-center" style={{ flexBasis: '28%', flexShrink: 0 }}>
               <div 
                 className="glass-premium rounded-3xl shadow-2xl overflow-hidden"
-                style={{ width: '350px', height: '550px', maxWidth: '100%' }}
+                style={{ width: '350px', height: '600px', maxWidth: '100%' }}
               >
                 <FullWellnessGeniUI 
                   isGuestMode={true}
@@ -138,7 +140,7 @@ const Home = () => {
             </div>
 
             {/* Right - Headline & CTAs */}
-            <div className="flex flex-col gap-5 justify-center" style={{ flexBasis: '38%', flexShrink: 1, maxWidth: '500px' }}>
+            <div className="flex flex-col gap-6 justify-center" style={{ flexBasis: '36%', flexShrink: 1, maxWidth: '400px' }}>
               <h1 
                 className="font-playfair text-5xl font-bold leading-tight"
                 style={{ color: 'hsl(var(--champagne-gold))' }}
@@ -146,14 +148,14 @@ const Home = () => {
                 Meet Isabella — Your AI Model Ambassador
               </h1>
               
-              <h3 className="font-sans text-xl font-light leading-relaxed" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
-                The world's first interactive AI model — explore Ovela, book photoshoots, or design your own AI-powered ambassador.
+              <h3 className="font-sans text-2xl font-light leading-relaxed" style={{ color: '#FFF5E1' }}>
+                Isabella is the world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or design your own AI-powered ambassador.
               </h3>
               
-              <div className="flex flex-col gap-4 mt-2">
+              <div className="flex flex-col gap-4 mt-4">
                 <Button 
                   onClick={focusChat}
-                  className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold px-8 py-6 rounded-2xl hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all duration-300 text-base w-full"
+                  className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-black font-bold px-8 py-6 rounded-2xl hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] hover:-translate-y-1 transition-all duration-300 text-base w-full"
                 >
                   ✨ Start Chatting with Isabella
                 </Button>
@@ -161,7 +163,7 @@ const Home = () => {
                 <Button 
                   onClick={scrollToPortfolio}
                   variant="outline"
-                  className="border-2 text-base font-semibold px-8 py-6 rounded-2xl transition-all duration-300 w-full"
+                  className="border-2 text-base font-semibold px-8 py-6 rounded-2xl transition-all duration-300 w-full hover:-translate-y-1"
                   style={{ 
                     borderColor: 'hsl(var(--champagne-gold))',
                     color: 'hsl(var(--champagne-gold))',
@@ -185,12 +187,12 @@ const Home = () => {
         </section>
 
         {/* Elegant Separator */}
-        <div className="w-full py-12 bg-gradient-to-b from-midnight-blue/40 via-soft-purple/20 to-midnight-blue/40">
+        <div className="w-full py-16 bg-gradient-to-b from-midnight-blue/40 via-soft-purple/20 to-midnight-blue/40">
           <div className="max-w-6xl mx-auto text-center">
-            <div className="h-px bg-gradient-to-r from-transparent via-champagne-gold to-transparent mb-6"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-champagne-gold to-transparent mb-8"></div>
             <button
               onClick={scrollToPortfolio}
-              className="text-lg font-medium transition-colors duration-300 hover:scale-105 transform"
+              className="text-xl font-medium transition-all duration-300 hover:scale-105 transform"
               style={{ color: 'hsl(var(--champagne-gold))' }}
               onMouseEnter={(e) => e.currentTarget.style.color = '#FFE55C'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'hsl(var(--champagne-gold))'}
@@ -201,7 +203,7 @@ const Home = () => {
         </div>
 
         {/* Lookbook / Media Showcase */}
-        <div ref={portfolioRef} className="w-full py-20 px-4" style={{ marginTop: '60px' }}>
+        <div ref={portfolioRef} className="w-full py-20 px-4" style={{ marginTop: '120px' }}>
           <div className="max-w-[90%] mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-5xl font-playfair font-bold mb-4" style={{ color: 'hsl(var(--champagne-gold))' }}>

@@ -156,10 +156,11 @@ const Home = () => {
                     fontFamily: 'Playfair Display, serif',
                     fontSize: 'clamp(28px, 3.5vw, 42px)',
                     letterSpacing: '1px',
-                    color: '#FFFFFF',
+                    color: '#D4C5A0',
                     fontWeight: '300',
                     lineHeight: '1.1',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    fontStyle: 'italic'
                   }}
                 >
                   Meet Isabella — Your AI Model Ambassador
@@ -188,18 +189,18 @@ const Home = () => {
                       width: '280px',
                       height: '52px',
                       borderRadius: '16px',
-                      background: '#E6D6A8',
-                      boxShadow: '0 4px 12px rgba(230, 214, 168, 0.4)',
-                      fontWeight: '500',
-                      fontSize: '16px',
+                      background: '#D4C5A0',
+                      boxShadow: '0 4px 12px rgba(212, 197, 160, 0.4)',
+                      fontWeight: '400',
+                      fontSize: '15px',
                       letterSpacing: '0.5px'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 24px 8px rgba(230, 214, 168, 0.5)';
+                      e.currentTarget.style.boxShadow = '0 0 24px 8px rgba(212, 197, 160, 0.5)';
                       e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(230, 214, 168, 0.4)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 197, 160, 0.4)';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >

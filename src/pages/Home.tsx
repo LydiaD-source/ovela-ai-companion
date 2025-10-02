@@ -128,7 +128,7 @@ const Home = () => {
                   alt="Isabella Navia - The World's First AI Model Ambassador"
                   className="relative object-contain object-bottom"
                   style={{ 
-                    height: '85vh',
+                    height: '90vh',
                     width: 'auto',
                     transformOrigin: 'bottom center'
                   }}
@@ -151,55 +151,59 @@ const Home = () => {
                 className={`transition-all duration-700 ${isChatActive ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}
               >
                 <h1 
-                  className="font-semibold leading-tight mb-6"
+                  className="leading-tight"
                   style={{ 
                     fontFamily: 'Playfair Display, serif',
-                    fontSize: 'clamp(28px, 3.5vw, 42px)',
-                    letterSpacing: '1px',
-                    color: '#FFFFFF',
-                    fontWeight: '300',
+                    fontSize: 'clamp(38px, 4.5vw, 54px)',
+                    letterSpacing: '0.5px',
+                    background: 'linear-gradient(90deg, #E0C78C, #F9EFD7)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontWeight: '400',
                     lineHeight: '1.1',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    marginBottom: '18px'
                   }}
                 >
-                  Meet Isabella — Your AI Model Ambassador
+                  Meet Isabella — The World's First AI Model Ambassador
                 </h1>
                 
                 <p 
-                  className="font-light leading-relaxed mb-8"
+                  className="font-light leading-relaxed"
                   style={{ 
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: 'clamp(15px, 1.8vw, 18px)',
-                    color: '#E6D6A8',
-                    maxWidth: '520px',
-                    margin: '0 auto 32px',
+                    fontSize: '22px',
+                    color: '#F9F6F1',
+                    maxWidth: '560px',
                     fontWeight: '300',
-                    lineHeight: '1.5'
+                    lineHeight: '1.4',
+                    marginBottom: '32px'
                   }}
                 >
-                  The world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or design your own AI-powered ambassador.
+                  A new era of interactive modeling. Ask, explore, and collaborate — live.
                 </p>
                 
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-start gap-4">
                   <Button 
                     onClick={activateChat}
-                    className="text-black font-medium transition-all duration-300"
+                    className="text-black font-medium transition-all duration-300 uppercase"
                     style={{
-                      width: '280px',
+                      width: '200px',
                       height: '52px',
                       borderRadius: '16px',
-                      background: '#E6D6A8',
-                      boxShadow: '0 4px 12px rgba(230, 214, 168, 0.4)',
+                      background: 'linear-gradient(135deg, #C6A656 0%, #E6D6A8 100%)',
+                      boxShadow: '0 4px 12px rgba(198, 166, 86, 0.4)',
                       fontWeight: '500',
-                      fontSize: '16px',
-                      letterSpacing: '0.5px'
+                      fontSize: '13px',
+                      letterSpacing: '1px'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 24px 8px rgba(230, 214, 168, 0.5)';
+                      e.currentTarget.style.boxShadow = '0 0 28px 10px rgba(198, 166, 86, 0.6)';
                       e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(230, 214, 168, 0.4)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(198, 166, 86, 0.4)';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >

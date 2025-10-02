@@ -15,7 +15,7 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 pointer-events-none">
-      <div className="flex items-center justify-between" style={{ padding: '40px 60px' }}>
+      <div className="flex items-center justify-between" style={{ padding: '30px 40px' }}>
         {/* Logo */}
         <Link to="/" className="pointer-events-auto flex items-center space-x-2">
           <div className="text-2xl font-bold">

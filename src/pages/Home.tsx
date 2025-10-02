@@ -154,15 +154,12 @@ const Home = () => {
                   className="font-semibold leading-tight mb-6"
                   style={{ 
                     fontFamily: 'Playfair Display, serif',
-                    fontSize: 'clamp(32px, 4vw, 48px)',
-                    letterSpacing: '2px',
-                    background: 'linear-gradient(90deg, #E6D6A8 0%, #F8F5F0 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    textTransform: 'uppercase',
+                    fontSize: 'clamp(28px, 3.5vw, 42px)',
+                    letterSpacing: '1px',
+                    color: '#FFFFFF',
                     fontWeight: '300',
-                    lineHeight: '1.2'
+                    lineHeight: '1.1',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   Meet Isabella — Your AI Model Ambassador
@@ -172,12 +169,12 @@ const Home = () => {
                   className="font-light leading-relaxed mb-8"
                   style={{ 
                     fontFamily: 'Inter, sans-serif',
-                    fontSize: 'clamp(16px, 2vw, 20px)',
+                    fontSize: 'clamp(15px, 1.8vw, 18px)',
                     color: '#E6D6A8',
                     maxWidth: '520px',
                     margin: '0 auto 32px',
                     fontWeight: '300',
-                    lineHeight: '1.6'
+                    lineHeight: '1.5'
                   }}
                 >
                   The world's first interactive model. Ask about Ovela, book photoshoots, explore pricing, or design your own AI-powered ambassador.
@@ -188,10 +185,10 @@ const Home = () => {
                     onClick={activateChat}
                     className="text-black font-medium transition-all duration-300"
                     style={{
-                      width: '240px',
+                      width: '280px',
                       height: '52px',
                       borderRadius: '16px',
-                      background: 'linear-gradient(135deg, #E6D6A8 0%, #F8F5F0 100%)',
+                      background: '#E6D6A8',
                       boxShadow: '0 4px 12px rgba(230, 214, 168, 0.4)',
                       fontWeight: '500',
                       fontSize: '16px',

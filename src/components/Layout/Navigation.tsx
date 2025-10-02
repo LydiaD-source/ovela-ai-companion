@@ -41,6 +41,14 @@ const Navigation = () => {
           background: 'rgba(30, 41, 59, 0.95)'
         }}>
           <div className="flex flex-col items-center space-y-8">
+            <Link
+              to="/"
+              className="text-4xl font-light transition-all duration-300 hover:scale-110"
+              style={{ color: 'hsl(var(--champagne-gold))' }}
+              onClick={() => setIsOpen(false)}
+            >
+              Home
+            </Link>
             {navItems.map((item) => (
               <Link
                 key={item.path}

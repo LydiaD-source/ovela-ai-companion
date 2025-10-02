@@ -141,7 +141,7 @@ const Home = () => {
               className="flex flex-col justify-center z-20"
               style={{ 
                 maxWidth: '450px',
-                marginRight: '8%'
+                marginRight: '12%'
               }}
             >
               {/* Initial State - Text & CTAs */}
@@ -154,13 +154,15 @@ const Home = () => {
                     fontFamily: 'Playfair Display, serif',
                     fontSize: 'clamp(38px, 3.5vw, 42px)',
                     fontWeight: '400',
+                    fontStyle: 'italic',
                     lineHeight: '1.2',
                     background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                     marginBottom: '24px',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    marginLeft: '-4cm'
                   }}
                 >
                   Meet Isabella — The Future of Modeling is Interactive
@@ -174,13 +176,14 @@ const Home = () => {
                     fontWeight: '300',
                     color: '#E5E5E5',
                     lineHeight: '1.5',
-                    marginBottom: '60px'
+                    marginBottom: '60px',
+                    marginLeft: '-3cm'
                   }}
                 >
                   <p style={{ marginBottom: '8px' }}>
                     Isabella is Ovela's first AI model ambassador.
                   </p>
-                  <p>
+                  <p style={{ whiteSpace: 'nowrap' }}>
                     Ask questions, explore her portfolio, book a project — live.
                   </p>
                 </div>
@@ -249,12 +252,12 @@ const Home = () => {
               <div 
                 className={`transition-all duration-700 ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
                 style={{ 
-                  width: '400px',
-                  height: '520px'
+                  width: '380px',
+                  height: '580px'
                 }}
               >
                 <div 
-                  className="overflow-hidden h-full"
+                  className="overflow-hidden h-full relative"
                   style={{ 
                     background: 'rgba(10, 10, 42, 0.75)',
                     backdropFilter: 'blur(24px)',
@@ -268,6 +271,18 @@ const Home = () => {
                     border: '1px solid rgba(212, 175, 55, 0.25)'
                   }}
                 >
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setIsChatActive(false)}
+                    className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-white/10 transition-colors"
+                    style={{ color: '#D4AF37' }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                  
                   <FullWellnessGeniUI 
                     isGuestMode={true}
                     defaultPersona="isabella-navia"

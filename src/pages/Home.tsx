@@ -176,29 +176,37 @@ const Home = () => {
                     marginBottom: '30px'
                   }}
                 >
-                  {/* Line 1: Isabella ✨ */}
-                  <p style={{ 
-                    fontSize: '36px',
-                    fontWeight: '700',
-                    color: '#FFD700',
-                    marginBottom: '12px',
-                    marginLeft: 'calc(-2cm + 5mm)',
-                    textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
-                  }}>
-                    Isabella ✨
-                  </p>
+                  {/* Line 1: Isabella ✨ + Ovela's first AI model ambassador. Ask questions, */}
+                  <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', marginLeft: 'calc(-2cm + 5mm)', marginBottom: '8px' }}>
+                    <p style={{ 
+                      fontSize: '36px',
+                      fontWeight: '700',
+                      color: '#FFD700',
+                      marginRight: '12px',
+                      textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
+                    }}>
+                      Isabella ✨
+                    </p>
+                    <p style={{ 
+                      fontSize: '19px',
+                      fontWeight: '300',
+                      color: '#F7F7F7',
+                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                    }}>
+                      Ovela's first AI model ambassador. Ask questions,
+                    </p>
+                  </div>
                   
-                  {/* Line 2: Description */}
+                  {/* Line 2: explore her portfolio... */}
                   <p style={{ 
                     fontSize: '19px',
                     fontWeight: '300',
                     color: '#F7F7F7',
                     lineHeight: '1.6',
                     textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                    marginLeft: '-2cm',
-                    maxWidth: '450px'
+                    marginLeft: 'calc(-2cm + 5mm)'
                   }}>
-                    Ovela's first AI model ambassador. Ask questions, explore her portfolio, book a project — live.
+                    explore her portfolio, book a project — live.
                   </p>
                 </div>
                 
@@ -208,22 +216,22 @@ const Home = () => {
                   <button 
                     onClick={activateChat}
                     className="transition-all duration-300"
-                     style={{
-                       width: '28vw',
-                       maxWidth: '280px',
-                       height: '52px',
-                       borderRadius: '16px',
-                       background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
-                       border: 'none',
-                       color: '#0A0A2A',
-                       fontFamily: 'Inter, sans-serif',
-                       fontSize: '15px',
-                       fontWeight: '600',
-                       letterSpacing: '0.5px',
-                       marginLeft: '-1cm',
-                       cursor: 'pointer',
-                       boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
-                     }}
+                    style={{
+                      width: '28vw',
+                      maxWidth: '280px',
+                      height: '52px',
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
+                      border: 'none',
+                      color: '#0A0A2A',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '15px',
+                      fontWeight: '600',
+                      letterSpacing: '0.5px',
+                      marginLeft: 'calc(-1cm + 8mm)',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+                    }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 175, 55, 0.7)';
                       e.currentTarget.style.transform = 'translateY(-2px)';

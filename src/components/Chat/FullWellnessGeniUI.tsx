@@ -387,8 +387,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   return (
     <div className="flex h-full max-w-6xl mx-auto bg-background rounded-xl border shadow-lg overflow-hidden">
-      {/* Left side - Isabella Image (Compact, no extra space) */}
-      <div className="w-2/5 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-start p-6">
+      {/* Left side - Isabella Image (Compact, no bottom padding) */}
+      <div className="w-2/5 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 flex flex-col items-center justify-start p-6 pb-0">
         <div className="w-full max-w-md">
           <img 
             src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png" 
@@ -412,11 +412,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         </div>
         
-        {/* Text info - Directly below mute button */}
-        <div className="text-center mt-2">
+        {/* Text info - Directly below mute button, no bottom padding */}
+        <div className="text-center mt-2 mb-0">
           <h3 className="text-xl font-semibold text-foreground">Isabella Navia</h3>
           <p className="text-sm text-muted-foreground">AI Brand Ambassador</p>
-          <p className="text-xs text-muted-foreground mt-1">Ovela Interactive</p>
+          <p className="text-xs text-muted-foreground">Ovela Interactive</p>
         </div>
         
         {/* D-ID Video Avatar */}
@@ -438,10 +438,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         />
       </div>
 
-      {/* Right side - Chat Interface (More compact) */}
+      {/* Right side - Chat Interface (Positioned to align input with Isabella's name) */}
       <div className="flex-1 flex flex-col min-h-0">
         {/* Header - More compact */}
-        <div className="border-b bg-muted/50 p-3">
+        <div className="border-b bg-muted/50 p-2">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold">Chat with Isabella</h2>
@@ -449,12 +449,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             </div>
             <div className="flex gap-2">
               {!isActivated && (
-                <Button size="sm" onClick={activate} className="hover-scale text-xs px-3 py-1">
+                <Button size="sm" onClick={activate} className="hover-scale text-xs px-2 py-1">
                   Activate Animation
                 </Button>
               )}
               {showPromotions && (
-                <Button size="sm" variant="outline" onClick={() => setShowPromotions(false)} className="text-xs px-3 py-1">
+                <Button size="sm" variant="outline" onClick={() => setShowPromotions(false)} className="text-xs px-2 py-1">
                   Hide Promo
                 </Button>
               )}
@@ -472,8 +472,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         )}
 
-        {/* Chat Messages - Flexible height to align input with image bottom */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+        {/* Chat Messages - Reduced to align input with Isabella's name */}
+        <div className="overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent" style={{ height: 'calc(100% - 250px)' }}>
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-xl p-3 ${

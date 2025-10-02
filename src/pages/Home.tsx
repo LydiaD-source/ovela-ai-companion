@@ -97,29 +97,14 @@ const Home = () => {
         {/* Hero Section - Isabella Interactive Chat (Moved up close to nav) */}
         <Section className="relative overflow-hidden py-6">
           <div className="container-custom relative z-10">
-            {/* Full Isabella Chat Interface with Right Text */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Chat Interface - Takes most space */}
-              <div className="lg:col-span-9" style={{ height: '650px' }}>
-                <FullWellnessGeniUI
-                  isGuestMode={true}
-                  defaultPersona="isabella-navia"
-                  allowedPersonas={["isabella-navia"]}
-                  showOnlyPromoter={true}
-                />
-              </div>
-
-              {/* Right Side Text */}
-              <div className="lg:col-span-3 flex items-start justify-center pt-8">
-                <div className="text-center lg:text-left">
-                  <h2 className="heading-lg mb-4 gradient-text">
-                    Ask Our Model Isabella
-                  </h2>
-                  <p className="body-md text-muted-foreground leading-relaxed">
-                    Anything about modeling, pricing, availability and projects
-                  </p>
-                </div>
-              </div>
+            {/* Full Width Isabella Chat Interface */}
+            <div className="w-full" style={{ height: '550px' }}>
+              <FullWellnessGeniUI
+                isGuestMode={true}
+                defaultPersona="isabella-navia"
+                allowedPersonas={["isabella-navia"]}
+                showOnlyPromoter={true}
+              />
             </div>
           </div>
 

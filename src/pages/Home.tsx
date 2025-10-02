@@ -148,59 +148,52 @@ const Home = () => {
               <div 
                 className={`transition-all duration-700 ${isChatActive ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}
               >
-                {/* Headline */}
+                {/* Headline - Single Line */}
                 <h1 
                   style={{ 
                     fontFamily: 'Playfair Display, serif',
-                    fontSize: 'clamp(36px, 3.2vw, 42px)',
+                    fontSize: 'clamp(38px, 3.5vw, 42px)',
                     fontWeight: '400',
                     lineHeight: '1.2',
                     background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    marginBottom: '16px'
+                    marginBottom: '24px',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  Meet Isabella
+                  Meet Isabella — The Future of Modeling is Interactive
                 </h1>
                 
-                {/* Subline 1 - Italic */}
-                <p 
-                  style={{ 
-                    fontFamily: 'Playfair Display, serif',
-                    fontSize: '20px',
-                    fontStyle: 'italic',
-                    color: '#F7E7CE',
-                    marginBottom: '20px',
-                    lineHeight: '1.4'
-                  }}
-                >
-                  The future of modeling is interactive.
-                </p>
-                
-                {/* Subline 2 - Body Text */}
-                <p 
+                {/* Supporting Text - Two Lines */}
+                <div 
                   style={{ 
                     fontFamily: 'Inter, sans-serif',
                     fontSize: '17px',
                     fontWeight: '300',
                     color: '#E5E5E5',
-                    lineHeight: '1.6',
-                    marginBottom: '32px'
+                    lineHeight: '1.5',
+                    marginBottom: '60px'
                   }}
                 >
-                  Isabella is Ovela's first AI model ambassador. She can answer your questions, share her portfolio, and even secure projects — live, in real time.
-                </p>
+                  <p style={{ marginBottom: '8px' }}>
+                    Isabella is Ovela's first AI model ambassador.
+                  </p>
+                  <p>
+                    Ask questions, explore her portfolio, book a project — live.
+                  </p>
+                </div>
                 
                 {/* CTA Buttons */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-5">
+                  {/* Primary Button */}
                   <button 
                     onClick={activateChat}
                     className="transition-all duration-300"
                     style={{
-                      width: '100%',
-                      maxWidth: '320px',
+                      width: '70%',
+                      maxWidth: '224px',
                       height: '48px',
                       borderRadius: '16px',
                       background: 'transparent',
@@ -213,8 +206,8 @@ const Home = () => {
                       cursor: 'pointer'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.4)';
-                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
+                      e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.6)';
+                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.boxShadow = 'none';
@@ -224,33 +217,30 @@ const Home = () => {
                     Start Chatting with Isabella
                   </button>
                   
+                  {/* Secondary Button - Text Link Style */}
                   <button 
                     onClick={scrollToPortfolio}
                     className="transition-all duration-300"
                     style={{
-                      width: '100%',
-                      maxWidth: '320px',
-                      height: '48px',
-                      borderRadius: '16px',
                       background: 'transparent',
-                      border: '1.5px solid #D4AF37',
-                      color: '#F7E7CE',
+                      border: 'none',
+                      color: '#D4AF37',
                       fontFamily: 'Inter, sans-serif',
                       fontSize: '15px',
                       fontWeight: '400',
                       letterSpacing: '0.5px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      padding: '0',
+                      textAlign: 'left'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.4)';
-                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.1)';
+                      e.currentTarget.style.color = '#F7E7CE';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = '#D4AF37';
                     }}
                   >
-                    Explore Isabella's Portfolio ↓
+                    ↓ Explore Isabella's Portfolio ↓
                   </button>
                 </div>
               </div>

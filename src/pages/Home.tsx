@@ -176,26 +176,26 @@ const Home = () => {
                     marginBottom: '30px'
                   }}
                 >
-                  {/* Line 1: Isabella ✨ + Ovela's first AI model ambassador. Ask questions, */}
-                  <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', marginLeft: 'calc(-2cm + 5mm)', marginBottom: '8px' }}>
-                    <p style={{ 
+                  {/* Line 1: Isabella Ovela's first AI model ambassador. Ask questions */}
+                  <p style={{ 
+                    fontSize: '19px',
+                    fontWeight: '300',
+                    color: '#F7F7F7',
+                    marginBottom: '8px',
+                    marginLeft: 'calc(-2cm + 5mm)',
+                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                  }}>
+                    <span style={{ 
                       fontSize: '36px',
                       fontWeight: '700',
                       color: '#FFD700',
                       marginRight: '12px',
                       textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
                     }}>
-                      Isabella ✨
-                    </p>
-                    <p style={{ 
-                      fontSize: '19px',
-                      fontWeight: '300',
-                      color: '#F7F7F7',
-                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-                    }}>
-                      Ovela's first AI model ambassador. Ask questions,
-                    </p>
-                  </div>
+                      Isabella
+                    </span>
+                    {" Ovela's first AI model ambassador. Ask questions,"}
+                  </p>
                   
                   {/* Line 2: explore her portfolio... */}
                   <p style={{ 

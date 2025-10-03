@@ -1,290 +1,332 @@
-import React, { useState } from 'react';
-import { ArrowRight, DollarSign, Zap, Palette, CheckCircle, Star, Globe, Mic, BarChart3, Sparkles } from 'lucide-react';
-import Section from '@/components/UI/Section';
-import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import QuickPricingMenu from '@/components/UI/QuickPricingMenu';
+import React from 'react';
+import { Sparkles, Globe, Mic, Palette, BarChart3, Video, Monitor } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 
 const Pricing = () => {
-  const [showPricingMenu, setShowPricingMenu] = useState(false);
-  const { startChat, isConnecting } = useWellnessGeniChat();
+  const packages = [
+    {
+      title: 'Product Promotion',
+      description: 'Isabella becomes the face of your luxury products through stunning photography and cinematic video content that captures attention and drives desire.',
+      price: 'From €1,500/month',
+      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759515522/Flux_Dev_Fullbody_portrait_of_IsabellaV2_head_to_feet_visible__0_er2yhj.jpg',
+      icon: Sparkles
+    },
+    {
+      title: 'Social Media Feature',
+      description: 'Amplify your brand presence with Isabella\'s authentic voice. From Instagram stories to TikTok trends, she creates engaging content that resonates.',
+      price: 'From €250/post',
+      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759264536/Fllux_Dev_Use_Character_Element_IsabellaV2Focus_half_body_sitti_1_33_raj9vh.jpg',
+      icon: Globe
+    },
+    {
+      title: 'Event Presence',
+      description: 'Bring Isabella to your virtual events, product launches, and brand activations. An interactive AI presence that engages and inspires your audience.',
+      price: 'From €2,000/event',
+      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg',
+      icon: Video
+    },
+    {
+      title: 'Custom Ambassador Campaign',
+      description: 'A bespoke partnership tailored to your brand vision. Isabella adapts to your aesthetic, values, and messaging for a truly unique collaboration.',
+      price: 'Custom Pricing',
+      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759515522/Flux_Dev_Fullbody_portrait_of_IsabellaV2_head_to_feet_visible__0_er2yhj.jpg',
+      icon: Palette
+    },
+    {
+      title: 'Website Integration',
+      description: 'Transform your digital presence with an interactive Isabella embedded on your site. Custom-designed to enhance user experience and brand storytelling.',
+      price: '€2,000 setup + €500/month',
+      thumbnail: '/lovable-uploads/isabella-appearance-settings.png',
+      icon: Monitor
+    },
+    {
+      title: 'Ambassador Video',
+      description: 'A polished 60-second video featuring Isabella as your brand spokesperson. Perfect for campaigns, advertisements, and social media announcements.',
+      price: 'From €750',
+      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759264536/Fllux_Dev_Use_Character_Element_IsabellaV2Focus_half_body_sitti_1_33_raj9vh.jpg',
+      icon: Video
+    }
+  ];
+
+  const addons = [
+    { icon: Palette, name: 'Custom Outfit Styling', price: '€2,000' },
+    { icon: Mic, name: 'Exclusive Voice Lines', price: '€500 per style' },
+    { icon: Globe, name: 'Multi-Language Interaction', price: '€1,200 per language' },
+    { icon: BarChart3, name: '3D Animation Packages', price: 'From €3,000' }
+  ];
 
   return (
-    <div className="pt-16">
-      {/* Hero Section */}
-      <Section className="text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/5 via-transparent to-neon-purple/5 pointer-events-none" />
-        <div className="relative z-10 max-w-5xl mx-auto">
-          <h1 className="heading-xl mb-6">
-            Affordable. Scalable. <span className="gradient-text">Always On.</span>
-            <br />
-            Isabella works when others can't.
-          </h1>
-          <p className="body-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
-            Give your brand a face that never sleeps, never cancels, and always shines.
-          </p>
-          <Button 
-            onClick={() => setShowPricingMenu(!showPricingMenu)}
-            size="lg" 
-            className="btn-gradient group animate-glow"
+    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #0A0A23 0%, #1A0A2E 50%, #2D1B3D 100%)' }}>
+      {/* Header / Tagline Section */}
+      <section className="w-full py-20 md:py-32 text-center px-6">
+        <div className="max-w-4xl mx-auto">
+          <h1 
+            className="text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight"
+            style={{
+              fontFamily: 'Playfair Display, serif',
+              color: '#D4AF37',
+              fontWeight: '600',
+              letterSpacing: '-0.02em'
+            }}
           >
-            See Plans
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          
-          {/* Quick Pricing Menu */}
-          {showPricingMenu && (
-            <div className="animate-fade-in mt-8">
-              <QuickPricingMenu />
-            </div>
-          )}
+            Work With Isabella — The Future of Interactive Modeling
+          </h1>
+          <p 
+            className="text-lg md:text-xl leading-relaxed"
+            style={{
+              fontFamily: 'Inter, sans-serif',
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontWeight: '300'
+            }}
+          >
+            Partner with the world's first AI model ambassador for luxury campaigns that captivate and inspire.
+          </p>
         </div>
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-gradient-to-br from-electric-blue/20 to-transparent blur-xl" />
-        <div className="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-gradient-to-br from-neon-purple/20 to-transparent blur-xl" />
-      </Section>
+        
+        {/* Decorative golden line */}
+        <div 
+          className="mt-16 mx-auto"
+          style={{
+            width: '200px',
+            height: '2px',
+            background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+            boxShadow: '0 0 20px rgba(212, 175, 55, 0.5)'
+          }}
+        />
+      </section>
 
-      {/* Why Choose Isabella - Bubble Highlights */}
-      <Section background="gray">
-        <div className="text-center mb-12">
-          <h2 className="heading-lg mb-6">Why Choose Isabella?</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: DollarSign,
-              title: 'More Affordable Than Humans',
-              description: 'One month with Isabella costs less than one sponsored post from a human influencer.',
-              gradient: 'from-green-400 to-emerald-600'
-            },
-            {
-              icon: Zap,
-              title: 'Always On',
-              description: 'She never takes a sick day, vacation, or break.',
-              gradient: 'from-electric-blue to-blue-600'
-            },
-            {
-              icon: Palette,
-              title: 'Customizable',
-              description: 'Every client gets a unique Isabella persona tailored to their brand.',
-              gradient: 'from-neon-purple to-purple-600'
-            }
-          ].map((benefit, idx) => (
-            <div key={idx} className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/10 to-neon-purple/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-300" />
-              <Card className="relative p-8 text-center hover-lift bg-background/80 backdrop-blur-sm border-border/50 rounded-3xl">
-                <div className={`w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${benefit.gradient} flex items-center justify-center shadow-2xl`}>
-                  <benefit.icon className="w-10 h-10 text-white" />
+      {/* Luxury Pricing Catalog */}
+      <section className="w-full py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-10 md:gap-12">
+            {packages.map((pkg, index) => (
+              <div
+                key={index}
+                className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105"
+                style={{
+                  background: 'rgba(10, 10, 35, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                  padding: '40px'
+                }}
+              >
+                {/* Thumbnail */}
+                <div className="mb-6 rounded-xl overflow-hidden" style={{ height: '120px', width: '120px', margin: '0 auto' }}>
+                  <img
+                    src={pkg.thumbnail}
+                    alt={pkg.title}
+                    className="w-full h-full object-cover"
+                    style={{
+                      filter: 'brightness(0.9) contrast(1.1)',
+                      transition: 'transform 0.3s ease'
+                    }}
+                  />
                 </div>
-                <CardTitle className="heading-sm mb-4">{benefit.title}</CardTitle>
-                <CardDescription className="text-base">{benefit.description}</CardDescription>
-              </Card>
-            </div>
-          ))}
-        </div>
-      </Section>
 
-      {/* Pricing Table */}
-      <Section id="pricing-plans">
-        <div className="text-center mb-12">
-          <h2 className="heading-lg mb-6">Choose Your Isabella Package</h2>
-          <p className="body-md text-muted-foreground">Transparent pricing, no hidden fees, incredible value</p>
-        </div>
+                {/* Title */}
+                <h3
+                  className="text-center mb-4"
+                  style={{
+                    fontFamily: 'Playfair Display, serif',
+                    fontSize: '28px',
+                    color: '#D4AF37',
+                    fontWeight: '600'
+                  }}
+                >
+                  {pkg.title}
+                </h3>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {[
-            {
-              name: 'Starter',
-              price: '$1,500',
-              period: '/month',
-              description: 'Perfect for small brands getting started',
-              features: ['8 posts per month', '4 stories per month', 'Basic brand customization', '24/7 availability', 'Standard resolution'],
-              popular: false
-            },
-            {
-              name: 'Growth',
-              price: '$3,500',
-              period: '/month',
-              description: 'Ideal for growing businesses',
-              features: ['12 posts per month', '8 stories per month', '2 Reels per month', 'Advanced customization', 'HD quality content', 'Priority support'],
-              popular: true
-            },
-            {
-              name: 'Premium',
-              price: '$6,000',
-              period: '/month',
-              description: 'For enterprise-level campaigns',
-              features: ['20 posts per month', '12 stories per month', '4 Reels per month', 'Trend insights included', '4K quality content', 'Dedicated account manager', 'Custom integrations'],
-              popular: false
-            }
-          ].map((plan, idx) => (
-            <Card key={idx} className={`relative p-8 hover-lift ${plan.popular ? 'ring-2 ring-electric-blue shadow-2xl scale-105' : ''} bg-background border-border/50`}>
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-electric-blue to-neon-purple text-white px-6 py-2 rounded-full text-sm font-semibold">
-                    Most Popular
-                  </div>
+                {/* Description */}
+                <p
+                  className="text-center mb-6 leading-relaxed"
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '15px',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontWeight: '300',
+                    minHeight: '80px'
+                  }}
+                >
+                  {pkg.description}
+                </p>
+
+                {/* Price */}
+                <div
+                  className="text-center mb-8"
+                  style={{
+                    fontFamily: 'Playfair Display, serif',
+                    fontSize: '32px',
+                    color: '#D4AF37',
+                    fontWeight: '600'
+                  }}
+                >
+                  {pkg.price}
                 </div>
-              )}
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="heading-md mb-2">{plan.name}</CardTitle>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
-                </div>
-                <CardDescription>{plan.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {plan.features.map((feature, featureIdx) => (
-                  <div key={featureIdx} className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-electric-blue flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
-                  </div>
-                ))}
+
+                {/* CTA Button */}
                 <a href="/#chat">
-                  <Button 
-                    className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
-                    size="lg"
+                  <button
+                    className="w-full transition-all duration-300 hover:scale-105"
+                    style={{
+                      padding: '14px 24px',
+                      borderRadius: '8px',
+                      background: 'transparent',
+                      border: '1.5px solid #D4AF37',
+                      color: '#D4AF37',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      cursor: 'pointer'
+                    }}
                   >
-                    Work With Isabella
-                  </Button>
+                    Request Isabella
+                  </button>
                 </a>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        {/* Special Services */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {[
-            {
-              name: 'Ambassador Video',
-              price: 'From $750',
-              description: '60-second branded spokesperson video',
-              icon: Star
-            },
-            {
-              name: 'Website Integration',
-              price: '$2,000 setup + $500/month',
-              description: 'Setup + custom template + interactive Isabella',
-              icon: Globe
-            }
-          ].map((service, idx) => (
-            <Card key={idx} className="p-6 hover-lift bg-gradient-to-br from-background to-muted/30 border-border/50">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-electric-blue to-neon-purple flex items-center justify-center flex-shrink-0">
-                  <service.icon className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="heading-sm mb-2">{service.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xl font-bold">{service.price}</span>
-                      <a href="/#chat">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                        >
-                          Work With Isabella
-                        </Button>
-                      </a>
-                    </div>
-                </div>
+                {/* Hover glow effect */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
+                  style={{
+                    background: 'radial-gradient(circle at center, rgba(212, 175, 55, 0.1), transparent)',
+                  }}
+                />
               </div>
-            </Card>
-          ))}
-        </div>
-      </Section>
-
-      {/* Add-Ons Section */}
-      <Section background="gray">
-        <div className="text-center mb-12">
-          <h2 className="heading-lg mb-6">Powerful Add-Ons</h2>
-          <p className="body-md text-muted-foreground">Enhance your Isabella experience with these premium features</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { icon: Palette, name: 'LoRA Custom Training', price: '$2,000' },
-            { icon: Mic, name: 'Custom Voice (ElevenLabs)', price: '$500 per style' },
-            { icon: Globe, name: 'Multi-Language Support', price: '$1,200 per language' },
-            { icon: BarChart3, name: 'Analytics Dashboard', price: '$750 setup + $300/month' }
-          ].map((addon, idx) => (
-            <Card key={idx} className="p-6 text-center hover-lift bg-background border-border/50">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-electric-blue/20 to-neon-purple/20 flex items-center justify-center">
-                <addon.icon className="w-8 h-8 text-electric-blue" />
-              </div>
-              <h3 className="font-semibold mb-2">{addon.name}</h3>
-              <p className="text-electric-blue font-bold">{addon.price}</p>
-            </Card>
-          ))}
-        </div>
-      </Section>
-
-      {/* Proof of Value Section */}
-      <Section>
-        <div className="text-center mb-12">
-          <h2 className="heading-lg mb-6">Isabella vs. Top AI Influencers</h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {[
-            {
-              competitor: 'Lil Miquela',
-              cost: '$10k per post',
-              comparison: 'Isabella gives you the same cutting-edge impact for a fraction of the cost.'
-            },
-            {
-              competitor: 'Aitana Lopez',
-              cost: '€10k/month with fewer followers',
-              comparison: 'Isabella offers more flexibility and lower cost.'
-            }
-          ].map((comparison, idx) => (
-            <Card key={idx} className="p-8 bg-gradient-to-br from-electric-blue/5 to-neon-purple/5 border-electric-blue/20 hover-lift">
-              <div className="text-center">
-                <h3 className="heading-sm mb-4">{comparison.competitor}</h3>
-                <p className="text-2xl font-bold text-electric-blue mb-4">{comparison.cost}</p>
-                <p className="text-muted-foreground">{comparison.comparison}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        <div className="text-center">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-electric-blue to-neon-purple p-6 rounded-2xl text-white">
-            <Sparkles className="w-6 h-6" />
-            <span className="text-xl font-bold">With Isabella, you're not just keeping up — you're staying ahead.</span>
-            <Sparkles className="w-6 h-6" />
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
-      {/* Final CTA Section */}
-      <Section background="dark" className="text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="heading-lg mb-8 text-soft-white">
-            Your brand deserves more than a chatbot.
-            <br />
-            <span className="gradient-text">Let Isabella elevate your story.</span>
+      {/* Golden Divider */}
+      <div 
+        className="my-20 mx-auto"
+        style={{
+          width: '80%',
+          maxWidth: '800px',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent)',
+          boxShadow: '0 0 15px rgba(212, 175, 55, 0.3)'
+        }}
+      />
+
+      {/* Exclusive Add-Ons Section */}
+      <section className="w-full py-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2
+            className="text-center mb-12"
+            style={{
+              fontFamily: 'Playfair Display, serif',
+              fontSize: '42px',
+              color: '#D4AF37',
+              fontWeight: '600'
+            }}
+          >
+            Exclusive Add-Ons
           </h2>
-          <a href="/#chat">
-            <Button 
-              size="lg" 
-              className="btn-gradient group text-lg px-12 py-6 animate-glow"
-            >
-              Work With Isabella Today
-              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </a>
-          <p className="text-soft-white/70 mt-6 text-lg">
-            Connect with Isabella on the home page
-          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {addons.map((addon, index) => (
+              <div
+                key={index}
+                className="text-center transition-all duration-300 hover:scale-105"
+                style={{
+                  background: 'rgba(10, 10, 35, 0.4)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  borderRadius: '16px',
+                  padding: '32px 24px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <div
+                  className="mx-auto mb-4 rounded-full flex items-center justify-center"
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05))',
+                    border: '1px solid rgba(212, 175, 55, 0.3)'
+                  }}
+                >
+                  <addon.icon className="w-8 h-8" style={{ color: '#D4AF37' }} />
+                </div>
+                <h4
+                  className="mb-3"
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '16px',
+                    color: '#FFFFFF',
+                    fontWeight: '500'
+                  }}
+                >
+                  {addon.name}
+                </h4>
+                <p
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '18px',
+                    color: '#D4AF37',
+                    fontWeight: '600'
+                  }}
+                >
+                  {addon.price}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-        {/* Decorative glow effects */}
-        <div className="absolute inset-0 bg-gradient-to-r from-electric-blue/10 via-transparent to-neon-purple/10 pointer-events-none" />
-      </Section>
+      </section>
+
+      {/* Final CTA Strip */}
+      <section
+        className="w-full py-24 md:py-32 text-center px-6 relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #2D1B3D 100%)',
+          marginTop: '80px'
+        }}
+      >
+        <div className="max-w-4xl mx-auto relative z-10">
+          <h2
+            className="mb-8 leading-tight"
+            style={{
+              fontFamily: 'Playfair Display, serif',
+              fontSize: 'clamp(32px, 5vw, 48px)',
+              color: '#0A0A23',
+              fontWeight: '700'
+            }}
+          >
+            Partner with Isabella, the world's first AI Model Ambassador
+          </h2>
+          
+          <a href="/#chat">
+            <button
+              className="transition-all duration-300 hover:scale-105"
+              style={{
+                padding: '18px 48px',
+                borderRadius: '12px',
+                background: '#0A0A23',
+                border: 'none',
+                color: '#D4AF37',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '20px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                boxShadow: '0 8px 24px rgba(10, 10, 35, 0.4)'
+              }}
+            >
+              Contact Ovela
+            </button>
+          </a>
+        </div>
+
+        {/* Decorative fade effect */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at center, transparent 30%, rgba(10, 10, 35, 0.3))'
+          }}
+        />
+      </section>
+
       <FooterMinimal />
     </div>
   );

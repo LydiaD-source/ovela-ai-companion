@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Send, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, Send, Loader2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -374,6 +374,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     sendMessage(inputText);
   };
 
+  const handleResetMessages = () => {
+    setMessages([]);
+    toast({
+      title: "Chat Reset",
+      description: "Conversation cleared.",
+    });
+  };
+
   return (
     <div className="relative w-full h-full flex flex-col bg-transparent" style={{ minHeight: 0 }}>
       {/* Compact Header */}
@@ -387,18 +395,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <p className="text-xs text-soft-white/60">AI Brand Ambassador</p>
           </div>
         </div>
-        
-        <button
-          onClick={() => setIsMuted(!isMuted)}
-          className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
-          title={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? (
-            <VolumeX className="w-4 h-4 text-soft-white" />
-          ) : (
-            <Volume2 className="w-4 h-4 text-soft-white" />
-          )}
-        </button>
       </div>
 
       {/* Chat Messages */}
@@ -440,7 +436,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       {/* Chat Input */}
       <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={handleSubmit} className="flex gap-2 mb-2">
           <Input
             type="text"
             value={inputText}
@@ -457,6 +453,45 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <Send className="w-4 h-4" />
           </Button>
         </form>
+        
+        {/* Bottom Right Controls */}
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={handleResetMessages}
+            className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
+            title="Reset conversation"
+          >
+            <RotateCcw className="w-4 h-4 text-soft-white" />
+          </button>
+          
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
+            title={isMuted ? "Unmute Isabella" : "Mute Isabella"}
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4 text-soft-white" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-soft-white" />
+            )}
+          </button>
+          
+          <button
+            onClick={isInVoiceMode ? stopVoiceMode : startVoiceMode}
+            className={`p-2 rounded-full transition-colors ${
+              isInVoiceMode 
+                ? 'bg-champagne-gold/80 hover:bg-champagne-gold' 
+                : 'bg-soft-white/10 hover:bg-soft-white/20'
+            } ${isRecording ? 'animate-pulse' : ''}`}
+            title={isInVoiceMode ? "Stop voice mode" : "Start voice mode"}
+          >
+            {isInVoiceMode ? (
+              <MicOff className="w-4 h-4 text-charcoal" />
+            ) : (
+              <Mic className="w-4 h-4 text-soft-white" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Hidden video element */}

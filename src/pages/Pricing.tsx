@@ -102,7 +102,7 @@ const Pricing = () => {
             {packages.map((pkg, index) => (
               <div
                 key={index}
-                className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105"
+                className="group relative rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 flex flex-col"
                 style={{
                   background: 'rgba(10, 10, 35, 0.6)',
                   backdropFilter: 'blur(10px)',
@@ -165,7 +165,8 @@ const Pricing = () => {
                 </div>
 
                 {/* CTA Button */}
-                <a href="/#chat">
+                <div className="mt-auto">
+                  <a href="/#chat">
                   <button
                     className="w-full transition-all duration-300 hover:scale-105"
                     style={{
@@ -183,6 +184,7 @@ const Pricing = () => {
                     Request Isabella
                   </button>
                 </a>
+                </div>
 
                 {/* Hover glow effect */}
                 <div

@@ -6,7 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "@/components/Layout/Navigation";
-import Footer from "@/components/Layout/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Isabella from "./pages/Isabella";
@@ -41,7 +40,6 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
-            <Footer />
           </div>
         </BrowserRouter>
       </TooltipProvider>

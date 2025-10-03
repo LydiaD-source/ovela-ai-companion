@@ -34,7 +34,10 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
 
         <div className="flex justify-center items-center">
           <button
-            onClick={onChatClick}
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setTimeout(() => onChatClick(), 800);
+            }}
             className="transition-all duration-300 hover:scale-105"
             style={{
               padding: '14px 32px',

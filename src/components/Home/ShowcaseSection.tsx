@@ -13,12 +13,11 @@ const showcaseItems = [
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758192666/FTlux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_stand_3_7_jod0un.jpg',
     title: 'Interactive Marketing',
     description: 'Isabella transforms traditional campaigns into conversations. Luxury brands can now engage audiences directly through interactive experiences.',
-    layout: 'media-right',
-    isInteractive: true
+    layout: 'media-right'
   },
   {
     mediaType: 'image',
-    src: '/lovable-uploads/3548b4f8-b4f5-410a-a3cd-669f8d922534.png',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg',
     title: 'Multi-Brand Excellence',
     description: 'Seamless representation across diverse industries and audiences',
     layout: 'media-left'
@@ -60,45 +59,6 @@ export const ShowcaseSection = () => {
                     WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 95%, rgba(0,0,0,0))'
                   }}
                 />
-                {item.isInteractive && (
-                  <>
-                    {/* Champagne Gold Gradient Overlay */}
-                    <div 
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background: 'linear-gradient(to bottom, rgba(232, 207, 169, 0.2) 0%, rgba(232, 207, 169, 0.05) 100%)'
-                      }}
-                    />
-                    {/* Chat Bubble Overlay */}
-                    <div 
-                      className="absolute top-[20%] right-[8%] max-w-[20%] min-w-[200px]"
-                      style={{
-                        animation: 'fadeIn 1s ease-in-out'
-                      }}
-                    >
-                      <div 
-                        className="backdrop-blur-sm rounded-3xl p-5 shadow-lg"
-                        style={{
-                          background: 'rgba(232, 207, 169, 0.35)',
-                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-                          borderRadius: '24px'
-                        }}
-                      >
-                        <p 
-                          className="text-sm md:text-base"
-                          style={{
-                            fontFamily: 'Inter, sans-serif',
-                            fontWeight: '300',
-                            color: '#1a1a1a',
-                            lineHeight: '1.6'
-                          }}
-                        >
-                          Would you like to discover more?
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
             )}
           </div>

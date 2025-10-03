@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 
 interface LookbookItem {
   type: 'image' | 'video';
@@ -48,9 +48,14 @@ const lookbookItems: LookbookItem[] = [
 export const LookbookCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [mutedStates, setMutedStates] = useState<Record<number, boolean>>(
+    lookbookItems.reduce((acc, _, index) => ({ ...acc, [index]: true }), {})
+  );
+  const [buttonVisible, setButtonVisible] = useState<Record<number, boolean>>({});
+  const fadeTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const startX = useRef<number>(0);
+  const scrollLeft = useRef<number>(0);
 
   const scrollToIndex = (index: number) => {
     if (!scrollContainerRef.current) return;
@@ -105,6 +110,53 @@ export const LookbookCarousel = () => {
     const walk = (x - startX.current) * 2;
     scrollContainerRef.current.scrollLeft = scrollLeft.current - walk;
   };
+
+  const toggleMute = (index: number) => {
+    setMutedStates(prev => ({ ...prev, [index]: !prev[index] }));
+    setButtonVisible(prev => ({ ...prev, [index]: true }));
+    
+    // Clear existing timeout
+    if (fadeTimeouts.current[index]) {
+      clearTimeout(fadeTimeouts.current[index]);
+    }
+    
+    // Set new fade timeout
+    fadeTimeouts.current[index] = setTimeout(() => {
+      setButtonVisible(prev => ({ ...prev, [index]: false }));
+    }, 3000);
+  };
+
+  const handleVideoMouseEnter = (index: number) => {
+    setButtonVisible(prev => ({ ...prev, [index]: true }));
+    if (fadeTimeouts.current[index]) {
+      clearTimeout(fadeTimeouts.current[index]);
+    }
+  };
+
+  const handleVideoMouseLeave = (index: number) => {
+    fadeTimeouts.current[index] = setTimeout(() => {
+      setButtonVisible(prev => ({ ...prev, [index]: false }));
+    }, 3000);
+  };
+
+  useEffect(() => {
+    // Show all buttons initially, then fade after 3 seconds
+    const initialTimeout = setTimeout(() => {
+      setButtonVisible(
+        lookbookItems.reduce((acc, item, index) => {
+          if (item.type === 'video') {
+            return { ...acc, [index]: false };
+          }
+          return acc;
+        }, {})
+      );
+    }, 3000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      Object.values(fadeTimeouts.current).forEach(timeout => clearTimeout(timeout));
+    };
+  }, []);
 
   return (
     <section 
@@ -172,14 +224,45 @@ export const LookbookCarousel = () => {
                 }}
               >
                 {item.type === 'video' ? (
-                  <video
-                    src={item.src}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+                  <>
+                    <video
+                      src={item.src}
+                      autoPlay
+                      muted={mutedStates[index]}
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onMouseEnter={() => handleVideoMouseEnter(index)}
+                      onMouseLeave={() => handleVideoMouseLeave(index)}
+                    />
+                    {/* Sound Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleMute(index);
+                      }}
+                      onMouseEnter={() => handleVideoMouseEnter(index)}
+                      className="absolute transition-opacity duration-300 flex items-center justify-center"
+                      style={{
+                        bottom: '24px',
+                        right: '24px',
+                        width: window.innerWidth < 768 ? '28px' : '40px',
+                        height: window.innerWidth < 768 ? '28px' : '40px',
+                        borderRadius: '50%',
+                        background: 'rgba(0, 0, 0, 0.35)',
+                        border: '1.5px solid #D4AF37',
+                        opacity: buttonVisible[index] === false ? 0.2 : 1,
+                        boxShadow: buttonVisible[index] === false ? 'none' : '0 0 10px rgba(212, 175, 55, 0.7)',
+                      }}
+                      aria-label={mutedStates[index] ? 'Unmute video' : 'Mute video'}
+                    >
+                      {mutedStates[index] ? (
+                        <VolumeX size={window.innerWidth < 768 ? 14 : 18} color="#D4AF37" strokeWidth={1.5} />
+                      ) : (
+                        <Volume2 size={window.innerWidth < 768 ? 14 : 18} color="#D4AF37" strokeWidth={1.5} />
+                      )}
+                    </button>
+                  </>
                 ) : (
                   <img
                     src={item.src}

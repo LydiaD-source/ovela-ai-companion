@@ -104,134 +104,144 @@ const Home = () => {
       />
 
       <div>
-        {/* Premium Hero Section - Luxury Brand Style */}
+        {/* Luxury Hero Section */}
         <section className="h-screen w-full relative overflow-hidden">
-          {/* Luxury Gradient Background - Navy → Plum → Champagne Glow */}
+          {/* Deep Navy to Black Gradient with Champagne Glow */}
           <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse at 40% 50%, rgba(247, 231, 206, 0.12) 0%, #0A0A2A 25%, #3B1C32 60%, rgba(247, 231, 206, 0.08) 100%)'
+            background: 'linear-gradient(135deg, #0A0E27 0%, #000000 100%)',
+          }}></div>
+          
+          {/* Champagne/Gold Radial Glow Behind Isabella */}
+          <div className="absolute inset-0" style={{
+            background: 'radial-gradient(ellipse 800px 900px at 25% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 60%)',
+            pointerEvents: 'none'
           }}></div>
           
           {/* Main Content Container */}
-          <div className="relative w-full h-full flex items-center justify-between px-12">
+          <div className="relative w-full h-full flex items-start justify-between">
             
-            {/* Left - Isabella Full-Body with Golden Halo */}
-            <div className="flex items-end h-full pb-0 z-10">
-              <div className="relative">
-                {/* Soft golden glow behind Isabella */}
-                <div className="absolute inset-0 blur-[180px] opacity-25" style={{
-                  background: 'radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, rgba(212, 175, 55, 0.15) 40%, transparent 70%)',
-                  transform: 'scale(1.3)'
+            {/* Left Side - Isabella (Anchor) */}
+            <div className="flex items-end h-full" style={{ width: '35%' }}>
+              <div className="relative w-full h-full flex items-end justify-center">
+                {/* Soft Spotlight/Glow Behind Isabella */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{
+                  width: '500px',
+                  height: '700px',
+                  background: 'radial-gradient(ellipse at center, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.08) 40%, transparent 70%)',
+                  filter: 'blur(60px)',
+                  zIndex: 0
                 }}></div>
                 
+                {/* Isabella Image - 85-90% viewport height, feet anchored */}
                 <img 
                   src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
-                  alt="Isabella Navia - The World's First AI Model Ambassador"
+                  alt="Isabella Navia - AI Model Ambassador"
                   className="relative object-contain object-bottom"
                   style={{ 
-                    height: '99vh',
+                    height: '88vh',
                     width: 'auto',
-                    transformOrigin: 'bottom center'
+                    maxWidth: 'none',
+                    zIndex: 1
                   }}
                 />
               </div>
             </div>
 
-            {/* Right - Elegant Text Block */}
+            {/* Center-Right Area - Tagline & Text */}
             <div 
-              className="flex flex-col justify-center z-20"
+              className="flex flex-col justify-center h-full"
               style={{ 
-                maxWidth: '720px',
-                marginRight: '6%'
+                width: '65%',
+                paddingLeft: '4%',
+                paddingRight: '8%'
               }}
             >
-              {/* Initial State - Text & CTAs */}
+              {/* Content Wrapper - Fades out when chat is active */}
               <div 
-                className={`transition-all duration-700 ${isChatActive ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'}`}
+                className={`transition-all duration-500 ${isChatActive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                style={{ 
+                  display: isChatActive ? 'none' : 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  maxWidth: '700px',
+                  margin: '0 auto'
+                }}
               >
-                {/* Headline - Single Line */}
+                {/* Headline - Luxury Serif */}
                 <h1 
                   style={{ 
                     fontFamily: 'Playfair Display, serif',
-                    fontSize: 'clamp(42px, 3.5vw, 46px)',
-                    fontWeight: '400',
-                    fontStyle: 'italic',
-                    lineHeight: '1.2',
-                    background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
+                    fontSize: '56px',
+                    fontWeight: '700',
+                    lineHeight: '1.15',
+                    marginBottom: '24px',
+                    color: '#FFFFFF'
+                  }}
+                >
+                  The Future of Modeling is{' '}
+                  <span style={{
+                    background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #D4AF37 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    marginBottom: '20px',
-                    whiteSpace: 'nowrap',
-                    transform: 'translateX(calc(-3cm + 8mm))'
-                  }}
-                >
-                  The Future of Modeling is Interactive
+                    backgroundClip: 'text'
+                  }}>
+                    Interactive
+                  </span>
                 </h1>
                 
-                {/* Supporting Text - Single Line */}
-                <div 
-                  style={{ 
-                    fontFamily: 'Inter, sans-serif',
-                    maxWidth: '600px',
-                    marginBottom: '30px'
-                  }}
-                >
-                  <p style={{ 
-                    fontSize: '19px',
-                    fontWeight: '300',
-                    color: '#F7F7F7',
-                    marginLeft: 'calc(-2cm + 5mm)',
-                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                    lineHeight: '1.6'
+                {/* Subheadline - Elegant Sans-Serif */}
+                <p style={{ 
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '23px',
+                  fontWeight: '300',
+                  lineHeight: '1.5',
+                  marginBottom: '40px',
+                  maxWidth: '650px',
+                  color: '#E5E5E5'
+                }}>
+                  <span style={{ 
+                    color: '#D4AF37',
+                    fontWeight: '500'
                   }}>
-                    <span style={{ 
-                      fontSize: '36px',
-                      fontWeight: '700',
-                      color: '#FFD700',
-                      marginRight: '12px',
-                      textShadow: '0 0 20px rgba(255, 215, 0, 0.4)'
-                    }}>
-                      Isabella
-                    </span>
-                    {"Ovela's first AI model ambassador. Ask questions, explore her portfolio, book a project — live."}
-                  </p>
-                </div>
+                    Isabella ✨
+                  </span>
+                  {' — Ovela\'s first AI model ambassador. Ask about Ovela, book a project, or design your own AI-powered ambassador.'}
+                </p>
                 
-                {/* CTA Buttons */}
-                <div className="flex flex-col gap-5">
-                  {/* Primary Button */}
+                {/* CTA Section - Reverse Chevron Alignment */}
+                <div className="flex flex-col items-center gap-4">
+                  {/* Primary CTA Button - 70% of original size */}
                   <button 
                     onClick={activateChat}
                     className="transition-all duration-300"
                     style={{
-                      width: '28vw',
-                      maxWidth: '280px',
-                      height: '52px',
-                      borderRadius: '16px',
+                      width: '280px',
+                      height: '54px',
+                      borderRadius: '12px',
                       background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
                       border: 'none',
-                      color: '#0A0A2A',
+                      color: '#000000',
                       fontFamily: 'Inter, sans-serif',
-                      fontSize: '15px',
+                      fontSize: '16px',
                       fontWeight: '600',
-                      letterSpacing: '0.5px',
-                      marginLeft: 'calc(-1cm + 8mm)',
+                      letterSpacing: '0.3px',
                       cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)'
+                      boxShadow: '0 8px 24px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2)'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 24px rgba(212, 175, 55, 0.7)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 12px 32px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3)';
+                      e.currentTarget.style.transform = 'translateY(-3px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 175, 55, 0.3)';
+                      e.currentTarget.style.boxShadow = '0 8px 24px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2)';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     Start Chatting with Isabella
                   </button>
                   
-                  {/* Secondary Button - Text Link Style */}
+                  {/* Secondary CTA - Plain Text Link */}
                   <button 
                     onClick={scrollToPortfolio}
                     className="transition-all duration-300"
@@ -244,15 +254,15 @@ const Home = () => {
                       fontWeight: '400',
                       letterSpacing: '0.5px',
                       cursor: 'pointer',
-                      padding: '0',
-                      textAlign: 'left',
-                      marginLeft: 'calc(-1cm + 8mm)'
+                      padding: '8px 0'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = '#F7E7CE';
+                      e.currentTarget.style.textShadow = '0 0 12px rgba(212, 175, 55, 0.6)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = '#D4AF37';
+                      e.currentTarget.style.textShadow = 'none';
                     }}
                   >
                     ↓ Explore Isabella's Portfolio ↓
@@ -260,34 +270,51 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Active State - Chat Box Overlay */}
+              {/* Chat Box Overlay - Glassmorphism */}
               <div 
-                className={`transition-all duration-700 ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
+                className={`transition-all duration-500 ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: '420px',
-                  height: '620px'
+                  display: isChatActive ? 'flex' : 'none',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: '100%'
                 }}
               >
                 <div 
-                  className="h-full relative flex flex-col"
+                  className="relative"
                   style={{ 
-                    background: 'rgba(10, 10, 42, 0.75)',
-                    backdropFilter: 'blur(24px)',
-                    WebkitBackdropFilter: 'blur(24px)',
+                    width: '400px',
+                    height: '550px',
+                    background: 'rgba(10, 14, 39, 0.7)',
+                    backdropFilter: 'blur(40px)',
+                    WebkitBackdropFilter: 'blur(40px)',
                     borderRadius: '24px',
+                    border: '1px solid rgba(212, 175, 55, 0.3)',
                     boxShadow: `
-                      0 30px 60px rgba(0, 0, 0, 0.5),
-                      0 0 0 1px rgba(212, 175, 55, 0.3),
-                      inset 0 0 40px rgba(212, 175, 55, 0.06)
+                      0 0 60px rgba(212, 175, 55, 0.25),
+                      0 30px 60px rgba(0, 0, 0, 0.4),
+                      inset 0 0 80px rgba(212, 175, 55, 0.05)
                     `,
-                    border: '1px solid rgba(212, 175, 55, 0.25)'
+                    overflow: 'hidden'
                   }}
                 >
                   {/* Close Button */}
                   <button
                     onClick={() => setIsChatActive(false)}
-                    className="absolute top-3 right-3 z-50 p-2 rounded-full hover:bg-white/10 transition-colors"
-                    style={{ color: '#D4AF37' }}
+                    className="absolute top-4 right-4 z-50 p-2 rounded-full transition-all duration-200"
+                    style={{ 
+                      color: '#D4AF37',
+                      background: 'rgba(0, 0, 0, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>

@@ -10,12 +10,12 @@ interface LookbookItem {
 const lookbookItems: LookbookItem[] = [
   {
     type: 'video',
-    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4',
+    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758907652/Ovela_2_hiufkv.mp4',
     caption: 'Isabella in Motion'
   },
   {
     type: 'image',
-    src: '/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759496778/Flux_Dev_Fullbody_or_closeup_portrait_of_adult_IsabellaV2_hair_0_jbwnwi.jpg',
     caption: 'Editorial Excellence'
   },
   {
@@ -25,22 +25,22 @@ const lookbookItems: LookbookItem[] = [
   },
   {
     type: 'image',
-    src: '/lovable-uploads/b06efdff-127f-4fcd-9e95-9dcf24e4b22f.png',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759495220/1_16_xpxhgm.jpg',
     caption: 'Brand Partnerships'
   },
   {
     type: 'image',
-    src: '/lovable-uploads/b08873ce-6e3a-412a-aae2-2dc08fe8f75c.png',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759495676/Flux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_debou_000_18_ohp5o7.jpg',
     caption: 'Fashion Forward'
   },
   {
     type: 'image',
-    src: '/lovable-uploads/10967d19-2fe9-4ab6-aa70-39ba0280a4a2.png',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759496281/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_body_clos_1_iitsbk.jpg',
     caption: 'Timeless Elegance'
   },
   {
-    type: 'image',
-    src: '/lovable-uploads/3548b4f8-b4f5-410a-a3cd-669f8d922534.png',
+    type: 'video',
+    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4',
     caption: 'Modern Icon'
   }
 ];

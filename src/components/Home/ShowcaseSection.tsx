@@ -3,7 +3,7 @@ import React from 'react';
 const showcaseItems = [
   {
     mediaType: 'video',
-    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4',
+    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/202509242206_1_nnxmtz.mp4',
     title: 'Fashion Forward',
     description: 'High-end editorial campaigns that capture attention and drive engagement',
     layout: 'media-left'

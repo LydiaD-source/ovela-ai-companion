@@ -6,7 +6,7 @@ export const AboutSection = () => {
       {/* Left: Image */}
       <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden">
         <img
-          src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759415621/Flux_1Dev_Use_Character_Element_IsabellaV2Focus_fullbody_portra_1__6_-removebg-preview_iapmgy.png"
+          src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759499223/Flux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_elega_3_asxnlz.jpg"
           alt="Isabella Navia - AI Model"
           className="w-full h-full object-cover object-center"
           style={{ objectPosition: 'center 20%' }}

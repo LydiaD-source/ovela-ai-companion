@@ -10,10 +10,11 @@ const showcaseItems = [
   },
   {
     mediaType: 'image',
-    src: '/lovable-uploads/10967d19-2fe9-4ab6-aa70-39ba0280a4a2.png',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758192666/FTlux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_stand_3_7_jod0un.jpg',
     title: 'Interactive Marketing',
-    description: 'Real-time customer interactions that convert browsers into buyers',
-    layout: 'media-right'
+    description: 'Isabella transforms traditional campaigns into conversations. Luxury brands can now engage audiences directly through interactive experiences.',
+    layout: 'media-right',
+    isInteractive: true
   },
   {
     mediaType: 'image',
@@ -47,11 +48,65 @@ export const ShowcaseSection = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <img
-                src={item.src}
-                alt={item.title}
-                className="w-full h-full object-cover"
-              />
+              <div className="relative w-full h-full">
+                <img
+                  src={item.src}
+                  alt={item.title}
+                  className="w-full h-full object-cover object-center"
+                  style={{ 
+                    maxWidth: '1120px',
+                    margin: '0 auto',
+                    maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 95%, rgba(0,0,0,0))',
+                    WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 95%, rgba(0,0,0,0))'
+                  }}
+                />
+                {item.isInteractive && (
+                  <>
+                    {/* Champagne Gold Gradient Overlay */}
+                    <div 
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        background: 'linear-gradient(to bottom, rgba(232, 207, 169, 0.2) 0%, rgba(232, 207, 169, 0.05) 100%)'
+                      }}
+                    />
+                    {/* Chat Bubble Overlay */}
+                    <div 
+                      className="absolute top-[15%] left-[10%] max-w-[20%] min-w-[200px]"
+                      style={{
+                        animation: 'fadeIn 1s ease-in-out'
+                      }}
+                    >
+                      <div 
+                        className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg"
+                        style={{
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                        }}
+                      >
+                        <p 
+                          className="text-sm md:text-base"
+                          style={{
+                            fontFamily: 'Inter, sans-serif',
+                            color: '#2C2C2C',
+                            lineHeight: '1.5'
+                          }}
+                        >
+                          Would you like to discover more?
+                        </p>
+                      </div>
+                      {/* Chat bubble tail */}
+                      <div 
+                        className="w-0 h-0 ml-6"
+                        style={{
+                          borderLeft: '10px solid transparent',
+                          borderRight: '10px solid transparent',
+                          borderTop: '10px solid rgba(255, 255, 255, 0.9)',
+                          filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </div>
 

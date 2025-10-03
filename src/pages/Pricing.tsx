@@ -143,14 +143,14 @@ const Pricing = () => {
                     <span className="text-sm">{feature}</span>
                   </div>
                 ))}
-                <Button 
-                  className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
-                  size="lg"
-                  onClick={() => startChat('isabella-navia', 'pricing-plan')}
-                  disabled={isConnecting}
-                >
-                  {isConnecting ? 'Connecting...' : 'Work With Isabella'}
-                </Button>
+                <a href="/#chat">
+                  <Button 
+                    className={`w-full mt-8 ${plan.popular ? 'btn-gradient' : 'btn-outline'}`}
+                    size="lg"
+                  >
+                    Work With Isabella
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           ))}
@@ -180,17 +180,17 @@ const Pricing = () => {
                 <div className="flex-1">
                   <h3 className="heading-sm mb-2">{service.name}</h3>
                   <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold">{service.price}</span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => startChat('isabella-navia', 'pricing-service')}
-                      disabled={isConnecting}
-                    >
-                      {isConnecting ? 'Connecting...' : 'Work With Isabella'}
-                    </Button>
-                  </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold">{service.price}</span>
+                      <a href="/#chat">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                        >
+                          Work With Isabella
+                        </Button>
+                      </a>
+                    </div>
                 </div>
               </div>
             </Card>
@@ -269,17 +269,17 @@ const Pricing = () => {
             <br />
             <span className="gradient-text">Let Isabella elevate your story.</span>
           </h2>
-          <Button 
-            size="lg" 
-            className="btn-gradient group text-lg px-12 py-6 animate-glow"
-            onClick={() => startChat('isabella-navia', 'pricing-cta')}
-            disabled={isConnecting}
-          >
-            {isConnecting ? 'Connecting...' : 'Work With Isabella Today'}
-            <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <a href="/#chat">
+            <Button 
+              size="lg" 
+              className="btn-gradient group text-lg px-12 py-6 animate-glow"
+            >
+              Work With Isabella Today
+              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
           <p className="text-soft-white/70 mt-6 text-lg">
-            Connect with Isabella through WellnessGeni integration
+            Connect with Isabella on the home page
           </p>
         </div>
         {/* Decorative glow effects */}

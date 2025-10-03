@@ -395,6 +395,45 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <p className="text-xs text-soft-white/60">AI Brand Ambassador</p>
           </div>
         </div>
+        
+        {/* Top Right Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleResetMessages}
+            className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
+            title="Reset conversation"
+          >
+            <RotateCcw className="w-4 h-4 text-soft-white" />
+          </button>
+          
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
+            title={isMuted ? "Unmute Isabella" : "Mute Isabella"}
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4 text-soft-white" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-soft-white" />
+            )}
+          </button>
+          
+          <button
+            onClick={isInVoiceMode ? stopVoiceMode : startVoiceMode}
+            className={`p-2 rounded-full transition-colors ${
+              isInVoiceMode 
+                ? 'bg-champagne-gold/80 hover:bg-champagne-gold' 
+                : 'bg-soft-white/10 hover:bg-soft-white/20'
+            } ${isRecording ? 'animate-pulse' : ''}`}
+            title={isInVoiceMode ? "Stop voice mode" : "Start voice mode"}
+          >
+            {isInVoiceMode ? (
+              <MicOff className="w-4 h-4 text-charcoal" />
+            ) : (
+              <Mic className="w-4 h-4 text-soft-white" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Chat Messages */}
@@ -436,7 +475,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       {/* Chat Input */}
       <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
-        <form onSubmit={handleSubmit} className="flex gap-2 mb-2">
+        <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             type="text"
             value={inputText}
@@ -453,45 +492,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <Send className="w-4 h-4" />
           </Button>
         </form>
-        
-        {/* Bottom Right Controls */}
-        <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={handleResetMessages}
-            className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
-            title="Reset conversation"
-          >
-            <RotateCcw className="w-4 h-4 text-soft-white" />
-          </button>
-          
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors"
-            title={isMuted ? "Unmute Isabella" : "Mute Isabella"}
-          >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4 text-soft-white" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-soft-white" />
-            )}
-          </button>
-          
-          <button
-            onClick={isInVoiceMode ? stopVoiceMode : startVoiceMode}
-            className={`p-2 rounded-full transition-colors ${
-              isInVoiceMode 
-                ? 'bg-champagne-gold/80 hover:bg-champagne-gold' 
-                : 'bg-soft-white/10 hover:bg-soft-white/20'
-            } ${isRecording ? 'animate-pulse' : ''}`}
-            title={isInVoiceMode ? "Stop voice mode" : "Start voice mode"}
-          >
-            {isInVoiceMode ? (
-              <MicOff className="w-4 h-4 text-charcoal" />
-            ) : (
-              <Mic className="w-4 h-4 text-soft-white" />
-            )}
-          </button>
-        </div>
       </div>
 
       {/* Hidden video element */}

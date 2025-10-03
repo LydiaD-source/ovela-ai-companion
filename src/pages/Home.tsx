@@ -301,10 +301,21 @@ const Home = () => {
                     overflow: 'hidden'
                   }}
                 >
-                  {/* Close Button */}
+                  
+                  {/* Chat Component - Full Height */}
+                  <div className="w-full h-full pt-2">
+                    <FullWellnessGeniUI 
+                      isGuestMode={true}
+                      defaultPersona="isabella-navia"
+                      allowedPersonas={['isabella-navia']}
+                      showOnlyPromoter={true}
+                    />
+                  </div>
+                  
+                  {/* Close Button - Bottom Right */}
                   <button
                     onClick={() => setIsChatActive(false)}
-                    className="absolute top-4 right-4 z-50 p-2 rounded-full transition-all duration-200"
+                    className="absolute bottom-4 right-4 z-50 p-2 rounded-full transition-all duration-200"
                     style={{ 
                       color: '#D4AF37',
                       background: 'rgba(0, 0, 0, 0.3)'
@@ -323,16 +334,6 @@ const Home = () => {
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
                   </button>
-                  
-                  {/* Chat Component - Full Height */}
-                  <div className="w-full h-full pt-2">
-                    <FullWellnessGeniUI 
-                      isGuestMode={true}
-                      defaultPersona="isabella-navia"
-                      allowedPersonas={['isabella-navia']}
-                      showOnlyPromoter={true}
-                    />
-                  </div>
                 </div>
               </div>
             </div>

@@ -282,11 +282,11 @@ const Home = () => {
                 }}
               >
                 <div 
-                  className="relative"
+                  className="relative flex flex-col"
                   style={{ 
-                    width: '400px',
-                    height: '550px',
-                    background: 'rgba(10, 14, 39, 0.7)',
+                    width: '480px',
+                    height: '640px',
+                    background: 'rgba(10, 14, 39, 0.85)',
                     backdropFilter: 'blur(40px)',
                     WebkitBackdropFilter: 'blur(40px)',
                     borderRadius: '24px',
@@ -322,12 +322,15 @@ const Home = () => {
                     </svg>
                   </button>
                   
-                  <FullWellnessGeniUI 
-                    isGuestMode={true}
-                    defaultPersona="isabella-navia"
-                    allowedPersonas={['isabella-navia']}
-                    showOnlyPromoter={true}
-                  />
+                  {/* Chat Component - Full Height */}
+                  <div className="w-full h-full pt-2">
+                    <FullWellnessGeniUI 
+                      isGuestMode={true}
+                      defaultPersona="isabella-navia"
+                      allowedPersonas={['isabella-navia']}
+                      showOnlyPromoter={true}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

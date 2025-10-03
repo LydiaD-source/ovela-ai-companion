@@ -71,38 +71,31 @@ export const ShowcaseSection = () => {
                     />
                     {/* Chat Bubble Overlay */}
                     <div 
-                      className="absolute top-[15%] left-[10%] max-w-[20%] min-w-[200px]"
+                      className="absolute top-[20%] right-[8%] max-w-[20%] min-w-[200px]"
                       style={{
                         animation: 'fadeIn 1s ease-in-out'
                       }}
                     >
                       <div 
-                        className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg"
+                        className="backdrop-blur-sm rounded-3xl p-5 shadow-lg"
                         style={{
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                          background: 'rgba(232, 207, 169, 0.35)',
+                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                          borderRadius: '24px'
                         }}
                       >
                         <p 
                           className="text-sm md:text-base"
                           style={{
                             fontFamily: 'Inter, sans-serif',
-                            color: '#2C2C2C',
-                            lineHeight: '1.5'
+                            fontWeight: '300',
+                            color: '#1a1a1a',
+                            lineHeight: '1.6'
                           }}
                         >
                           Would you like to discover more?
                         </p>
                       </div>
-                      {/* Chat bubble tail */}
-                      <div 
-                        className="w-0 h-0 ml-6"
-                        style={{
-                          borderLeft: '10px solid transparent',
-                          borderRight: '10px solid transparent',
-                          borderTop: '10px solid rgba(255, 255, 255, 0.9)',
-                          filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))'
-                        }}
-                      />
                     </div>
                   </>
                 )}

@@ -375,7 +375,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full flex flex-col bg-transparent">
+    <div className="relative w-full h-full flex flex-col bg-transparent" style={{ minHeight: 0 }}>
       {/* Compact Header */}
       <div className="flex items-center justify-between p-3 border-b border-soft-white/10">
         <div className="flex items-center space-x-3">
@@ -405,8 +405,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       <div 
         className="flex-1 overflow-y-auto p-4 space-y-4"
         style={{ 
-          maxHeight: 'calc(100% - 140px)',
-          minHeight: '300px'
+          maxHeight: 'calc(100% - 128px)',
+          minHeight: '200px',
+          overscrollBehavior: 'contain'
         }}
       >
         {messages.map((message) => (

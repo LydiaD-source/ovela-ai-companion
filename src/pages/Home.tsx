@@ -284,8 +284,10 @@ const Home = () => {
                 <div 
                   className="relative flex flex-col"
                   style={{ 
-                    width: '480px',
-                    height: '640px',
+                    width: '360px',
+                    height: '520px',
+                    maxWidth: '92vw',
+                    maxHeight: '80vh',
                     background: 'rgba(10, 14, 39, 0.85)',
                     backdropFilter: 'blur(40px)',
                     WebkitBackdropFilter: 'blur(40px)',

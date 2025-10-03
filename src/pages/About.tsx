@@ -25,7 +25,7 @@ const About = () => {
             <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
               <div className="relative w-full max-w-md">
                 <img
-                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg"
+                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759515522/Flux_Dev_Fullbody_portrait_of_IsabellaV2_head_to_feet_visible__0_er2yhj.jpg"
                   alt="Isabella - Interactive AI Model"
                   className="w-full h-auto rounded-lg"
                   style={{
@@ -68,7 +68,7 @@ const About = () => {
             <div className="flex justify-center lg:justify-end">
               <div className="relative w-full max-w-md">
                 <img
-                  src="/lovable-uploads/b08873ce-6e3a-412a-aae2-2dc08fe8f75c.png"
+                  src="/lovable-uploads/isabella-appearance-settings.png"
                   alt="WellnessGeni App with Isabella"
                   className="w-full h-auto rounded-lg"
                   style={{
@@ -99,7 +99,7 @@ const About = () => {
             <div className="flex justify-center lg:justify-start">
               <div className="relative w-full max-w-md">
                 <img
-                  src="/lovable-uploads/3548b4f8-b4f5-410a-a3cd-669f8d922534.png"
+                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759264536/Fllux_Dev_Use_Character_Element_IsabellaV2Focus_half_body_sitti_1_33_raj9vh.jpg"
                   alt="Isabella in WellnessGeni"
                   className="w-full h-auto rounded-lg"
                   style={{

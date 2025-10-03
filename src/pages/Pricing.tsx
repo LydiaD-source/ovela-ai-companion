@@ -5,6 +5,7 @@ import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import QuickPricingMenu from '@/components/UI/QuickPricingMenu';
+import { FooterMinimal } from '@/components/Home/FooterMinimal';
 
 const Pricing = () => {
   const [showPricingMenu, setShowPricingMenu] = useState(false);
@@ -284,6 +285,7 @@ const Pricing = () => {
         {/* Decorative glow effects */}
         <div className="absolute inset-0 bg-gradient-to-r from-electric-blue/10 via-transparent to-neon-purple/10 pointer-events-none" />
       </Section>
+      <FooterMinimal />
     </div>
   );
 };

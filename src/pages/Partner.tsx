@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, Clock, DollarSign, Zap, Globe, Users, Target }
 import Section from '@/components/UI/Section';
 import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import { Button } from '@/components/ui/button';
+import { FooterMinimal } from '@/components/Home/FooterMinimal';
 
 const Partner = () => {
   const { startChat, isConnecting } = useWellnessGeniChat();
@@ -117,21 +118,22 @@ const Partner = () => {
         </div>
 
         <div className="text-center">
-          <Button 
-            variant="default" 
-            size="lg" 
-            className="btn-gradient group"
-            onClick={() => startChat('isabella-navia', 'partner-page')}
-            disabled={isConnecting}
-          >
-            {isConnecting ? 'Connecting...' : 'Start Your Project Today'}
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <a href="/#chat">
+            <Button 
+              variant="default" 
+              size="lg" 
+              className="btn-gradient group"
+            >
+              Chat With Isabella
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
           <p className="text-sm text-muted-foreground mt-4">
-            Connect with Isabella through WellnessGeni integration
+            Connect with Isabella on the home page
           </p>
         </div>
       </Section>
+      <FooterMinimal />
     </div>
   );
 };

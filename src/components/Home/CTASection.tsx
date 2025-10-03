@@ -32,7 +32,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
           Partner with the world's first AI model ambassador for your brand, campaign, or vision.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex justify-center items-center">
           <button
             onClick={onChatClick}
             className="transition-all duration-300 hover:scale-105"
@@ -47,24 +47,6 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
               fontWeight: '600',
               cursor: 'pointer',
               boxShadow: '0 8px 24px rgba(212, 175, 55, 0.4)'
-            }}
-          >
-            Start Your Project
-          </button>
-
-          <button
-            onClick={onChatClick}
-            className="transition-all duration-300 hover:bg-[#E8CFA9]/10"
-            style={{
-              padding: '14px 32px',
-              borderRadius: '12px',
-              background: 'transparent',
-              border: '2px solid #E8CFA9',
-              color: '#E8CFA9',
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '18px',
-              fontWeight: '600',
-              cursor: 'pointer'
             }}
           >
             Chat With Isabella

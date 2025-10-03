@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Section from '@/components/UI/Section';
+import { FooterMinimal } from '@/components/Home/FooterMinimal';
 
 const Projects = () => {
   const projects = [
@@ -78,6 +79,7 @@ const Projects = () => {
           </p>
         </div>
       </Section>
+      <FooterMinimal />
     </div>
   );
 };

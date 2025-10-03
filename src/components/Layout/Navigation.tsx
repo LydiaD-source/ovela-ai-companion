@@ -64,9 +64,7 @@ const Navigation = () => {
             WebkitBackdropFilter: 'blur(20px)',
             border: '1px solid hsl(var(--champagne-gold))',
             borderRadius: '12px',
-            boxShadow: '0 0 30px rgba(232, 207, 169, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4)',
-            maxHeight: '30vh',
-            overflowY: 'auto'
+            boxShadow: '0 0 30px rgba(232, 207, 169, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4)'
           }}
         >
           <div className="flex flex-col p-4">

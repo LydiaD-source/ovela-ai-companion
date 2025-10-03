@@ -11,6 +11,7 @@ import About from "./pages/About";
 import Projects from "./pages/Projects";
 import WellnessGeni from "./pages/WellnessGeni";
 import Partner from "./pages/Partner";
+import PartnerWithUs from "./pages/PartnerWithUs";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
@@ -31,7 +32,7 @@ const App = () => {
                 <Route path="/about" element={<About />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/wellnessgeni" element={<WellnessGeni />} />
-                <Route path="/partner" element={<Partner />} />
+                <Route path="/partner" element={<PartnerWithUs />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

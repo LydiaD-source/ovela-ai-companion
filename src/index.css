@@ -45,8 +45,9 @@
     
     /* Hero Premium Colors */
     --midnight-blue: 230 45% 15%;
+    --deep-navy: 228 45% 8%;
     --soft-purple: 270 40% 50%;
-    --champagne-gold: 45 100% 60%;
+    --champagne-gold: 45 79% 66%;
 
     /* Typography Scale */
     --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;

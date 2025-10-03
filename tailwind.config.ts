@@ -108,7 +108,8 @@ export default {
 			fontFamily: {
 				'heading': ['Playfair Display', 'serif'],
 				'body': ['Inter', 'system-ui', 'sans-serif'],
-				'display': ['Playfair Display', 'serif']
+				'display': ['Playfair Display', 'serif'],
+				'playfair': ['Playfair Display', 'serif']
 			}
 		}
 	},

@@ -51,7 +51,14 @@ export const LookbookCarousel = () => {
   const [mutedStates, setMutedStates] = useState<Record<number, boolean>>(
     lookbookItems.reduce((acc, _, index) => ({ ...acc, [index]: true }), {})
   );
-  const [buttonVisible, setButtonVisible] = useState<Record<number, boolean>>({});
+  const [buttonVisible, setButtonVisible] = useState<Record<number, boolean>>(
+    lookbookItems.reduce((acc, item, index) => {
+      if (item.type === 'video') {
+        return { ...acc, [index]: true };
+      }
+      return acc;
+    }, {})
+  );
   const fadeTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const startX = useRef<number>(0);

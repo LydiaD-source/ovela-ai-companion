@@ -249,24 +249,29 @@ export const LookbookCarousel = () => {
                         toggleMute(index);
                       }}
                       onMouseEnter={() => handleVideoMouseEnter(index)}
-                      className="absolute transition-opacity duration-300 flex items-center justify-center"
+                      className="absolute transition-opacity duration-300 flex items-center justify-center hover:scale-110"
                       style={{
-                        bottom: '24px',
-                        right: '24px',
-                        width: window.innerWidth < 768 ? '28px' : '40px',
-                        height: window.innerWidth < 768 ? '28px' : '40px',
+                        bottom: '80px',
+                        right: '20px',
+                        width: window.innerWidth < 768 ? '32px' : '44px',
+                        height: window.innerWidth < 768 ? '32px' : '44px',
                         borderRadius: '50%',
-                        background: 'rgba(0, 0, 0, 0.35)',
-                        border: '1.5px solid #D4AF37',
-                        opacity: buttonVisible[index] === false ? 0.2 : 1,
-                        boxShadow: buttonVisible[index] === false ? 'none' : '0 0 10px rgba(212, 175, 55, 0.7)',
+                        background: 'rgba(0, 0, 0, 0.6)',
+                        border: '2px solid #D4AF37',
+                        opacity: buttonVisible[index] === false ? 0.3 : 1,
+                        boxShadow: buttonVisible[index] === false 
+                          ? '0 0 10px rgba(212, 175, 55, 0.3)' 
+                          : '0 0 20px rgba(212, 175, 55, 0.9)',
+                        zIndex: 30,
+                        cursor: 'pointer',
+                        backdropFilter: 'blur(4px)'
                       }}
                       aria-label={mutedStates[index] ? 'Unmute video' : 'Mute video'}
                     >
                       {mutedStates[index] ? (
-                        <VolumeX size={window.innerWidth < 768 ? 14 : 18} color="#D4AF37" strokeWidth={1.5} />
+                        <VolumeX size={window.innerWidth < 768 ? 16 : 20} color="#D4AF37" strokeWidth={2} />
                       ) : (
-                        <Volume2 size={window.innerWidth < 768 ? 14 : 18} color="#D4AF37" strokeWidth={1.5} />
+                        <Volume2 size={window.innerWidth < 768 ? 16 : 20} color="#D4AF37" strokeWidth={2} />
                       )}
                     </button>
                   </>

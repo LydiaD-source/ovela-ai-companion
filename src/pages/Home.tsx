@@ -76,7 +76,7 @@ const Home = () => {
                 
                 {/* Isabella Image - 85-90% viewport height, feet anchored */}
                 <img 
-                  src={isabellaHeroAvatar}
+                  src={`${isabellaHeroAvatar}?v=${Date.now()}`}
                   alt="Isabella Navia - AI Model Ambassador"
                   className="relative object-contain object-bottom"
                   style={{ 

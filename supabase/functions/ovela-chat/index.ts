@@ -60,6 +60,7 @@ serve(async (req) => {
     const proxiedUrl = isValidUrl(rawBase) ? rawBase!.trim() : null;
     const ovelaApiKey = Deno.env.get("WELLNESS_GENI_API_KEY"); // wg_... client key
     const openaiKey = Deno.env.get("OPENAI_API_KEY");
+    const ovelaGuide = Deno.env.get("OVELA_GUIDE"); // Ovela Interactive brand guide
 
     if (!ovelaApiKey) {
       // still allow local OpenAI route if openaiKey exists, but log actionable message
@@ -102,7 +103,7 @@ serve(async (req) => {
       }
     }
 
-    const effectiveGuide = brandGuideIn ?? fetchedGuide ?? undefined;
+    const effectiveGuide = brandGuideIn ?? fetchedGuide ?? ovelaGuide ?? undefined;
     const payload = {
       message: incomingMessage,
       persona,

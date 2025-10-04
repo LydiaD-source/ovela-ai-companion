@@ -34,7 +34,7 @@ class IsabellaAPI {
           prompt: message,
           client_id: 'ovela_client_001',
           user_id: uid,
-          brand_guide: null,
+          persona: persona || 'isabella-navia',
           source: 'ovela',
           context: 'ovela-interactive'
         }

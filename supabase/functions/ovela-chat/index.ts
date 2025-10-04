@@ -60,7 +60,6 @@ serve(async (req) => {
     const proxiedUrl = isValidUrl(rawBase) ? rawBase!.trim() : null;
     const ovelaApiKey = Deno.env.get("WELLNESS_GENI_API_KEY"); // wg_... client key
     const openaiKey = Deno.env.get("OPENAI_API_KEY");
-    const ovelaGuide = Deno.env.get("OVELA_GUIDE");
 
     if (!ovelaApiKey) {
       // still allow local OpenAI route if openaiKey exists, but log actionable message
@@ -74,7 +73,36 @@ serve(async (req) => {
     const userId = body?.user_id ?? body?.userId ?? "ovela-guest";
     const clientId = body?.client_id ?? "ovela_client_001";
 
-    const effectiveGuide = brandGuideIn ?? ovelaGuide ?? undefined;
+    // Fetch brand guide from WellnessGeni admin if available
+    let fetchedGuide: string | undefined = undefined;
+    if (proxiedUrl && ovelaApiKey) {
+      try {
+        console.log("Fetching brand guide from WellnessGeni admin for client:", clientId);
+        const guideResponse = await fetch(`${proxiedUrl}/brand-guide`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${ovelaApiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            action: "getBrandGuide",
+            payload: { client_id: clientId }
+          })
+        });
+        
+        if (guideResponse.ok) {
+          const guideData = await guideResponse.json();
+          fetchedGuide = guideData?.data?.guide_content || guideData?.guide_content;
+          console.log("Brand guide fetched successfully from WellnessGeni admin");
+        } else {
+          console.warn("Failed to fetch brand guide from admin, will use fallback");
+        }
+      } catch (err) {
+        console.error("Error fetching brand guide from admin:", err);
+      }
+    }
+
+    const effectiveGuide = brandGuideIn ?? fetchedGuide ?? undefined;
     const payload = {
       message: incomingMessage,
       persona,

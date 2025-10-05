@@ -308,3 +308,12 @@
     border-color: hsl(var(--charcoal));
   }
 }
+
+/* Raw hero image rendering to avoid any smoothing/compression */
+.hero-image-raw {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: none;
+}

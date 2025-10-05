@@ -76,7 +76,7 @@ const Home = () => {
                 
                 {/* Isabella Image - 85-90% viewport height, feet anchored */}
                 <img 
-                  src={`${isabellaHeroAvatar}?v=${Date.now()}`}
+                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759664538/Default_Generate_a_fullbody_photorealistic_image_of_IsabellaV3_0_14d7b887-9839-42dc-b83f-3d592f027d6e_0_gwuqis.png"
                   alt="Isabella Navia - AI Model Ambassador"
                   className="relative object-contain object-bottom"
                   style={{ 

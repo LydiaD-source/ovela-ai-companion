@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroAvatar from '@/assets/isabella-hero-avatar-v5.webp';
+import isabellaHeroAvatar from '@/assets/isabella-hero-avatar-hd.webp';
 
 const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
@@ -74,18 +74,21 @@ const Home = () => {
                   zIndex: 0
                 }}></div>
                 
-                {/* Isabella Image - 85-90% viewport height, feet anchored */}
+                {/* Isabella Image - Ultra HD for zoom support */}
                 <img 
                   src={isabellaHeroAvatar}
                   alt="Isabella Navia - AI Model Ambassador"
                   className="relative object-bottom"
+                  loading="eager"
+                  fetchPriority="high"
                   style={{ 
                     height: '88vh',
                     width: 'auto',
                     maxWidth: 'none',
                     zIndex: 1,
                     objectFit: 'contain',
-                    imageRendering: '-webkit-optimize-contrast',
+                    objectPosition: 'bottom',
+                    imageRendering: 'crisp-edges',
                     backfaceVisibility: 'hidden',
                     WebkitBackfaceVisibility: 'hidden',
                     transform: 'translateZ(0)',

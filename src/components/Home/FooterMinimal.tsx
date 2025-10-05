@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Instagram, Youtube, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import LegalDocumentModal from '@/components/UI/LegalDocumentModal';
 
 export const FooterMinimal = () => {
-  const handleOpenPDF = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
 
   return (
     <>
@@ -62,7 +62,7 @@ export const FooterMinimal = () => {
               </div>
               <div className="flex items-center gap-4 text-sm">
                 <button
-                  onClick={() => handleOpenPDF('/terms-of-service.pdf')}
+                  onClick={() => setTermsOpen(true)}
                   className="transition-colors underline-offset-4 hover:underline"
                   style={{ color: 'rgba(232, 207, 169, 0.7)' }}
                 >
@@ -70,7 +70,7 @@ export const FooterMinimal = () => {
                 </button>
                 <span style={{ color: 'rgba(232, 207, 169, 0.3)' }}>|</span>
                 <button
-                  onClick={() => handleOpenPDF('/privacy-policy.pdf')}
+                  onClick={() => setPrivacyOpen(true)}
                   className="transition-colors underline-offset-4 hover:underline"
                   style={{ color: 'rgba(232, 207, 169, 0.7)' }}
                 >
@@ -131,6 +131,20 @@ export const FooterMinimal = () => {
           </div>
         </div>
       </footer>
+
+      {/* Legal Document Modals */}
+      <LegalDocumentModal
+        open={privacyOpen}
+        onOpenChange={setPrivacyOpen}
+        documentType="privacy_policy"
+        title="Privacy Policy"
+      />
+      <LegalDocumentModal
+        open={termsOpen}
+        onOpenChange={setTermsOpen}
+        documentType="terms_of_service"
+        title="Terms & Conditions"
+      />
     </>
   );
 };

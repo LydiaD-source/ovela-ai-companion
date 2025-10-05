@@ -35,11 +35,11 @@ export const FooterMinimal = () => {
               <Button
                 variant="outline"
                 size="sm"
+                className="font-semibold tracking-wide hover:bg-white/10"
                 style={{
-                  borderColor: 'rgba(232, 207, 169, 0.3)',
+                  borderColor: 'rgba(232, 207, 169, 0.35)',
                   color: '#E8CFA9'
                 }}
-                className="hover:bg-white/10"
                 asChild
               >
                 <a href="mailto:contact@ovelainteractive.com">

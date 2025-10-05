@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroFullbody from '@/assets/isabella-hero-fullbody.png';
+import isabellaHeroFullbody from '@/assets/isabella-hero-fullbody-v3.png';
 
 
 const Home = () => {

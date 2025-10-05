@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Instagram, Youtube, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import PDFViewer from '@/components/UI/PDFViewer';
 
 export const FooterMinimal = () => {
-  const [privacyOpen, setPrivacyOpen] = useState(false);
-  const [termsOpen, setTermsOpen] = useState(false);
+  const handleOpenPDF = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <>
@@ -62,7 +62,7 @@ export const FooterMinimal = () => {
               </div>
               <div className="flex items-center gap-4 text-sm">
                 <button
-                  onClick={() => setTermsOpen(true)}
+                  onClick={() => handleOpenPDF('/terms-of-service.pdf')}
                   className="transition-colors underline-offset-4 hover:underline"
                   style={{ color: 'rgba(232, 207, 169, 0.7)' }}
                 >
@@ -70,7 +70,7 @@ export const FooterMinimal = () => {
                 </button>
                 <span style={{ color: 'rgba(232, 207, 169, 0.3)' }}>|</span>
                 <button
-                  onClick={() => setPrivacyOpen(true)}
+                  onClick={() => handleOpenPDF('/privacy-policy.pdf')}
                   className="transition-colors underline-offset-4 hover:underline"
                   style={{ color: 'rgba(232, 207, 169, 0.7)' }}
                 >
@@ -131,20 +131,6 @@ export const FooterMinimal = () => {
           </div>
         </div>
       </footer>
-
-      {/* PDF Viewers */}
-      <PDFViewer
-        open={privacyOpen}
-        onOpenChange={setPrivacyOpen}
-        pdfUrl="/privacy-policy.pdf"
-        title="Privacy Policy"
-      />
-      <PDFViewer
-        open={termsOpen}
-        onOpenChange={setTermsOpen}
-        pdfUrl="/terms-of-service.pdf"
-        title="Terms & Conditions"
-      />
     </>
   );
 };

@@ -10,10 +10,7 @@ export const AboutSection = () => {
           alt="Isabella Navia - AI Model"
           className="w-full h-full object-cover object-center"
           style={{ 
-            objectPosition: 'center 20%',
-            imageRendering: '-webkit-optimize-contrast',
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden'
+            objectPosition: 'center 20%'
           }}
         />
       </div>

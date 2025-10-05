@@ -90,13 +90,28 @@
   
   /* Optimize image rendering for all browsers - especially Edge */
   img, video {
+    image-rendering: auto;
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    /* Prevent subpixel rendering issues */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* High-quality rendering for photographic images */
+  img[src*="isabella"],
+  img[src*="cloudinary"],
+  img[alt*="Isabella"] {
+    image-rendering: auto;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
+    /* Ensure sharp rendering on high DPI displays */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
   }
 }
 

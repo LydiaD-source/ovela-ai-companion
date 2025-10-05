@@ -1769,6 +1769,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      check_email_authorized: {
+        Args: { check_email: string }
+        Returns: boolean
+      }
       ensure_user_profile: {
         Args: Record<PropertyKey, never>
         Returns: undefined

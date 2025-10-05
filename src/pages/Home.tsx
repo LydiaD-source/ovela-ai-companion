@@ -74,9 +74,9 @@ const Home = () => {
                   zIndex: 0
                 }}></div>
                 
-                {/* Isabella Image - Native resolution (2314×4096) for ultra-sharp zoom */}
+                {/* Isabella Image - Native resolution for ultra-sharp zoom */}
                 <img 
-                  src="/images/isabella-hero-avatar-native.webp?raw=1"
+                  src="/src/assets/isabella-hero-fullbody.png"
                   alt="Isabella Navia - AI Model Ambassador"
                   className="relative object-bottom hero-image-raw"
                   loading="eager"

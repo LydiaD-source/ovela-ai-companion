@@ -84,7 +84,7 @@ const Home = () => {
                   style={{ 
                     height: '88vh',
                     width: 'auto',
-                    maxWidth: 'none',
+                    maxWidth: '2314px',
                     zIndex: 1,
                     objectFit: 'contain',
                     objectPosition: 'bottom',

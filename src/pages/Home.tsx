@@ -83,7 +83,12 @@ const Home = () => {
                     height: '88vh',
                     width: 'auto',
                     maxWidth: 'none',
-                    zIndex: 1
+                    zIndex: 1,
+                    imageRendering: '-webkit-optimize-contrast',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)'
                   }}
                 />
               </div>

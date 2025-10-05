@@ -87,6 +87,17 @@
   html {
     scroll-behavior: smooth;
   }
+  
+  /* Optimize image rendering for all browsers - especially Edge */
+  img, video {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
 }
 
 @layer components {

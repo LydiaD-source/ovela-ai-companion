@@ -9,7 +9,12 @@ export const AboutSection = () => {
           src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759499223/Flux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_elega_3_asxnlz.jpg"
           alt="Isabella Navia - AI Model"
           className="w-full h-full object-cover object-center"
-          style={{ objectPosition: 'center 20%' }}
+          style={{ 
+            objectPosition: 'center 20%',
+            imageRendering: '-webkit-optimize-contrast',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden'
+          }}
         />
       </div>
 

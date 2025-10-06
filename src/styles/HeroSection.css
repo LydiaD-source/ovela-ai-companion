@@ -89,17 +89,14 @@
   position: relative;
   object-fit: contain;
   object-position: bottom center;
-  height: 88vh;
+  height: auto;
+  max-height: 88vh;
   width: auto;
-  max-width: none;
   z-index: 3;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transform: translateZ(0);
+  transform: none;
   image-rendering: auto;
-  image-rendering: -webkit-optimize-contrast;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

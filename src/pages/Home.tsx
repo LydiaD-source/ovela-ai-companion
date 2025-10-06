@@ -7,7 +7,9 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroFullbody from '@/assets/isabella-hero-fullbody-v3.png';
+import isabellaHeroWebP from '@/assets/isabella-hero-fullbody-v3.webp';
+import isabellaHeroPNG from '@/assets/isabella-hero-fullbody-v3.png';
+import '@/styles/HeroSection.css';
 
 
 const Home = () => {
@@ -48,174 +50,82 @@ const Home = () => {
 
       <div>
         {/* Luxury Hero Section */}
-        <section className="h-screen w-full relative overflow-hidden">
-          {/* Deep Navy to Black Gradient with Champagne Glow */}
-          <div className="absolute inset-0" style={{
-            background: 'linear-gradient(135deg, #0A0E27 0%, #000000 100%)',
-          }}></div>
+        <section className="hero-section">
+          {/* Deep Navy to Black Gradient Background */}
+          <div className="hero-gradient-bg"></div>
           
           {/* Champagne/Gold Radial Glow Behind Isabella */}
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(ellipse 800px 900px at 25% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 60%)',
-            pointerEvents: 'none'
-          }}></div>
+          <div className="hero-ambient-glow"></div>
           
           {/* Main Content Container */}
-          <div className="relative w-full h-full flex items-start justify-between">
+          <div className="hero-content-wrapper">
             
             {/* Left Side - Isabella (Anchor) */}
-            <div className="flex items-end h-full" style={{ width: '35%' }}>
-              <div className="relative w-full h-full flex items-end justify-center">
-                {/* Soft Spotlight/Glow Behind Isabella */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{
-                  width: '500px',
-                  height: '700px',
-                  background: 'radial-gradient(ellipse at center, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.08) 40%, transparent 70%)',
-                  filter: 'blur(60px)',
-                  zIndex: 0
-                }}></div>
+            <div className="isabella-container">
+              {/* Enhanced Isabella Backlight (Soft Golden Glow) - Positioned in container */}
+              <div className="isabella-backlight"></div>
+              
+              {/* Soft Spotlight Behind Isabella */}
+              <div className="isabella-spotlight"></div>
+              
+              <div className="isabella-image-wrapper">
+                {/* Isabella Image - Optimized WebP with PNG Fallback */}
+                <picture>
+                  <source srcSet={isabellaHeroWebP} type="image/webp" />
+                  <img 
+                    src={isabellaHeroPNG}
+                    alt="Isabella Navia - AI Model Ambassador"
+                    className="isabella-hero-image"
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
+                  />
+                </picture>
                 
-                {/* Isabella Image - Native resolution for ultra-sharp zoom */}
-                <img 
-                  src={isabellaHeroFullbody}
-                  alt="Isabella Navia - AI Model Ambassador"
-                  className="relative object-bottom hero-image-raw"
-                  loading="eager"
-                  decoding="sync"
-                  fetchPriority="high"
-                  style={{ 
-                    height: '88vh',
-                    width: 'auto',
-                    maxWidth: '2314px',
-                    zIndex: 1,
-                    objectFit: 'contain',
-                    objectPosition: 'bottom',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    transform: 'none',
-                    msInterpolationMode: 'bicubic'
-                  } as React.CSSProperties}
-                />
+                {/* HeyGen Avatar Container (Ready for Video Embed) */}
+                <div id="heygen-container" className="heygen-avatar-layer">
+                  {/* HeyGen video embed will go here */}
+                </div>
+                
+                {/* Loading Skeleton (Optional) */}
+                {/* <div className="heygen-loading-skeleton"></div> */}
               </div>
             </div>
 
             {/* Center-Right Area - Tagline & Text */}
-            <div 
-              className="flex flex-col justify-center h-full"
-              style={{ 
-                width: '65%',
-                paddingLeft: '4%',
-                paddingRight: '8%'
-              }}
-            >
+            <div className="hero-text-container">
               {/* Content Wrapper - Fades out when chat is active */}
-              <div 
-                className={`transition-all duration-500 ${isChatActive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-                style={{ 
-                  display: isChatActive ? 'none' : 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  maxWidth: '700px',
-                  margin: '0 auto'
-                }}
-              >
+              <div className={`hero-content-fade ${isChatActive ? 'hidden' : ''}`}>
                 {/* Headline - Luxury Serif */}
-                <h1 
-                  style={{ 
-                    fontFamily: 'Playfair Display, serif',
-                    fontSize: '56px',
-                    fontWeight: '700',
-                    lineHeight: '1.15',
-                    marginBottom: '24px',
-                    color: '#FFFFFF'
-                  }}
-                >
+                <h1 className="hero-headline">
                   The Future of Modeling is{' '}
-                  <span style={{
-                    background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #D4AF37 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}>
+                  <span className="hero-gradient-text">
                     Interactive
                   </span>
                 </h1>
                 
                 {/* Subheadline - Elegant Sans-Serif */}
-                <p style={{ 
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '23px',
-                  fontWeight: '300',
-                  lineHeight: '1.5',
-                  marginBottom: '40px',
-                  maxWidth: '650px',
-                  color: '#E5E5E5'
-                }}>
-                  <span style={{ 
-                    color: '#D4AF37',
-                    fontWeight: '500'
-                  }}>
+                <p className="hero-subheadline">
+                  <span className="hero-highlight-name">
                     Isabella ✨
                   </span>
                   {' — Ovela\'s first AI model ambassador. Ask about Ovela, book a project, or design your own AI-powered ambassador.'}
                 </p>
                 
-                {/* CTA Section - Reverse Chevron Alignment */}
-                <div className="flex flex-col items-center gap-4">
-                  {/* Primary CTA Button - 70% of original size */}
+                {/* CTA Section */}
+                <div className="hero-cta-section">
+                  {/* Primary CTA Button */}
                   <button 
                     onClick={activateChat}
-                    className="transition-all duration-300"
-                    style={{
-                      width: '280px',
-                      height: '54px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
-                      border: 'none',
-                      color: '#000000',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: '600',
-                      letterSpacing: '0.3px',
-                      cursor: 'pointer',
-                      boxShadow: '0 8px 24px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 12px 32px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3)';
-                      e.currentTarget.style.transform = 'translateY(-3px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 8px 24px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
+                    className="hero-btn-primary"
                   >
                     Start Chatting with Isabella
                   </button>
                   
-                  {/* Secondary CTA - Plain Text Link */}
+                  {/* Secondary CTA - Text Link */}
                   <a 
                     href="#lookbook"
-                    className="transition-all duration-300"
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#D4AF37',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '15px',
-                      fontWeight: '400',
-                      letterSpacing: '0.5px',
-                      cursor: 'pointer',
-                      padding: '8px 0'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#F7E7CE';
-                      e.currentTarget.style.textShadow = '0 0 12px rgba(212, 175, 55, 0.6)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = '#D4AF37';
-                      e.currentTarget.style.textShadow = 'none';
-                    }}
+                    className="hero-link-secondary"
                   >
                     ↓ Explore Isabella's Portfolio ↓
                   </a>
@@ -223,37 +133,8 @@ const Home = () => {
               </div>
 
               {/* Chat Box Overlay - Glassmorphism */}
-              <div 
-                className={`transition-all duration-500 ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                style={{ 
-                  display: isChatActive ? 'flex' : 'none',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  height: '100%'
-                }}
-              >
-                <div 
-                  className="relative flex flex-col"
-                  style={{ 
-                    width: '360px',
-                    height: '520px',
-                    maxWidth: '92vw',
-                    maxHeight: '80vh',
-                    background: 'rgba(10, 14, 39, 0.85)',
-                    backdropFilter: 'blur(40px)',
-                    WebkitBackdropFilter: 'blur(40px)',
-                    borderRadius: '24px',
-                    border: '1px solid rgba(212, 175, 55, 0.3)',
-                    boxShadow: `
-                      0 0 60px rgba(212, 175, 55, 0.25),
-                      0 30px 60px rgba(0, 0, 0, 0.4),
-                      inset 0 0 80px rgba(212, 175, 55, 0.05)
-                    `,
-                    overflow: 'hidden'
-                  }}
-                >
-                  
+              <div className={`hero-chat-overlay ${isChatActive ? 'active' : ''}`}>
+                <div className="hero-chat-box">
                   {/* Chat Component - Full Height */}
                   <div className="w-full h-full pt-2">
                     <FullWellnessGeniUI 
@@ -267,19 +148,8 @@ const Home = () => {
                   {/* Close Button - Bottom Right */}
                   <button
                     onClick={() => setIsChatActive(false)}
-                    className="absolute bottom-4 right-4 z-50 p-2 rounded-full transition-all duration-200"
-                    style={{ 
-                      color: '#D4AF37',
-                      background: 'rgba(0, 0, 0, 0.3)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)';
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
+                    className="hero-chat-close"
+                    aria-label="Close chat"
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>

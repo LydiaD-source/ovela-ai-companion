@@ -1,0 +1,366 @@
+/* Hero Section Optimized Styles */
+
+/* Hero Container */
+.hero-section {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0A0E27 0%, #000000 100%);
+}
+
+/* Deep Navy to Black Gradient Background */
+.hero-gradient-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0A0E27 0%, #000000 100%);
+  z-index: 0;
+}
+
+/* Champagne/Gold Radial Glow Behind Isabella */
+.hero-ambient-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 800px 900px at 25% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Enhanced Isabella Backlight (Soft Golden Glow) */
+.isabella-backlight {
+  position: absolute;
+  width: 120%;
+  height: 100%;
+  left: -10%;
+  top: 0;
+  background: radial-gradient(ellipse at center, rgba(255, 215, 100, 0.35) 0%, rgba(212, 175, 55, 0.2) 40%, transparent 70%);
+  filter: blur(50px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Main Content Layout */
+.hero-content-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+/* Isabella Container (Left Anchor - 35%) */
+.isabella-container {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  width: 35%;
+  position: relative;
+  z-index: 1;
+}
+
+.isabella-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* Soft Spotlight Behind Isabella */
+.isabella-spotlight {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 700px;
+  background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.08) 40%, transparent 70%);
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Isabella Image - Optimized for Ultra-Sharp Display */
+.isabella-hero-image {
+  position: relative;
+  object-fit: contain;
+  object-position: bottom;
+  height: 88vh;
+  width: auto;
+  max-width: 2314px;
+  z-index: 3;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: none;
+  -ms-interpolation-mode: bicubic;
+  will-change: transform;
+}
+
+/* HeyGen Avatar Layer (Ready for Video Embed) */
+.heygen-avatar-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 88vh;
+  z-index: 4;
+  pointer-events: none;
+  display: none; /* Hidden until HeyGen is activated */
+}
+
+.heygen-avatar-layer.active {
+  display: block;
+  pointer-events: auto;
+}
+
+/* Content Area (Center-Right - 65%) */
+.hero-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  width: 65%;
+  padding-left: 4%;
+  padding-right: 8%;
+}
+
+/* Content Wrapper (Fades out when chat is active) */
+.hero-content-fade {
+  transition: all 0.5s ease;
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero-content-fade.hidden {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+/* Headline - Luxury Serif */
+.hero-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 24px;
+  color: #FFFFFF;
+}
+
+/* Interactive Text Gradient */
+.hero-gradient-text {
+  background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subheadline - Elegant Sans-Serif */
+.hero-subheadline {
+  font-family: 'Inter', sans-serif;
+  font-size: 23px;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  max-width: 650px;
+  color: #E5E5E5;
+}
+
+.hero-highlight-name {
+  color: #D4AF37;
+  font-weight: 500;
+}
+
+/* CTA Section */
+.hero-cta-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Primary CTA Button */
+.hero-btn-primary {
+  width: 280px;
+  height: 54px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%);
+  border: none;
+  color: #000000;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hero-btn-primary:hover {
+  box-shadow: 0 12px 32px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Secondary CTA - Text Link */
+.hero-link-secondary {
+  background: transparent;
+  border: none;
+  color: #D4AF37;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 8px 0;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.hero-link-secondary:hover {
+  color: #F7E7CE;
+  text-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+/* Chat Box Overlay - Glassmorphism */
+.hero-chat-overlay {
+  transition: all 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-chat-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+  display: flex;
+}
+
+/* Glassmorphism Chat Box */
+.hero-chat-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  height: 520px;
+  max-width: 92vw;
+  max-height: 80vh;
+  background: rgba(10, 14, 39, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 24px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 
+    0 0 60px rgba(212, 175, 55, 0.25),
+    0 30px 60px rgba(0, 0, 0, 0.4),
+    inset 0 0 80px rgba(212, 175, 55, 0.05);
+  overflow: hidden;
+}
+
+/* Close Button - Chat Overlay */
+.hero-chat-close {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 50;
+  padding: 8px;
+  border-radius: 50%;
+  color: #D4AF37;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-chat-close:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: scale(1.1);
+}
+
+/* Loading Skeleton for HeyGen */
+.heygen-loading-skeleton {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 88vh;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 14, 39, 0.1) 0%,
+    rgba(212, 175, 55, 0.1) 50%,
+    rgba(10, 14, 39, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .isabella-container {
+    width: 40%;
+  }
+  
+  .hero-text-container {
+    width: 60%;
+  }
+  
+  .hero-headline {
+    font-size: 42px;
+  }
+  
+  .hero-subheadline {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content-wrapper {
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  
+  .isabella-container {
+    width: 100%;
+    height: 50%;
+  }
+  
+  .hero-text-container {
+    width: 100%;
+    height: 50%;
+    padding: 5%;
+  }
+  
+  .hero-headline {
+    font-size: 32px;
+  }
+  
+  .hero-subheadline {
+    font-size: 16px;
+  }
+  
+  .hero-btn-primary {
+    width: 240px;
+    height: 48px;
+    font-size: 14px;
+  }
+}

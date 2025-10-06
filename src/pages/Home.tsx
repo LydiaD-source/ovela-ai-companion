@@ -70,7 +70,7 @@ const Home = () => {
               
               <div className="isabella-image-wrapper">
                 {/* Isabella Image - Optimized WebP with PNG Fallback */}
-                <picture>
+                <picture style={{ background: 'transparent', display: 'contents' }}>
                   <source srcSet={isabellaHeroWebP} type="image/webp" />
                   <img 
                     src={isabellaHeroPNG}
@@ -79,6 +79,7 @@ const Home = () => {
                     loading="eager"
                     decoding="async"
                     fetchPriority="high"
+                    style={{ background: 'transparent' }}
                   />
                 </picture>
                 

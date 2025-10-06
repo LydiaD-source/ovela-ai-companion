@@ -66,6 +66,7 @@
   align-items: flex-end;
   justify-content: center;
   z-index: 2;
+  background: transparent;
 }
 
 /* Soft Spotlight Behind Isabella */
@@ -96,6 +97,9 @@
   transform: none;
   -ms-interpolation-mode: bicubic;
   will-change: transform;
+  /* Remove any background from transparent areas */
+  background: transparent;
+  mix-blend-mode: normal;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

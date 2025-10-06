@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroNative from '/images/isabella-hero-native.png';
+import isabellaHeroTransparent from '@/assets/isabella-hero-transparent.png';
 import '@/styles/HeroSection.css';
 
 
@@ -68,13 +68,13 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Native High-Resolution */}
+                {/* Isabella Image - Ultra HD with Transparent Background */}
                 <img 
-                  src={isabellaHeroNative}
+                  src={isabellaHeroTransparent}
                   alt="Isabella Navia - AI Model Ambassador"
                   className="isabella-hero-image"
                   loading="eager"
-                  decoding="async"
+                  decoding="sync"
                   fetchPriority="high"
                 />
                 

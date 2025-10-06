@@ -96,13 +96,10 @@
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
-  -ms-interpolation-mode: bicubic;
-  will-change: transform;
-  /* Force transparent background rendering */
-  background: transparent !important;
-  mix-blend-mode: normal;
+  image-rendering: auto;
   image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

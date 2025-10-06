@@ -7,8 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroWebP from '@/assets/isabella-hero-fullbody-v3.webp';
-import isabellaHeroPNG from '@/assets/isabella-hero-fullbody-v3.png';
+import isabellaHeroNative from '/images/isabella-hero-native.png';
 import '@/styles/HeroSection.css';
 
 
@@ -69,19 +68,15 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Optimized WebP with PNG Fallback */}
-                <picture style={{ background: 'transparent', display: 'contents' }}>
-                  <source srcSet={isabellaHeroWebP} type="image/webp" />
-                  <img 
-                    src={isabellaHeroPNG}
-                    alt="Isabella Navia - AI Model Ambassador"
-                    className="isabella-hero-image"
-                    loading="eager"
-                    decoding="async"
-                    fetchPriority="high"
-                    style={{ background: 'transparent' }}
-                  />
-                </picture>
+                {/* Isabella Image - Native High-Resolution */}
+                <img 
+                  src={isabellaHeroNative}
+                  alt="Isabella Navia - AI Model Ambassador"
+                  className="isabella-hero-image"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                />
                 
                 {/* HeyGen Avatar Container (Ready for Video Embed) */}
                 <div id="heygen-container" className="heygen-avatar-layer">

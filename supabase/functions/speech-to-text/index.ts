@@ -53,10 +53,11 @@ serve(async (req) => {
       throw new Error('OPENAI_API_KEY not configured');
     }
 
-    console.log('Processing speech-to-text request');
+    console.log('🎙️ Transcribing audio...');
 
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
+    console.log(`📊 Audio size: ${binaryAudio.length} bytes`);
     
     // Prepare form data
     const formData = new FormData();
@@ -75,12 +76,12 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
+      console.error('❌ OpenAI API error:', errorText);
       throw new Error(`OpenAI API error: ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('Transcription successful:', result.text);
+    console.log('✅ Transcription received:', result.text);
 
     return new Response(
       JSON.stringify({ 
@@ -91,7 +92,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Speech-to-text error:', error);
+    console.error('❌ Speech-to-text error:', error);
     return new Response(
       JSON.stringify({ 
         success: false,

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-
+import { supabase } from '@/integrations/supabase/client';
 interface VoiceInputButtonProps {
   onTranscript: (text: string) => void;
   disabled?: boolean;
@@ -16,7 +16,22 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const mimeTypeRef = useRef<string | undefined>(undefined);
   const { toast } = useToast();
+
+  const getSupportedMimeType = (): string | undefined => {
+    const types = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/ogg',
+      'audio/mp4'
+    ];
+    for (const t of types) {
+      if ((window as any).MediaRecorder && (MediaRecorder as any).isTypeSupported?.(t)) return t;
+    }
+    return undefined;
+  };
 
   const startRecording = async () => {
     try {
@@ -31,9 +46,9 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
         }
       });
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
+      const chosenType = getSupportedMimeType();
+      mimeTypeRef.current = chosenType;
+      const mediaRecorder = chosenType ? new MediaRecorder(stream, { mimeType: chosenType }) : new MediaRecorder(stream);
 
       chunksRef.current = [];
 
@@ -48,7 +63,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
         setIsProcessing(true);
 
         try {
-          const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+          const audioBlob = new Blob(chunksRef.current, { type: mimeTypeRef.current || 'audio/webm' });
           console.log(`📊 Audio blob size: ${audioBlob.size} bytes`);
 
           // Convert blob to base64
@@ -59,29 +74,20 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
             const base64Audio = (reader.result as string).split(',')[1];
             
             try {
-              // Direct fetch to Supabase function
-              const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
-              console.log('📡 STT Fetch URL:', sttUrl);
-              console.log('📤 Sending audio directly to Supabase speech-to-text...');
-              
-              const response = await fetch(sttUrl, {
-                method: 'POST',
-                headers: { 
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ audio: base64Audio })
+              console.log('📤 Invoking Supabase speech-to-text via SDK...');
+              const { data, error } = await supabase.functions.invoke('speech-to-text', {
+                body: { audio: base64Audio }
               });
 
-              console.log('📡 Response status:', response.status);
-              
-              if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ STT HTTP Error:', response.status, response.statusText);
-                console.error('❌ Full error response:', errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
+              if (error) {
+                console.error('❌ STT invocation error:', error);
+                throw new Error(error.message || 'Invocation failed');
               }
 
-              const data = await response.json();
+              if (!data) {
+                throw new Error('Empty response from speech-to-text');
+              }
+
               console.log('📡 STT Response:', data);
 
               if (data?.success && data?.text) {

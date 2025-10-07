@@ -13,7 +13,7 @@ import '@/styles/HeroSection.css';
 const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroHD = "https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_auto/v1759836676/golddress_ibt1fp.png";
-  const [isChatActive, setIsChatActive] = useState(true);
+  const [isChatActive, setIsChatActive] = useState(false);
 
   const activateChat = () => {
     setIsChatActive(true);

@@ -14,11 +14,12 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const transcriptBufferRef = useRef<string>('');
   const { toast } = useToast();
 
   const connect = useCallback(async () => {
     try {
-      const WS_URL = `wss://vrpgowcocbztclxfzssu.supabase.co/functions/v1/openai-realtime-relay`;
+      const WS_URL = 'wss://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/openai-realtime-relay';
       
       wsRef.current = new WebSocket(WS_URL);
 
@@ -40,36 +41,38 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
               console.log('Session updated');
               break;
             
-            case 'input_audio_buffer.speech_started':
-              console.log('Speech started');
+            case 'response.audio_transcript.delta':
+              // Build up live transcript as deltas arrive
+              transcriptBufferRef.current += data.delta || '';
+              setCurrentTranscript(transcriptBufferRef.current);
               break;
-            
-            case 'input_audio_buffer.speech_stopped':
-              console.log('Speech stopped');
-              break;
-            
-            case 'conversation.item.input_audio_transcription.completed':
-              const transcript = data.transcript;
-              console.log('Transcript:', transcript);
-              setCurrentTranscript(transcript);
-              onTranscript?.(transcript);
+
+            case 'response.done':
+            case 'response.audio.done':
+              if (transcriptBufferRef.current.trim()) {
+                const finalText = transcriptBufferRef.current.trim();
+                console.log('Final transcript:', finalText);
+                onTranscript?.(finalText);
+              }
+              transcriptBufferRef.current = '';
               break;
             
             case 'response.audio.delta':
               onAudioDelta?.(data.delta);
               break;
             
-            case 'response.audio_transcript.delta':
-              console.log('Response transcript delta:', data.delta);
-              break;
-            
             case 'error':
               console.error('OpenAI error:', data.error);
               toast({
                 title: 'Error',
-                description: data.error.message || 'An error occurred',
+                description: (data.error && (data.error.message || data.error)) || 'An error occurred',
                 variant: 'destructive'
               });
+              break;
+            
+            default:
+              // Uncomment for verbose logging
+              // console.log('WS event:', data.type);
               break;
           }
         } catch (error) {

@@ -97,8 +97,8 @@
   -webkit-backface-visibility: hidden;
   transform: none;
   margin-left: 19px; /* ~5mm nudge to the right on typical displays */
-  image-rendering: crisp-edges;
   image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
   filter: none;
   -webkit-filter: none;
   mix-blend-mode: normal;

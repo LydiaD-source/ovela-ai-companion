@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroHD from '@/assets/isabella-hero-avatar-new.webp';
+import isabellaHeroHD from '@/assets/isabella-hero-original.png';
 import '@/styles/HeroSection.css';
 
 
@@ -72,7 +72,7 @@ const Home = () => {
                 <img 
                   src={isabellaHeroHD}
                   alt="Isabella Navia - AI Model Ambassador"
-                  className="isabella-hero-image"
+                  className="isabella-hero-image hero-image-raw"
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"

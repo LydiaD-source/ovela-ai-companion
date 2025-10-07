@@ -161,7 +161,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
       size="icon"
       onClick={handleClick}
       disabled={disabled || isProcessing}
-      className={`transition-all ${isRecording ? 'animate-pulse' : ''}`}
+      className={`transition-all ${isRecording ? 'animate-pulse' : ''} relative z-10`}
       title={isRecording ? 'Stop recording' : 'Start recording'}
     >
       {isProcessing ? (

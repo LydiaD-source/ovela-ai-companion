@@ -86,30 +86,21 @@
 
 /* Isabella Image - Optimized for Ultra-Sharp Display */
 .isabella-hero-image {
-  width: auto;
-  max-width: none; /* allow full height scaling without width cap */
-  height: 88vh; /* restore original to prevent layout overflow */
+  position: relative;
   object-fit: contain;
   object-position: bottom center;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges; /* favor sharper sampling */
-  margin-left: 19px; /* ~5mm nudge to the right */
-  margin-bottom: 0; /* ensure feet are fully visible */
-  mix-blend-mode: darken; /* reduce white fringing on dark bg */
-  position: relative;
-  z-index: 3;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
-  isolation: isolate;
-}
-
-/* Critical clarity styles for public hero image */
-.hero-image {
+  height: auto;
+  max-height: 88vh;
   width: auto;
-  max-width: 100%;
-  /* Do not set height here to allow specific avatar sizing */
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
+  z-index: 3;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: none;
+  image-rendering: auto;
+  filter: none;
+  -webkit-filter: none;
+  mix-blend-mode: normal;
+  image-orientation: from-image;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */
@@ -133,12 +124,11 @@
 .hero-text-container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   height: 100%;
   width: 65%;
   padding-left: 4%;
   padding-right: 8%;
-  padding-top: 2vh;
 }
 
 /* Content Wrapper (Fades out when chat is active) */

@@ -313,9 +313,12 @@
 
 /* Raw hero image rendering to avoid any smoothing/compression */
 .hero-image-raw {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transform: none;
+  -webkit-transform: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  filter: none !important;
 }

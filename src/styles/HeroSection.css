@@ -84,7 +84,7 @@
   pointer-events: none;
 }
 
-/* Isabella Image - Optimized for Ultra-Sharp Display */
+/* Isabella Image - Maximum Sharpness, Responsive Scaling */
 .isabella-hero-image {
   position: relative;
   object-fit: contain;
@@ -92,17 +92,20 @@
   height: auto;
   max-height: 88vh;
   width: auto;
+  max-width: 100%;
   z-index: 3;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: none;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: none !important;
+  -webkit-transform: none !important;
   margin-left: 19px; /* ~5mm nudge to the right on typical displays */
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  filter: none;
-  -webkit-filter: none;
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  filter: none !important;
+  -webkit-filter: none !important;
   mix-blend-mode: normal;
   image-orientation: from-image;
+  will-change: auto !important;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

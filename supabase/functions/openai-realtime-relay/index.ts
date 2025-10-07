@@ -57,25 +57,24 @@ serve(async (req) => {
 
           // Build brand-aware instructions
           (async () => {
-            const baseUrl = Deno.env.get('WELLNESS_GENI_API_URL');
-            const apiKey = Deno.env.get('WELLNESS_GENI_API_KEY');
             const envGuide = Deno.env.get('OVELA_GUIDE');
             const clientId = Deno.env.get('OVELA_CLIENT_ID')?.trim() || Deno.env.get('DEFAULT_BRAND_TEMPLATE_ID')?.trim() || 'ovela_client_001';
 
             let brandPrompt: string | undefined;
             try {
-              if (baseUrl && !/^wg_/.test(baseUrl.trim())) {
-                const res = await fetch(`${baseUrl}/brand-templates/${clientId}`, {
-                  headers: { Authorization: `Bearer ${apiKey}`, Accept: 'application/json' }
-                });
-                console.log('[realtime-relay] admin brand fetch status', res.status);
-                if (res.ok) {
-                  const j = await res.json();
-                  brandPrompt = j?.prompt || j?.data?.prompt;
-                }
+              const loaderUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/load-ovela-brand';
+              const res = await fetch(loaderUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ client_id: clientId })
+              });
+              console.log('[realtime-relay] load-ovela-brand status', res.status);
+              if (res.ok) {
+                const j = await res.json();
+                brandPrompt = j?.guide;
               }
             } catch (e) {
-              console.warn('[realtime-relay] admin brand fetch error', String(e));
+              console.warn('[realtime-relay] load-ovela-brand error', String(e));
             }
 
             if (!brandPrompt) brandPrompt = envGuide;

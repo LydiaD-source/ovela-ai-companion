@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.debug-brand-context]
 verify_jwt = false
+
+[functions.load-ovela-brand]
+verify_jwt = false

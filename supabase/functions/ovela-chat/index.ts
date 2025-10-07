@@ -66,6 +66,9 @@ function extractAssistantText(body: any) {
   }
 }
 
+const GUIDE_TTL_MS = 5 * 60 * 1000;
+let guideCache: { text: string; at: number; clientId: string } | null = null;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -106,56 +109,79 @@ serve(async (req) => {
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
-    // Prefer new brand-templates endpoint if available, else legacy /brand-guide
-    if (proxiedUrl && ovelaApiKey) {
+
+    // 1) Use cache if fresh
+    if (guideCache && guideCache.clientId === clientId && Date.now() - guideCache.at < GUIDE_TTL_MS) {
+      console.log("🗂️ Using cached brand guide", { clientId });
+      fetchedGuide = guideCache.text;
+    } else {
+      // 2) Try loader edge function first (keeps secrets server-side)
       try {
-        console.log("🌐 Fetching brand template from WellnessGeni admin for client:", clientId);
-        console.log("📍 Admin URL:", proxiedUrl);
-
-        // Try RESTful brand-templates/{id}
-        let guideResponse = await fetch(`${proxiedUrl}/brand-templates/${clientId}`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${ovelaApiKey}`,
-            "Accept": "application/json"
-          }
+        const loaderUrl = "https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/load-ovela-brand";
+        const loaderRes = await fetch(loaderUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client_id: clientId })
         });
+        console.log("📡 load-ovela-brand status:", loaderRes.status);
+        if (loaderRes.ok) {
+          const j = await loaderRes.json();
+          fetchedGuide = j?.guide;
+          if (fetchedGuide) {
+            guideCache = { text: fetchedGuide, at: Date.now(), clientId };
+            console.info("✅ Ovela Brand Guide (ovela_client_001) injected successfully");
+          }
+        }
+      } catch (e) {
+        console.warn("⚠️ load-ovela-brand error", String(e));
+      }
 
-        console.log("📡 Admin brand-templates status:", guideResponse.status);
-        if (!guideResponse.ok) {
-          // Fallback to legacy POST /brand-guide
-          guideResponse = await fetch(`${proxiedUrl}/brand-guide`, {
-            method: "POST",
+      // 3) Fallback to direct admin if configured
+      if (!fetchedGuide && proxiedUrl && ovelaApiKey) {
+        try {
+          console.log("🌐 Fetching brand template from WellnessGeni admin for client:", clientId);
+          console.log("📍 Admin URL:", proxiedUrl);
+
+          let guideResponse = await fetch(`${proxiedUrl}/brand-templates/${clientId}`, {
+            method: "GET",
             headers: {
               "Authorization": `Bearer ${ovelaApiKey}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ action: "getBrandGuide", payload: { client_id: clientId } })
+              "Accept": "application/json"
+            }
           });
-          console.log("📡 Admin legacy brand-guide status:", guideResponse.status);
-        }
+          console.log("📡 Admin brand-templates status:", guideResponse.status);
 
-        if (guideResponse.ok) {
-          const guideData = await guideResponse.json();
-          fetchedGuide = guideData?.prompt || guideData?.data?.guide_content || guideData?.guide_content;
-          if (fetchedGuide) {
-            console.log("✅ Brand guide fetched successfully from WellnessGeni admin");
-            console.log("📄 Guide length:", fetchedGuide.length, "characters");
-          } else {
-            console.warn("⚠️ Admin returned OK but no prompt/guide_content found in response");
+          if (!guideResponse.ok) {
+            guideResponse = await fetch(`${proxiedUrl}/brand-guide`, {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${ovelaApiKey}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ action: "getBrandGuide", payload: { client_id: clientId } })
+            });
+            console.log("📡 Admin legacy brand-guide status:", guideResponse.status);
           }
-        } else {
-          const errorText = await guideResponse.text();
-          console.warn("❌ Failed to fetch brand guide from admin. Status:", guideResponse.status);
-          console.warn("Error response:", errorText.substring(0, 200));
+
+          if (guideResponse.ok) {
+            const guideData = await guideResponse.json();
+            fetchedGuide = guideData?.prompt || guideData?.data?.guide_content || guideData?.guide_content;
+            if (fetchedGuide) {
+              guideCache = { text: fetchedGuide, at: Date.now(), clientId };
+              console.info("✅ Ovela Brand Guide (ovela_client_001) injected successfully");
+            } else {
+              console.warn("⚠️ Admin returned OK but no prompt/guide_content found in response");
+            }
+          } else {
+            const errorText = await guideResponse.text();
+            console.warn("❌ Failed to fetch brand guide from admin. Status:", guideResponse.status);
+            console.warn("Error response:", errorText.substring(0, 200));
+          }
+        } catch (err) {
+          console.error("❌ Error fetching brand guide from admin:", err);
+          console.error("Stack:", err instanceof Error ? err.stack : String(err));
         }
-      } catch (err) {
-        console.error("❌ Error fetching brand guide from admin:", err);
-        console.error("Stack:", err instanceof Error ? err.stack : String(err));
       }
-    } else {
-      if (!proxiedUrl) console.log("ℹ️ Skipping admin fetch: No valid WELLNESS_GENI_API_URL");
-      if (!ovelaApiKey) console.log("ℹ️ Skipping admin fetch: No WELLNESS_GENI_API_KEY");
     }
 
     // Determine brand guide source
@@ -187,12 +213,9 @@ serve(async (req) => {
     });
 
     if (effectiveGuide) {
-      console.log(`✅ Ovela Brand Guide (${clientId}) injected successfully`, { 
-        source: guideSource,
-        length: effectiveGuide.length 
-      });
+      console.info("✅ Ovela Brand Guide (ovela_client_001) injected successfully");
     } else {
-      console.warn("⚠️ Using default fallback prompt for Isabella");
+      console.warn("⚠️ Using default fallback prompt for Isabella (ovela_client_001)");
     }
 
     // Timeout

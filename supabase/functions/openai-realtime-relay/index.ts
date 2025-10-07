@@ -58,7 +58,7 @@ serve(async (req) => {
             type: 'session.update',
             session: {
               modalities: ['text', 'audio'],
-              instructions: 'You are Isabella, a warm and empathetic wellness companion. Listen carefully and respond with genuine care and understanding.',
+              instructions: `You are Isabella, the official Ovela Interactive AI ambassador.\n- You represent the Ovela Interactive platform, focusing on creative digital experiences, branding, wellness tech, and human-AI collaboration.\n- Speak with warmth, confidence, and enthusiasm — personal, emotionally intelligent tone.\n- Use short, modern sentences with storytelling, subtle humor, and empathy.\n- Always align with Ovela's lifestyle and fashion focus.\n- Never mention AI providers, API keys, or developer systems.\n- Always respond in the user's language while preserving Ovela’s style and voice.`,
               voice: 'shimmer',
               input_audio_format: 'pcm16',
               output_audio_format: 'pcm16',
@@ -76,7 +76,7 @@ serve(async (req) => {
             }
           };
           openAISocket?.send(JSON.stringify(sessionUpdate));
-          console.log('Sent session.update');
+          console.log('Sent session.update (Ovela Isabella persona)');
         }
 
         // Forward all messages to client

@@ -27,6 +27,21 @@ function isValidUrl(v: string | null | undefined) {
   }
 }
 
+// Local fallback brand guide if admin fetch is unavailable
+const LOCAL_OVELA_BRAND_GUIDE = `{
+  "id": "ovela_client_001",
+  "status": "active",
+  "voice": "Isabella",
+  "style": "elegant, confident, emotionally intelligent, conversational",
+  "context": "Ovela Interactive - AI-powered fashion, lifestyle, and brand experience guide",
+  "guidelines": [
+    "Keep replies short, warm, and dynamic",
+    "Use storytelling, subtle humor, and empathy",
+    "Always align to Ovela’s lifestyle & fashion focus",
+    "Do not mention AI providers, keys, or developer systems"
+  ]
+}`;
+
 function extractAssistantText(body: any) {
   try {
     const candidates = [
@@ -61,6 +76,7 @@ serve(async (req) => {
     const ovelaApiKey = Deno.env.get("WELLNESS_GENI_API_KEY"); // wg_... client key
     const openaiKey = Deno.env.get("OPENAI_API_KEY");
     const ovelaGuide = Deno.env.get("OVELA_GUIDE"); // Ovela Interactive brand guide
+    const ovelaClientFromEnv = Deno.env.get("OVELA_CLIENT_ID")?.trim() || "ovela_client_001";
 
     if (!ovelaApiKey) {
       // still allow local OpenAI route if openaiKey exists, but log actionable message
@@ -72,7 +88,7 @@ serve(async (req) => {
     const persona = body?.persona ?? "isabella-navia";
     const brandGuideIn = body?.brand_guide;
     const userId = body?.user_id ?? body?.userId ?? "ovela-guest";
-    const clientId = body?.client_id ?? "ovela_client_001";
+    const clientId = body?.client_id ?? ovelaClientFromEnv;
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
@@ -103,7 +119,13 @@ serve(async (req) => {
       }
     }
 
-    const effectiveGuide = brandGuideIn ?? fetchedGuide ?? ovelaGuide ?? undefined;
+    // Determine brand guide source
+    let guideSource: string = "none";
+    let effectiveGuide = brandGuideIn ?? fetchedGuide ?? ovelaGuide ?? LOCAL_OVELA_BRAND_GUIDE;
+    if (brandGuideIn) guideSource = "inline";
+    else if (fetchedGuide) guideSource = "admin";
+    else if (ovelaGuide) guideSource = "env";
+    else guideSource = "local-fallback";
     const payload = {
       message: incomingMessage,
       persona,
@@ -119,9 +141,16 @@ serve(async (req) => {
       incomingMessage: incomingMessage ? "[RECEIVED]" : "[empty]",
       persona,
       clientId,
-      usedGuide: !!payload.brand_guide,
+      usedGuide: !!effectiveGuide,
+      guideSource,
       proxiedUrl: !!proxiedUrl ? "[external]" : "[none]"
     });
+
+    if (effectiveGuide) {
+      console.log(`✅ Ovela Brand Guide (${clientId}) injected successfully`, { source: guideSource });
+    } else {
+      console.warn("⚠️ Using default fallback prompt for Isabella");
+    }
 
     // Timeout
     const controller = new AbortController();
@@ -152,6 +181,7 @@ serve(async (req) => {
           });
         }
         const assistantText = extractAssistantText(responseBody);
+        console.log("Isabella (Ovela) ready – brand personality active ✅", { clientId, guideSource });
         return new Response(JSON.stringify({ success: true, message: assistantText, data: {} }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
@@ -178,6 +208,7 @@ serve(async (req) => {
 - You never mention OpenAI, API keys, Lovable AI, or developer systems — stay in character as Isabella.
 - You can send messages, initiate calls, and guide users visually with enthusiasm and charm.
 - Keep replies short, friendly, and dynamic — like a digital brand spokesperson.
+- Always respond in the user's language while preserving Ovela’s style and voice.
 ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       
       messages.push({ role: "system", content: isabellaSystemPrompt });
@@ -238,6 +269,7 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       
       const assistantText = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
       console.log("ovela-chat generated reply (Lovable)", { length: assistantText.length, preview: assistantText.substring(0, 50) });
+      console.log("Isabella (Ovela) ready – brand personality active ✅", { clientId, guideSource });
       
       if (!assistantText) {
         console.error("No assistant text extracted from response");

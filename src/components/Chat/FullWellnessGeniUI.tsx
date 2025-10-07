@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Send, Loader2, RotateCcw } from 'lucide-react';
+import { Volume2, VolumeX, Send, Loader2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-
+import { VoiceInputButton } from './VoiceInputButton';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
-import { supabase } from '@/integrations/supabase/client';
 import { isabellaAPI } from '@/lib/isabellaAPI';
 interface Message {
   id: string;
@@ -30,20 +28,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true
 }) => {
-  console.log('🟢 FullWellnessGeniUI component loaded - debug version active');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [isActivated, setIsActivated] = useState(false);
-  const [showPromotions, setShowPromotions] = useState(true);
-  const [isInVoiceMode, setIsInVoiceMode] = useState(false);
-  const [voiceStream, setVoiceStream] = useState<MediaStream | null>(null);
-
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -114,8 +105,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         }
       }
 
-      // Play video if available and activated
-      if (assistantMessage.videoUrl && videoRef.current && isActivated) {
+      // Play video if available
+      if (assistantMessage.videoUrl && videoRef.current) {
         videoRef.current.src = assistantMessage.videoUrl;
         videoRef.current.play();
       }
@@ -149,256 +140,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
 };
 
-  const activate = async () => {
-    try {
-      if (audioContext) {
-        if (audioContext.state === 'suspended') {
-          await audioContext.resume();
-        }
-      } else {
-        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-        setAudioContext(context);
-      }
-      setIsActivated(true);
-      toast({ title: 'Activated', description: 'Animated responses enabled.' });
-    } catch (error) {
-      console.error('Activation error:', error);
-    }
-  };
 
-  const startVoiceMode = async () => {
-    console.log('🔵 MICROPHONE BUTTON CLICKED - startVoiceMode called');
-    console.log('🔵 Current state:', { isInVoiceMode, isRecording });
-    try {
-      console.log('🔵 Requesting microphone access...');
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          sampleRate: 24000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      });
-      
-      setVoiceStream(stream);
-      setIsInVoiceMode(true);
-      
-      const recorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      });
-      
-      let chunks: Blob[] = [];
-      let silenceTimer: NodeJS.Timeout;
-      let isRecordingVoice = false;
-      
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-      
-      analyser.fftSize = 256;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      
-      const checkAudioLevel = () => {
-        if (!isInVoiceMode) return;
-        
-        analyser.getByteFrequencyData(dataArray);
-        const average = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
-        
-        if (average > 25 && !isRecordingVoice) {
-          chunks = [];
-          recorder.start();
-          isRecordingVoice = true;
-          setIsRecording(true);
-          clearTimeout(silenceTimer);
-        } else if (average <= 25 && isRecordingVoice) {
-          clearTimeout(silenceTimer);
-          silenceTimer = setTimeout(() => {
-            if (isRecordingVoice && recorder.state === 'recording') {
-              recorder.stop();
-              isRecordingVoice = false;
-              setIsRecording(false);
-            }
-          }, 1000);
-        }
-        
-        requestAnimationFrame(checkAudioLevel);
-      };
-      
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      };
-      
-      recorder.onstop = async () => {
-        console.log('🎤 RECORDER STOPPED - PROCESSING AUDIO');
-        if (chunks.length > 0) {
-          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
-          console.log('🎤 Audio blob created, size:', audioBlob.size, 'bytes');
-          await processVoiceInput(audioBlob);
-        } else {
-          console.log('❌ No audio chunks recorded');
-        }
-      };
-      
-      setMediaRecorder(recorder);
-      checkAudioLevel();
-      
-      // Start recording immediately for testing
-      console.log('🔥 STARTING IMMEDIATE RECORDING FOR TEST');
-      recorder.start();
-      setIsRecording(true);
-      
-      // Auto-stop after 3 seconds for testing
-      setTimeout(() => {
-        console.log('🔥 AUTO-STOPPING RECORDING AFTER 3 SECONDS');
-        if (recorder.state === 'recording') {
-          recorder.stop();
-        }
-      }, 3000);
-      
-      console.log('🔥 VOICE MODE STARTED - RECORDER READY');
-      toast({
-        title: "Voice Mode Active", 
-        description: "Recording for 3 seconds automatically!",
-      });
-      console.log('🔥 TOAST SHOWN - NOW WAITING FOR SPEECH');
-      
-    } catch (error) {
-      console.error('Error starting voice mode:', error);
-      toast({
-        title: "Error",
-        description: "Failed to access microphone for voice mode.",
-        variant: "destructive"
-      });
-    }
-  };
 
-  const stopVoiceMode = () => {
-    console.log('🔴 STOP VOICE MODE CLICKED');
-    setIsInVoiceMode(false);
-    setIsRecording(false);
-    
-    if (voiceStream) {
-      voiceStream.getTracks().forEach(track => track.stop());
-      setVoiceStream(null);
-    }
-    
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
-    }
-    
-    toast({
-      title: "Voice Mode Disabled",
-      description: "Switched back to text chat mode.",
-    });
-  };
-
-  const processVoiceInput = async (audioBlob: Blob) => {
-    try {
-      setIsLoading(true);
-
-      // Convert audio blob to base64
-      const reader = new FileReader();
-      const base64Audio = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          const base64 = (reader.result as string).split(',')[1];
-          resolve(base64);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(audioBlob);
-      });
-
-      // Direct fetch to Supabase function
-      const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
-      console.log('📡 STT Fetch URL:', sttUrl);
-      console.log('📤 Sending audio directly to Supabase speech-to-text...');
-      console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
-      
-      const response = await fetch(sttUrl, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ audio: base64Audio })
-      });
-
-      console.log('📡 Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ STT HTTP Error:', response.status, response.statusText);
-        console.error('❌ Full error response:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-
-      const transcriptionData = await response.json();
-      console.log('📡 STT Response:', transcriptionData);
-
-      if (!transcriptionData?.success || !transcriptionData?.text) {
-        throw new Error(transcriptionData?.error || 'No text received from transcription service');
-      }
-
-      const transcribedText = transcriptionData.text;
-      console.log('✅ Transcription received:', transcribedText);
-
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        text: transcribedText || '🎤 Voice message',
-        sender: 'user',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, userMessage]);
-
-      console.log('💬 Sending to Isabella (brand: ovela_client_001)');
-      const isa = await isabellaAPI.sendMessage(
-        transcribedText || 'I just sent a voice message. Please respond naturally as if I spoke to you.',
-        selectedPersona
-      );
-
-      let assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
-      let audioUrl = isa.audioUrl || '';
-      let videoUrl = isa.videoUrl || '';
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: assistantText,
-        sender: 'assistant',
-        timestamp: new Date(),
-        audioUrl: audioUrl,
-        videoUrl: videoUrl
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-
-      if (assistantText) {
-        try {
-          await textToSpeechService.speakText(assistantText);
-        } catch (error) {
-          console.error('Error playing speech:', error);
-        }
-      }
-
-      if (assistantMessage.videoUrl && videoRef.current && isActivated) {
-        videoRef.current.src = assistantMessage.videoUrl;
-        videoRef.current.play();
-      }
-
-    } catch (error) {
-      console.error('Error processing voice input:', error);
-      toast({
-        title: "Error",
-        description: "Failed to process voice message. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -449,28 +192,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             )}
           </button>
           
-          <button
-            onClick={() => {
-              console.log('🎯 MICROPHONE BUTTON CLICKED - Current state:', { isInVoiceMode, isRecording });
-              if (isInVoiceMode) {
-                stopVoiceMode();
-              } else {
-                startVoiceMode();
-              }
-            }}
-            className={`p-2 rounded-full transition-colors ${
-              isInVoiceMode 
-                ? 'bg-champagne-gold/80 hover:bg-champagne-gold' 
-                : 'bg-soft-white/10 hover:bg-soft-white/20'
-            } ${isRecording ? 'animate-pulse' : ''}`}
-            title={isInVoiceMode ? "Stop voice mode" : "Start voice mode"}
-          >
-            {isInVoiceMode ? (
-              <MicOff className="w-4 h-4 text-charcoal" />
-            ) : (
-              <Mic className="w-4 h-4 text-soft-white" />
-            )}
-          </button>
+          <VoiceInputButton 
+            onTranscript={(text) => sendMessage(text)}
+            disabled={isLoading}
+          />
         </div>
       </div>
 

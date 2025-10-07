@@ -7,6 +7,8 @@ import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { supabase } from '@/integrations/supabase/client';
+import { RealtimeVoiceButton } from '@/components/Chat/RealtimeVoiceButton';
+
 
 interface Message {
   id: string;
@@ -508,7 +510,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       {/* Chat Input */}
       <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+          <RealtimeVoiceButton 
+            onTranscript={(t) => sendMessage(t)}
+            disabled={isLoading}
+          />
           <Input
             type="text"
             value={inputText}
@@ -521,6 +527,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             type="submit" 
             disabled={isLoading || !inputText.trim()}
             className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
+            aria-label="Send"
           >
             <Send className="w-4 h-4" />
           </Button>

@@ -19,7 +19,7 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
 
   const connect = useCallback(async () => {
     try {
-      const WS_URL = `wss://vrpgowcocbztclxfzssu.supabase.co/functions/v1/openai-realtime-relay`;
+      const WS_URL = `wss://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/openai-realtime-relay`;
       
       wsRef.current = new WebSocket(WS_URL);
 

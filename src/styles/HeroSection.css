@@ -105,13 +105,12 @@
 
 /* Critical clarity styles for public hero image */
 .hero-image {
-  width: 1400px;
+  width: auto;
   max-width: 100%;
-  height: auto;
+  /* Do not set height here to allow specific avatar sizing */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   transform: translateZ(0);
-  max-height: none !important;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

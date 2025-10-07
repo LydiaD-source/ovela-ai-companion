@@ -59,8 +59,11 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
           reader.onloadend = async () => {
             const base64Audio = (reader.result as string).split(',')[1];
             
-            const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
-            console.log('📡 Sending audio to', sttUrl);
+            // Direct Supabase function call - bypassing any proxies
+            const sttUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/speech-to-text';
+            console.log('📡 STT Fetch URL:', sttUrl);
+            console.log('📤 Sending audio directly to Supabase speech-to-text...');
+            
             const { data, error } = await supabase.functions.invoke('speech-to-text', {
               body: { audio: base64Audio }
             });

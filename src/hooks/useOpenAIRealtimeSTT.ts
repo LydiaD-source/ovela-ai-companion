@@ -18,7 +18,7 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
 
   const connect = useCallback(async () => {
     try {
-      const WS_URL = `wss://vrpgowcocbztclxfzssu.supabase.co/functions/v1/openai-realtime-relay`;
+      const WS_URL = `wss://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/openai-realtime-relay`;
       
       wsRef.current = new WebSocket(WS_URL);
 
@@ -46,6 +46,12 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
             
             case 'input_audio_buffer.speech_stopped':
               console.log('Speech stopped');
+              try {
+                wsRef.current?.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
+                wsRef.current?.send(JSON.stringify({ type: 'response.create' }));
+              } catch (e) {
+                console.error('Failed to finalize audio buffer:', e);
+              }
               break;
             
             case 'conversation.item.input_audio_transcription.completed':
@@ -163,6 +169,15 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   }, [toast]);
 
   const stopRecording = useCallback(() => {
+    // Finalize current audio buffer and request a response
+    try {
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
+        wsRef.current.send(JSON.stringify({ type: 'response.create' }));
+      }
+    } catch (e) {
+      console.error('Error sending finalize events:', e);
+    }
     if (processorRef.current) {
       processorRef.current.disconnect();
       processorRef.current = null;

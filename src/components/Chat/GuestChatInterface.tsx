@@ -145,8 +145,6 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
                 }
               } catch (error) {
                 console.error('Chat error:', error);
-              } catch (error) {
-                console.error('Chat error:', error);
                 toast({
                   title: "Connection Error",
                   description: "Unable to connect right now. Please try again.",

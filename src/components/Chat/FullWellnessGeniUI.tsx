@@ -3,7 +3,7 @@ import { Mic, MicOff, Volume2, VolumeX, Send, Loader2, RotateCcw } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
+
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { supabase } from '@/integrations/supabase/client';
@@ -87,34 +87,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setIsLoading(true);
 
     try {
-      const response = await wellnessGeniAPI.sendChatMessage(
-        text,
-        selectedPersona,
-        null,
-        isGuestMode ? 'ovela-guest' : 'guest-user'
-      );
-
-      if (!response.success) {
-        throw new Error(response.error || 'API request failed');
-      }
-
-      const data = response.data;
-
-      // Extract assistant response text from standardized ovela-chat response
-      let assistantText = "I'm sorry — I didn't get the details. Please try again or ask another question.";
-      let audioUrl = '';
-      let videoUrl = '';
-      
-      if (data) {
-        // Handle ovela-chat response format: { success: true, message: "...", data: {} }
-        if (data.message) {
-          assistantText = data.message;
-          audioUrl = data.audioUrl || '';
-          videoUrl = data.videoUrl || '';
-        } else if (typeof data === 'string') {
-          assistantText = data;
-        }
-      }
+      console.log('💬 Sending to Isabella (brand: ovela_client_001)');
+      const isa = await isabellaAPI.sendMessage(text, selectedPersona);
+      let assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
+      let audioUrl = isa.audioUrl || '';
+      let videoUrl = isa.videoUrl || '';
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

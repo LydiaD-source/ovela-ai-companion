@@ -78,9 +78,23 @@ serve(async (req) => {
     const ovelaGuide = Deno.env.get("OVELA_GUIDE"); // Ovela Interactive brand guide
     const ovelaClientFromEnv = Deno.env.get("OVELA_CLIENT_ID")?.trim() || "ovela_client_001";
 
+    // Diagnostic logging
+    console.log("🔍 Brand Template Diagnostics:", {
+      hasWellnessGeniUrl: !!rawBase,
+      isValidUrl: !!proxiedUrl,
+      rawUrlValue: rawBase ? (rawBase.startsWith('wg_') ? '[API_KEY_DETECTED]' : rawBase.substring(0, 30) + '...') : '[NOT_SET]',
+      hasApiKey: !!ovelaApiKey,
+      hasLocalGuide: !!ovelaGuide,
+      clientId: ovelaClientFromEnv
+    });
+
+    if (!proxiedUrl && rawBase) {
+      console.warn("⚠️ WELLNESS_GENI_API_URL is set but invalid. Value starts with:", rawBase.substring(0, 20));
+      console.warn("💡 It should be a URL like 'https://api.wellnessgeni.com', not an API key");
+    }
+
     if (!ovelaApiKey) {
-      // still allow local OpenAI route if openaiKey exists, but log actionable message
-      console.warn("WELLNESS_GENI_API_KEY not set. Proxy mode disabled.");
+      console.warn("⚠️ WELLNESS_GENI_API_KEY not set. Proxy mode disabled.");
     }
 
     const body = await req.json().catch(() => ({}));
@@ -94,7 +108,9 @@ serve(async (req) => {
     let fetchedGuide: string | undefined = undefined;
     if (proxiedUrl && ovelaApiKey) {
       try {
-        console.log("Fetching brand guide from WellnessGeni admin for client:", clientId);
+        console.log("🌐 Fetching brand guide from WellnessGeni admin for client:", clientId);
+        console.log("📍 Admin URL:", proxiedUrl);
+        
         const guideResponse = await fetch(`${proxiedUrl}/brand-guide`, {
           method: "POST",
           headers: {
@@ -107,16 +123,29 @@ serve(async (req) => {
           })
         });
         
+        console.log("📡 Admin response status:", guideResponse.status);
+        
         if (guideResponse.ok) {
           const guideData = await guideResponse.json();
           fetchedGuide = guideData?.data?.guide_content || guideData?.guide_content;
-          console.log("Brand guide fetched successfully from WellnessGeni admin");
+          if (fetchedGuide) {
+            console.log("✅ Brand guide fetched successfully from WellnessGeni admin");
+            console.log("📄 Guide length:", fetchedGuide.length, "characters");
+          } else {
+            console.warn("⚠️ Admin returned OK but no guide_content found in response");
+          }
         } else {
-          console.warn("Failed to fetch brand guide from admin, will use fallback");
+          const errorText = await guideResponse.text();
+          console.warn("❌ Failed to fetch brand guide from admin. Status:", guideResponse.status);
+          console.warn("Error response:", errorText.substring(0, 200));
         }
       } catch (err) {
-        console.error("Error fetching brand guide from admin:", err);
+        console.error("❌ Error fetching brand guide from admin:", err);
+        console.error("Stack:", err instanceof Error ? err.stack : String(err));
       }
+    } else {
+      if (!proxiedUrl) console.log("ℹ️ Skipping admin fetch: No valid WELLNESS_GENI_API_URL");
+      if (!ovelaApiKey) console.log("ℹ️ Skipping admin fetch: No WELLNESS_GENI_API_KEY");
     }
 
     // Determine brand guide source
@@ -137,17 +166,21 @@ serve(async (req) => {
       context: "ovela-interactive"
     };
 
-    console.log("ovela-chat request summary", {
+    console.log("📊 ovela-chat request summary", {
       incomingMessage: incomingMessage ? "[RECEIVED]" : "[empty]",
       persona,
       clientId,
       usedGuide: !!effectiveGuide,
       guideSource,
+      guidePreview: effectiveGuide ? effectiveGuide.substring(0, 100) + '...' : '[none]',
       proxiedUrl: !!proxiedUrl ? "[external]" : "[none]"
     });
 
     if (effectiveGuide) {
-      console.log(`✅ Ovela Brand Guide (${clientId}) injected successfully`, { source: guideSource });
+      console.log(`✅ Ovela Brand Guide (${clientId}) injected successfully`, { 
+        source: guideSource,
+        length: effectiveGuide.length 
+      });
     } else {
       console.warn("⚠️ Using default fallback prompt for Isabella");
     }
@@ -268,8 +301,8 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       console.log("Lovable AI response body:", JSON.stringify(aiBody).substring(0, 200));
       
       const assistantText = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
-      console.log("ovela-chat generated reply (Lovable)", { length: assistantText.length, preview: assistantText.substring(0, 50) });
-      console.log("Isabella (Ovela) ready – brand personality active ✅", { clientId, guideSource });
+      console.log("💬 ovela-chat generated reply (Lovable)", { length: assistantText.length, preview: assistantText.substring(0, 50) });
+      console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId });
       
       if (!assistantText) {
         console.error("No assistant text extracted from response");

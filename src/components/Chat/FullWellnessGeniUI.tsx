@@ -166,6 +166,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   };
 
   const startVoiceMode = async () => {
+    console.log('🔵 MICROPHONE BUTTON CLICKED - startVoiceMode called');
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
@@ -255,6 +256,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   };
 
   const stopVoiceMode = () => {
+    console.log('🔴 STOP VOICE MODE CLICKED');
     setIsInVoiceMode(false);
     setIsRecording(false);
     
@@ -426,7 +428,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </button>
           
           <button
-            onClick={isInVoiceMode ? stopVoiceMode : startVoiceMode}
+            onClick={() => {
+              console.log('🎯 MICROPHONE BUTTON CLICKED - Current state:', { isInVoiceMode, isRecording });
+              if (isInVoiceMode) {
+                stopVoiceMode();
+              } else {
+                startVoiceMode();
+              }
+            }}
             className={`p-2 rounded-full transition-colors ${
               isInVoiceMode 
                 ? 'bg-champagne-gold/80 hover:bg-champagne-gold' 

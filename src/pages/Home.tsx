@@ -71,8 +71,9 @@ const Home = () => {
                 {/* Isabella Image - Pixel-Perfect via public assets */}
                 <picture>
                   <source srcSet="/isabella-hero@2x.webp 2x, /isabella-hero.webp 1x" type="image/webp" />
+                  <source srcSet="/isabella-hero.png 1x" type="image/png" />
                   <img
-                    src="/isabella-hero.png"
+                    src="/isabella-hero.webp"
                     alt="Isabella AI"
                     className="isabella-hero-image hero-image"
                     width="1400"

@@ -88,19 +88,17 @@
 .isabella-hero-image {
   width: auto;
   max-width: none; /* allow full height scaling without width cap */
-  height: 88vh; /* fill hero while keeping head + feet visible */
+  height: 92vh; /* maximize without cropping */
   object-fit: contain;
   object-position: bottom center;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  /* Avoid GPU transforms to keep image razor-sharp */
-  margin-left: 16px; /* ~4mm nudge to the right without blurring */
-  mix-blend-mode: normal;
-  /* Remove filters to prevent softness */
+  image-rendering: auto; /* keep native interpolation for sharpness */
+  margin-left: 16px; /* nudge right ~4mm */
+  margin-bottom: -2vh; /* trim transparent canvas/watermark at bottom */
+  mix-blend-mode: darken; /* reduce white fringing on dark bg */
   position: relative;
   z-index: 3;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   isolation: isolate;
 }
 

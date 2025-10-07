@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroHD from '@/assets/isabella-hero-avatar-new.webp';
+
 import '@/styles/HeroSection.css';
 
 
@@ -68,15 +68,19 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Original Ultra HD Quality */}
-                <img 
-                  src={isabellaHeroHD}
-                  alt="Isabella Navia - AI Model Ambassador"
-                  className="isabella-hero-image"
-                  loading="eager"
-                  decoding="sync"
-                  fetchPriority="high"
-                />
+                {/* Isabella Image - Pixel-Perfect via public assets */}
+                <picture>
+                  <source srcSet="/isabella-hero@2x.webp 2x, /isabella-hero.webp 1x" type="image/webp" />
+                  <img
+                    src="/isabella-hero.png"
+                    alt="Isabella AI"
+                    className="isabella-hero-image hero-image"
+                    width="1400"
+                    height="auto"
+                    loading="eager"
+                    decoding="sync"
+                  />
+                </picture>
                 
                 {/* HeyGen Avatar Container (Ready for Video Embed) */}
                 <div id="heygen-container" className="heygen-avatar-layer">

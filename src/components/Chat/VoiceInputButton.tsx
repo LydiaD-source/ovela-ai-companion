@@ -60,7 +60,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
             
             try {
               // Direct fetch to Supabase function
-              const sttUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/speech-to-text';
+              const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
               console.log('📡 STT Fetch URL:', sttUrl);
               console.log('📤 Sending audio directly to Supabase speech-to-text...');
               
@@ -72,9 +72,12 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
                 body: JSON.stringify({ audio: base64Audio })
               });
 
+              console.log('📡 Response status:', response.status);
+              
               if (!response.ok) {
                 const errorText = await response.text();
-                console.error('❌ STT HTTP Error:', response.status, errorText);
+                console.error('❌ STT HTTP Error:', response.status, response.statusText);
+                console.error('❌ Full error response:', errorText);
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
               }
 

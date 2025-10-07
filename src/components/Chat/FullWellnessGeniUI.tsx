@@ -289,7 +289,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       });
 
       // Call speech-to-text edge function - direct Supabase call
-      const sttUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/speech-to-text';
+      const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
       console.log('📡 STT Fetch URL:', sttUrl);
       console.log('📤 Sending audio directly to Supabase speech-to-text...');
       const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('speech-to-text', {

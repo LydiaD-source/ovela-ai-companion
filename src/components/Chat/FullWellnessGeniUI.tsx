@@ -30,6 +30,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true
 }) => {
+  console.log('🟢 FullWellnessGeniUI component loaded - debug version active');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -167,7 +168,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const startVoiceMode = async () => {
     console.log('🔵 MICROPHONE BUTTON CLICKED - startVoiceMode called');
+    console.log('🔵 Current state:', { isInVoiceMode, isRecording });
     try {
+      console.log('🔵 Requesting microphone access...');
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           sampleRate: 24000,

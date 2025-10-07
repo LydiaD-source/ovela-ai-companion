@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import isabellaHeroHD from '@/assets/isabella-hero-sharp.png';
+import isabellaHeroHD from '@/assets/isabella-hero-ultra-sharp.webp';
 import '@/styles/HeroSection.css';
 
 

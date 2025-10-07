@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UseOpenAIRealtimeSTTProps {
   onTranscript?: (text: string) => void;
@@ -15,6 +16,8 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const transcriptBufferRef = useRef<string>('');
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaChunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
 
   const connect = useCallback(async () => {
@@ -50,10 +53,8 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
               break;
 
             case 'input_audio_buffer.speech_stopped':
-              console.log('Speech stopped, requesting response');
-              try {
-                wsRef.current?.send(JSON.stringify({ type: 'response.create' }));
-              } catch (e) { console.error('Failed to request response:', e); }
+              console.log('Speech stopped (server VAD)');
+              // With server VAD enabled, do not manually commit or create response
               break;
 
             case 'response.audio_transcript.delta':
@@ -136,41 +137,89 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
       });
 
       streamRef.current = stream;
-      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      processorRef.current = audioContextRef.current.createScriptProcessor(4096, 1, 1);
 
-      processorRef.current.onaudioprocess = (e) => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          const inputData = e.inputBuffer.getChannelData(0);
-          const int16Array = new Int16Array(inputData.length);
-          
-          for (let i = 0; i < inputData.length; i++) {
-            const s = Math.max(-1, Math.min(1, inputData[i]));
-            int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      const useWebSocket = wsRef.current?.readyState === WebSocket.OPEN;
+
+      if (useWebSocket) {
+        // Realtime path: stream PCM16 frames to OpenAI via WS
+        audioContextRef.current = new AudioContext({ sampleRate: 24000 });
+        const source = audioContextRef.current.createMediaStreamSource(stream);
+        processorRef.current = audioContextRef.current.createScriptProcessor(4096, 1, 1);
+
+        processorRef.current.onaudioprocess = (e) => {
+          if (wsRef.current?.readyState === WebSocket.OPEN) {
+            const inputData = e.inputBuffer.getChannelData(0);
+            const int16Array = new Int16Array(inputData.length);
+            for (let i = 0; i < inputData.length; i++) {
+              const s = Math.max(-1, Math.min(1, inputData[i]));
+              int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+            const uint8Array = new Uint8Array(int16Array.buffer);
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < uint8Array.length; i += chunkSize) {
+              const chunk = uint8Array.subarray(i, Math.min(i + chunkSize, uint8Array.length));
+              binary += String.fromCharCode.apply(null, Array.from(chunk));
+            }
+            const base64Audio = btoa(binary);
+            wsRef.current.send(JSON.stringify({
+              type: 'input_audio_buffer.append',
+              audio: base64Audio
+            }));
           }
+        };
 
-          const uint8Array = new Uint8Array(int16Array.buffer);
-          let binary = '';
-          const chunkSize = 0x8000;
-          
-          for (let i = 0; i < uint8Array.length; i += chunkSize) {
-            const chunk = uint8Array.subarray(i, Math.min(i + chunkSize, uint8Array.length));
-            binary += String.fromCharCode.apply(null, Array.from(chunk));
-          }
-
-          const base64Audio = btoa(binary);
-
-          wsRef.current.send(JSON.stringify({
-            type: 'input_audio_buffer.append',
-            audio: base64Audio
-          }));
+        source.connect(processorRef.current);
+        processorRef.current.connect(audioContextRef.current.destination);
+      } else {
+        // Fallback path: record short clip and send to Whisper STT edge function
+        mediaChunksRef.current = [];
+        try {
+          mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+        } catch (e) {
+          // Safari may not support audio/webm; try default
+          mediaRecorderRef.current = new MediaRecorder(stream);
         }
-      };
 
-      source.connect(processorRef.current);
-      processorRef.current.connect(audioContextRef.current.destination);
-      
+        mediaRecorderRef.current.ondataavailable = (e: BlobEvent) => {
+          if (e.data && e.data.size > 0) mediaChunksRef.current.push(e.data);
+        };
+
+        mediaRecorderRef.current.onstop = async () => {
+          try {
+            const blob = new Blob(mediaChunksRef.current, { type: mediaRecorderRef.current?.mimeType || 'audio/webm' });
+            mediaChunksRef.current = [];
+            const arrayBuffer = await blob.arrayBuffer();
+            const bytes = new Uint8Array(arrayBuffer);
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+              const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+              binary += String.fromCharCode.apply(null, Array.from(chunk));
+            }
+            const base64Audio = btoa(binary);
+
+            const { data, error } = await supabase.functions.invoke('speech-to-text', {
+              body: { audio: base64Audio }
+            });
+
+            if (error) {
+              console.error('Whisper STT error:', error);
+              toast({ title: 'Speech-to-text failed', description: 'Please try again', variant: 'destructive' });
+            } else if (data?.success && data?.text) {
+              setCurrentTranscript(data.text);
+              onTranscript?.(data.text);
+            } else {
+              console.warn('Unexpected STT response', data);
+            }
+          } catch (err) {
+            console.error('Failed processing recorded audio:', err);
+          }
+        };
+
+        mediaRecorderRef.current.start(250); // gather small chunks for responsiveness
+      }
+
       setIsRecording(true);
       setCurrentTranscript('');
     } catch (error) {
@@ -181,18 +230,26 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
         variant: 'destructive'
       });
     }
-  }, [toast]);
+  }, [onTranscript, toast]);
 
   const stopRecording = useCallback(() => {
-    // Signal end of audio and request response
+    // If using fallback recorder, stop it (onstop handler will process STT)
     try {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        console.log('Committing audio buffer and requesting response');
-        wsRef.current.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
-        wsRef.current.send(JSON.stringify({ type: 'response.create' }));
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        console.log('Stopping MediaRecorder fallback');
+        mediaRecorderRef.current.stop();
       }
     } catch (e) {
-      console.error('Failed to finalize audio:', e);
+      console.warn('Failed to stop MediaRecorder:', e);
+    }
+
+    // Realtime path: rely on server VAD, do not manually commit or request response
+    try {
+      if (processorRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
+        console.log('Stopping realtime capture (no manual commit, server VAD active)');
+      }
+    } catch (e) {
+      console.error('Failed to finalize WS audio:', e);
     }
 
     if (processorRef.current) {

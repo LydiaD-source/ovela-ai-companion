@@ -87,8 +87,8 @@
 /* Isabella Image - Optimized for Ultra-Sharp Display */
 .isabella-hero-image {
   width: auto;
-  max-width: 100%;
-  height: 50vh;
+  max-width: none; /* allow full height scaling without width cap */
+  height: 86vh; /* fill hero while keeping head + feet visible */
   object-fit: contain;
   object-position: bottom center;
   image-rendering: -webkit-optimize-contrast;

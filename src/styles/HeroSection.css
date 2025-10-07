@@ -95,11 +95,12 @@
   z-index: 3;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transform: translateZ(0);
-  image-rendering: -webkit-optimize-contrast;
-  /* Remove white halo around transparent edges and improve compositing */
-  filter: drop-shadow(0 0 0 #000);
-  -webkit-filter: drop-shadow(0 0 0 #000);
+  transform: none;
+  image-rendering: auto;
+  filter: none;
+  -webkit-filter: none;
+  mix-blend-mode: normal;
+  image-orientation: from-image;
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

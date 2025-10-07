@@ -247,10 +247,23 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       setMediaRecorder(recorder);
       checkAudioLevel();
       
+      // Start recording immediately for testing
+      console.log('🔥 STARTING IMMEDIATE RECORDING FOR TEST');
+      recorder.start();
+      setIsRecording(true);
+      
+      // Auto-stop after 3 seconds for testing
+      setTimeout(() => {
+        console.log('🔥 AUTO-STOPPING RECORDING AFTER 3 SECONDS');
+        if (recorder.state === 'recording') {
+          recorder.stop();
+        }
+      }, 3000);
+      
       console.log('🔥 VOICE MODE STARTED - RECORDER READY');
       toast({
-        title: "Voice Mode Active",
-        description: "Start speaking naturally - I'll respond with voice!",
+        title: "Voice Mode Active", 
+        description: "Recording for 3 seconds automatically!",
       });
       console.log('🔥 TOAST SHOWN - NOW WAITING FOR SPEECH');
       

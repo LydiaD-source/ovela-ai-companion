@@ -91,12 +91,12 @@
 .isabella-hero-image {
   width: auto;
   max-width: 100%;
-  height: 88vh;
+  height: 82vh;
   object-fit: contain;
   object-position: bottom center;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  transform: translateZ(0);
+  transform: translateZ(0) translateX(4mm);
   mix-blend-mode: multiply; /* removes white halo */
   filter: drop-shadow(0 0 0.5px rgba(0,0,0,0.6));
   position: relative;

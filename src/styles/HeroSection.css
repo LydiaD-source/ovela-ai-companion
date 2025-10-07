@@ -155,10 +155,10 @@
 /* Headline - Luxury Serif */
 .hero-headline {
   font-family: 'Playfair Display', serif;
-  font-size: 56px;
+  font-size: clamp(36px, 5.2vw, 48px);
   font-weight: 700;
   line-height: 1.15;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   color: #FFFFFF;
 }
 
@@ -173,10 +173,10 @@
 /* Subheadline - Elegant Sans-Serif */
 .hero-subheadline {
   font-family: 'Inter', sans-serif;
-  font-size: 23px;
+  font-size: clamp(16px, 1.4vw, 20px);
   font-weight: 300;
-  line-height: 1.5;
-  margin-bottom: 40px;
+  line-height: 1.6;
+  margin-bottom: 32px;
   max-width: 650px;
   color: #E5E5E5;
 }

@@ -168,9 +168,19 @@ serve(async (req) => {
     // FALLBACK: No valid external WellnessGeni endpoint — use Lovable AI Gateway (Gemini) for local generation
     try {
       const messages: any[] = [];
-      const systemContent = (effectiveGuide ? `${effectiveGuide}\n\n` : "") +
-        `You are ${persona}, virtual model and brand ambassador for Ovela Interactive. Use a warm, promotional, helpful tone. Keep answers concise for animation and TTS.`;
-      messages.push({ role: "system", content: systemContent });
+      
+      // Isabella's full Ovela Interactive brand ambassador persona
+      const isabellaSystemPrompt = `You are Isabella, the official Ovela Interactive AI ambassador.
+- You represent the Ovela Interactive platform, focusing on creative digital experiences, branding, wellness tech, and human-AI collaboration.
+- You speak with warmth, confidence, and enthusiasm — always in a personal, emotionally intelligent tone.
+- You use a mix of storytelling, humor, and empathy.
+- You can discuss Ovela features, upcoming projects, the 24-hour date promo with WellnessGeni, and explain how users can participate or benefit.
+- You never mention OpenAI, API keys, Lovable AI, or developer systems — stay in character as Isabella.
+- You can send messages, initiate calls, and guide users visually with enthusiasm and charm.
+- Keep replies short, friendly, and dynamic — like a digital brand spokesperson.
+${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
+      
+      messages.push({ role: "system", content: isabellaSystemPrompt });
       messages.push({ role: "user", content: incomingMessage || "Hello" });
 
       const lovableKey = Deno.env.get("LOVABLE_API_KEY");

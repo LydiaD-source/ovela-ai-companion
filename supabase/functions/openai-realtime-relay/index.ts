@@ -54,29 +54,60 @@ serve(async (req) => {
         // Send session.update after receiving session.created
         if (data.type === 'session.created' && !sessionCreated) {
           sessionCreated = true;
-          const sessionUpdate = {
-            type: 'session.update',
-            session: {
-              modalities: ['text', 'audio'],
-              instructions: `You are Isabella, the official Ovela Interactive AI ambassador.\n- You represent the Ovela Interactive platform, focusing on creative digital experiences, branding, wellness tech, and human-AI collaboration.\n- Speak with warmth, confidence, and enthusiasm — personal, emotionally intelligent tone.\n- Use short, modern sentences with storytelling, subtle humor, and empathy.\n- Always align with Ovela's lifestyle and fashion focus.\n- Never mention AI providers, API keys, or developer systems.\n- Always respond in the user's language while preserving Ovela’s style and voice.`,
-              voice: 'shimmer',
-              input_audio_format: 'pcm16',
-              output_audio_format: 'pcm16',
-              input_audio_transcription: {
-                model: 'whisper-1'
-              },
-              turn_detection: {
-                type: 'server_vad',
-                threshold: 0.5,
-                prefix_padding_ms: 300,
-                silence_duration_ms: 1000
-              },
-              temperature: 0.8,
-              max_response_output_tokens: 'inf'
+
+          // Build brand-aware instructions
+          (async () => {
+            const baseUrl = Deno.env.get('WELLNESS_GENI_API_URL');
+            const apiKey = Deno.env.get('WELLNESS_GENI_API_KEY');
+            const envGuide = Deno.env.get('OVELA_GUIDE');
+            const clientId = Deno.env.get('OVELA_CLIENT_ID')?.trim() || Deno.env.get('DEFAULT_BRAND_TEMPLATE_ID')?.trim() || 'ovela_client_001';
+
+            let brandPrompt: string | undefined;
+            try {
+              if (baseUrl && !/^wg_/.test(baseUrl.trim())) {
+                const res = await fetch(`${baseUrl}/brand-templates/${clientId}`, {
+                  headers: { Authorization: `Bearer ${apiKey}`, Accept: 'application/json' }
+                });
+                console.log('[realtime-relay] admin brand fetch status', res.status);
+                if (res.ok) {
+                  const j = await res.json();
+                  brandPrompt = j?.prompt || j?.data?.prompt;
+                }
+              }
+            } catch (e) {
+              console.warn('[realtime-relay] admin brand fetch error', String(e));
             }
-          };
-          openAISocket?.send(JSON.stringify(sessionUpdate));
-          console.log('Sent session.update (Ovela Isabella persona)');
+
+            if (!brandPrompt) brandPrompt = envGuide;
+
+            const baseInstructions = `You are Isabella, the official Ovela Interactive AI ambassador.\n- You represent the Ovela Interactive platform, focusing on creative digital experiences, branding, wellness tech, and human-AI collaboration.\n- Speak with warmth, confidence, and enthusiasm — personal, emotionally intelligent tone.\n- Use short, modern sentences with storytelling, subtle humor, and empathy.\n- Always align with Ovela's lifestyle and fashion focus.\n- Never mention AI providers, API keys, or developer systems.\n- Always respond in the user's language while preserving Ovela’s style and voice.`;
+
+            const instructions = brandPrompt ? `${baseInstructions}\n\nAdditional brand context (template: ${clientId}):\n${brandPrompt}` : baseInstructions;
+
+            const sessionUpdate = {
+              type: 'session.update',
+              session: {
+                modalities: ['text', 'audio'],
+                instructions,
+                voice: 'shimmer',
+                input_audio_format: 'pcm16',
+                output_audio_format: 'pcm16',
+                input_audio_transcription: {
+                  model: 'whisper-1'
+                },
+                turn_detection: {
+                  type: 'server_vad',
+                  threshold: 0.5,
+                  prefix_padding_ms: 300,
+                  silence_duration_ms: 1000
+                },
+                temperature: 0.8,
+                max_response_output_tokens: 'inf'
+              }
+            };
+            openAISocket?.send(JSON.stringify(sessionUpdate));
+            console.log('Sent session.update (Ovela persona + brand template)', { clientId, hasBrandPrompt: !!brandPrompt });
+          })();
         }
 
         // Forward all messages to client

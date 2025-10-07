@@ -106,33 +106,43 @@ serve(async (req) => {
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
+    // Prefer new brand-templates endpoint if available, else legacy /brand-guide
     if (proxiedUrl && ovelaApiKey) {
       try {
-        console.log("🌐 Fetching brand guide from WellnessGeni admin for client:", clientId);
+        console.log("🌐 Fetching brand template from WellnessGeni admin for client:", clientId);
         console.log("📍 Admin URL:", proxiedUrl);
-        
-        const guideResponse = await fetch(`${proxiedUrl}/brand-guide`, {
-          method: "POST",
+
+        // Try RESTful brand-templates/{id}
+        let guideResponse = await fetch(`${proxiedUrl}/brand-templates/${clientId}`, {
+          method: "GET",
           headers: {
             "Authorization": `Bearer ${ovelaApiKey}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            action: "getBrandGuide",
-            payload: { client_id: clientId }
-          })
+            "Accept": "application/json"
+          }
         });
-        
-        console.log("📡 Admin response status:", guideResponse.status);
-        
+
+        console.log("📡 Admin brand-templates status:", guideResponse.status);
+        if (!guideResponse.ok) {
+          // Fallback to legacy POST /brand-guide
+          guideResponse = await fetch(`${proxiedUrl}/brand-guide`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${ovelaApiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ action: "getBrandGuide", payload: { client_id: clientId } })
+          });
+          console.log("📡 Admin legacy brand-guide status:", guideResponse.status);
+        }
+
         if (guideResponse.ok) {
           const guideData = await guideResponse.json();
-          fetchedGuide = guideData?.data?.guide_content || guideData?.guide_content;
+          fetchedGuide = guideData?.prompt || guideData?.data?.guide_content || guideData?.guide_content;
           if (fetchedGuide) {
             console.log("✅ Brand guide fetched successfully from WellnessGeni admin");
             console.log("📄 Guide length:", fetchedGuide.length, "characters");
           } else {
-            console.warn("⚠️ Admin returned OK but no guide_content found in response");
+            console.warn("⚠️ Admin returned OK but no prompt/guide_content found in response");
           }
         } else {
           const errorText = await guideResponse.text();

@@ -165,108 +165,52 @@ serve(async (req) => {
       }
     }
 
-    // FALLBACK: No valid external WellnessGeni endpoint — try Lovable AI first, then OpenAI
-    const lovableKey = Deno.env.get("LOVABLE_API_KEY");
-    const openaiKey = Deno.env.get("OPENAI_API_KEY");
-
-    if (lovableKey) {
-      try {
-        const messages: any[] = [];
-        const systemContent = (effectiveGuide ? `${effectiveGuide}\n\n` : "") + `You are ${persona}, virtual model and brand ambassador for Ovela Interactive. Use warm, promotional, helpful tone. Keep answers concise for animation and TTS.`;
-        messages.push({ role: "system", content: systemContent });
-        messages.push({ role: "user", content: incomingMessage || "Hello" });
-
-        const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${lovableKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-2.5-flash",
-            messages,
-            stream: false,
-          }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        if (!aiRes.ok) {
-          if (aiRes.status === 429) {
-            return new Response(JSON.stringify({ success: false, message: "Rate limits exceeded, please try again shortly.", data: {} }), {
-              status: 200,
-              headers: { ...corsHeaders, "Content-Type": "application/json" }
-            });
-          }
-          if (aiRes.status === 402) {
-            return new Response(JSON.stringify({ success: false, message: "AI credits exhausted. Please top up your Lovable AI workspace.", data: {} }), {
-              status: 200,
-              headers: { ...corsHeaders, "Content-Type": "application/json" }
-            });
-          }
-          const errText = await aiRes.text().catch(() => "");
-          console.error("Lovable AI gateway error", { status: aiRes.status, errText });
-          // Fall through to OpenAI if available
-        } else {
-          const aiBody = await aiRes.json().catch(() => ({}));
-          const assistantText = extractAssistantText(aiBody) || (aiBody?.choices?.[0]?.message?.content ?? "");
-          console.log("ovela-chat lovable generated reply", { length: (assistantText || "").length });
-          return new Response(JSON.stringify({ success: true, message: assistantText, data: {} }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" }
-          });
-        }
-      } catch (err) {
-        clearTimeout(timeoutId);
-        console.error("ovela-chat lovable generation error", { err: String(err) });
-        // Continue to OpenAI fallback
-      }
+    // FALLBACK: No valid external WellnessGeni endpoint — call OpenAI directly (local generation)
+    if (!openaiKey) {
+      clearTimeout(timeoutId);
+      console.error("FATAL: OPENAI_API_KEY is missing; cannot generate response locally.");
+      return new Response(JSON.stringify({ success: false, message: "Server misconfiguration: OPENAI_API_KEY not set", data: {} }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
 
-    if (openaiKey) {
-      try {
-        const messages: any[] = [];
-        const systemContent = (effectiveGuide ? `${effectiveGuide}\n\n` : "") + `You are ${persona}, virtual model and brand ambassador for Ovela Interactive. Use warm, promotional, helpful tone. Keep answers concise for animation and TTS.`;
-        messages.push({ role: "system", content: systemContent });
-        messages.push({ role: "user", content: incomingMessage || "Hello" });
+    try {
+      const messages: any[] = [];
+      // System contextualization: OVELA_GUIDE + persona
+      const systemContent = (effectiveGuide ? `${effectiveGuide}\n\n` : "") + `You are ${persona}, virtual model and brand ambassador for Ovela Interactive. Use warm, promotional, helpful tone. Keep answers concise for animation and TTS.`;
+      messages.push({ role: "system", content: systemContent });
+      messages.push({ role: "user", content: incomingMessage || "Hello" });
 
-        const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${openaiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages,
-            max_tokens: 600,
-            temperature: 0.8,
-          }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        const openaiBody = await openaiRes.json().catch(() => ({}));
-        const assistantText = extractAssistantText(openaiBody) || (openaiBody?.choices?.[0]?.message?.content ?? "");
-        console.log("ovela-chat openai generated reply", { length: (assistantText || "").length });
-        return new Response(JSON.stringify({ success: true, message: assistantText, data: {} }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      } catch (err) {
-        clearTimeout(timeoutId);
-        console.error("ovela-chat openai generation error", { err: String(err) });
-        return new Response(JSON.stringify({ success: false, message: `Generation error: ${err?.message ?? String(err)}`, data: {} }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      }
+      const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${openaiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages,
+          max_tokens: 600,
+          temperature: 0.8
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      const openaiBody = await openaiRes.json().catch(() => ({}));
+      const assistantText = extractAssistantText(openaiBody) || (openaiBody?.choices?.[0]?.message?.content ?? "");
+      console.log("ovela-chat local generated reply", { length: (assistantText || "").length });
+      return new Response(JSON.stringify({ success: true, message: assistantText, data: {} }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    } catch (err) {
+      clearTimeout(timeoutId);
+      console.error("ovela-chat local generation error", { err: String(err) });
+      return new Response(JSON.stringify({ success: false, message: `Generation error: ${err?.message ?? String(err)}`, data: {} }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
-
-    // If neither key is available
-    clearTimeout(timeoutId);
-    console.error("FATAL: No AI provider configured. Set LOVABLE_API_KEY or OPENAI_API_KEY.");
-    return new Response(JSON.stringify({ success: false, message: "Server misconfiguration: no AI provider configured", data: {} }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    });
   } catch (err) {
     console.error("ovela-chat top-level error", { err: String(err) });
     return new Response(JSON.stringify({ success: false, message: err?.message ?? String(err), data: {} }), {

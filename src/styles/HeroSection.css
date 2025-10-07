@@ -275,8 +275,8 @@
     0 0 60px rgba(212, 175, 55, 0.25),
     0 30px 60px rgba(0, 0, 0, 0.4),
     inset 0 0 80px rgba(212, 175, 55, 0.05);
-  overflow: hidden;
-  padding-bottom: 24px;
+  overflow: visible;
+  padding-bottom: 72px;
 }
 
 /* Close Button - Chat Overlay */

@@ -42,7 +42,7 @@ serve(async (req) => {
   }
 
   try {
-    const { audio } = await req.json();
+    const { audio, mimeType } = await req.json();
     
     if (!audio) {
       throw new Error('No audio data provided');
@@ -61,7 +61,7 @@ serve(async (req) => {
     
     // Prepare form data
     const formData = new FormData();
-    const blob = new Blob([binaryAudio], { type: 'audio/webm' });
+    const blob = new Blob([binaryAudio], { type: mimeType || 'audio/webm' });
     formData.append('file', blob, 'audio.webm');
     formData.append('model', 'whisper-1');
 

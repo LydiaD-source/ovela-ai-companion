@@ -76,7 +76,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
             try {
               console.log('📤 Invoking Supabase speech-to-text via SDK...');
               const { data, error } = await supabase.functions.invoke('speech-to-text', {
-                body: { audio: base64Audio }
+                body: { audio: base64Audio, mimeType: mimeTypeRef.current || 'audio/webm' }
               });
 
               if (error) {

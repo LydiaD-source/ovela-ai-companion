@@ -183,6 +183,7 @@ serve(async (req) => {
         });
       }
 
+      console.log("Calling Lovable AI with model google/gemini-2.5-flash");
       const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -198,7 +199,12 @@ serve(async (req) => {
       });
       clearTimeout(timeoutId);
 
+      console.log("Lovable AI response status:", aiRes.status);
+      
       if (!aiRes.ok) {
+        const errorText = await aiRes.text();
+        console.error("Lovable AI error:", aiRes.status, errorText);
+        
         if (aiRes.status === 429) {
           return new Response(JSON.stringify({ success: false, message: "Rate limits exceeded, please try again later.", data: {} }), {
             status: 200,
@@ -211,23 +217,32 @@ serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" }
           });
         }
-        const t = await aiRes.text();
-        console.error("Lovable AI gateway error:", aiRes.status, t);
-        return new Response(JSON.stringify({ success: false, message: "AI gateway error", data: {} }), {
+        return new Response(JSON.stringify({ success: false, message: `AI gateway error: ${errorText}`, data: {} }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
-      const body = await aiRes.json().catch(() => ({}));
-      const assistantText = extractAssistantText(body) || (body?.choices?.[0]?.message?.content ?? "");
-      console.log("ovela-chat generated reply (Lovable)", { length: (assistantText || "").length });
+      const aiBody = await aiRes.json();
+      console.log("Lovable AI response body:", JSON.stringify(aiBody).substring(0, 200));
+      
+      const assistantText = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
+      console.log("ovela-chat generated reply (Lovable)", { length: assistantText.length, preview: assistantText.substring(0, 50) });
+      
+      if (!assistantText) {
+        console.error("No assistant text extracted from response");
+        return new Response(JSON.stringify({ success: false, message: "No response generated", data: {} }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      
       return new Response(JSON.stringify({ success: true, message: assistantText, data: {} }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (err) {
       clearTimeout(timeoutId);
-      console.error("ovela-chat generation error (Lovable)", { err: String(err) });
+      console.error("ovela-chat generation error (Lovable)", { err: String(err), stack: err?.stack });
       return new Response(JSON.stringify({ success: false, message: `Generation error: ${err?.message ?? String(err)}`, data: {} }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" }

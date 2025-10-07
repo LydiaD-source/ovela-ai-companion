@@ -81,10 +81,12 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
     <div className="flex items-center gap-2">
       <Button
         type="button"
-        variant={isRecording ? 'destructive' : 'outline'}
+        variant={isRecording ? 'destructive' : 'secondary'}
         size="icon"
         onClick={handleClick}
         disabled={disabled}
+        aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+        title={isRecording ? 'Stop recording' : 'Speak'}
         className={`transition-all ${isRecording ? 'animate-pulse' : ''}`}
       >
         {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}

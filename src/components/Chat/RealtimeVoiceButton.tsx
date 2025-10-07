@@ -35,13 +35,26 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
   }, [currentTranscript]);
 
   const handleClick = async () => {
-    if (!isConnected) {
-      await connect();
-      setTimeout(() => startRecording(), 500);
-    } else if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
+    try {
+      console.log('Microphone button clicked. State:', { isConnected, isRecording });
+      
+      if (!isConnected) {
+        console.log('Connecting to OpenAI Realtime...');
+        await connect();
+        console.log('Connected! Starting recording in 500ms...');
+        setTimeout(async () => {
+          await startRecording();
+          console.log('Recording started');
+        }, 500);
+      } else if (isRecording) {
+        console.log('Stopping recording...');
+        stopRecording();
+      } else {
+        console.log('Starting recording...');
+        await startRecording();
+      }
+    } catch (error) {
+      console.error('Error in handleClick:', error);
     }
   };
 

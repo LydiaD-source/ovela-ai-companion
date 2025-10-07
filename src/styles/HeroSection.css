@@ -88,11 +88,12 @@
 .isabella-hero-image {
   width: auto;
   max-width: none; /* allow full height scaling without width cap */
-  height: 92vh; /* maximize without cropping */
+  height: 88vh; /* restore original to prevent layout overflow */
   object-fit: contain;
   object-position: bottom center;
-  image-rendering: auto; /* keep native interpolation for sharpness */
-  margin-left: 20px; /* ~5mm nudge to the right */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges; /* favor sharper sampling */
+  margin-left: 19px; /* ~5mm nudge to the right */
   margin-bottom: 0; /* ensure feet are fully visible */
   mix-blend-mode: darken; /* reduce white fringing on dark bg */
   position: relative;

@@ -32,57 +32,68 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
           resolve();
         };
 
-        wsRef.current.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
+      wsRef.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
 
-            switch (data.type) {
-              case 'session.created':
-                console.log('Session created');
-                break;
+          switch (data.type) {
+            case 'session.created':
+              console.log('Session created');
+              break;
 
-              case 'session.updated':
-                console.log('Session updated');
-                break;
+            case 'session.updated':
+              console.log('Session updated');
+              break;
 
-              case 'response.audio_transcript.delta':
-                // Build up live transcript as deltas arrive
-                transcriptBufferRef.current += data.delta || '';
-                setCurrentTranscript(transcriptBufferRef.current);
-                break;
+            case 'input_audio_buffer.speech_started':
+              console.log('Speech started');
+              break;
 
-              case 'response.done':
-              case 'response.audio.done':
-                if (transcriptBufferRef.current.trim()) {
-                  const finalText = transcriptBufferRef.current.trim();
-                  console.log('Final transcript:', finalText);
-                  onTranscript?.(finalText);
-                }
-                transcriptBufferRef.current = '';
-                break;
+            case 'input_audio_buffer.speech_stopped':
+              console.log('Speech stopped, requesting response');
+              try {
+                wsRef.current?.send(JSON.stringify({ type: 'response.create' }));
+              } catch (e) { console.error('Failed to request response:', e); }
+              break;
 
-              case 'response.audio.delta':
-                onAudioDelta?.(data.delta);
-                break;
+            case 'response.audio_transcript.delta':
+              // Build up live transcript as deltas arrive
+              transcriptBufferRef.current += data.delta || '';
+              setCurrentTranscript(transcriptBufferRef.current);
+              break;
 
-              case 'error':
-                console.error('OpenAI error:', data.error);
-                toast({
-                  title: 'Error',
-                  description: (data.error && (data.error.message || data.error)) || 'An error occurred',
-                  variant: 'destructive'
-                });
-                break;
+            case 'response.done':
+            case 'response.audio.done':
+              if (transcriptBufferRef.current.trim()) {
+                const finalText = transcriptBufferRef.current.trim();
+                console.log('Final transcript:', finalText);
+                onTranscript?.(finalText);
+              }
+              transcriptBufferRef.current = '';
+              break;
 
-              default:
-                // Uncomment for verbose logging
-                // console.log('WS event:', data.type);
-                break;
-            }
-          } catch (error) {
-            console.error('Error processing message:', error);
+            case 'response.audio.delta':
+              onAudioDelta?.(data.delta);
+              break;
+
+            case 'error':
+              console.error('OpenAI error:', data.error);
+              toast({
+                title: 'Error',
+                description: (data.error && (data.error.message || data.error)) || 'An error occurred',
+                variant: 'destructive'
+              });
+              break;
+
+            default:
+              // Uncomment for verbose logging
+              // console.log('WS event:', data.type);
+              break;
           }
-        };
+        } catch (error) {
+          console.error('Error processing message:', error);
+        }
+      };
 
         wsRef.current.onerror = (error) => {
           console.error('WebSocket error:', error);
@@ -173,6 +184,17 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   }, [toast]);
 
   const stopRecording = useCallback(() => {
+    // Signal end of audio and request response
+    try {
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        console.log('Committing audio buffer and requesting response');
+        wsRef.current.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
+        wsRef.current.send(JSON.stringify({ type: 'response.create' }));
+      }
+    } catch (e) {
+      console.error('Failed to finalize audio:', e);
+    }
+
     if (processorRef.current) {
       processorRef.current.disconnect();
       processorRef.current = null;

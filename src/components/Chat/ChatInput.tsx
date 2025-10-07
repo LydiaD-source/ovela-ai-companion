@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send } from 'lucide-react';
+import { RealtimeVoiceButton } from './RealtimeVoiceButton';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -25,8 +26,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
+  const handleTranscript = (transcript: string) => {
+    if (transcript.trim()) {
+      onSendMessage(transcript.trim());
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex space-x-2">
+      <RealtimeVoiceButton 
+        onTranscript={handleTranscript}
+        disabled={disabled}
+      />
       <Input
         value={message}
         onChange={(e) => setMessage(e.target.value)}

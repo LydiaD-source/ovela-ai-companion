@@ -20,81 +20,87 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   const connect = useCallback(async () => {
     try {
       const WS_URL = 'wss://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/openai-realtime-relay';
-      
-      wsRef.current = new WebSocket(WS_URL);
 
-      wsRef.current.onopen = () => {
-        console.log('Connected to OpenAI Realtime API');
-        setIsConnected(true);
-      };
+      await new Promise<void>((resolve, reject) => {
+        let opened = false;
+        wsRef.current = new WebSocket(WS_URL);
 
-      wsRef.current.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          
-          switch (data.type) {
-            case 'session.created':
-              console.log('Session created');
-              break;
-            
-            case 'session.updated':
-              console.log('Session updated');
-              break;
-            
-            case 'response.audio_transcript.delta':
-              // Build up live transcript as deltas arrive
-              transcriptBufferRef.current += data.delta || '';
-              setCurrentTranscript(transcriptBufferRef.current);
-              break;
+        wsRef.current.onopen = () => {
+          console.log('Connected to OpenAI Realtime API');
+          setIsConnected(true);
+          opened = true;
+          resolve();
+        };
 
-            case 'response.done':
-            case 'response.audio.done':
-              if (transcriptBufferRef.current.trim()) {
-                const finalText = transcriptBufferRef.current.trim();
-                console.log('Final transcript:', finalText);
-                onTranscript?.(finalText);
-              }
-              transcriptBufferRef.current = '';
-              break;
-            
-            case 'response.audio.delta':
-              onAudioDelta?.(data.delta);
-              break;
-            
-            case 'error':
-              console.error('OpenAI error:', data.error);
-              toast({
-                title: 'Error',
-                description: (data.error && (data.error.message || data.error)) || 'An error occurred',
-                variant: 'destructive'
-              });
-              break;
-            
-            default:
-              // Uncomment for verbose logging
-              // console.log('WS event:', data.type);
-              break;
+        wsRef.current.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+
+            switch (data.type) {
+              case 'session.created':
+                console.log('Session created');
+                break;
+
+              case 'session.updated':
+                console.log('Session updated');
+                break;
+
+              case 'response.audio_transcript.delta':
+                // Build up live transcript as deltas arrive
+                transcriptBufferRef.current += data.delta || '';
+                setCurrentTranscript(transcriptBufferRef.current);
+                break;
+
+              case 'response.done':
+              case 'response.audio.done':
+                if (transcriptBufferRef.current.trim()) {
+                  const finalText = transcriptBufferRef.current.trim();
+                  console.log('Final transcript:', finalText);
+                  onTranscript?.(finalText);
+                }
+                transcriptBufferRef.current = '';
+                break;
+
+              case 'response.audio.delta':
+                onAudioDelta?.(data.delta);
+                break;
+
+              case 'error':
+                console.error('OpenAI error:', data.error);
+                toast({
+                  title: 'Error',
+                  description: (data.error && (data.error.message || data.error)) || 'An error occurred',
+                  variant: 'destructive'
+                });
+                break;
+
+              default:
+                // Uncomment for verbose logging
+                // console.log('WS event:', data.type);
+                break;
+            }
+          } catch (error) {
+            console.error('Error processing message:', error);
           }
-        } catch (error) {
-          console.error('Error processing message:', error);
-        }
-      };
+        };
 
-      wsRef.current.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        toast({
-          title: 'Connection Error',
-          description: 'Failed to connect to speech service',
-          variant: 'destructive'
-        });
-      };
+        wsRef.current.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          toast({
+            title: 'Connection Error',
+            description: 'Failed to connect to speech service',
+            variant: 'destructive'
+          });
+          if (!opened) reject(error as any);
+        };
 
-      wsRef.current.onclose = () => {
-        console.log('WebSocket closed');
-        setIsConnected(false);
-        setIsRecording(false);
-      };
-
+        wsRef.current.onclose = () => {
+          console.log('WebSocket closed');
+          setIsConnected(false);
+          setIsRecording(false);
+          if (!opened) reject(new Error('WebSocket closed before opening'));
+        };
+      });
     } catch (error) {
       console.error('Error connecting:', error);
       toast({
@@ -102,6 +108,7 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
         description: 'Failed to initialize speech service',
         variant: 'destructive'
       });
+      throw error;
     }
   }, [onTranscript, onAudioDelta, toast]);
 

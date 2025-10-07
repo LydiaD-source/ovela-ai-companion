@@ -41,11 +41,9 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
       if (!isConnected) {
         console.log('Connecting to OpenAI Realtime...');
         await connect();
-        console.log('Connected! Starting recording in 500ms...');
-        setTimeout(async () => {
-          await startRecording();
-          console.log('Recording started');
-        }, 500);
+        console.log('Connected! Starting recording now...');
+        await startRecording();
+        console.log('Recording started');
       } else if (isRecording) {
         console.log('Stopping recording...');
         stopRecording();

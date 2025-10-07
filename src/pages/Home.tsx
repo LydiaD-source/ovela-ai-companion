@@ -9,7 +9,6 @@ import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 
 import '@/styles/HeroSection.css';
-import IsabellaHero from '@/assets/isabella-hero-hd-transparent.png';
 
 
 const Home = () => {
@@ -69,15 +68,18 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Pixel-Perfect via public assets */}
-                <img
-                  src={IsabellaHero}
-                  alt="Isabella AI brand ambassador — transparent PNG"
-                  className="isabella-hero-image hero-image hero-image-raw"
-                  loading="eager"
-                  decoding="sync"
-                  fetchPriority="high"
-                />
+                <picture>
+                  <source srcSet="/isabella-hero@2x.webp 2x, /isabella-hero.webp 1x" type="image/webp" />
+                  <source srcSet="/isabella-hero.png 1x" type="image/png" />
+                  <img
+                    src="/isabella-hero.webp"
+                    alt="Isabella AI"
+                    className="isabella-hero-image hero-image hero-image-raw"
+                    width="1400"
+                    loading="eager"
+                    decoding="sync"
+                  />
+                </picture>
                 
                 {/* HeyGen Avatar Container (Ready for Video Embed) */}
                 <div id="heygen-container" className="heygen-avatar-layer">

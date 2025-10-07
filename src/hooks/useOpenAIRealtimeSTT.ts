@@ -14,6 +14,7 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const transcriptBufferRef = useRef('');
   const { toast } = useToast();
 
   const connect = useCallback(async () => {
@@ -46,6 +47,13 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
             
             case 'input_audio_buffer.speech_stopped':
               console.log('Speech stopped');
+              // If we have a buffered transcript, emit it now
+              if (transcriptBufferRef.current.trim()) {
+                const finalText = transcriptBufferRef.current.trim();
+                setCurrentTranscript(finalText);
+                onTranscript?.(finalText);
+                transcriptBufferRef.current = '';
+              }
               break;
             
             case 'conversation.item.input_audio_transcription.completed':
@@ -60,7 +68,17 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
               break;
             
             case 'response.audio_transcript.delta':
-              console.log('Response transcript delta:', data.delta);
+              // Accumulate streaming transcript text
+              transcriptBufferRef.current += data.delta || '';
+              setCurrentTranscript(transcriptBufferRef.current);
+              break;
+            case 'response.audio_transcript.done':
+              if (transcriptBufferRef.current.trim()) {
+                const finalText = transcriptBufferRef.current.trim();
+                setCurrentTranscript(finalText);
+                onTranscript?.(finalText);
+                transcriptBufferRef.current = '';
+              }
               break;
             
             case 'error':
@@ -163,6 +181,15 @@ export const useOpenAIRealtimeSTT = ({ onTranscript, onAudioDelta }: UseOpenAIRe
   }, [toast]);
 
   const stopRecording = useCallback(() => {
+    // Finalize audio buffer and ask the model to respond
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      try {
+        wsRef.current.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
+        wsRef.current.send(JSON.stringify({ type: 'response.create' }));
+      } catch (e) {
+        console.error('Error finalizing audio buffer:', e);
+      }
+    }
     if (processorRef.current) {
       processorRef.current.disconnect();
       processorRef.current = null;

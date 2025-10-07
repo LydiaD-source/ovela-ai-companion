@@ -70,15 +70,24 @@ const Home = () => {
               <div className="isabella-image-wrapper">
                 {/* Isabella Image - Pixel-Perfect via public assets */}
                 <picture>
-                  <source srcSet="/isabella-hero@2x.webp 2x, /isabella-hero.webp 1x" type="image/webp" />
-                  <source srcSet="/isabella-hero.png 1x" type="image/png" />
+                  <source
+                    srcSet="/isabella-hero@2x.webp 2800w, /isabella-hero.webp 1400w"
+                    sizes="(min-width:1024px) 35vw, (min-width:768px) 60vw, 100vw"
+                    type="image/webp"
+                  />
+                  <source
+                    srcSet="/isabella-hero.png 1400w"
+                    sizes="(min-width:1024px) 35vw, (min-width:768px) 60vw, 100vw"
+                    type="image/png"
+                  />
                   <img
                     src="/isabella-hero.webp"
-                    alt="Isabella AI"
+                    alt="Isabella AI brand ambassador — high‑resolution WebP"
                     className="isabella-hero-image hero-image"
-                    width="1400"
                     loading="eager"
-                    decoding="sync"
+                    decoding="async"
+                    fetchPriority="high"
+                    sizes="(min-width:1024px) 35vw, (min-width:768px) 60vw, 100vw"
                   />
                 </picture>
                 

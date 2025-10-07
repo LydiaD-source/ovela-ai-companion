@@ -92,8 +92,8 @@
   object-fit: contain;
   object-position: bottom center;
   image-rendering: auto; /* keep native interpolation for sharpness */
-  margin-left: 16px; /* nudge right ~4mm */
-  margin-bottom: -2vh; /* trim transparent canvas/watermark at bottom */
+  margin-left: 20px; /* ~5mm nudge to the right */
+  margin-bottom: 0; /* ensure feet are fully visible */
   mix-blend-mode: darken; /* reduce white fringing on dark bg */
   position: relative;
   z-index: 3;

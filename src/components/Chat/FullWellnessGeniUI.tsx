@@ -288,20 +288,38 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         reader.readAsDataURL(audioBlob);
       });
 
-      // Call speech-to-text edge function - direct Supabase call
+      // Direct fetch to Supabase function
       const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
       console.log('📡 STT Fetch URL:', sttUrl);
       console.log('📤 Sending audio directly to Supabase speech-to-text...');
-      const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('speech-to-text', {
-        body: { audio: base64Audio }
+      console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
+      
+      const response = await fetch(sttUrl, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ audio: base64Audio })
       });
 
-      if (transcriptionError || !transcriptionData?.success) {
-        throw new Error(transcriptionData?.error || 'Failed to transcribe audio');
+      console.log('📡 Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ STT HTTP Error:', response.status, response.statusText);
+        console.error('❌ Full error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const transcriptionData = await response.json();
+      console.log('📡 STT Response:', transcriptionData);
+
+      if (!transcriptionData?.success || !transcriptionData?.text) {
+        throw new Error(transcriptionData?.error || 'No text received from transcription service');
       }
 
       const transcribedText = transcriptionData.text;
-      console.log('Transcribed text:', transcribedText);
+      console.log('✅ Transcription received:', transcribedText);
 
       const userMessage: Message = {
         id: Date.now().toString(),

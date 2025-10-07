@@ -2,7 +2,10 @@
 
 /* Hero Container */
 .hero-section {
-  height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 90vh;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -86,21 +89,20 @@
 
 /* Isabella Image - Optimized for Ultra-Sharp Display */
 .isabella-hero-image {
-  position: relative;
+  width: auto;
+  max-width: 100%;
+  height: 88vh;
   object-fit: contain;
   object-position: bottom center;
-  height: auto;
-  max-height: 88vh;
-  width: auto;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  mix-blend-mode: multiply; /* removes white halo */
+  filter: drop-shadow(0 0 0.5px rgba(0,0,0,0.6));
+  position: relative;
   z-index: 3;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transform: none;
-  image-rendering: auto;
-  filter: none;
-  -webkit-filter: none;
-  mix-blend-mode: normal;
-  image-orientation: from-image;
 }
 
 /* Critical clarity styles for public hero image */

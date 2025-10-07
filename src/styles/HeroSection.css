@@ -131,6 +131,7 @@
   width: 65%;
   padding-left: 4%;
   padding-right: 8%;
+  padding-top: 6vh; /* push text down so headline isn't cropped */
 }
 
 /* Content Wrapper (Fades out when chat is active) */

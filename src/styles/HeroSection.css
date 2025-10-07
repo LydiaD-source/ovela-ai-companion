@@ -263,9 +263,9 @@
   display: flex;
   flex-direction: column;
   width: 360px;
-  height: 520px;
+  height: 600px;
   max-width: 92vw;
-  max-height: 80vh;
+  max-height: 85vh;
   background: rgba(10, 14, 39, 0.85);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
@@ -276,6 +276,7 @@
     0 30px 60px rgba(0, 0, 0, 0.4),
     inset 0 0 80px rgba(212, 175, 55, 0.05);
   overflow: hidden;
+  padding-bottom: 56px;
 }
 
 /* Close Button - Chat Overlay */

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -297,18 +298,42 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const processVoiceInput = async (audioBlob: Blob) => {
     try {
+      setIsLoading(true);
+
+      // Convert audio blob to base64
+      const reader = new FileReader();
+      const base64Audio = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          const base64 = (reader.result as string).split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(audioBlob);
+      });
+
+      // Call speech-to-text edge function
+      const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('speech-to-text', {
+        body: { audio: base64Audio }
+      });
+
+      if (transcriptionError || !transcriptionData?.success) {
+        throw new Error(transcriptionData?.error || 'Failed to transcribe audio');
+      }
+
+      const transcribedText = transcriptionData.text;
+      console.log('Transcribed text:', transcribedText);
+
       const userMessage: Message = {
         id: Date.now().toString(),
-        text: '🎤 Voice message',
+        text: transcribedText || '🎤 Voice message',
         sender: 'user',
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, userMessage]);
-      setIsLoading(true);
 
       const response = await wellnessGeniAPI.sendChatMessage(
-        'I just sent a voice message. Please respond naturally as if I spoke to you.',
+        transcribedText || 'I just sent a voice message. Please respond naturally as if I spoke to you.',
         selectedPersona,
         undefined,
         isGuestMode ? 'ovela-guest' : 'guest-user'

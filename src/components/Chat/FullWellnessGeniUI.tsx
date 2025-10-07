@@ -7,8 +7,6 @@ import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { supabase } from '@/integrations/supabase/client';
-import { RealtimeVoiceButton } from '@/components/Chat/RealtimeVoiceButton';
-
 
 interface Message {
   id: string;
@@ -231,11 +229,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         if (average > 25 && !isRecordingVoice) {
           chunks = [];
           recorder.start();
-          if (true /* ENABLE_STT_TESTING */) {
-            setTimeout(() => {
-              if (recorder.state === 'recording') recorder.stop();
-            }, 5000);
-          }
           isRecordingVoice = true;
           setIsRecording(true);
           clearTimeout(silenceTimer);
@@ -318,19 +311,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         reader.readAsDataURL(audioBlob);
       });
 
-      // Call new public transcribe edge function with multipart upload
-      const form = new FormData();
-      form.append('file', audioBlob, 'recording.webm');
-      const resp = await fetch('https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/transcribe', {
-        method: 'POST',
-        body: form,
+      // Call speech-to-text edge function
+      const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('speech-to-text', {
+        body: { audio: base64Audio }
       });
-      const transcriptionData = await resp.json();
-      if (!resp.ok || !transcriptionData?.text) {
+
+      if (transcriptionError || !transcriptionData?.success) {
         throw new Error(transcriptionData?.error || 'Failed to transcribe audio');
       }
 
-      const transcribedText = transcriptionData.text as string;
+      const transcribedText = transcriptionData.text;
       console.log('Transcribed text:', transcribedText);
 
       const userMessage: Message = {
@@ -510,11 +500,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       {/* Chat Input */}
       <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
-        <form onSubmit={handleSubmit} className="flex gap-2 items-center">
-          <RealtimeVoiceButton 
-            onTranscript={(t) => sendMessage(t)}
-            disabled={isLoading}
-          />
+        <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             type="text"
             value={inputText}
@@ -527,7 +513,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             type="submit" 
             disabled={isLoading || !inputText.trim()}
             className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
-            aria-label="Send"
           >
             <Send className="w-4 h-4" />
           </Button>

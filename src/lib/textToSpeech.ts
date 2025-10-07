@@ -74,7 +74,6 @@ export class TextToSpeechService {
         try { this.htmlAudio.pause(); } catch {}
       }
       this.htmlAudio.src = audioUrl;
-      this.htmlAudio.playbackRate = 0.85;
       this.htmlAudio.onended = () => { this.isPlaying = false; };
       this.htmlAudio.onerror = () => { this.isPlaying = false; };
       await this.htmlAudio.play();
@@ -103,7 +102,6 @@ export class TextToSpeechService {
       const audioBuffer = await audioContext.decodeAudioData(audioData);
       const source = audioContext.createBufferSource();
       source.buffer = audioBuffer;
-      source.playbackRate.value = 0.85;
       source.connect(audioContext.destination);
       source.onended = () => { this.isPlaying = false; };
       source.start(0);

@@ -88,14 +88,15 @@
 .isabella-hero-image {
   width: auto;
   max-width: none; /* allow full height scaling without width cap */
-  height: 86vh; /* fill hero while keeping head + feet visible */
+  height: 88vh; /* fill hero while keeping head + feet visible */
   object-fit: contain;
   object-position: bottom center;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  transform: translateZ(0) translateX(4mm);
+  /* Avoid GPU transforms to keep image razor-sharp */
+  margin-left: 16px; /* ~4mm nudge to the right without blurring */
   mix-blend-mode: normal;
-  filter: contrast(1.05) brightness(1.02);
+  /* Remove filters to prevent softness */
   position: relative;
   z-index: 3;
   backface-visibility: hidden;
@@ -110,7 +111,6 @@
   /* Do not set height here to allow specific avatar sizing */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  transform: translateZ(0);
 }
 
 /* HeyGen Avatar Layer (Ready for Video Embed) */

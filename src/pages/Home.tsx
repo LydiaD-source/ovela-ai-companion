@@ -76,7 +76,6 @@ const Home = () => {
                     alt="Isabella AI"
                     className="isabella-hero-image hero-image"
                     width="1400"
-                    height="auto"
                     loading="eager"
                     decoding="sync"
                   />

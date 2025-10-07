@@ -59,8 +59,8 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
           reader.onloadend = async () => {
             const base64Audio = (reader.result as string).split(',')[1];
             
-            console.log('📤 Sending audio to speech-to-text endpoint...');
-            
+            const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
+            console.log('📡 Sending audio to', sttUrl);
             const { data, error } = await supabase.functions.invoke('speech-to-text', {
               body: { audio: base64Audio }
             });
@@ -108,7 +108,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
       mediaRecorder.start();
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
-      console.log('✅ Recording started');
+      console.log('🎙️ Recording started');
 
     } catch (err) {
       console.error('❌ Microphone access error:', err);

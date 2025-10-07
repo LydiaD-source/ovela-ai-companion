@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 import IsabellaAvatar from '@/components/UI/IsabellaAvatar';
 import ChatMessages from '@/components/Chat/ChatMessages';
 import ChatInput from '@/components/Chat/ChatInput';
-import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
+
 import { useToast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { isabellaAPI } from '@/lib/isabellaAPI';
 
 // Extract assistant text robustly from various API response shapes
 const extractAssistantText = (data: any): string => {
@@ -120,32 +121,30 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
               setIsLoading(true);
 
               try {
-                // Send to WellnessGeni API
-                const response = await wellnessGeniAPI.sendChatMessage(message, currentPersona);
-                
-                if (response.success && response.data) {
-                  const assistantText = extractAssistantText(response.data);
-                  const assistantMessage = {
-                    id: (Date.now() + 1).toString(),
-                    text: assistantText || "I'm sorry — I didn't get the details. Please try again or ask another question.",
-                    sender: 'assistant' as const,
-                    timestamp: new Date(),
-                    persona: currentPersona
-                  };
-                  
-                  setMessages(prev => [...prev, assistantMessage]);
+                console.log('💬 Sending to Isabella (brand: ovela_client_001)');
+                const isa = await isabellaAPI.sendMessage(message, currentPersona);
+                const assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
 
-                  // Generate and play speech if not muted
-                  if (!isMuted && assistantText) {
-                    try {
-                      await textToSpeechService.speakText(assistantText);
-                    } catch (error) {
-                      console.error('Error playing speech:', error);
-                    }
+                const assistantMessage = {
+                  id: (Date.now() + 1).toString(),
+                  text: assistantText,
+                  sender: 'assistant' as const,
+                  timestamp: new Date(),
+                  persona: currentPersona
+                };
+                
+                setMessages(prev => [...prev, assistantMessage]);
+
+                // Generate and play speech if not muted
+                if (!isMuted && assistantText) {
+                  try {
+                    await textToSpeechService.speakText(assistantText);
+                  } catch (error) {
+                    console.error('Error playing speech:', error);
                   }
-                } else {
-                  throw new Error(response.error || 'Failed to get response');
                 }
+              } catch (error) {
+                console.error('Chat error:', error);
               } catch (error) {
                 console.error('Chat error:', error);
                 toast({

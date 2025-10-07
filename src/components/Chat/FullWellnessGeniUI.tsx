@@ -7,7 +7,7 @@ import { wellnessGeniAPI } from '@/lib/wellnessGeniAPI';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { supabase } from '@/integrations/supabase/client';
-
+import { isabellaAPI } from '@/lib/isabellaAPI';
 interface Message {
   id: string;
   text: string;
@@ -312,6 +312,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       });
 
       // Call speech-to-text edge function
+      const sttUrl = 'https://vrpgowcocbztclxfzssu.functions.supabase.co/functions/v1/speech-to-text';
+      console.log('📡 Sending audio to', sttUrl);
       const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('speech-to-text', {
         body: { audio: base64Audio }
       });
@@ -332,31 +334,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, userMessage]);
 
-      const response = await wellnessGeniAPI.sendChatMessage(
+      console.log('💬 Sending to Isabella (brand: ovela_client_001)');
+      const isa = await isabellaAPI.sendMessage(
         transcribedText || 'I just sent a voice message. Please respond naturally as if I spoke to you.',
-        selectedPersona,
-        undefined,
-        isGuestMode ? 'ovela-guest' : 'guest-user'
+        selectedPersona
       );
 
-      if (!response.success) {
-        throw new Error(response.error || 'API request failed');
-      }
-
-      const data = response.data;
-      let assistantText = "I'm sorry — I didn't get the details. Please try again or ask another question.";
-      let audioUrl = '';
-      let videoUrl = '';
-      
-      if (data) {
-        if (data.message) {
-          assistantText = data.message;
-          audioUrl = data.audioUrl || '';
-          videoUrl = data.videoUrl || '';
-        } else if (typeof data === 'string') {
-          assistantText = data;
-        }
-      }
+      let assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
+      let audioUrl = isa.audioUrl || '';
+      let videoUrl = isa.videoUrl || '';
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

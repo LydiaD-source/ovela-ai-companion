@@ -234,19 +234,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       };
       
       recorder.onstop = async () => {
+        console.log('🎤 RECORDER STOPPED - PROCESSING AUDIO');
         if (chunks.length > 0) {
           const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          console.log('🎤 Audio blob created, size:', audioBlob.size, 'bytes');
           await processVoiceInput(audioBlob);
+        } else {
+          console.log('❌ No audio chunks recorded');
         }
       };
       
       setMediaRecorder(recorder);
       checkAudioLevel();
       
+      console.log('🔥 VOICE MODE STARTED - RECORDER READY');
       toast({
         title: "Voice Mode Active",
         description: "Start speaking naturally - I'll respond with voice!",
       });
+      console.log('🔥 TOAST SHOWN - NOW WAITING FOR SPEECH');
       
     } catch (error) {
       console.error('Error starting voice mode:', error);

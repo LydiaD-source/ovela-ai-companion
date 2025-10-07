@@ -70,7 +70,12 @@ const Home = () => {
               <div className="isabella-image-wrapper">
                 {/* Isabella Image - Original Ultra HD Quality */}
                 <img 
-                  src={isabellaHeroHD}
+                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_1.0/v1759836676/golddress_ibt1fp.png"
+                  srcSet="
+                    https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_1.0/v1759836676/golddress_ibt1fp.png 1x,
+                    https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_2.0/v1759836676/golddress_ibt1fp.png 2x,
+                    https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_3.0/v1759836676/golddress_ibt1fp.png 3x
+                  "
                   alt="Isabella Navia - AI Model Ambassador"
                   className="isabella-hero-image hero-image-raw"
                   loading="eager"

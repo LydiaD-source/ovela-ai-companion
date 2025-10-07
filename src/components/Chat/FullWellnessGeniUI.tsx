@@ -229,6 +229,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         if (average > 25 && !isRecordingVoice) {
           chunks = [];
           recorder.start();
+          if (true /* ENABLE_STT_TESTING */) {
+            setTimeout(() => {
+              if (recorder.state === 'recording') recorder.stop();
+            }, 5000);
+          }
           isRecordingVoice = true;
           setIsRecording(true);
           clearTimeout(silenceTimer);
@@ -311,16 +316,19 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         reader.readAsDataURL(audioBlob);
       });
 
-      // Call speech-to-text edge function
-      const { data: transcriptionData, error: transcriptionError } = await supabase.functions.invoke('speech-to-text', {
-        body: { audio: base64Audio }
+      // Call new public transcribe edge function with multipart upload
+      const form = new FormData();
+      form.append('file', audioBlob, 'recording.webm');
+      const resp = await fetch('https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/transcribe', {
+        method: 'POST',
+        body: form,
       });
-
-      if (transcriptionError || !transcriptionData?.success) {
+      const transcriptionData = await resp.json();
+      if (!resp.ok || !transcriptionData?.text) {
         throw new Error(transcriptionData?.error || 'Failed to transcribe audio');
       }
 
-      const transcribedText = transcriptionData.text;
+      const transcribedText = transcriptionData.text as string;
       console.log('Transcribed text:', transcribedText);
 
       const userMessage: Message = {

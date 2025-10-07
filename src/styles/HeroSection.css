@@ -277,6 +277,7 @@
     inset 0 0 80px rgba(212, 175, 55, 0.05);
   overflow: visible; /* allow content to show fully */
   padding-bottom: 96px;
+  z-index: 10; /* ensure chat UI and icons are visible */
 }
 
 /* Close Button - Chat Overlay */

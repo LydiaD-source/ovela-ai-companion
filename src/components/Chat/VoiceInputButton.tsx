@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface VoiceInputButtonProps {
   onTranscript: (text: string) => void;
@@ -59,35 +58,42 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
           reader.onloadend = async () => {
             const base64Audio = (reader.result as string).split(',')[1];
             
-            // Direct Supabase function call - bypassing any proxies
-            const sttUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/speech-to-text';
-            console.log('📡 STT Fetch URL:', sttUrl);
-            console.log('📤 Sending audio directly to Supabase speech-to-text...');
-            
-            const { data, error } = await supabase.functions.invoke('speech-to-text', {
-              body: { audio: base64Audio }
-            });
-
-            if (error) {
-              console.error('❌ Speech-to-text error:', error);
-              toast({
-                title: 'Transcription Failed',
-                description: error.message || 'Could not transcribe audio',
-                variant: 'destructive'
+            try {
+              // Direct fetch to Supabase function
+              const sttUrl = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/speech-to-text';
+              console.log('📡 STT Fetch URL:', sttUrl);
+              console.log('📤 Sending audio directly to Supabase speech-to-text...');
+              
+              const response = await fetch(sttUrl, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ audio: base64Audio })
               });
-              setIsProcessing(false);
-              return;
-            }
 
-            if (data?.success && data?.text) {
-              console.log('✅ Transcription received:', data.text);
-              console.log('💬 Sending to Isabella (brand: ovela_client_001)');
-              onTranscript(data.text);
-            } else {
-              console.error('❌ Invalid response from speech-to-text:', data);
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ STT HTTP Error:', response.status, errorText);
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+              }
+
+              const data = await response.json();
+              console.log('📡 STT Response:', data);
+
+              if (data?.success && data?.text) {
+                console.log('✅ Transcription received:', data.text);
+                console.log('💬 Sending to Isabella (brand: ovela_client_001)');
+                onTranscript(data.text);
+              } else {
+                console.error('❌ Invalid response from speech-to-text:', data);
+                throw new Error('No text received from transcription service');
+              }
+            } catch (fetchError) {
+              console.error('❌ Speech-to-text fetch error:', fetchError);
               toast({
                 title: 'Transcription Failed',
-                description: 'No text received from transcription service',
+                description: fetchError instanceof Error ? fetchError.message : 'Could not transcribe audio',
                 variant: 'destructive'
               });
             }

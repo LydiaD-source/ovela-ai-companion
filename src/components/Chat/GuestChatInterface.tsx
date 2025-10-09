@@ -43,10 +43,12 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
   const [currentPersona, setCurrentPersona] = useState(defaultPersona);
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     // Keep chat minimal: no initial greeting message
+    textToSpeechService.setOnSpeakingChange(setIsSpeaking);
   }, [isGuestMode]);
 
   return (
@@ -55,9 +57,11 @@ const GuestChatInterface: React.FC<GuestChatInterfaceProps> = ({
       <div className="w-64 border-r bg-muted/30 p-4">
         <div className="space-y-4">
           <div className="text-center">
-            <IsabellaAvatar size="large" />
+            <IsabellaAvatar size="large" isSpeaking={isSpeaking} />
             <h3 className="font-semibold mt-2">Isabella Navia</h3>
-            <p className="text-sm text-muted-foreground">Information Ambassador</p>
+            <p className="text-sm text-muted-foreground">
+              {isSpeaking ? 'Speaking...' : 'Information Ambassador'}
+            </p>
           </div>
           
           {/* Only show Isabella Navia button */}

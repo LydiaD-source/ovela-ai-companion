@@ -4,6 +4,7 @@ export class TextToSpeechService {
   private audioContext: AudioContext | null = null;
   private isPlaying = false;
   private htmlAudio: HTMLAudioElement | null = null;
+  private onSpeakingChangeCallback: ((isSpeaking: boolean) => void) | null = null;
 
   constructor() {
     // Initialize audio context when first needed
@@ -16,6 +17,10 @@ export class TextToSpeechService {
       window.addEventListener('click', unlock);
       window.addEventListener('touchstart', unlock);
     }
+  }
+
+  setOnSpeakingChange(callback: (isSpeaking: boolean) => void) {
+    this.onSpeakingChangeCallback = callback;
   }
 
   private async initAudioContext(): Promise<AudioContext> {
@@ -68,14 +73,21 @@ export class TextToSpeechService {
     // Prefer HTMLAudioElement for broader autoplay compatibility
     try {
       this.isPlaying = true;
+      this.onSpeakingChangeCallback?.(true);
       if (!this.htmlAudio) {
         this.htmlAudio = new Audio();
       } else {
         try { this.htmlAudio.pause(); } catch {}
       }
       this.htmlAudio.src = audioUrl;
-      this.htmlAudio.onended = () => { this.isPlaying = false; };
-      this.htmlAudio.onerror = () => { this.isPlaying = false; };
+      this.htmlAudio.onended = () => { 
+        this.isPlaying = false; 
+        this.onSpeakingChangeCallback?.(false);
+      };
+      this.htmlAudio.onerror = () => { 
+        this.isPlaying = false; 
+        this.onSpeakingChangeCallback?.(false);
+      };
       await this.htmlAudio.play();
       console.log('Playing audio (HTMLAudio)...');
       return;
@@ -103,12 +115,16 @@ export class TextToSpeechService {
       const source = audioContext.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(audioContext.destination);
-      source.onended = () => { this.isPlaying = false; };
+      source.onended = () => { 
+        this.isPlaying = false; 
+        this.onSpeakingChangeCallback?.(false);
+      };
       source.start(0);
       console.log('Playing audio (WebAudio)...');
     } catch (error) {
       console.error('Error playing audio (fallback failed):', error);
       this.isPlaying = false;
+      this.onSpeakingChangeCallback?.(false);
     }
   }
 
@@ -129,6 +145,7 @@ export class TextToSpeechService {
       this.audioContext.suspend();
     }
     this.isPlaying = false;
+    this.onSpeakingChangeCallback?.(false);
   }
 
   get isCurrentlyPlaying(): boolean {

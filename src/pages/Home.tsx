@@ -85,13 +85,13 @@ const Home = () => {
                   fetchPriority="high"
                 />
                 
-                {/* HeyGen Avatar Container (Ready for Video Embed) */}
-                <div id="heygen-container" className="heygen-avatar-layer">
-                  {/* HeyGen video embed will go here */}
-                </div>
+                {/* Heygen disabled for now - D-ID will be integrated when API key is ready */}
+                {/* <div id="heygen-container" className="heygen-avatar-layer"></div> */}
                 
-                {/* Loading Skeleton (Optional) */}
-                {/* <div className="heygen-loading-skeleton"></div> */}
+                {/* D-ID Stream API Placeholder - Waiting for API key */}
+                <div id="did-container" className="did-avatar-layer" style={{ display: 'none' }}>
+                  {/* D-ID streaming avatar will go here */}
+                </div>
               </div>
             </div>
 

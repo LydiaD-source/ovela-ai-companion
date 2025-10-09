@@ -38,11 +38,10 @@ export class TextToSpeechService {
   async generateSpeech(text: string, voice?: string): Promise<string | null> {
     try {
       console.log('Generating speech for text:', text.substring(0, 50) + '...');
-      
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
-        body: { 
+        body: {
           text: text.trim(),
-          voice: voice || 't0IcnDolatli2xhqgLgn' // Isabella voice
+          voice: voice || 't0IcnDolatli2xhqgLgn'
         }
       });
 
@@ -51,9 +50,20 @@ export class TextToSpeechService {
         return null;
       }
 
-      if (data?.success && data?.audioUrl) {
-        console.log('Successfully generated speech');
-        return data.audioUrl;
+      if (!data) {
+        console.error('Text-to-speech empty response');
+        return null;
+      }
+
+      // Support multiple response shapes
+      const audioUrl: string | undefined = data.audioUrl
+        || data.url
+        || (data.audioContent ? `data:audio/mpeg;base64,${data.audioContent}` : undefined)
+        || (data.base64 ? `data:audio/mpeg;base64,${data.base64}` : undefined);
+
+      if (audioUrl) {
+        console.log('Successfully generated speech (resolved url)');
+        return audioUrl;
       }
 
       console.error('Invalid response from text-to-speech service:', data);

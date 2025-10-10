@@ -24,7 +24,7 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
     onTranscript: (text) => {
       console.log('Received transcript:', text);
       onTranscript(text);
-      stopRecording();
+      // Keep recording to allow continuous realtime transcription
     }
   });
 

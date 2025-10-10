@@ -70,7 +70,7 @@ serve(async (req) => {
         const elForm = new FormData();
         elForm.append('model_id', 'scribe_v1');
         elForm.append('file', blob, 'audio.webm');
-        const elResp = await fetch('https://api.elevenlabs.io/v1/speech-to-text/convert', {
+        const elResp = await fetch('https://api.elevenlabs.io/v1/speech-to-text', {
           method: 'POST',
           headers: { 'xi-api-key': ELEVENLABS_API_KEY },
           body: elForm,

@@ -59,18 +59,57 @@ serve(async (req) => {
     const binaryAudio = processBase64Chunks(audio);
     console.log(`📊 Audio size: ${binaryAudio.length} bytes`);
     
-    // Prepare form data
-    const formData = new FormData();
+    // Prepare blob once
     const blob = new Blob([binaryAudio], { type: mimeType || 'audio/webm' });
+
+    // Prefer ElevenLabs STT if key is available
+    const ELEVENLABS_API_KEY = (Deno.env.get('ELEVENLABS_API_KEY') || '').trim();
+    if (ELEVENLABS_API_KEY) {
+      try {
+        console.log('🟢 Using ElevenLabs STT (scribe_v1)');
+        const elForm = new FormData();
+        elForm.append('model_id', 'scribe_v1');
+        elForm.append('file', blob, 'audio.webm');
+        const elResp = await fetch('https://api.elevenlabs.io/v1/speech-to-text/convert', {
+          method: 'POST',
+          headers: { 'xi-api-key': ELEVENLABS_API_KEY },
+          body: elForm,
+        });
+        if (elResp.ok) {
+          const elJson = await elResp.json();
+          // Best-effort text extraction across possible shapes
+          const text = elJson?.text
+            || elJson?.transcript
+            || (Array.isArray(elJson?.transcripts) && elJson.transcripts.map((t: any) => t?.text).filter(Boolean).join(' '))
+            || (Array.isArray(elJson?.results) && elJson.results.map((r: any) => r?.text).filter(Boolean).join(' '))
+            || '';
+          console.log('✅ ElevenLabs transcription received:', text?.slice(0, 120));
+          if (text && text.trim().length > 0) {
+            return new Response(
+              JSON.stringify({ success: true, text }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          console.warn('⚠️ ElevenLabs response missing text field:', elJson);
+        } else {
+          const t = await elResp.text();
+          console.error('❌ ElevenLabs STT error:', elResp.status, t);
+        }
+      } catch (e) {
+        console.error('❌ ElevenLabs STT request failed:', e);
+      }
+    } else {
+      console.log('ℹ️ ELEVENLABS_API_KEY not set, falling back to OpenAI Whisper');
+    }
+
+    // Fallback to OpenAI Whisper API
+    const formData = new FormData();
     formData.append('file', blob, 'audio.webm');
     formData.append('model', 'whisper-1');
 
-    // Send to OpenAI Whisper API
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
+      headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}` },
       body: formData,
     });
 
@@ -78,24 +117,16 @@ serve(async (req) => {
       const errorText = await response.text();
       console.error('❌ OpenAI API error:', response.status, errorText);
       return new Response(
-        JSON.stringify({ 
-          success: false,
-          error: 'OpenAI API error',
-          status: response.status,
-          details: errorText
-        }),
+        JSON.stringify({ success: false, error: 'OpenAI API error', status: response.status, details: errorText }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const result = await response.json();
-    console.log('✅ Transcription received:', result.text);
+    console.log('✅ Transcription received (OpenAI):', result.text);
 
     return new Response(
-      JSON.stringify({ 
-        success: true,
-        text: result.text 
-      }),
+      JSON.stringify({ success: true, text: result.text }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useOpenAIRealtimeSTT } from '@/hooks/useOpenAIRealtimeSTT';
+import { useRealtimeSTT } from '@/hooks/useRealtimeSTT';
+import { featureFlags } from '@/config/featureFlags';
 
 interface RealtimeVoiceButtonProps {
   onTranscript: (text: string) => void;
@@ -16,15 +17,15 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
     isConnected,
     isRecording,
     currentTranscript,
+    mode,
     connect,
     disconnect,
     startRecording,
     stopRecording
-  } = useOpenAIRealtimeSTT({
-    onTranscript: (text) => {
-      console.log('Received transcript:', text);
+  } = useRealtimeSTT({
+    onTranscript: (text, isFinal) => {
+      console.log('Received transcript:', text, 'Final:', isFinal);
       onTranscript(text);
-      // Keep recording to allow continuous realtime transcription
     }
   });
 
@@ -54,6 +55,7 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
         onClick={handleClick}
         disabled={disabled}
         className={`transition-all ${isRecording ? 'animate-pulse' : ''}`}
+        title={featureFlags.realtime_stt_enabled ? `Realtime mode: ${mode}` : 'Record mode'}
       >
         {isRecording ? (
           <MicOff className="h-4 w-4" />
@@ -61,9 +63,9 @@ export const RealtimeVoiceButton: React.FC<RealtimeVoiceButtonProps> = ({
           <Mic className="h-4 w-4" />
         )}
       </Button>
-      {currentTranscript && (
-        <span className="text-sm text-muted-foreground italic">
-          "{currentTranscript}"
+      {isRecording && featureFlags.realtime_stt_enabled && (
+        <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-md">
+          Listening...
         </span>
       )}
     </div>

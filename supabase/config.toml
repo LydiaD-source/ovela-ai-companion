@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.load-ovela-brand]
 verify_jwt = false
+
+[functions.openai-realtime-token]
+verify_jwt = false

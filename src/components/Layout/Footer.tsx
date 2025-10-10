@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Instagram, Linkedin, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import PDFViewer from '@/components/UI/PDFViewer';
 
@@ -25,16 +26,16 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Contact Button - Left */}
             <div className="order-1 md:order-1">
-              <Button
-                variant="outline"
-                className="border-soft-white/20 text-soft-white hover:bg-soft-white/10"
-                asChild
-              >
-                <a href="mailto:contact@ovelainteractive.com">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Contact Us
-                </a>
-              </Button>
+            <Button
+              variant="outline"
+              className="border-soft-white/20 text-soft-white hover:bg-soft-white/10"
+              asChild
+            >
+              <Link to="/contact">
+                <Mail className="mr-2 h-4 w-4" />
+                Contact Us
+              </Link>
+            </Button>
             </div>
 
             {/* Center Section: Copyright + Legal Links */}

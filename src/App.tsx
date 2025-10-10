@@ -13,6 +13,7 @@ import WellnessGeni from "./pages/WellnessGeni";
 import Partner from "./pages/Partner";
 import PartnerWithUs from "./pages/PartnerWithUs";
 import Pricing from "./pages/Pricing";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => {
                 <Route path="/wellnessgeni" element={<WellnessGeni />} />
                 <Route path="/partner" element={<PartnerWithUs />} />
                 <Route path="/pricing" element={<Pricing />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

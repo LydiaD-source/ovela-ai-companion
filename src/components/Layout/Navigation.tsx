@@ -12,6 +12,7 @@ const Navigation = () => {
     { name: 'Pricing', path: '/pricing' },
     { name: 'Portfolio', path: '/projects' },
     { name: 'Partner With Us', path: '/partner' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   // Close dropdown when clicking outside

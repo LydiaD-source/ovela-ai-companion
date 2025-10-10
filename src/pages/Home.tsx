@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
@@ -15,6 +15,16 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroHD = "https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_auto/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
+
+  // Check URL parameter to auto-open chat from Contact page
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('chat') === 'open') {
+      setIsChatActive(true);
+      // Clean up URL
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
   const activateChat = () => {
     console.log('🟢 ACTIVATE CHAT CLICKED');

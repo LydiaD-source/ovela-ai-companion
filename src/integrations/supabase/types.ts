@@ -309,7 +309,7 @@ export type Database = {
           id: string
           is_deleted: boolean | null
           role: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           chat_session?: string | null
@@ -318,7 +318,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           role?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           chat_session?: string | null
@@ -327,7 +327,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           role?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -354,6 +354,39 @@ export type Database = {
           id?: string
           name?: string
           status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          inquiry_type: string
+          message: string
+          name: string
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          inquiry_type: string
+          message: string
+          name: string
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          inquiry_type?: string
+          message?: string
+          name?: string
+          source?: string
           updated_at?: string
         }
         Relationships: []
@@ -1001,6 +1034,7 @@ export type Database = {
         Row: {
           adult_mode_enabled: boolean | null
           avatar: string | null
+          avatar_talking_photo_id: string | null
           consent_date: string | null
           created_at: string
           default_mode: string | null
@@ -1030,6 +1064,7 @@ export type Database = {
         Insert: {
           adult_mode_enabled?: boolean | null
           avatar?: string | null
+          avatar_talking_photo_id?: string | null
           consent_date?: string | null
           created_at?: string
           default_mode?: string | null
@@ -1059,6 +1094,7 @@ export type Database = {
         Update: {
           adult_mode_enabled?: boolean | null
           avatar?: string | null
+          avatar_talking_photo_id?: string | null
           consent_date?: string | null
           created_at?: string
           default_mode?: string | null
@@ -1187,6 +1223,39 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscription_products: {
         Row: {
           created_at: string
@@ -1245,7 +1314,7 @@ export type Database = {
           status: string
           topic: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -1256,7 +1325,7 @@ export type Database = {
           status?: string
           topic: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -1267,7 +1336,7 @@ export type Database = {
           status?: string
           topic?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }

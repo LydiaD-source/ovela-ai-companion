@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Instagram, Youtube, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import LegalDocumentModal from '@/components/UI/LegalDocumentModal';
 
@@ -42,10 +43,10 @@ export const FooterMinimal = () => {
                 }}
                 asChild
               >
-                <a href="mailto:contact@ovelainteractive.com">
+                <Link to="/contact">
                   <Mail className="mr-2 h-4 w-4" />
                   Contact Us
-                </a>
+                </Link>
               </Button>
             </div>
 

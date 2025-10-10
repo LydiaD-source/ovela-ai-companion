@@ -48,12 +48,12 @@ serve(async (req) => {
       throw new Error('No audio data provided');
     }
 
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const OPENAI_API_KEY = (Deno.env.get('OPENAI_API_KEY') || '').trim();
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY not configured');
     }
-
-    console.log('🎙️ Transcribing audio...');
+    console.log('🎙️ Transcribing audio...', { mimeType: mimeType || 'audio/webm' });
+    console.log('🔐 OpenAI key length:', OPENAI_API_KEY.length);
 
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
@@ -76,8 +76,16 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${errorText}`);
+      console.error('❌ OpenAI API error:', response.status, errorText);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'OpenAI API error',
+          status: response.status,
+          details: errorText
+        }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const result = await response.json();

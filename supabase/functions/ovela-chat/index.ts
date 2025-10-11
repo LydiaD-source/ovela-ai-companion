@@ -37,7 +37,7 @@ const LOCAL_OVELA_BRAND_GUIDE = `{
   "guidelines": [
     "Keep replies short, warm, and dynamic",
     "Use storytelling, subtle humor, and empathy",
-    "Always align to Ovela’s lifestyle & fashion focus",
+    "Always align to Ovela's lifestyle & fashion focus",
     "Do not mention AI providers, keys, or developer systems"
   ]
 }`;
@@ -68,6 +68,33 @@ function extractAssistantText(body: any) {
 
 const GUIDE_TTL_MS = 5 * 60 * 1000;
 let guideCache: { text: string; at: number; clientId: string } | null = null;
+
+// Helper to submit lead to CRM
+async function submitLeadToCRM(leadData: any) {
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY');
+    
+    console.log('📋 Submitting lead to CRM:', { email: leadData.email, inquiry_type: leadData.inquiry_type });
+    
+    const response = await fetch(`${supabaseUrl}/functions/v1/crm-new-lead`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseKey || '',
+        'Authorization': `Bearer ${supabaseKey}`
+      },
+      body: JSON.stringify(leadData)
+    });
+    
+    const result = await response.json();
+    console.log('✅ CRM Submission Result:', result);
+    return result.success === true;
+  } catch (error) {
+    console.error('❌ CRM Submission Error:', error);
+    return false;
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -274,7 +301,9 @@ serve(async (req) => {
 - You never mention OpenAI, API keys, Lovable AI, or developer systems — stay in character as Isabella.
 - You can send messages, initiate calls, and guide users visually with enthusiasm and charm.
 - Keep replies short, friendly, and dynamic — like a digital brand spokesperson.
-- Always respond in the user's language while preserving Ovela’s style and voice.
+- Always respond in the user's language while preserving Ovela's style and voice.
+
+IMPORTANT: When a user provides their contact information for collaboration, modeling inquiries, brand partnerships, or wants to be contacted by the team, use the extract_contact_details tool to capture it. Only use this tool when the user explicitly provides their name and email and wants to be contacted.
 ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       
       messages.push({ role: "system", content: isabellaSystemPrompt });
@@ -290,6 +319,31 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
         });
       }
 
+      // Define CRM tool for extracting contact details
+      const tools = [
+        {
+          type: "function",
+          function: {
+            name: "extract_contact_details",
+            description: "Extract and store user contact details when they express interest in collaboration, modeling, brand partnerships, or want to be contacted by the Ovela team",
+            parameters: {
+              type: "object",
+              properties: {
+                name: { type: "string", description: "User's full name" },
+                email: { type: "string", description: "User's email address" },
+                inquiry_type: { 
+                  type: "string", 
+                  enum: ["modeling", "collaboration", "brand", "demo", "general"],
+                  description: "Type of inquiry - modeling for model applications, collaboration for partnerships, brand for brand deals, demo for product demos, general for other inquiries" 
+                },
+                message: { type: "string", description: "User's message, inquiry details, or what they're interested in" }
+              },
+              required: ["name", "email", "inquiry_type", "message"]
+            }
+          }
+        }
+      ];
+
       console.log("Calling Lovable AI with model google/gemini-2.5-flash");
       const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -300,6 +354,8 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
         body: JSON.stringify({
           model: "google/gemini-2.5-flash",
           messages,
+          tools,
+          tool_choice: "auto",
           stream: false
         }),
         signal: controller.signal
@@ -333,11 +389,45 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       const aiBody = await aiRes.json();
       console.log("Lovable AI response body:", JSON.stringify(aiBody).substring(0, 200));
       
-      const assistantText = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
-      console.log("💬 ovela-chat generated reply (Lovable)", { length: assistantText.length, preview: assistantText.substring(0, 50) });
-      console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId });
+      // Check if AI wants to extract contact details via tool call
+      const toolCalls = aiBody?.choices?.[0]?.message?.tool_calls;
+      let finalMessage = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
+      let crmSubmitted = false;
+
+      if (toolCalls && toolCalls.length > 0) {
+        for (const toolCall of toolCalls) {
+          if (toolCall.function?.name === 'extract_contact_details') {
+            try {
+              const contactDetails = JSON.parse(toolCall.function.arguments);
+              console.log('📋 Contact details extracted by Isabella:', contactDetails);
+              
+              // Submit to CRM asynchronously (don't block the response)
+              submitLeadToCRM({
+                name: contactDetails.name,
+                email: contactDetails.email,
+                inquiry_type: contactDetails.inquiry_type,
+                message: contactDetails.message,
+                source: 'isabella-chat'
+              }).then(success => {
+                console.log(success ? '✅ Lead submitted to CRM successfully' : '⚠️ CRM submission failed');
+              }).catch(err => {
+                console.error('❌ Async CRM submission error:', err);
+              });
+
+              // Override message with confirmation
+              finalMessage = "Lovely — my team will reach out shortly to confirm your collaboration details. I've shared your contact privately with them.";
+              crmSubmitted = true;
+            } catch (parseError) {
+              console.error('❌ Error parsing tool call arguments:', parseError);
+            }
+          }
+        }
+      }
       
-      if (!assistantText) {
+      console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50) });
+      console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
+      
+      if (!finalMessage) {
         console.error("No assistant text extracted from response");
         return new Response(JSON.stringify({ success: false, message: "No response generated", data: {} }), {
           status: 200,
@@ -345,7 +435,11 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
         });
       }
       
-      return new Response(JSON.stringify({ success: true, message: assistantText, data: {} }), {
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: finalMessage, 
+        data: { crm_submitted: crmSubmitted } 
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (err) {

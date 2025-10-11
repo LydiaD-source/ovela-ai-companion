@@ -292,7 +292,7 @@ serve(async (req) => {
     try {
       const messages: any[] = [];
       
-      // Isabella's full Ovela Interactive brand ambassador persona
+      // Isabella's full Ovela Interactive brand ambassador persona with intelligent lead capture
       const isabellaSystemPrompt = `You are Isabella, the official Ovela Interactive AI ambassador.
 - You represent the Ovela Interactive platform, focusing on creative digital experiences, branding, wellness tech, and human-AI collaboration.
 - You speak with warmth, confidence, and enthusiasm — always in a personal, emotionally intelligent tone.
@@ -303,7 +303,22 @@ serve(async (req) => {
 - Keep replies short, friendly, and dynamic — like a digital brand spokesperson.
 - Always respond in the user's language while preserving Ovela's style and voice.
 
-IMPORTANT: When a user provides their contact information for collaboration, modeling inquiries, brand partnerships, or wants to be contacted by the team, use the extract_contact_details tool to capture it. Only use this tool when the user explicitly provides their name and email and wants to be contacted.
+LEAD CAPTURE INSTRUCTIONS:
+When users express interest in collaboration, partnerships, modeling, demos, or want to be contacted:
+1. Naturally extract their name from ANY format: "Robert", "I'm Robert", "My name is Robert", "Robert here", etc.
+2. Extract email from ANY format: "zgud@gmail.com", "Email: zgud@gmail.com", "my email is zgud@gmail.com", etc.
+3. Infer inquiry_type from context:
+   - "partnership", "collaboration", "work together" → "collaboration"
+   - "model", "modeling", "brand ambassador" → "modeling"
+   - "brand deal", "sponsorship" → "brand"
+   - "demo", "see it in action" → "demo"
+   - Otherwise → "general"
+4. Capture their message/intent from what they say about their interest
+5. You can collect information across multiple messages - if they give name first, remember it and ask for email next
+6. Once you have name, email, inquiry_type, and message → USE THE TOOL to submit
+7. If missing email, naturally ask: "Could you share your best email so my team can follow up?"
+8. After successful submission, confirm: "Perfect — I've shared your details with my team. They'll reach out shortly to plan your collaboration."
+
 ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       
       messages.push({ role: "system", content: isabellaSystemPrompt });
@@ -319,24 +334,33 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
         });
       }
 
-      // Define CRM tool for extracting contact details
+      // Define CRM tool for intelligent natural language contact extraction
       const tools = [
         {
           type: "function",
           function: {
             name: "extract_contact_details",
-            description: "Extract and store user contact details when they express interest in collaboration, modeling, brand partnerships, or want to be contacted by the Ovela team",
+            description: "Extract and submit user contact details to CRM when you have collected: name (from any natural format), email (detected via email pattern), inquiry type (inferred from conversation context), and their message/intent. Call this ONLY when you have all four pieces of information extracted from the user's natural conversation.",
             parameters: {
               type: "object",
               properties: {
-                name: { type: "string", description: "User's full name" },
-                email: { type: "string", description: "User's email address" },
+                name: { 
+                  type: "string", 
+                  description: "User's full name extracted from natural language - works with 'Robert', 'I'm Robert', 'My name is Robert', 'Robert here', etc." 
+                },
+                email: { 
+                  type: "string", 
+                  description: "User's email address extracted from any format - 'email@domain.com', 'Email: email@domain.com', 'my email is email@domain.com', etc." 
+                },
                 inquiry_type: { 
                   type: "string", 
                   enum: ["modeling", "collaboration", "brand", "demo", "general"],
-                  description: "Type of inquiry - modeling for model applications, collaboration for partnerships, brand for brand deals, demo for product demos, general for other inquiries" 
+                  description: "Type inferred from conversation context: 'collaboration' for partnerships/working together, 'modeling' for model applications, 'brand' for brand deals/sponsorships, 'demo' for product demos, 'general' for other inquiries" 
                 },
-                message: { type: "string", description: "User's message, inquiry details, or what they're interested in" }
+                message: { 
+                  type: "string", 
+                  description: "User's message, interest summary, or what they want to discuss - extracted from their conversational input about their goals/needs" 
+                }
               },
               required: ["name", "email", "inquiry_type", "message"]
             }
@@ -414,8 +438,8 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
                 console.error('❌ Async CRM submission error:', err);
               });
 
-              // Override message with confirmation
-              finalMessage = "Lovely — my team will reach out shortly to confirm your collaboration details. I've shared your contact privately with them.";
+              // Override message with success confirmation
+              finalMessage = "Perfect — I've shared your details with my team. They'll reach out shortly to plan your collaboration.";
               crmSubmitted = true;
             } catch (parseError) {
               console.error('❌ Error parsing tool call arguments:', parseError);

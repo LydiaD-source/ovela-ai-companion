@@ -6,6 +6,8 @@ import { VoiceInputButton } from './VoiceInputButton';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
+import { crmAPI } from '@/lib/crmAPI';
+
 interface Message {
   id: string;
   text: string;
@@ -13,6 +15,12 @@ interface Message {
   timestamp: Date;
   audioUrl?: string;
   videoUrl?: string;
+}
+
+interface LeadDraft {
+  name?: string;
+  email?: string;
+  message?: string;
 }
 
 interface FullWellnessGeniUIProps {
@@ -34,6 +42,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -64,6 +74,93 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     initAudio();
   }, []);
 
+  // Extract contact details from user message
+  const extractContactDetails = (text: string): Partial<LeadDraft> => {
+    const extracted: Partial<LeadDraft> = {};
+    
+    // Extract email
+    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (emailMatch) {
+      extracted.email = emailMatch[0];
+      console.log('📧 Email detected:', extracted.email);
+    }
+    
+    // Extract name (capitalized word or after "I'm", "I am", "My name is", etc.)
+    const namePatterns = [
+      /(?:my name is|i'm|i am|this is)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i,
+      /^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\s*[,.]?\s*(?:here|speaking)/i,
+      /^(?:hi|hello|hey),?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i
+    ];
+    
+    for (const pattern of namePatterns) {
+      const nameMatch = text.match(pattern);
+      if (nameMatch && nameMatch[1]) {
+        extracted.name = nameMatch[1];
+        console.log('👤 Name detected:', extracted.name);
+        break;
+      }
+    }
+    
+    // Extract message (remaining text after removing email and name)
+    let messageText = text;
+    if (extracted.email) {
+      messageText = messageText.replace(extracted.email, '');
+    }
+    if (extracted.name) {
+      messageText = messageText.replace(extracted.name, '');
+    }
+    messageText = messageText.replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is)[,\s]*/i, '').trim();
+    
+    if (messageText.length > 10) {
+      extracted.message = messageText;
+      console.log('💬 Message detected:', extracted.message);
+    }
+    
+    return extracted;
+  };
+
+  // Submit lead to CRM
+  const submitLeadToCRM = async (draft: LeadDraft) => {
+    if (!draft.name || !draft.email || !draft.message || leadSubmitted) {
+      return false;
+    }
+    
+    try {
+      console.log('📤 Submitting lead to CRM:', draft);
+      
+      // Determine inquiry type based on message content
+      let inquiryType: 'modeling' | 'collaboration' | 'brand' | 'general' = 'general';
+      const messageLower = draft.message.toLowerCase();
+      if (messageLower.includes('partner') || messageLower.includes('collaboration') || messageLower.includes('collab')) {
+        inquiryType = 'collaboration';
+      } else if (messageLower.includes('brand') || messageLower.includes('promo')) {
+        inquiryType = 'brand';
+      } else if (messageLower.includes('model') || messageLower.includes('shoot') || messageLower.includes('photo')) {
+        inquiryType = 'modeling';
+      }
+      
+      const result = await crmAPI.submitLead({
+        name: draft.name,
+        email: draft.email,
+        inquiry_type: inquiryType,
+        message: draft.message,
+        source: 'ovela-isabella-chat'
+      });
+      
+      if (result.success) {
+        console.log('✅ CRM submission successful');
+        setLeadSubmitted(true);
+        return true;
+      } else {
+        console.error('❌ CRM submission failed:', result.error);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Error submitting to CRM:', error);
+      return false;
+    }
+  };
+
   const sendMessage = async (text: string, audioData?: Blob) => {
     if (!text.trim() && !audioData) return;
 
@@ -78,12 +175,40 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setInputText('');
     setIsLoading(true);
 
+    // Extract contact details from user input
+    const extracted = extractContactDetails(text);
+    const updatedDraft = { ...leadDraft, ...extracted };
+    setLeadDraft(updatedDraft);
+
     try {
       console.log('💬 Sending to Isabella (brand: ovela_client_001)');
       const isa = await isabellaAPI.sendMessage(text, selectedPersona);
       let assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
       let audioUrl = isa.audioUrl || '';
       let videoUrl = isa.videoUrl || '';
+
+      // Check if we have all required fields and haven't submitted yet
+      if (updatedDraft.name && updatedDraft.email && updatedDraft.message && !leadSubmitted) {
+        console.log('🎯 All contact details collected, submitting to CRM...');
+        const submitted = await submitLeadToCRM(updatedDraft);
+        
+        if (submitted) {
+          assistantText = `Perfect, ${updatedDraft.name} — I've shared your details with my team. They'll reach out shortly to plan your collaboration.`;
+          // Clear lead draft after successful submission
+          setLeadDraft({});
+        } else {
+          assistantText = "Thank you! I've noted your info and will have my team contact you manually.";
+        }
+      } else if (updatedDraft.name || updatedDraft.email || updatedDraft.message) {
+        // Partial info collected - ask for missing fields
+        if (!updatedDraft.name) {
+          assistantText = "And may I have your first name, please?";
+        } else if (!updatedDraft.email) {
+          assistantText = "Could you share your best email so my team can reach you?";
+        } else if (!updatedDraft.message) {
+          assistantText = "Lovely — what type of collaboration are you interested in?";
+        }
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -150,6 +275,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const handleResetMessages = () => {
     setMessages([]);
+    setLeadDraft({});
+    setLeadSubmitted(false);
     toast({
       title: "Chat Reset",
       description: "Conversation cleared.",

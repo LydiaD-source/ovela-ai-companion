@@ -44,6 +44,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [isCollectingLead, setIsCollectingLead] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -74,46 +75,49 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     initAudio();
   }, []);
 
+  // Detect contact intent
+  const hasContactIntent = (text: string): boolean => {
+    const contactIntent = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|schedule|call|meeting)/i;
+    return contactIntent.test(text);
+  };
+
   // Extract contact details from user message
-  const extractContactDetails = (text: string): Partial<LeadDraft> => {
+  const extractContactDetails = (text: string, currentDraft: LeadDraft): Partial<LeadDraft> => {
     const extracted: Partial<LeadDraft> = {};
     
-    // Extract email
-    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    if (emailMatch) {
-      extracted.email = emailMatch[0];
-      console.log('📧 Email detected:', extracted.email);
+    // Extract email (only if not already captured)
+    if (!currentDraft.email) {
+      const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      if (emailMatch) {
+        extracted.email = emailMatch[0];
+        console.log('[LeadDetection] 📧 Email detected:', extracted.email);
+      }
     }
     
-    // Extract name (capitalized word or after "I'm", "I am", "My name is", etc.)
-    const namePatterns = [
-      /(?:my name is|i'm|i am|this is)\s+([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i,
-      /^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\s*[,.]?\s*(?:here|speaking)/i,
-      /^(?:hi|hello|hey),?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)/i
-    ];
-    
-    for (const pattern of namePatterns) {
-      const nameMatch = text.match(pattern);
-      if (nameMatch && nameMatch[1]) {
-        extracted.name = nameMatch[1];
-        console.log('👤 Name detected:', extracted.name);
-        break;
+    // Extract name (only if not already captured)
+    if (!currentDraft.name) {
+      const nameMatch = text.match(/\b([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\b/);
+      if (nameMatch) {
+        extracted.name = nameMatch[0];
+        console.log('[LeadDetection] 👤 Name detected:', extracted.name);
       }
     }
     
     // Extract message (remaining text after removing email and name)
-    let messageText = text;
-    if (extracted.email) {
-      messageText = messageText.replace(extracted.email, '');
-    }
-    if (extracted.name) {
-      messageText = messageText.replace(extracted.name, '');
-    }
-    messageText = messageText.replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is)[,\s]*/i, '').trim();
-    
-    if (messageText.length > 10) {
-      extracted.message = messageText;
-      console.log('💬 Message detected:', extracted.message);
+    if (!currentDraft.message) {
+      let messageText = text;
+      if (extracted.email) {
+        messageText = messageText.replace(extracted.email, '');
+      }
+      if (extracted.name) {
+        messageText = messageText.replace(extracted.name, '');
+      }
+      messageText = messageText.replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is)[,\s]*/i, '').trim();
+      
+      if (messageText.length > 5) {
+        extracted.message = messageText;
+        console.log('[LeadDetection] 💬 Message detected:', extracted.message);
+      }
     }
     
     return extracted;
@@ -175,39 +179,61 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setInputText('');
     setIsLoading(true);
 
-    // Extract contact details from user input
-    const extracted = extractContactDetails(text);
-    const updatedDraft = { ...leadDraft, ...extracted };
-    setLeadDraft(updatedDraft);
+    // Detect contact intent
+    if (!isCollectingLead && hasContactIntent(text)) {
+      console.log('[LeadDetection] 🎯 Contact intent detected, starting lead capture...');
+      setIsCollectingLead(true);
+    }
+
+    // Extract contact details if in collection mode
+    let updatedDraft = { ...leadDraft };
+    if (isCollectingLead) {
+      const extracted = extractContactDetails(text, leadDraft);
+      updatedDraft = { ...leadDraft, ...extracted };
+      setLeadDraft(updatedDraft);
+      console.log('[LeadDetection] Current draft:', updatedDraft);
+    }
 
     try {
-      console.log('💬 Sending to Isabella (brand: ovela_client_001)');
-      const isa = await isabellaAPI.sendMessage(text, selectedPersona);
-      let assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
-      let audioUrl = isa.audioUrl || '';
-      let videoUrl = isa.videoUrl || '';
+      let assistantText = "";
+      let audioUrl = '';
+      let videoUrl = '';
 
-      // Check if we have all required fields and haven't submitted yet
-      if (updatedDraft.name && updatedDraft.email && updatedDraft.message && !leadSubmitted) {
-        console.log('🎯 All contact details collected, submitting to CRM...');
-        const submitted = await submitLeadToCRM(updatedDraft);
-        
-        if (submitted) {
-          assistantText = `Perfect, ${updatedDraft.name} — I've shared your details with my team. They'll reach out shortly to plan your collaboration.`;
-          // Clear lead draft after successful submission
-          setLeadDraft({});
+      // Check if we're collecting lead data
+      if (isCollectingLead && !leadSubmitted) {
+        const { name, email, message } = updatedDraft;
+
+        // Check if all fields are present
+        if (name && email && message) {
+          console.log('[LeadDetection] 🎯 All contact details collected, submitting to CRM...');
+          const submitted = await submitLeadToCRM(updatedDraft);
+          
+          if (submitted) {
+            assistantText = `Perfect, ${name} — I've shared your details with my team. They'll reach out shortly to continue this conversation. ✨`;
+            setIsCollectingLead(false);
+            setLeadDraft({});
+            console.log('[LeadSubmitted] ✅ Success');
+          } else {
+            assistantText = "Thank you! I've noted your info and will have my team contact you manually.";
+            console.log('[LeadSubmitted] ⚠️ Failed, manual follow-up needed');
+          }
         } else {
-          assistantText = "Thank you! I've noted your info and will have my team contact you manually.";
+          // Ask only for missing fields in order
+          if (!name) {
+            assistantText = "Could I have your first name, please?";
+          } else if (!email) {
+            assistantText = "And your best email address so my team can follow up?";
+          } else if (!message) {
+            assistantText = "Lovely — could you tell me what you'd like to discuss or create together?";
+          }
         }
-      } else if (updatedDraft.name || updatedDraft.email || updatedDraft.message) {
-        // Partial info collected - ask for missing fields
-        if (!updatedDraft.name) {
-          assistantText = "And may I have your first name, please?";
-        } else if (!updatedDraft.email) {
-          assistantText = "Could you share your best email so my team can reach you?";
-        } else if (!updatedDraft.message) {
-          assistantText = "Lovely — what type of collaboration are you interested in?";
-        }
+      } else {
+        // Normal conversation flow
+        console.log('💬 Sending to Isabella (brand: ovela_client_001)');
+        const isa = await isabellaAPI.sendMessage(text, selectedPersona);
+        assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";
+        audioUrl = isa.audioUrl || '';
+        videoUrl = isa.videoUrl || '';
       }
 
       const assistantMessage: Message = {
@@ -277,6 +303,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setMessages([]);
     setLeadDraft({});
     setLeadSubmitted(false);
+    setIsCollectingLead(false);
     toast({
       title: "Chat Reset",
       description: "Conversation cleared.",

@@ -82,7 +82,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   // Detect contact intent
   const hasContactIntent = (text: string): boolean => {
-    const contactIntent = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing)/i;
+    const contactIntent = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect)/i;
     return contactIntent.test(text);
   };
 
@@ -237,19 +237,32 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
         // Check if all fields are present → immediate submission
         if (name && email && message) {
-          console.log('[lead-detect] 🎯 All fields present, submitting to CRM...');
+          console.log('[lead-detect] 🎯 All fields present, preparing CRM submission...');
+          console.log('[CRM] Payload ready', { name, email, message });
+          // Idempotency: prevent duplicate prompts/submits
+          setLeadSubmitted(true);
           const submitted = await submitLeadToCRM(updatedDraft);
           
           if (submitted) {
-            assistantText = `Perfect, ${name} — I've shared your details with my team. They'll reach out shortly to plan your collaboration. ✨`;
+            console.log('[CRM] Submission successful');
+            assistantText = `Perfect, ${name} — thank you! I’ll share this with my production team right away so they can follow up with details.`;
             setIsCollectingLead(false);
             setLeadDraft({});
+            toast({
+              title: "Lead submitted",
+              description: "Your details are with our team.",
+            });
           } else {
-            assistantText = "Thank you! I've noted your info and will have my team contact you manually.";
+            console.error('[CRM] Submission failed');
+            // Allow retry if needed
+            setLeadSubmitted(false);
+            assistantText = "Thanks — I’ve saved this here and will notify my team manually. Could I also get a phone number just in case?";
           }
         } else {
           // Ask only for the FIRST missing field (never re-ask for already-captured fields)
-          if (!name) {
+          if (!name && !email) {
+            assistantText = "Of course! May I have your name and best email so my team can contact you?";
+          } else if (!name) {
             assistantText = "Could I have your first name, please?";
           } else if (!email) {
             assistantText = "And your best email address so my team can reach you?";

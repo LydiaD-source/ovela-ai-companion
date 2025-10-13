@@ -62,13 +62,6 @@ export const InteractiveMarketingGallery = ({ isOpen, onClose }: InteractiveMark
         <DialogOverlay className="bg-black/90 backdrop-blur-md" />
         <DialogContent className="max-w-7xl w-[95vw] max-h-[90vh] overflow-y-auto bg-background/95 border-primary/20">
           <div className="relative">
-            <button
-              onClick={onClose}
-              className="absolute -top-2 -right-2 z-50 rounded-full bg-background/80 p-2 hover:bg-background transition-colors"
-              aria-label="Close gallery"
-            >
-              <X className="h-6 w-6" />
-            </button>
 
             <div className="pt-8 pb-4">
               <h2 className="text-3xl font-playfair text-primary mb-2">Interactive Marketing Portfolio</h2>
@@ -118,14 +111,7 @@ export const InteractiveMarketingGallery = ({ isOpen, onClose }: InteractiveMark
       {selectedItem && (
         <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
           <DialogOverlay className="bg-black/95 backdrop-blur-lg" />
-          <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto bg-transparent border-none shadow-none p-0">
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="absolute -top-12 right-0 z-50 rounded-full bg-white/10 p-3 hover:bg-white/20 transition-colors"
-              aria-label="Close fullscreen view"
-            >
-              <X className="h-6 w-6 text-white" />
-            </button>
+          <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto bg-transparent border-none shadow-none p-0 [&>button]:bg-white/10 [&>button]:hover:bg-white/20 [&>button]:text-white [&>button]:-top-12 [&>button]:right-0">
 
             <div className="relative flex items-center justify-center max-h-[90vh]">
               {selectedItem.type === 'video' ? (

@@ -364,11 +364,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             assistantText = "Could you tell me briefly what you'd like my team to contact you about?";
           }
         }
-      } else if (leadSubmitted) {
-        // If already submitted, just confirm
-        assistantText = "Your details are already with my team — they'll contact you soon. ✨";
       } else {
-        // Normal conversation flow
+        // Normal conversation flow - answer questions about Ovela
         console.log('💬 Sending to Isabella (brand: ovela_client_001)');
         const isa = await isabellaAPI.sendMessage(text, selectedPersona);
         assistantText = isa.message || "I'm sorry — I didn't get the details. Please try again or ask another question.";

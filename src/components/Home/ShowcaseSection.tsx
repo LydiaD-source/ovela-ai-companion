@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { InteractiveMarketingGallery } from './InteractiveMarketingGallery';
 
 const showcaseItems = [
   {
@@ -25,8 +26,11 @@ const showcaseItems = [
 ];
 
 export const ShowcaseSection = () => {
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+
   return (
     <section className="w-full bg-black">
+      <InteractiveMarketingGallery isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
       {showcaseItems.map((item, index) => (
         <div
           key={index}
@@ -87,17 +91,35 @@ export const ShowcaseSection = () => {
               >
                 {item.description}
               </p>
-              <a
-                href="#portfolio"
-                className="inline-block transition-all duration-300 hover:underline"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  color: '#E8CFA9',
-                  fontSize: '16px'
-                }}
-              >
-                See Full Portfolio →
-              </a>
+              {item.title === 'Interactive Marketing' ? (
+                <button
+                  onClick={() => setIsGalleryOpen(true)}
+                  className="inline-block transition-all duration-300 hover:underline"
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#E8CFA9',
+                    fontSize: '16px',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer'
+                  }}
+                >
+                  See Portfolio →
+                </button>
+              ) : (
+                <a
+                  href="#portfolio"
+                  className="inline-block transition-all duration-300 hover:underline"
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#E8CFA9',
+                    fontSize: '16px'
+                  }}
+                >
+                  See Full Portfolio →
+                </a>
+              )}
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Instagram, Linkedin, Mail } from 'lucide-react';
+import { Instagram, Linkedin, Youtube, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import PDFViewer from '@/components/UI/PDFViewer';
@@ -63,25 +63,33 @@ const Footer = () => {
             {/* Social Links - Right */}
             <div className="order-2 md:order-3 flex space-x-4">
               <a
-                href="mailto:contact@ovelainteractive.com"
-                className="p-3 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors duration-200"
-                aria-label="Email"
-              >
-                <Mail size={20} />
-              </a>
-              <a
-                href="#"
+                href="https://www.instagram.com/isabellanavia_ai/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-3 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors duration-200"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
               </a>
               <a
-                href="#"
+                href="https://www.youtube.com/channel/UCNPojwnrF8R_OfsMqzF5T9g"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-3 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors duration-200"
-                aria-label="LinkedIn"
+                aria-label="YouTube"
               >
-                <Linkedin size={20} />
+                <Youtube size={20} />
+              </a>
+              <a
+                href="https://x.com/IsabellaNaviaAI"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors duration-200"
+                aria-label="X (Twitter)"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
               </a>
             </div>
           </div>

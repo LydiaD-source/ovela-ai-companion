@@ -1,33 +1,161 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import Footer from '@/components/Layout/Footer';
+import { Mail } from 'lucide-react';
 
 const Contact = () => {
   const handleStartChat = () => {
-    // Navigate to home and open chat
     window.location.href = '/?chat=open';
   };
 
+  // SEO Metadata
+  useEffect(() => {
+    document.title = 'Contact Ovela Interactive | Modeling & Marketing Agency';
+    
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Get in touch with Ovela Interactive — a creative modeling and marketing agency specializing in AI-enhanced campaigns. Contact our team or chat with Isabella for collaborations and project inquiries.');
+    }
+    
+    const metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (metaKeywords) {
+      metaKeywords.setAttribute('content', 'Ovela Interactive, contact Ovela, modeling agency, marketing collaborations, creative partnerships, AI marketing, brand projects');
+    } else {
+      const keywords = document.createElement('meta');
+      keywords.name = 'keywords';
+      keywords.content = 'Ovela Interactive, contact Ovela, modeling agency, marketing collaborations, creative partnerships, AI marketing, brand projects';
+      document.head.appendChild(keywords);
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen"
+      style={{
+        background: 'linear-gradient(180deg, #0A0A23 0%, #1a1a3e 100%)'
+      }}
+    >
       {/* Hero Section */}
       <section className="relative w-full py-24 md:py-32 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background" />
-        
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="font-playfair text-4xl md:text-6xl lg:text-7xl mb-6 text-foreground">
-            Connect with Isabella
+          <h1 
+            className="font-playfair text-4xl md:text-6xl lg:text-7xl mb-6"
+            style={{ color: '#D4AF37' }}
+          >
+            Contact Ovela Interactive
           </h1>
           
-          <p className="text-lg md:text-xl mb-8 text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Your direct link to Ovela's creative partnerships and collaborations.
+          <p 
+            className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed"
+            style={{ color: '#FFFFFF', fontWeight: 300 }}
+          >
+            We'd love to hear from you. Whether you're interested in creative collaborations, 
+            modeling partnerships, or have questions about our projects, our team is here to help.
           </p>
+        </div>
+      </section>
 
-          <div className="mb-16">
+      {/* Contact Information */}
+      <section className="w-full py-16 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 
+            className="font-playfair text-3xl md:text-4xl text-center mb-12"
+            style={{ color: '#D4AF37' }}
+          >
+            Direct Contact
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8 text-center mb-16">
+            <div>
+              <div 
+                className="text-4xl mb-4 flex justify-center"
+                style={{ color: '#D4AF37' }}
+              >
+                <Mail size={40} />
+              </div>
+              <h3 
+                className="font-semibold text-lg mb-3"
+                style={{ color: '#FFFFFF' }}
+              >
+                Email
+              </h3>
+              <a 
+                href="mailto:support@ovelainteractive.com" 
+                className="hover:opacity-80 transition-opacity"
+                style={{ color: '#D4AF37' }}
+              >
+                support@ovelainteractive.com
+              </a>
+            </div>
+            
+            <div>
+              <div 
+                className="text-4xl mb-4"
+                style={{ color: '#D4AF37' }}
+              >
+                🏢
+              </div>
+              <h3 
+                className="font-semibold text-lg mb-3"
+                style={{ color: '#FFFFFF' }}
+              >
+                Studio
+              </h3>
+              <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                Bonaventura Armengol 15, 3R 3A<br />
+                AD500 Andorra La Vella
+              </p>
+            </div>
+            
+            <div>
+              <div 
+                className="text-4xl mb-4"
+                style={{ color: '#D4AF37' }}
+              >
+                🕘
+              </div>
+              <h3 
+                className="font-semibold text-lg mb-3"
+                style={{ color: '#FFFFFF' }}
+              >
+                Hours
+              </h3>
+              <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                Monday–Friday<br />
+                9am–6pm CET
+              </p>
+            </div>
+          </div>
+
+          {/* Chat with Isabella Section */}
+          <div 
+            className="text-center py-12 px-6 rounded-2xl"
+            style={{
+              background: 'rgba(212, 175, 55, 0.1)',
+              border: '1px solid rgba(212, 175, 55, 0.3)'
+            }}
+          >
+            <h3 
+              className="font-playfair text-2xl md:text-3xl mb-4"
+              style={{ color: '#D4AF37' }}
+            >
+              Chat with Isabella
+            </h3>
+            <p 
+              className="mb-6 max-w-xl mx-auto"
+              style={{ color: 'rgba(255, 255, 255, 0.7)' }}
+            >
+              Prefer a quick chat? You can speak directly with Isabella, our virtual assistant, 
+              who can answer basic questions and connect you with the right team member.
+            </p>
             <Button
               onClick={handleStartChat}
               size="lg"
               className="text-lg px-8 py-6 h-auto"
+              style={{
+                background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)',
+                color: '#000000',
+                fontWeight: 600
+              }}
             >
               Start Conversation with Isabella
             </Button>
@@ -35,64 +163,10 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Introduction Section */}
-      <section className="w-full py-16 px-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="prose prose-lg dark:prose-invert mx-auto text-center">
-            <p className="text-muted-foreground leading-relaxed">
-              Hello, I'm Isabella — an AI model and brand ambassador for Ovela Interactive. 
-              Whether you're interested in modeling opportunities, creative collaborations, 
-              brand partnerships, or simply want to learn more about what we do, I'm here to help.
-            </p>
-            <p className="text-muted-foreground leading-relaxed mt-6">
-              Click the button above to start a conversation with me directly, or use the 
-              contact information below to reach our studio team.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Information */}
-      <section className="w-full py-16 px-4 bg-muted/30">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="font-playfair text-3xl md:text-4xl text-center mb-12 text-foreground">
-            Direct Contact
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <h3 className="font-semibold text-lg mb-3 text-foreground">Email</h3>
-              <a 
-                href="mailto:hello@ovela.ai" 
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                hello@ovela.ai
-              </a>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold text-lg mb-3 text-foreground">Studio</h3>
-              <p className="text-muted-foreground">
-                37 Boulevard Royal<br />
-                L-2449 Luxembourg
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold text-lg mb-3 text-foreground">Hours</h3>
-              <p className="text-muted-foreground">
-                Monday–Friday<br />
-                9am–6pm CET
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="w-full py-12 px-4 border-t border-border">
-        <div className="max-w-6xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Ovela Interactive © 2025 — An AI modeling & marketing platform powered by OpenAI</p>
+      <footer className="w-full py-12 px-4 border-t" style={{ borderColor: 'rgba(212, 175, 55, 0.2)' }}>
+        <div className="max-w-6xl mx-auto text-center text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <p>Ovela Interactive © 2025 — Modeling & Marketing Powered by AI</p>
         </div>
       </footer>
     </div>

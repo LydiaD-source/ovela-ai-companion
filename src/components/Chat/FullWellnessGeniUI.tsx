@@ -94,10 +94,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     return emailRegex.test(email.trim());
   };
 
-  // Validate name (only alphabetic characters and spaces, minimum 2 chars)
+  // Validate name (letters with accents, spaces, apostrophes or hyphens; min 2 chars)
   const isValidName = (name: string): boolean => {
     const cleaned = name.trim();
-    return /^[a-zA-Z\s]+$/.test(cleaned) && cleaned.length >= 2;
+    return /^[A-Za-zÀ-ÿ\s'-]+$/.test(cleaned) && cleaned.length >= 2;
   };
 
   // Extract contact details from user message with robust heuristics
@@ -119,13 +119,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       }
     }
     
-    // 2) Name detection - multiple patterns
+    // 2) Name detection - multiple patterns + single-token fallback
     if (!currentDraft.name) {
       // Explicit patterns: "my name is", "i'm", "i am", "this is", "call me"
       const namePatterns = [
-        /(?:my name is|i am|i'm|this is|call me|name:\s*)\s+([a-zA-Z]+(?:\s[a-zA-Z]+)?)/i,
-        /^([A-Z][a-z]+)\s/,  // Capitalized word at start
-        /^([a-z]+)\s+[a-zA-Z0-9._%+-]+@/i  // Word before email (e.g., "kris zgud24@...")
+        /(?:my name is|i am|i'm|this is|call me|name:\s*)\s+([A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)?)/i,
+        /^([A-ZÀ-Ý][a-zà-ÿ]+)\s/,  // Capitalized word at start (supports accents)
+        /^([A-Za-zÀ-ÿ]+)\s+[A-Za-z0-9._%+-]+@/i  // Word before email (e.g., "kris zgud24@...")
       ];
       
       for (const pattern of namePatterns) {
@@ -137,6 +137,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           extracted.inferred!.name = true;
           console.log('[CRM] 👤 Name:', extracted.name);
           break;
+        }
+      }
+
+      // Single-token fallback (e.g., "kris")
+      if (!extracted.name) {
+        const singleToken = text.trim();
+        if (/^[A-Za-zÀ-ÿ]+$/.test(singleToken)) {
+          extracted.name = singleToken.charAt(0).toUpperCase() + singleToken.slice(1).toLowerCase();
+          extracted.inferred!.name = true;
+          console.log('[CRM] 👤 Name (single-token):', extracted.name);
         }
       }
     }
@@ -340,14 +350,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           } else {
             console.error('[CRM] Submission failed');
             setLeadSubmitted(false);
-            assistantText = "Oops, it seems my connection glitched — could you please try again in a moment?";
+            assistantText = "It seems there was a small hiccup. Let’s try that again.";
           }
         }
 
         // Ask for first missing field if no validation happened above
         if (!assistantText) {
           if (!name) {
-            assistantText = "I'd be happy to connect you with my team! Could you please tell me your first name?";
+            assistantText = "May I have your first name, please?";
           } else if (!email) {
             assistantText = "And your best email address, please?";
           } else if (!message) {

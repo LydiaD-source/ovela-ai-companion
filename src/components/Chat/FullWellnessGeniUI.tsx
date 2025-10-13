@@ -26,6 +26,11 @@ interface LeadDraft {
     email: boolean;
     message: boolean;
   };
+  confirmed?: {
+    name: boolean;
+    email: boolean;
+    message: boolean;
+  };
 }
 
 interface FullWellnessGeniUIProps {
@@ -54,12 +59,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // No initial greeting to keep chat minimal on load
   useEffect(() => {
     setMessages([]);
   }, [isGuestMode]);
 
-  // Auto-scroll to bottom when new messages arrive - only scroll the chat container
   useEffect(() => {
     const chatContainer = messagesEndRef.current?.parentElement;
     if (chatContainer) {
@@ -67,7 +70,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
   }, [messages]);
 
-  // Initialize audio context
   useEffect(() => {
     const initAudio = async () => {
       try {
@@ -82,14 +84,27 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   // Detect contact intent
   const hasContactIntent = (text: string): boolean => {
-    const contactIntent = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect)/i;
+    const contactIntent = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect|talk to|speak with)/i;
     return contactIntent.test(text);
+  };
+
+  // Validate email format
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email.trim());
+  };
+
+  // Validate name (only alphabetic characters and spaces, minimum 2 chars)
+  const isValidName = (name: string): boolean => {
+    const cleaned = name.trim();
+    return /^[a-zA-Z\s]+$/.test(cleaned) && cleaned.length >= 2;
   };
 
   // Extract contact details from user message with robust heuristics
   const extractContactDetails = (text: string, currentDraft: LeadDraft): Partial<LeadDraft> => {
     const extracted: Partial<LeadDraft> = {
-      inferred: currentDraft.inferred || { name: false, email: false, message: false }
+      inferred: currentDraft.inferred || { name: false, email: false, message: false },
+      confirmed: currentDraft.confirmed || { name: false, email: false, message: false }
     };
     
     // 1) Email detection (highest confidence)
@@ -97,48 +112,59 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
       const emails = text.match(emailRegex);
       if (emails && emails.length) {
-        extracted.email = emails[0].toLowerCase();
+        const potentialEmail = emails[0].toLowerCase().trim();
+        extracted.email = potentialEmail;
         extracted.inferred!.email = true;
-        console.log('[lead-detect] 📧 Email:', extracted.email);
+        console.log('[CRM] 📧 Email:', extracted.email);
       }
     }
     
-    // 2) Name detection (careful: avoid capturing common words as names)
+    // 2) Name detection - multiple patterns
     if (!currentDraft.name) {
-      // Prefer explicit patterns: "my name is", "i'm", "i am", "this is"
-      const nameExplicit = text.match(/(?:my name is|i am|i'm|this is)\s+([A-Z]?[a-z]+(?:\s[A-Z]?[a-z]+){0,2})/i);
-      if (nameExplicit) {
-        extracted.name = nameExplicit[1].trim();
-        extracted.inferred!.name = true;
-        console.log('[lead-detect] 👤 Name (explicit):', extracted.name);
-      } else {
-        // If explicit not found, try short single-token name heuristics
-        const tokens = text.trim().split(/\s+/);
-        // If message looks like "Kris" or contains email, treat first token as name
-        if (tokens.length <= 3 && /^[A-Z]?[a-z]+$/.test(tokens[0])) {
-          const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
-          if (emails || /name/i.test(text)) {
-            extracted.name = tokens[0].charAt(0).toUpperCase() + tokens[0].slice(1).toLowerCase();
-            extracted.inferred!.name = true;
-            console.log('[lead-detect] 👤 Name (inferred):', extracted.name);
-          }
+      // Explicit patterns: "my name is", "i'm", "i am", "this is", "call me"
+      const namePatterns = [
+        /(?:my name is|i am|i'm|this is|call me|name:\s*)\s+([a-zA-Z]+(?:\s[a-zA-Z]+)?)/i,
+        /^([A-Z][a-z]+)\s/,  // Capitalized word at start
+        /^([a-z]+)\s+[a-zA-Z0-9._%+-]+@/i  // Word before email (e.g., "kris zgud24@...")
+      ];
+      
+      for (const pattern of namePatterns) {
+        const match = text.match(pattern);
+        if (match && match[1]) {
+          const potentialName = match[1].trim();
+          // Capitalize first letter
+          extracted.name = potentialName.charAt(0).toUpperCase() + potentialName.slice(1).toLowerCase();
+          extracted.inferred!.name = true;
+          console.log('[CRM] 👤 Name:', extracted.name);
+          break;
         }
       }
     }
     
-    // 3) Message detection (the rest)
+    // 3) Message detection (the rest, excluding email and name)
     if (!currentDraft.message) {
       let messageCandidate = text;
-      if (extracted.email) messageCandidate = messageCandidate.replace(extracted.email, '');
-      if (extracted.name) messageCandidate = messageCandidate.replace(new RegExp(extracted.name, 'gi'), '');
+      
+      // Remove email
+      if (extracted.email) {
+        messageCandidate = messageCandidate.replace(extracted.email, '');
+      }
+      
+      // Remove name
+      if (extracted.name) {
+        messageCandidate = messageCandidate.replace(new RegExp(extracted.name, 'gi'), '');
+      }
+      
+      // Clean up common prefixes
       messageCandidate = messageCandidate
-        .replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is)[,\s]*/i, '')
+        .replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is|call me|about|regarding|message:?|email:?|name:?)[,\s]*/gi, '')
         .trim();
       
-      if (messageCandidate.length >= 3) {
+      // Accept if substantial enough
+      if (messageCandidate.length >= 5) {
         extracted.message = messageCandidate;
         extracted.inferred!.message = true;
-        console.log('[lead-detect] 💬 Message:', extracted.message);
+        console.log('[CRM] 💬 Message:', extracted.message);
       }
     }
     
@@ -148,12 +174,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   // Submit lead to CRM
   const submitLeadToCRM = async (draft: LeadDraft) => {
     if (!draft.name || !draft.email || !draft.message || leadSubmitted) {
-      console.log('[lead-submit-attempt]', { submitted: leadSubmitted, draft });
+      console.log('[CRM] Submit attempt skipped', { submitted: leadSubmitted, draft });
       return false;
     }
     
     try {
-      console.log('[lead-submit-attempt] 📤 Submitting to CRM:', draft);
+      console.log('[CRM] 📤 Submitting to CRM:', draft);
       
       // Determine inquiry type based on message content
       let inquiryType: 'modeling' | 'collaboration' | 'brand' | 'general' = 'general';
@@ -174,18 +200,18 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         source: 'ovela-isabella-chat'
       });
       
-      console.log('[lead-submit-response]', result);
+      console.log('[CRM] Submission response:', result);
       
       if (result.success) {
-        console.log('[CRM Submit] ✅ Success');
+        console.log('[CRM] ✅ Submission successful');
         setLeadSubmitted(true);
         return true;
       } else {
-        console.error('[CRM Submit] ❌ Failed:', result.error);
+        console.error('[CRM] ❌ Submission failed:', result.error);
         return false;
       }
     } catch (error) {
-      console.error('[CRM Submit] ❌ Error:', error);
+      console.error('[CRM] ❌ Error:', error);
       return false;
     }
   };
@@ -206,11 +232,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
     // Detect contact intent and start collection
     if (!isCollectingLead && hasContactIntent(text)) {
-      console.log('[lead-detect] 🎯 Contact intent detected, starting lead capture...');
+      console.log('[CRM] Lead detected');
       setIsCollectingLead(true);
     }
 
-    // Extract contact details on EVERY message (including the first one with contact intent)
+    // Extract contact details on EVERY message when collecting
     let updatedDraft = { ...leadDraft };
     if (isCollectingLead || hasContactIntent(text)) {
       const extracted = extractContactDetails(text, leadDraft);
@@ -220,10 +246,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         inferred: { 
           ...(leadDraft.inferred || { name: false, email: false, message: false }),
           ...(extracted.inferred || {})
+        },
+        confirmed: {
+          ...(leadDraft.confirmed || { name: false, email: false, message: false }),
+          ...(extracted.confirmed || {})
         }
       };
       setLeadDraft(updatedDraft);
-      console.log('[lead-detect]', updatedDraft);
+      console.log('[CRM] Current draft state:', updatedDraft);
     }
 
     try {
@@ -231,43 +261,97 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       let audioUrl = '';
       let videoUrl = '';
 
-      // Check if we're collecting lead data or if lead is already submitted
+      // Handle lead collection with validation
       if ((isCollectingLead || hasContactIntent(text)) && !leadSubmitted) {
-        const { name, email, message } = updatedDraft;
+        const { name, email, message, confirmed } = updatedDraft;
 
-        // Check if all fields are present → immediate submission
-        if (name && email && message) {
-          console.log('[lead-detect] 🎯 All fields present, preparing CRM submission...');
+        // Validate name if present but not confirmed
+        if (name && !confirmed?.name) {
+          if (!isValidName(name)) {
+            setLeadDraft(prev => ({ 
+              ...prev, 
+              name: undefined, 
+              inferred: { ...prev.inferred, name: false } 
+            }));
+            assistantText = "Hmm, I didn't quite catch that — could you please retype your name so I can save it correctly?";
+          } else {
+            // Confirm name
+            setLeadDraft(prev => ({ 
+              ...prev, 
+              confirmed: { ...prev.confirmed, name: true } 
+            }));
+            updatedDraft.confirmed!.name = true;
+            
+            if (!email) {
+              assistantText = `Perfect, thanks ${name}! And your best email address, please?`;
+            }
+          }
+        }
+
+        // Validate email if present but not confirmed
+        if (email && !confirmed?.email && confirmed?.name) {
+          if (!isValidEmail(email)) {
+            setLeadDraft(prev => ({ 
+              ...prev, 
+              email: undefined, 
+              inferred: { ...prev.inferred, email: false } 
+            }));
+            assistantText = "That doesn't look like a full email — could you double-check it for me?";
+          } else {
+            // Confirm email
+            setLeadDraft(prev => ({ 
+              ...prev, 
+              confirmed: { ...prev.confirmed, email: true } 
+            }));
+            updatedDraft.confirmed!.email = true;
+            
+            if (!message) {
+              assistantText = `Got it, ${name}. Could you tell me briefly what you'd like my team to contact you about?`;
+            }
+          }
+        }
+
+        // Confirm message when present
+        if (message && !confirmed?.message && confirmed?.name && confirmed?.email) {
+          setLeadDraft(prev => ({ 
+            ...prev, 
+            confirmed: { ...prev.confirmed, message: true } 
+          }));
+          updatedDraft.confirmed!.message = true;
+        }
+
+        // Submit when all fields are validated and confirmed
+        if (name && email && message && confirmed?.name && confirmed?.email) {
+          console.log('[CRM] All fields validated and confirmed, submitting...');
           console.log('[CRM] Payload ready', { name, email, message });
-          // Idempotency: prevent duplicate prompts/submits
           setLeadSubmitted(true);
+          
           const submitted = await submitLeadToCRM(updatedDraft);
           
           if (submitted) {
             console.log('[CRM] Submission successful');
-            assistantText = `Perfect, ${name} — thank you! I’ll share this with my production team right away so they can follow up with details.`;
+            assistantText = `Thank you, ${name}! I've sent your details to our team. They'll reach out shortly.`;
             setIsCollectingLead(false);
             setLeadDraft({});
             toast({
-              title: "Lead submitted",
-              description: "Your details are with our team.",
+              title: "Lead Submitted",
+              description: "Your contact information has been sent to our team.",
             });
           } else {
             console.error('[CRM] Submission failed');
-            // Allow retry if needed
             setLeadSubmitted(false);
-            assistantText = "Thanks — I’ve saved this here and will notify my team manually. Could I also get a phone number just in case?";
+            assistantText = "Oops, it seems my connection glitched — could you please try again in a moment?";
           }
-        } else {
-          // Ask only for the FIRST missing field (never re-ask for already-captured fields)
-          if (!name && !email) {
-            assistantText = "Of course! May I have your name and best email so my team can contact you?";
-          } else if (!name) {
-            assistantText = "Could I have your first name, please?";
+        }
+
+        // Ask for first missing field if no validation happened above
+        if (!assistantText) {
+          if (!name) {
+            assistantText = "I'd be happy to connect you with my team! Could you please tell me your first name?";
           } else if (!email) {
-            assistantText = "And your best email address so my team can reach you?";
+            assistantText = "And your best email address, please?";
           } else if (!message) {
-            assistantText = "Lovely — tell me a little about the project or what you'd like to create.";
+            assistantText = "Could you tell me briefly what you'd like my team to contact you about?";
           }
         }
       } else if (leadSubmitted) {
@@ -337,9 +421,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
 };
 
-
-
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(inputText);
@@ -347,10 +428,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const handleResetMessages = () => {
     setMessages([]);
-    setLeadDraft({ inferred: { name: false, email: false, message: false } });
+    setLeadDraft({ 
+      inferred: { name: false, email: false, message: false },
+      confirmed: { name: false, email: false, message: false }
+    });
     setLeadSubmitted(false);
     setIsCollectingLead(false);
-    console.log('[lead-detect] 🔄 Chat reset');
+    console.log('[CRM] 🔄 Chat reset');
     toast({
       title: "Chat Reset",
       description: "Conversation cleared.",

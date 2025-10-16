@@ -8,42 +8,42 @@ const Pricing = () => {
       title: 'Product Promotion',
       description: 'Isabella becomes the face of your luxury products through stunning photography and cinematic video content that captures attention and drives desire.',
       price: 'From €1,500/month',
-      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759515522/Flux_Dev_Fullbody_portrait_of_IsabellaV2_head_to_feet_visible__0_er2yhj.jpg',
+      thumbnail: '/images/pricing-product-promotion.jpg',
       icon: Sparkles
     },
     {
       title: 'Social Media Feature',
       description: 'Amplify your brand presence with Isabella\'s authentic voice. From Instagram stories to TikTok trends, she creates engaging content that resonates.',
       price: 'From €250/post',
-      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759264536/Fllux_Dev_Use_Character_Element_IsabellaV2Focus_half_body_sitti_1_33_raj9vh.jpg',
+      thumbnail: '/images/pricing-social-media.jpg',
       icon: Globe
     },
     {
       title: 'Event Presence',
       description: 'Bring Isabella to your virtual events, product launches, and brand activations. An interactive AI presence that engages and inspires your audience.',
       price: 'From €2,000/event',
-      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg',
+      thumbnail: '/images/pricing-event-presence.jpg',
       icon: Video
     },
     {
       title: 'Custom Ambassador Campaign',
       description: 'A bespoke partnership tailored to your brand vision. Isabella adapts to your aesthetic, values, and messaging for a truly unique collaboration.',
       price: 'Custom Pricing',
-      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759515522/Flux_Dev_Fullbody_portrait_of_IsabellaV2_head_to_feet_visible__0_er2yhj.jpg',
+      thumbnail: '/images/pricing-custom-ambassador.jpg',
       icon: Palette
     },
     {
       title: 'Website Integration',
       description: 'Transform your digital presence with an interactive Isabella embedded on your site. Custom-designed to enhance user experience and brand storytelling.',
       price: '€2,000 setup + €500/month',
-      thumbnail: '/lovable-uploads/isabella-appearance-settings.png',
+      thumbnail: '/images/pricing-website-integration.jpg',
       icon: Monitor
     },
     {
       title: 'Ambassador Video',
       description: 'A polished 60-second video featuring Isabella as your brand spokesperson. Perfect for campaigns, advertisements, and social media announcements.',
       price: 'From €750',
-      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759264536/Fllux_Dev_Use_Character_Element_IsabellaV2Focus_half_body_sitti_1_33_raj9vh.jpg',
+      thumbnail: '/images/pricing-ambassador-video.jpg',
       icon: Video
     }
   ];

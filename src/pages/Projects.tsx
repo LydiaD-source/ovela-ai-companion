@@ -88,7 +88,16 @@ const Projects = () => {
                   aspectRatio: '3/2'
                 }}
               >
-                {project.id === 4 ? (
+                {project.id === 1 ? (
+                  <video
+                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760721288/202510171413_srvvmr.mp4"
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : project.id === 4 ? (
                   <video
                     src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760713364/202510171024_1_jxyq2j.mp4"
                     className="w-full h-full object-cover"

@@ -88,14 +88,25 @@ const Projects = () => {
                   aspectRatio: '3/2'
                 }}
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="text-6xl mb-4">🎬</div>
-                    <p style={{ color: '#D4AF37', fontFamily: 'Inter, sans-serif' }}>
-                      [Placeholder: {project.imagePlaceholder}]
-                    </p>
+                {project.id === 4 ? (
+                  <video
+                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760713364/202510171024_1_jxyq2j.mp4"
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <div className="text-6xl mb-4">🎬</div>
+                      <p style={{ color: '#D4AF37', fontFamily: 'Inter, sans-serif' }}>
+                        [Placeholder: {project.imagePlaceholder}]
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Project Info */}

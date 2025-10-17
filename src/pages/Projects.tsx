@@ -90,7 +90,7 @@ const Projects = () => {
               >
                 {project.id === 1 ? (
                   <video
-                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760721288/202510171413_srvvmr.mp4"
+                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760723126/202510171413_obwauh.mp4"
                     className="w-full h-full object-cover"
                     autoPlay
                     loop

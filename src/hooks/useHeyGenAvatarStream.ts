@@ -62,12 +62,21 @@ export const useHeyGenAvatarStream = (options: UseHeyGenAvatarStreamOptions) => 
 
       // Start new session
       setIsLoading(true);
-      console.log('🚀 Creating new HeyGen session...');
+      console.log('🚀 Creating new HeyGen session with Isabella voice (ElevenLabs)...');
 
-      // Create streaming session with Angela avatar
+      // Create streaming session with Angela avatar and Isabella's ElevenLabs voice
       const session = await heygenClient.createStreamingSession('Angela-inblackskirt-20220820');
       sessionIdRef.current = session.sessionId;
       console.log('✅ HeyGen session created:', session.sessionId);
+      console.log('📊 Session details:', {
+        hasSDO: !!session.sdp,
+        iceServersCount: session.iceServers?.length || 0
+      });
+
+      // Verify we have a valid SDP offer
+      if (!session.sdp) {
+        throw new Error('No SDP offer received from HeyGen');
+      }
 
       // Set up WebRTC peer connection
       peerConnectionRef.current = new RTCPeerConnection({
@@ -135,11 +144,11 @@ export const useHeyGenAvatarStream = (options: UseHeyGenAvatarStreamOptions) => 
 
     } catch (error) {
       console.error('❌ HeyGen speak error:', error);
-      setIsLoading(false);
-      setIsStreaming(false);
+      console.error('Error details:', error instanceof Error ? error.message : JSON.stringify(error));
+      await cleanup();
       onError?.(error instanceof Error ? error : new Error('Unknown HeyGen error'));
     }
-  }, [containerRef, isStreaming, onStreamStart, onError]);
+  }, [containerRef, isStreaming, cleanup, onStreamStart, onError]);
 
   return {
     speak,

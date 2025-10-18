@@ -28,10 +28,19 @@ serve(async (req) => {
       case 'create_streaming_session':
         endpoint = 'https://api.heygen.com/v1/streaming.new';
         body = {
-          avatar_id: payload.avatarId || 'Angela-inblackskirt-20220820',
           quality: 'high',
-          version: 'v2',
-          ...payload
+          avatar_id: payload.avatarId || 'Angela-inblackskirt-20220820',
+          voice: {
+            voice_id: payload.voiceId || '9BWtsMINqrJLrRacOk9x', // Aria from ElevenLabs (Isabella's voice)
+            rate: 1.0,
+            elevenlabs_settings: {
+              stability: 0.75,
+              similarity_boost: 0.75,
+              style: 0.0,
+              use_speaker_boost: true,
+              model_id: 'eleven_multilingual_v2'
+            }
+          }
         };
         break;
       
@@ -58,7 +67,7 @@ serve(async (req) => {
     const response = await fetch(endpoint, {
       method,
       headers: {
-        'X-Api-Key': HEYGEN_API_KEY,
+        'x-api-key': HEYGEN_API_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),

@@ -128,7 +128,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{ 
-                    opacity: isStreaming ? 0 : 1,
+                    opacity: 1,
                     transition: 'opacity 0.5s ease-in-out'
                   }}
                 />
@@ -148,6 +148,7 @@ const Home = () => {
                     opacity: isStreaming || isLoading ? 1 : 0,
                     transition: 'opacity 0.5s ease-in-out',
                     pointerEvents: 'none',
+                    mixBlendMode: 'lighten',
                   }}
                 >
                   {/* D-ID videos will be injected here dynamically */}

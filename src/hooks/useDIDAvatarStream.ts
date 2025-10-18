@@ -99,6 +99,7 @@ export const useDIDAvatarStream = ({
       }
 
       setIsLoading(true);
+      pendingTextRef.current = text;
 
       // 1) Create stream
       console.log('🎬 Creating D-ID talk stream...');
@@ -137,15 +138,17 @@ export const useDIDAvatarStream = ({
         left: '0',
         width: '100%',
         height: '100%',
-        objectFit: 'contain',
+        objectFit: 'cover',
         opacity: '0',
         transition: 'opacity 0.3s ease-in-out',
         zIndex: '20',
+        mixBlendMode: 'lighten',
+        backgroundColor: 'transparent',
       } as CSSStyleDeclaration);
       videoRef.current = video;
       containerRef.current.appendChild(video);
 
-      pc.ontrack = (event) => {
+      pc.ontrack = async (event) => {
         console.log('🎥 ontrack received');
         if (event.streams && event.streams[0]) {
           video.srcObject = event.streams[0];
@@ -153,6 +156,26 @@ export const useDIDAvatarStream = ({
           setIsLoading(false);
           setIsStreaming(true);
           onStreamStart?.();
+
+          // Send the initial speak only after media is flowing
+          const toSpeak = pendingTextRef.current;
+          if (toSpeak && streamIdRef.current && sessionIdRef.current) {
+            try {
+              await supabase.functions.invoke('did-streaming', {
+                body: {
+                  action: 'talk_stream_speak',
+                  data: {
+                    stream_id: streamIdRef.current,
+                    session_id: sessionIdRef.current,
+                    text: toSpeak,
+                  },
+                },
+              });
+              pendingTextRef.current = null;
+            } catch (e) {
+              console.error('❌ Initial speak after ontrack failed:', e);
+            }
+          }
         }
       };
 
@@ -192,25 +215,7 @@ export const useDIDAvatarStream = ({
         },
       });
 
-      // First speak
-      await supabase.functions.invoke('did-streaming', {
-        body: {
-          action: 'talk_stream_speak',
-          data: { stream_id: streamId, session_id: session_id, text },
-        },
-      });
-
-      // If something was queued while setting up, send it now
-      if (pendingTextRef.current) {
-        const next = pendingTextRef.current;
-        pendingTextRef.current = null;
-        await supabase.functions.invoke('did-streaming', {
-          body: {
-            action: 'talk_stream_speak',
-            data: { stream_id: streamId, session_id: session_id, text: next },
-          },
-        });
-      }
+      // Initial speak is now triggered after ontrack to avoid race conditions
 
       video.onerror = (e) => {
         console.error('❌ Video error:', e);

@@ -13,6 +13,8 @@ serve(async (req) => {
 
   try {
     const HEYGEN_API_KEY = Deno.env.get('HEYGEN_API_KEY');
+    const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+    
     if (!HEYGEN_API_KEY) {
       throw new Error('HEYGEN_API_KEY not configured');
     }
@@ -27,20 +29,20 @@ serve(async (req) => {
     switch (action) {
       case 'create_streaming_session':
         endpoint = 'https://api.heygen.com/v1/streaming.new';
+        
+        // Build voice configuration for ElevenLabs
+        const voiceConfig: any = {};
+        
+        // If ElevenLabs API key is available, use Isabella's custom voice
+        if (ELEVENLABS_API_KEY && payload.elevenLabsVoiceId) {
+          voiceConfig.voice_id = payload.elevenLabsVoiceId; // Isabella's ElevenLabs voice ID
+          voiceConfig.rate = 1.0;
+        }
+        
         body = {
           quality: 'high',
           avatar_id: payload.avatarId || 'Angela-inblackskirt-20220820',
-          voice: {
-            voice_id: payload.voiceId || '9BWtsMINqrJLrRacOk9x', // Aria from ElevenLabs (Isabella's voice)
-            rate: 1.0,
-            elevenlabs_settings: {
-              stability: 0.75,
-              similarity_boost: 0.75,
-              style: 0.0,
-              use_speaker_boost: true,
-              model_id: 'eleven_multilingual_v2'
-            }
-          }
+          ...(Object.keys(voiceConfig).length > 0 && { voice: voiceConfig })
         };
         break;
       
@@ -64,12 +66,19 @@ serve(async (req) => {
         throw new Error(`Unknown action: ${action}`);
     }
 
+    const headers: Record<string, string> = {
+      'x-api-key': HEYGEN_API_KEY,
+      'Content-Type': 'application/json',
+    };
+    
+    // Add ElevenLabs API key if available (for custom voices)
+    if (ELEVENLABS_API_KEY && action === 'create_streaming_session') {
+      headers['elevenlabs-api-key'] = ELEVENLABS_API_KEY;
+    }
+    
     const response = await fetch(endpoint, {
       method,
-      headers: {
-        'x-api-key': HEYGEN_API_KEY,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(body),
     });
 

@@ -7,12 +7,13 @@ export interface HeyGenStreamingSession {
 }
 
 export class HeyGenAPIClient {
-  async createStreamingSession(avatarId?: string): Promise<HeyGenStreamingSession> {
+  async createStreamingSession(avatarId?: string, elevenLabsVoiceId?: string): Promise<HeyGenStreamingSession> {
     const { data, error } = await supabase.functions.invoke('heygen-proxy', {
       body: {
         action: 'create_streaming_session',
         payload: {
-          avatarId: avatarId || 'Angela-inblackskirt-20220820'
+          avatarId: avatarId || 'Angela-inblackskirt-20220820',
+          elevenLabsVoiceId: elevenLabsVoiceId || 't0IcnDolatli2xhqgLgn' // Isabella's voice
         }
       }
     });

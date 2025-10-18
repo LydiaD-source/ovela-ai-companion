@@ -142,7 +142,7 @@ export const useDIDAvatarStream = ({
         opacity: '0',
         transition: 'opacity 0.3s ease-in-out',
         zIndex: '20',
-        mixBlendMode: 'lighten',
+        mixBlendMode: 'normal',
         backgroundColor: 'transparent',
       } as CSSStyleDeclaration);
       videoRef.current = video;

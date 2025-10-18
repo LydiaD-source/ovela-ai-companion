@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import { useDIDAvatarStream } from '@/hooks/useDIDAvatarStream';
+import { useHeyGenAvatarStream } from '@/hooks/useHeyGenAvatarStream';
 import '@/styles/HeroSection.css';
 
 
@@ -16,21 +16,21 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
-  const didContainerRef = useRef<HTMLDivElement>(null);
+  const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [isAvatarReady, setIsAvatarReady] = useState(false);
 
-  // D-ID Avatar Stream Hook
-  const { speak: speakDID, isStreaming, isLoading } = useDIDAvatarStream({
-    containerRef: didContainerRef,
+  // HeyGen Avatar Stream Hook
+  const { speak: speakHeyGen, isStreaming, isLoading } = useHeyGenAvatarStream({
+    containerRef: avatarContainerRef,
     onStreamStart: () => {
-      console.log('🎬 D-ID stream started');
+      console.log('🎬 HeyGen stream started');
       setIsAvatarReady(true);
     },
     onStreamEnd: () => {
-      console.log('🎬 D-ID stream ended');
+      console.log('🎬 HeyGen stream ended');
     },
     onError: (error) => {
-      console.error('❌ D-ID stream error:', error);
+      console.error('❌ HeyGen stream error:', error);
     },
   });
 
@@ -59,14 +59,14 @@ const Home = () => {
     
     setIsChatActive(true);
 
-    // Kick off a short greeting animation to open D-ID stream
+    // Kick off a short greeting animation with HeyGen
     // Keep it short to minimize latency
     try {
       const greeting = "Hello, I'm Isabella. How can I help you today?";
-      console.log('🎬 Sending initial greeting to D-ID');
-      await speakDID(greeting, isabellaHeroImageUrl);
+      console.log('🎬 Sending initial greeting to HeyGen');
+      await speakHeyGen(greeting);
     } catch (e) {
-      console.error('❌ Initial D-ID greeting failed:', e);
+      console.error('❌ Initial HeyGen greeting failed:', e);
     }
   };
 
@@ -133,11 +133,11 @@ const Home = () => {
                   }}
                 />
                 
-                {/* D-ID Stream Container - Overlays on top of static image */}
+                {/* HeyGen Stream Container - Overlays on top of static image */}
                 <div 
-                  ref={didContainerRef}
-                  id="did-container" 
-                  className="did-avatar-layer" 
+                  ref={avatarContainerRef}
+                  id="heygen-container" 
+                  className="heygen-avatar-layer" 
                   style={{ 
                     position: 'absolute',
                     top: '9%',     // face region Y of the hero image
@@ -153,7 +153,7 @@ const Home = () => {
                     background: 'transparent',
                   }}
                 >
-                  {/* D-ID videos will be injected here dynamically */}
+                  {/* HeyGen videos will be injected here dynamically */}
                   {isLoading && (
                     <div style={{
                       position: 'absolute',
@@ -225,12 +225,12 @@ const Home = () => {
                         console.log('🎯 onAIResponse callback triggered with text:', text?.substring(0, 50));
                         console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
                         if (text && !isLoading) {
-                          console.log('🎬 Calling speakDID (streaming mode - reuse connection)...');
-                          speakDID(text, isabellaHeroImageUrl).catch(err => {
-                            console.error('❌ speakDID error:', err);
+                          console.log('🎬 Calling speakHeyGen (streaming mode - reuse connection)...');
+                          speakHeyGen(text).catch(err => {
+                            console.error('❌ speakHeyGen error:', err);
                           });
                         } else {
-                          console.log('⏭️ Skipping D-ID - setup in progress');
+                          console.log('⏭️ Skipping HeyGen - setup in progress');
                         }
                       }}
                     />

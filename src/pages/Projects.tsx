@@ -97,6 +97,15 @@ const Projects = () => {
                     muted
                     playsInline
                   />
+                ) : project.id === 2 ? (
+                  <video
+                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760816930/202510181728_fobqjd.mp4"
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
                 ) : project.id === 4 ? (
                   <video
                     src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760713364/202510171024_1_jxyq2j.mp4"

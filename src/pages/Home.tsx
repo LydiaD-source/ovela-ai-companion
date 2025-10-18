@@ -215,9 +215,17 @@ const Home = () => {
                       showOnlyPromoter={true}
                       onAIResponse={(text) => {
                         // Trigger D-ID avatar to speak when AI responds
+                        console.log('🎯 onAIResponse callback triggered with text:', text?.substring(0, 50));
+                        console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
+                        console.log('🎯 speakDID function exists:', typeof speakDID);
+                        
                         if (text && !isLoading && !isStreaming) {
-                          console.log('🎬 Triggering D-ID speech for AI response');
-                          speakDID(text);
+                          console.log('🎬 Calling speakDID...');
+                          speakDID(text).catch(err => {
+                            console.error('❌ speakDID error:', err);
+                          });
+                        } else {
+                          console.log('⏭️ Skipping D-ID - conditions not met');
                         }
                       }}
                     />

@@ -50,6 +50,9 @@ export const useDIDAvatarStream = ({
   };
 
   const speak = async (text: string) => {
+    console.log('🎤 useDIDAvatarStream.speak called with text:', text?.substring(0, 50));
+    console.log('🎤 Current state - isLoading:', isLoading, 'isStreaming:', isStreaming);
+    
     if (!text || isLoading || isStreaming) {
       console.log('⏭️ Skipping speak - already processing or empty text');
       return;

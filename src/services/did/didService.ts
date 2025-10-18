@@ -28,7 +28,7 @@ class DIDService {
    * Create a D-ID talk stream with Isabella's image and text
    */
   async createTalkStream(config: DIDTalkConfig): Promise<DIDTalkResponse> {
-    console.log('🎬 Creating D-ID talk stream...', config);
+    console.log('🎬 didService.createTalkStream called with config:', config);
 
     const { data, error } = await supabase.functions.invoke('did-streaming', {
       body: {
@@ -36,6 +36,8 @@ class DIDService {
         data: config,
       },
     });
+
+    console.log('🎬 Supabase function response - data:', data, 'error:', error);
 
     if (error) {
       console.error('❌ Error creating talk stream:', error);

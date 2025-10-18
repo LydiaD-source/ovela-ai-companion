@@ -387,8 +387,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       setMessages(prev => [...prev, assistantMessage]);
 
       // Trigger D-ID avatar if callback is provided
+      console.log('💬 About to trigger onAIResponse callback');
+      console.log('💬 onAIResponse exists:', typeof onAIResponse);
+      console.log('💬 assistantText:', assistantText?.substring(0, 50));
+      
       if (onAIResponse && assistantText) {
+        console.log('💬 Calling onAIResponse callback with:', assistantText.substring(0, 50));
         onAIResponse(assistantText);
+      } else {
+        console.log('💬 onAIResponse NOT called - callback:', !!onAIResponse, 'text:', !!assistantText);
       }
 
       // Generate and play speech if not muted

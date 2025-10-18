@@ -83,24 +83,33 @@ class DIDService {
       const poll = async () => {
         try {
           attempts++;
-          const status = await this.getTalkStatus(talkId);
+          const status: any = await this.getTalkStatus(talkId);
           
           console.log(`🔄 Poll attempt ${attempts}/${maxAttempts}:`, status.status);
           onProgress?.(status.status);
 
-          if (status.status === 'done' && status.result_url) {
-            if (this.pollingInterval) {
-              clearInterval(this.pollingInterval);
-              this.pollingInterval = null;
+          if (status.status === 'done') {
+            const videoUrl = status.result_url || status.url || status.video_url || status?.result?.url;
+            if (videoUrl) {
+              if (this.pollingInterval) {
+                clearInterval(this.pollingInterval);
+                this.pollingInterval = null;
+              }
+              resolve(videoUrl);
+              return;
+            } else {
+              console.warn('⚠️ Done without video URL, full status:', status);
             }
-            resolve(status.result_url);
           } else if (status.status === 'error') {
             if (this.pollingInterval) {
               clearInterval(this.pollingInterval);
               this.pollingInterval = null;
             }
             reject(new Error(status.error?.description || 'Talk generation failed'));
-          } else if (attempts >= maxAttempts) {
+            return;
+          }
+
+          if (attempts >= maxAttempts) {
             if (this.pollingInterval) {
               clearInterval(this.pollingInterval);
               this.pollingInterval = null;

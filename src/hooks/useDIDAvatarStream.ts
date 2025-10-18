@@ -150,6 +150,10 @@ export const useDIDAvatarStream = ({
       containerRef.current.appendChild(video);
       videoRef.current = video;
 
+      // Make stream visible immediately (don't wait for loadeddata)
+      setIsStreaming(true);
+      onStreamStart?.();
+
       // Attempt to play (handle autoplay restrictions)
       try {
         await video.play();

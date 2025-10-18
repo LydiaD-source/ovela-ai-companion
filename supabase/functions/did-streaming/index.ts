@@ -65,6 +65,7 @@ serve(async (req) => {
             normalization_factor: 1.0,
             sharpen: true,
             result_format: 'mp4',
+            speed: 0.78,
           }
         };
 

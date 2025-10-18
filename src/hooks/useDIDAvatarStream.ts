@@ -18,6 +18,7 @@ export const useDIDAvatarStream = ({
   const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const currentTalkId = useRef<string | null>(null);
+  const pendingTextRef = useRef<string | null>(null);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -53,8 +54,13 @@ export const useDIDAvatarStream = ({
     console.log('🎤 useDIDAvatarStream.speak called with text:', text?.substring(0, 50));
     console.log('🎤 Current state - isLoading:', isLoading, 'isStreaming:', isStreaming);
     
-    if (!text || isLoading || isStreaming) {
-      console.log('⏭️ Skipping speak - already processing or empty text');
+    if (!text) {
+      console.log('⏭️ Skipping speak - empty text');
+      return;
+    }
+    if (isLoading || isStreaming) {
+      console.log('⏳ Busy. Queuing next utterance.');
+      pendingTextRef.current = text;
       return;
     }
 
@@ -132,10 +138,18 @@ export const useDIDAvatarStream = ({
         onStreamEnd?.();
         // Hide video after playback
         video.style.opacity = '0';
-        setTimeout(() => {
+        setTimeout(async () => {
           video.remove();
           videoRef.current = null;
-        }, 500);
+
+          // If there is a queued text, play it next
+          if (pendingTextRef.current) {
+            const next = pendingTextRef.current;
+            pendingTextRef.current = null;
+            console.log('➡️ Playing queued utterance next');
+            await speak(next);
+          }
+        }, 300);
       };
 
       video.onerror = (e) => {

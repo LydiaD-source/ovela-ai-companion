@@ -58,6 +58,16 @@ const Home = () => {
     }
     
     setIsChatActive(true);
+
+    // Kick off a short greeting animation to open D-ID stream
+    // Keep it short to minimize latency
+    try {
+      const greeting = "Hello, I'm Isabella. How can I help you today?";
+      console.log('🎬 Sending initial greeting to D-ID');
+      await speakDID(greeting);
+    } catch (e) {
+      console.error('❌ Initial D-ID greeting failed:', e);
+    }
   };
 
   return (
@@ -152,11 +162,11 @@ const Home = () => {
                       top: '50%',
                       left: '50%',
                       transform: 'translate(-50%, -50%)',
-                      color: '#E8CFA9',
-                      fontSize: '14px',
-                      fontFamily: 'Inter, sans-serif',
                     }}>
-                      Preparing Isabella...
+                      <div
+                        aria-label="Preparing Isabella"
+                        className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin"
+                      />
                     </div>
                   )}
                 </div>

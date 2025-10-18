@@ -7,6 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
+import { useDIDAvatarStream } from '@/hooks/useDIDAvatarStream';
 import '@/styles/HeroSection.css';
 
 
@@ -15,6 +16,23 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroHD = "https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_auto/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
+  const didContainerRef = useRef<HTMLDivElement>(null);
+  const [isAvatarReady, setIsAvatarReady] = useState(false);
+
+  // D-ID Avatar Stream Hook
+  const { speak: speakDID, isStreaming, isLoading } = useDIDAvatarStream({
+    containerRef: didContainerRef,
+    onStreamStart: () => {
+      console.log('🎬 D-ID stream started');
+      setIsAvatarReady(true);
+    },
+    onStreamEnd: () => {
+      console.log('🎬 D-ID stream ended');
+    },
+    onError: (error) => {
+      console.error('❌ D-ID stream error:', error);
+    },
+  });
 
   // Check URL parameter to auto-open chat from Contact page
   useEffect(() => {
@@ -26,8 +44,19 @@ const Home = () => {
     }
   }, []);
 
-  const activateChat = () => {
+  const activateChat = async () => {
     console.log('🟢 ACTIVATE CHAT CLICKED');
+    
+    // Enable autoplay by playing a silent interaction first (browser policy workaround)
+    try {
+      const silentAudio = new Audio();
+      silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      await silentAudio.play();
+      console.log('✅ Audio context unlocked');
+    } catch (error) {
+      console.log('⚠️ Could not unlock audio context:', error);
+    }
+    
     setIsChatActive(true);
   };
 
@@ -93,14 +122,43 @@ const Home = () => {
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"
+                  style={{ 
+                    opacity: isStreaming ? 0 : 1,
+                    transition: 'opacity 0.5s ease-in-out'
+                  }}
                 />
                 
-                {/* Heygen disabled for now - D-ID will be integrated when API key is ready */}
-                {/* <div id="heygen-container" className="heygen-avatar-layer"></div> */}
-                
-                {/* D-ID Stream API Placeholder - Waiting for API key */}
-                <div id="did-container" className="did-avatar-layer" style={{ display: 'none' }}>
-                  {/* D-ID streaming avatar will go here */}
+                {/* D-ID Stream Container - Overlays on top of static image */}
+                <div 
+                  ref={didContainerRef}
+                  id="did-container" 
+                  className="did-avatar-layer" 
+                  style={{ 
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 10,
+                    opacity: isStreaming ? 1 : 0,
+                    transition: 'opacity 0.5s ease-in-out',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {/* D-ID videos will be injected here dynamically */}
+                  {isLoading && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: '#E8CFA9',
+                      fontSize: '14px',
+                      fontFamily: 'Inter, sans-serif',
+                    }}>
+                      Preparing Isabella...
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -155,6 +213,13 @@ const Home = () => {
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
+                      onAIResponse={(text) => {
+                        // Trigger D-ID avatar to speak when AI responds
+                        if (text && !isLoading && !isStreaming) {
+                          console.log('🎬 Triggering D-ID speech for AI response');
+                          speakDID(text);
+                        }
+                      }}
                     />
                   </div>
                   

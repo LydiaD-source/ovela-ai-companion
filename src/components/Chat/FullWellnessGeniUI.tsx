@@ -38,13 +38,15 @@ interface FullWellnessGeniUIProps {
   defaultPersona?: string;
   allowedPersonas?: string[];
   showOnlyPromoter?: boolean;
+  onAIResponse?: (text: string) => void;
 }
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   isGuestMode = false,
   defaultPersona = 'isabella-navia',
   allowedPersonas = ['isabella-navia'],
-  showOnlyPromoter = true
+  showOnlyPromoter = true,
+  onAIResponse
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -383,6 +385,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Trigger D-ID avatar if callback is provided
+      if (onAIResponse && assistantText) {
+        onAIResponse(assistantText);
+      }
 
       // Generate and play speech if not muted
       if (!isMuted && assistantText) {

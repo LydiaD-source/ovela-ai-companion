@@ -1,53 +1,58 @@
 /**
  * D-ID Streaming API Service
- * Placeholder for future D-ID avatar integration
- * Will be activated when DID_API_KEY is configured
+ * Connects to D-ID API via Supabase edge function
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { didService } from './didService';
 
 export class DIDAvatarService {
-  private sessionId: string | null = null;
-  private peerConnection: RTCPeerConnection | null = null;
   private isActive = false;
+  private currentTalkId: string | null = null;
 
   /**
    * Initialize D-ID streaming session
-   * Requires DID_API_KEY secret to be configured
    */
   async initialize() {
-    console.log('🎬 D-ID Avatar Service - Waiting for API key configuration');
-    // Will be implemented when DID_API_KEY is available
-    throw new Error('D-ID API key not configured yet');
+    console.log('🎬 D-ID Avatar Service - Ready');
+    this.isActive = true;
   }
 
   /**
-   * Start D-ID streaming session with Isabella avatar
+   * Start D-ID talk stream with Isabella avatar
    */
-  async startSession(avatarId: string = 'default-isabella') {
-    console.log('🎬 D-ID session start requested - feature pending API key');
-    // Placeholder for D-ID session creation
-    throw new Error('D-ID streaming not yet configured');
+  async startSession() {
+    console.log('🎬 Starting D-ID session');
+    await this.initialize();
   }
 
   /**
    * Send text to D-ID avatar for lip-sync and speech
    */
-  async speak(text: string) {
+  async speak(text: string): Promise<string> {
     console.log('🎬 D-ID speak requested:', text.substring(0, 50));
-    // Placeholder for D-ID text-to-speech
-    throw new Error('D-ID streaming not yet configured');
+    
+    const talkResponse = await didService.createTalkStream({
+      script: text,
+      voice_id: '9BWtsMINqrJLrRacOk9x', // ElevenLabs Aria
+      stability: 0.5,
+      similarity_boost: 0.75,
+    });
+
+    this.currentTalkId = talkResponse.id;
+
+    // Poll for completion and return video URL
+    const videoUrl = await didService.pollForCompletion(talkResponse.id);
+    return videoUrl;
   }
 
   /**
    * Stop D-ID streaming session
    */
   async stopSession() {
-    if (this.peerConnection) {
-      this.peerConnection.close();
-      this.peerConnection = null;
+    if (this.currentTalkId) {
+      await didService.cleanup();
+      this.currentTalkId = null;
     }
-    this.sessionId = null;
     this.isActive = false;
     console.log('🎬 D-ID session stopped');
   }
@@ -56,7 +61,16 @@ export class DIDAvatarService {
    * Check if D-ID is ready to use
    */
   isReady(): boolean {
-    return false; // Will return true when DID_API_KEY is configured
+    return this.isActive;
+  }
+
+  /**
+   * Cleanup
+   */
+  async cleanup() {
+    await didService.cleanup();
+    this.currentTalkId = null;
+    this.isActive = false;
   }
 }
 

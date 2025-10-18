@@ -131,7 +131,7 @@ export const useDIDAvatarStream = ({
       const video = document.createElement('video');
       video.autoplay = true;
       video.playsInline = true;
-      video.muted = false;
+      video.muted = true;
       Object.assign(video.style, {
         position: 'absolute',
         top: '0',
@@ -148,7 +148,7 @@ export const useDIDAvatarStream = ({
       videoRef.current = video;
       containerRef.current.appendChild(video);
 
-      pc.ontrack = async (event) => {
+      pc.ontrack = (event) => {
         console.log('🎥 ontrack received');
         if (event.streams && event.streams[0]) {
           video.srcObject = event.streams[0];
@@ -156,26 +156,6 @@ export const useDIDAvatarStream = ({
           setIsLoading(false);
           setIsStreaming(true);
           onStreamStart?.();
-
-          // Send the initial speak only after media is flowing
-          const toSpeak = pendingTextRef.current;
-          if (toSpeak && streamIdRef.current && sessionIdRef.current) {
-            try {
-              await supabase.functions.invoke('did-streaming', {
-                body: {
-                  action: 'talk_stream_speak',
-                  data: {
-                    stream_id: streamIdRef.current,
-                    session_id: sessionIdRef.current,
-                    text: toSpeak,
-                  },
-                },
-              });
-              pendingTextRef.current = null;
-            } catch (e) {
-              console.error('❌ Initial speak after ontrack failed:', e);
-            }
-          }
         }
       };
 
@@ -215,7 +195,22 @@ export const useDIDAvatarStream = ({
         },
       });
 
-      // Initial speak is now triggered after ontrack to avoid race conditions
+      // Kick off initial speech shortly after SDP to start media
+      setTimeout(async () => {
+        const toSpeak = pendingTextRef.current;
+        if (!toSpeak) return;
+        try {
+          await supabase.functions.invoke('did-streaming', {
+            body: {
+              action: 'talk_stream_speak',
+              data: { stream_id: streamIdRef.current, session_id: sessionIdRef.current, text: toSpeak },
+            },
+          });
+          pendingTextRef.current = null;
+        } catch (e) {
+          console.error('❌ Initial speak after SDP failed:', e);
+        }
+      }, 150);
 
       video.onerror = (e) => {
         console.error('❌ Video error:', e);

@@ -22,8 +22,8 @@ export class HeyGenAPIClient {
 
     return {
       sessionId: data.data.session_id,
-      sdp: data.data.sdp,
-      iceServers: data.data.ice_servers2 || []
+      sdp: data.data.sdp || data.data.offer_sdp || '',
+      iceServers: data.data.ice_servers2 || data.data.ice_servers || []
     };
   }
 

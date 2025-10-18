@@ -74,10 +74,9 @@ serve(async (req) => {
           throw new Error(`Failed to send SDP: ${response.status}`);
         }
 
-        const result = await response.json();
         console.log('✅ SDP answer sent');
         
-        return new Response(JSON.stringify(result), {
+        return new Response(JSON.stringify({ ok: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
@@ -108,10 +107,9 @@ serve(async (req) => {
           throw new Error(`Failed to send ICE: ${response.status}`);
         }
 
-        const result = await response.json();
         console.log('✅ ICE candidate sent');
         
-        return new Response(JSON.stringify(result), {
+        return new Response(JSON.stringify({ ok: true }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }

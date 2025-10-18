@@ -14,7 +14,7 @@ import '@/styles/HeroSection.css';
 const Home = () => {
   console.log('🟢 HOME COMPONENT LOADED');
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
-  const isabellaHeroHD = "https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,f_auto,q_auto:best,dpr_auto/v1759836676/golddress_ibt1fp.png";
+  const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
   const didContainerRef = useRef<HTMLDivElement>(null);
   const [isAvatarReady, setIsAvatarReady] = useState(false);
@@ -64,7 +64,7 @@ const Home = () => {
     try {
       const greeting = "Hello, I'm Isabella. How can I help you today?";
       console.log('🎬 Sending initial greeting to D-ID');
-      await speakDID(greeting);
+      await speakDID(greeting, isabellaHeroImageUrl);
     } catch (e) {
       console.error('❌ Initial D-ID greeting failed:', e);
     }
@@ -121,12 +121,7 @@ const Home = () => {
               <div className="isabella-image-wrapper">
                 {/* Isabella Image - Original Ultra HD Quality */}
                 <img 
-                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png"
-                  srcSet="
-                    https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png 1x,
-                    https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_2.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png 2x,
-                    https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_3.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png 3x
-                  "
+                  src={isabellaHeroImageUrl}
                   alt="Isabella Navia - AI Model Ambassador"
                   className="isabella-hero-image hero-image-raw"
                   loading="eager"
@@ -228,7 +223,7 @@ const Home = () => {
                         console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
                         if (text && !isLoading) {
                           console.log('🎬 Calling speakDID (streaming mode - reuse connection)...');
-                          speakDID(text).catch(err => {
+                          speakDID(text, isabellaHeroImageUrl).catch(err => {
                             console.error('❌ speakDID error:', err);
                           });
                         } else {

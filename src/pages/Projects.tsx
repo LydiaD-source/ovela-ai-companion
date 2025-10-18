@@ -12,9 +12,9 @@ const Projects = () => {
     },
     {
       id: 2,
-      name: 'Veronica Ristulescu Psychology Group',
-      description: 'Here Isabella becomes the storyteller — not just modeling a look, but creating an emotional connection with the audience. A balance of fashion and narrative.',
-      imagePlaceholder: 'Isabella for Psychology Group'
+      name: 'Robocare AI',
+      description: 'Providing care and understanding to those in need of companionship 24/7',
+      imagePlaceholder: 'Isabella for Robocare AI'
     },
     {
       id: 3,

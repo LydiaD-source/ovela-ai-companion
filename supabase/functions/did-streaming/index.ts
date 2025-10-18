@@ -34,19 +34,23 @@ serve(async (req) => {
           use_cloned_voice = false,
         } = data;
 
-        // Configure provider based on whether we're using ElevenLabs or not
-        const provider = ELEVENLABS_API_KEY ? 'elevenlabs' : 'microsoft';
-        
+        // Build the request body with correct D-ID + ElevenLabs format
         const requestBody: any = {
           source_url,
           script: {
             type: 'text',
             input: script,
-            provider,
+            // CRITICAL: provider must be an object, not a string!
+            provider: ELEVENLABS_API_KEY ? {
+              type: 'elevenlabs',
+              voice_id: voice_id,
+            } : {
+              type: 'microsoft',
+              voice_id: 'en-US-JennyNeural',
+            }
           },
           config: {
             stitch: true,
-            // Speech rate: 78 (optimal, not too fast)
             fluent: false,
             pad_audio: 0.0,
             driver_expressions: {
@@ -64,22 +68,14 @@ serve(async (req) => {
           }
         };
 
-        // Add ElevenLabs-specific configuration if API key is available
-        if (provider === 'elevenlabs') {
-          requestBody.script.voice_config = {
-            voice_id,
+        // Add voice configuration for ElevenLabs if available
+        if (ELEVENLABS_API_KEY && requestBody.script.provider.type === 'elevenlabs') {
+          requestBody.script.provider.voice_config = {
             stability,
             similarity_boost,
             style,
             use_speaker_boost: true,
           };
-          // Set speech rate to 78 (0.78 in API terms)
-          requestBody.config.speed = 0.78;
-        } else {
-          // Microsoft TTS configuration with rate control
-          requestBody.script.ssml = false;
-          // For Microsoft, adjust rate via SSML or pitch
-          requestBody.config.speed = 0.78;
         }
 
         console.log('🎬 Creating D-ID talk stream with config:', JSON.stringify(requestBody, null, 2));

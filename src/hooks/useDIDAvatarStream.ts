@@ -98,15 +98,25 @@ export const useDIDAvatarStream = ({
       video.src = videoUrl;
       video.autoplay = true;
       video.playsInline = true;
-      video.muted = false; // Ensure audio is enabled
+      video.muted = false; // Audio enabled - D-ID handles both video and audio
       video.controls = false;
+      video.crossOrigin = 'anonymous';
       video.style.width = '100%';
       video.style.height = '100%';
       video.style.objectFit = 'cover';
       video.style.position = 'absolute';
       video.style.top = '0';
       video.style.left = '0';
-      video.style.zIndex = '10';
+      video.style.zIndex = '100'; // Higher z-index to ensure visibility
+      video.style.opacity = '1';
+      video.style.pointerEvents = 'auto';
+      
+      console.log('🎥 Video element created:', {
+        src: videoUrl,
+        width: video.style.width,
+        height: video.style.height,
+        zIndex: video.style.zIndex
+      });
 
       // Event listeners
       video.onloadeddata = () => {

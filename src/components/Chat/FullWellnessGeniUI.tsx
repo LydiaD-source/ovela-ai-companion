@@ -398,13 +398,17 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         console.log('💬 onAIResponse NOT called - callback:', !!onAIResponse, 'text:', !!assistantText);
       }
 
-      // Generate and play speech if not muted
-      if (!isMuted && assistantText) {
+      // Generate and play speech if not muted AND no D-ID callback
+      // (If D-ID is active, it handles audio through the video)
+      if (!isMuted && assistantText && !onAIResponse) {
+        console.log('🔊 Playing text-to-speech (no D-ID callback)');
         try {
           await textToSpeechService.speakText(assistantText);
         } catch (error) {
           console.error('Error playing speech:', error);
         }
+      } else if (onAIResponse) {
+        console.log('🎬 Skipping text-to-speech - D-ID will handle audio');
       }
 
       // Play video if available

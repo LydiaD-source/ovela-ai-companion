@@ -6,7 +6,7 @@ export interface HeyGenStreamingSession {
   iceServers: RTCIceServer[];
 }
 
-export class HeyGenAPIClient {
+export class HeyGenAPIClient { private sessionToken?: string;
   async createSessionToken(): Promise<string> {
     const { data, error } = await supabase.functions.invoke('heygen-proxy', {
       body: {
@@ -17,6 +17,7 @@ export class HeyGenAPIClient {
     if (error) throw error;
     const token = data?.data?.token || data?.token;
     if (!token) throw new Error('No session token received');
+    this.sessionToken = token;
     return token;
   }
 
@@ -25,6 +26,7 @@ export class HeyGenAPIClient {
     elevenLabsVoiceId?: string,
     sessionToken?: string
   ): Promise<HeyGenStreamingSession> {
+    const token = sessionToken ?? this.sessionToken;
     const { data, error } = await supabase.functions.invoke('heygen-proxy', {
       body: {
         action: 'create_streaming_session',
@@ -32,7 +34,7 @@ export class HeyGenAPIClient {
           avatarId: avatarId || 'Angela-inblackskirt-20220820',
           avatarName: avatarId || 'Angela-inblackskirt-20220820',
           elevenLabsVoiceId: elevenLabsVoiceId || 't0IcnDolatli2xhqgLgn',
-          ...(sessionToken ? { session_token: sessionToken, version: 'v2' } : {})
+          ...(token ? { session_token: token, version: 'v2' } : {})
         }
       }
     });
@@ -53,7 +55,8 @@ export class HeyGenAPIClient {
         action: 'start_session',
         payload: {
           session_id: sessionId,
-          sdp
+          sdp,
+          ...(this.sessionToken ? { session_token: this.sessionToken } : {})
         }
       }
     });
@@ -67,7 +70,8 @@ export class HeyGenAPIClient {
         action: 'send_task',
         payload: {
           session_id: sessionId,
-          text
+          text,
+          ...(this.sessionToken ? { session_token: this.sessionToken } : {})
         }
       }
     });
@@ -80,7 +84,8 @@ export class HeyGenAPIClient {
       body: {
         action: 'stop_session',
         payload: {
-          session_id: sessionId
+          session_id: sessionId,
+          ...(this.sessionToken ? { session_token: this.sessionToken } : {})
         }
       }
     });
@@ -94,7 +99,8 @@ export class HeyGenAPIClient {
         action: 'send_ice',
         payload: {
           session_id: sessionId,
-          candidate: candidate.toJSON()
+          candidate: candidate.toJSON(),
+          ...(this.sessionToken ? { session_token: this.sessionToken } : {})
         }
       }
     });

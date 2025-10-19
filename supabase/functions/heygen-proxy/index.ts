@@ -85,7 +85,7 @@ serve(async (req) => {
       'Content-Type': 'application/json',
     };
 
-    if (action === 'create_streaming_session' && payload?.session_token) {
+    if (payload?.session_token) {
       headers['Authorization'] = `Bearer ${payload.session_token}`;
     } else {
       headers['x-api-key'] = HEYGEN_API_KEY;

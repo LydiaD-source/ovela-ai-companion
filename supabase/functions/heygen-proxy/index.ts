@@ -41,9 +41,9 @@ serve(async (req) => {
         
         body = {
           quality: payload.quality || 'high',
-          // V2 prefers avatarName; keep avatar_id for backward compatibility
+          // V2 prefers avatar_name; keep avatar_id for backward compatibility
           avatar_id: payload.avatarId || 'Angela-inblackskirt-20220820',
-          avatarName: payload.avatarName || payload.avatarId || 'Angela-inblackskirt-20220820',
+          avatar_name: payload.avatarName || payload.avatarId || 'Angela-inblackskirt-20220820',
           ...(payload.session_token ? { version: payload.version || 'v2' } : {}),
           ...(Object.keys(voiceConfig).length > 0 && { voice: voiceConfig })
         };

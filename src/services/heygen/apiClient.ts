@@ -7,14 +7,32 @@ export interface HeyGenStreamingSession {
 }
 
 export class HeyGenAPIClient {
-  async createStreamingSession(avatarId?: string, elevenLabsVoiceId?: string): Promise<HeyGenStreamingSession> {
+  async createSessionToken(): Promise<string> {
+    const { data, error } = await supabase.functions.invoke('heygen-proxy', {
+      body: {
+        action: 'create_token',
+        payload: {}
+      }
+    });
+    if (error) throw error;
+    const token = data?.data?.token || data?.token;
+    if (!token) throw new Error('No session token received');
+    return token;
+  }
+
+  async createStreamingSession(
+    avatarId?: string,
+    elevenLabsVoiceId?: string,
+    sessionToken?: string
+  ): Promise<HeyGenStreamingSession> {
     const { data, error } = await supabase.functions.invoke('heygen-proxy', {
       body: {
         action: 'create_streaming_session',
         payload: {
           avatarId: avatarId || 'Angela-inblackskirt-20220820',
           avatarName: avatarId || 'Angela-inblackskirt-20220820',
-          elevenLabsVoiceId: elevenLabsVoiceId || 't0IcnDolatli2xhqgLgn' // Isabella's voice
+          elevenLabsVoiceId: elevenLabsVoiceId || 't0IcnDolatli2xhqgLgn',
+          ...(sessionToken ? { session_token: sessionToken, version: 'v2' } : {})
         }
       }
     });

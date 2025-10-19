@@ -40,9 +40,11 @@ serve(async (req) => {
         }
         
         body = {
-          quality: 'high',
+          quality: payload.quality || 'high',
+          // V2 prefers avatarName; keep avatar_id for backward compatibility
           avatar_id: payload.avatarId || 'Angela-inblackskirt-20220820',
-          avatarName: payload.avatarId || payload.avatarName || 'Angela-inblackskirt-20220820',
+          avatarName: payload.avatarName || payload.avatarId || 'Angela-inblackskirt-20220820',
+          ...(payload.session_token ? { version: payload.version || 'v2' } : {}),
           ...(Object.keys(voiceConfig).length > 0 && { voice: voiceConfig })
         };
         break;
@@ -69,14 +71,25 @@ serve(async (req) => {
         endpoint = 'https://api.heygen.com/v1/streaming.ice';
         break;
       
+      case 'create_token':
+        endpoint = 'https://api.heygen.com/v1/streaming.create_token';
+        body = {};
+        break;
+      
       default:
         throw new Error(`Unknown action: ${action}`);
     }
 
+    // Build headers dynamically: use Bearer token for v2 (session token), else x-api-key
     const headers: Record<string, string> = {
-      'x-api-key': HEYGEN_API_KEY,
       'Content-Type': 'application/json',
     };
+
+    if (action === 'create_streaming_session' && payload?.session_token) {
+      headers['Authorization'] = `Bearer ${payload.session_token}`;
+    } else {
+      headers['x-api-key'] = HEYGEN_API_KEY;
+    }
     
     // Add ElevenLabs API key if available (for custom voices)
     if (ELEVENLABS_API_KEY && action === 'create_streaming_session') {

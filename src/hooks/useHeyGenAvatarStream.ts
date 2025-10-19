@@ -65,8 +65,10 @@ export const useHeyGenAvatarStream = (options: UseHeyGenAvatarStreamOptions) => 
       console.log('🚀 Creating new HeyGen session with Isabella voice (ElevenLabs t0IcnDolatli2xhqgLgn)...');
 
       // Create streaming session with Angela avatar and Isabella's ElevenLabs voice
+      const avatarOverride = new URLSearchParams(window.location.search).get('heygenAvatar');
+      const chosenAvatar = avatarOverride || 'Angela-inblackskirt-20220820';
       const session = await heygenClient.createStreamingSession(
-        'Angela-inblackskirt-20220820',
+        chosenAvatar,
         't0IcnDolatli2xhqgLgn' // Isabella's voice ID
       );
       sessionIdRef.current = session.sessionId;

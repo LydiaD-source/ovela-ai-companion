@@ -13,6 +13,7 @@ export class HeyGenAPIClient {
         action: 'create_streaming_session',
         payload: {
           avatarId: avatarId || 'Angela-inblackskirt-20220820',
+          avatarName: avatarId || 'Angela-inblackskirt-20220820',
           elevenLabsVoiceId: elevenLabsVoiceId || 't0IcnDolatli2xhqgLgn' // Isabella's voice
         }
       }

@@ -42,6 +42,7 @@ serve(async (req) => {
         body = {
           quality: 'high',
           avatar_id: payload.avatarId || 'Angela-inblackskirt-20220820',
+          avatarName: payload.avatarId || payload.avatarName || 'Angela-inblackskirt-20220820',
           ...(Object.keys(voiceConfig).length > 0 && { voice: voiceConfig })
         };
         break;

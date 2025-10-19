@@ -52,6 +52,12 @@ serve(async (req) => {
       
       case 'send_task':
         endpoint = 'https://api.heygen.com/v1/streaming.task';
+        // Add task_type to make avatar speak with movements
+        body = {
+          ...payload,
+          task_type: payload.task_type || 'repeat', // 'repeat' for text-to-speech with gestures
+          task_mode: payload.task_mode || 'sync'
+        };
         break;
       
       case 'stop_session':

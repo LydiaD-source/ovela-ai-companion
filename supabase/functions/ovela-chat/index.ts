@@ -281,7 +281,7 @@ serve(async (req) => {
       } catch (err) {
         clearTimeout(timeoutId);
         console.error("ovela-chat proxy fetch error", { err: String(err), proxiedUrl });
-        return new Response(JSON.stringify({ success: false, message: `Network error: ${err?.message ?? String(err)}`, data: {} }), {
+        return new Response(JSON.stringify({ success: false, message: `Network error: ${err instanceof Error ? err.message : String(err)}`, data: {} }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
@@ -468,15 +468,15 @@ ${effectiveGuide ? `\n\nAdditional brand context:\n${effectiveGuide}` : ""}`;
       });
     } catch (err) {
       clearTimeout(timeoutId);
-      console.error("ovela-chat generation error (Lovable)", { err: String(err), stack: err?.stack });
-      return new Response(JSON.stringify({ success: false, message: `Generation error: ${err?.message ?? String(err)}`, data: {} }), {
+      console.error("ovela-chat generation error (Lovable)", { err: String(err), stack: err instanceof Error ? err.stack : undefined });
+      return new Response(JSON.stringify({ success: false, message: `Generation error: ${err instanceof Error ? err.message : String(err)}`, data: {} }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
   } catch (err) {
     console.error("ovela-chat top-level error", { err: String(err) });
-    return new Response(JSON.stringify({ success: false, message: err?.message ?? String(err), data: {} }), {
+    return new Response(JSON.stringify({ success: false, message: err instanceof Error ? err.message : String(err), data: {} }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });

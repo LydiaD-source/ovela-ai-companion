@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const Projects = () => {
+  useCanonicalLink('/projects');
   const [mutedVideos, setMutedVideos] = useState<{ [key: number]: boolean }>({
     1: true,
     2: true,

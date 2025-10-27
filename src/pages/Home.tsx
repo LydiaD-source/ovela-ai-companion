@@ -8,10 +8,12 @@ import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { useHeyGenAvatarStream } from '@/hooks/useHeyGenAvatarStream';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 import '@/styles/HeroSection.css';
 
 
 const Home = () => {
+  useCanonicalLink('/');
   console.log('🟢 HOME COMPONENT LOADED');
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";

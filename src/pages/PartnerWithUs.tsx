@@ -1,8 +1,10 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const PartnerWithUs = () => {
+  useCanonicalLink('/partner');
   const scrollToChat = () => {
     window.location.href = '/#chat';
   };

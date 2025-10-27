@@ -5,8 +5,10 @@ import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 import placeholder1 from '@/assets/wellnessgeni-placeholder1.png';
 import placeholder2 from '@/assets/wellnessgeni-placeholder2.png';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const WellnessGeni = () => {
+  useCanonicalLink('/wellnessgeni');
   // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
   const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 

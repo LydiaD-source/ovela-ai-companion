@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const Contact = () => {
+  useCanonicalLink('/contact');
   const handleStartChat = () => {
     window.location.href = '/?chat=open';
   };

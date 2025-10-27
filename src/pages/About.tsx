@@ -1,8 +1,10 @@
 import React from 'react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { Separator } from '@/components/ui/separator';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const About = () => {
+  useCanonicalLink('/about');
   return (
     <div className="min-h-screen">
       {/* Hero Intro Block */}

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Sparkles, Globe, Mic, Palette, BarChart3, Video, Monitor } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const Pricing = () => {
+  useCanonicalLink('/pricing');
   const packages = [
     {
       title: 'Product Promotion',

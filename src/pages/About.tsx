@@ -101,7 +101,7 @@ const About = () => {
             <div className="flex justify-center lg:justify-start">
               <div className="relative w-full max-w-md">
                 <img
-                  src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1762181641/Flux_Dev_Isabella_V3_futuristic_AI_wellness_coach_doing_a_yoga_0_e97roq.jpg"
+                  src="/images/isabella-wellnessgeni-yoga.jpg"
                   alt="Isabella in WellnessGeni"
                   className="w-full h-auto rounded-lg"
                   style={{

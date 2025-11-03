@@ -115,12 +115,14 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
       });
 
       if (error) throw error;
-      return data.data.token;
+      const token = data?.data?.token || data?.token;
+      if (!token) throw new Error('Token missing from heygen-proxy response');
+      return token as string;
     } catch (error) {
       console.error('Error fetching access token:', error);
       toast({
-        title: "Error",
-        description: "Failed to get authentication token",
+        title: "Erreur",
+        description: "Échec de récupération du token HeyGen",
         variant: "destructive"
       });
       return null;
@@ -159,13 +161,13 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
       // Create streaming session with Isabella avatar and ElevenLabs voice
       const sessionInfo = await avatar.current.createStartAvatar({
         quality: AvatarQuality.High,
-        avatarName: '38b52c989d4748ca900e2152498da3d4', // Isabella avatar ID
+        avatarName: 'Isabella V3',
         voice: {
-          voiceId: 't0IcnDolatli2xhqgLgn', // Isabella's ElevenLabs voice
+          voiceId: 't0IcnDolatli2xhqgLgn',
           rate: 1.0,
           emotion: VoiceEmotion.FRIENDLY,
         },
-        language: 'en',
+        language: 'fr',
         disableIdleTimeout: false,
       });
 

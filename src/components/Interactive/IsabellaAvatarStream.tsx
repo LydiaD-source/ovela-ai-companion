@@ -11,6 +11,45 @@ import { Loader2, Mic, MicOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
+// Interface pour le système de reconnaissance vocale
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: any) => void;
+  onend: () => void;
+}
+
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
+
 interface IsabellaAvatarStreamProps {
   onStreamingChange?: (isStreaming: boolean) => void;
 }
@@ -25,6 +64,7 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
 
   const mediaStream = useRef<HTMLVideoElement>(null);
   const avatar = useRef<StreamingAvatar | null>(null);
+  const recognition = useRef<SpeechRecognition | null>(null);
 
   // Initialize avatar on mount
   useEffect(() => {
@@ -138,7 +178,7 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
       });
 
       // Say welcome message
-      await handleSpeak("Hello! I'm Isabella, Ovela's interactive AI model. How can I help you today?");
+      await handleSpeak("Bonjour ! Je suis Isabella, l'IA ambassadrice d'Ovela. Comment puis-je vous aider aujourd'hui ?");
 
     } catch (error) {
       console.error('Error starting session:', error);
@@ -201,20 +241,84 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
   const handleUserTalk = async () => {
     if (isUserTalking) {
       // Stop listening
+      if (recognition.current) {
+        recognition.current.stop();
+      }
       setIsUserTalking(false);
-      // Here you would implement voice-to-text
-      toast({
-        title: "Listening stopped",
-        description: "Processing your voice...",
-      });
     } else {
       // Start listening
-      setIsUserTalking(true);
-      toast({
-        title: "Listening",
-        description: "Speak now...",
-      });
+      if (!recognition.current) {
+        initSpeechRecognition();
+      }
+      
+      if (recognition.current) {
+        try {
+          recognition.current.start();
+          setIsUserTalking(true);
+          toast({
+            title: "Écoute activée",
+            description: "Parlez maintenant... Isabella vous écoute",
+          });
+        } catch (error) {
+          console.error('Error starting speech recognition:', error);
+          toast({
+            title: "Erreur",
+            description: "Impossible d'activer le microphone",
+            variant: "destructive"
+          });
+        }
+      } else {
+        toast({
+          title: "Non disponible",
+          description: "La reconnaissance vocale n'est pas supportée par votre navigateur",
+          variant: "destructive"
+        });
+      }
     }
+  };
+
+  const initSpeechRecognition = () => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognitionAPI) {
+      console.error('Speech recognition not supported');
+      return;
+    }
+
+    recognition.current = new SpeechRecognitionAPI();
+    recognition.current.continuous = true;
+    recognition.current.interimResults = true;
+    recognition.current.lang = 'fr-FR'; // Français par défaut, peut être changé
+
+    recognition.current.onresult = async (event: SpeechRecognitionEvent) => {
+      const results = event.results;
+      const lastResult = results[results.length - 1];
+      
+      if (lastResult.isFinal) {
+        const transcript = lastResult[0].transcript;
+        console.log('User said:', transcript);
+        
+        // Faire parler Isabella avec la réponse
+        await handleSpeak(`Vous avez dit: ${transcript}. Je comprends.`);
+      }
+    };
+
+    recognition.current.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsUserTalking(false);
+      
+      if (event.error === 'not-allowed') {
+        toast({
+          title: "Permission refusée",
+          description: "Veuillez autoriser l'accès au microphone",
+          variant: "destructive"
+        });
+      }
+    };
+
+    recognition.current.onend = () => {
+      setIsUserTalking(false);
+    };
   };
 
   return (

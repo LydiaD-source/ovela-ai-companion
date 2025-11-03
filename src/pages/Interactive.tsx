@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
+import { IsabellaAvatarStream } from '@/components/Interactive/IsabellaAvatarStream';
 
 const Interactive = () => {
   const navigate = useNavigate();
+  const [showAvatar, setShowAvatar] = useState(false);
 
   useEffect(() => {
     // SEO: Set page title and meta description
@@ -48,8 +50,8 @@ const Interactive = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Hero Section with Avatar */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
         <div
           className="absolute inset-0 z-0"
           style={{
@@ -57,30 +59,56 @@ const Interactive = () => {
           }}
         />
         
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <h1 
-            className="text-5xl md:text-7xl font-bold mb-6"
-            style={{
-              fontFamily: 'Playfair Display, serif',
-              color: '#E8CFA9'
-            }}
-          >
-            Meet Isabella
-          </h1>
-          <h2 className="text-2xl md:text-3xl mb-8 text-white/90">
-            The World's First Interactive AI Model
-          </h2>
-          <p className="text-lg md:text-xl mb-12 text-white/70 max-w-2xl mx-auto leading-relaxed">
-            Experience the future of brand engagement with Isabella, an AI ambassador who adapts to your brand, 
-            engages your audience in real-time, and scales infinitely across campaigns.
-          </p>
-          <Button
-            onClick={() => navigate('/?chat=open')}
-            size="lg"
-            className="text-lg px-8 py-6"
-          >
-            Start Chatting with Isabella
-          </Button>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h1 
+              className="text-5xl md:text-7xl font-bold mb-6"
+              style={{
+                fontFamily: 'Playfair Display, serif',
+                color: '#E8CFA9'
+              }}
+            >
+              Meet Isabella
+            </h1>
+            <h2 className="text-2xl md:text-3xl mb-8 text-white/90">
+              The World's First Interactive AI Model
+            </h2>
+            <p className="text-lg md:text-xl mb-8 text-white/70 max-w-2xl mx-auto leading-relaxed">
+              Experience the future of brand engagement with Isabella, an AI ambassador who adapts to your brand, 
+              engages your audience in real-time, and scales infinitely across campaigns.
+            </p>
+            
+            {!showAvatar && (
+              <Button
+                onClick={() => setShowAvatar(true)}
+                size="lg"
+                className="text-lg px-8 py-6"
+              >
+                Launch Interactive Avatar
+              </Button>
+            )}
+          </div>
+
+          {/* Avatar Container */}
+          {showAvatar && (
+            <div className="w-full max-w-5xl mx-auto">
+              <IsabellaAvatarStream onStreamingChange={(streaming) => console.log('Streaming:', streaming)} />
+            </div>
+          )}
+
+          {/* Alternative Chat Option */}
+          {!showAvatar && (
+            <div className="text-center mt-8">
+              <p className="text-white/50 mb-4">Or prefer text chat?</p>
+              <Button
+                onClick={() => navigate('/?chat=open')}
+                variant="outline"
+                size="lg"
+              >
+                Start Text Chat
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

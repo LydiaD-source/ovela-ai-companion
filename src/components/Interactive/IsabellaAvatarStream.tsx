@@ -4,7 +4,6 @@ import StreamingAvatar, {
   StreamingEvents,
   TaskMode,
   TaskType,
-  VoiceEmotion,
 } from '@heygen/streaming-avatar';
 import { Button } from '@/components/ui/button';
 import { Loader2, Mic, MicOff } from 'lucide-react';
@@ -158,16 +157,10 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
         setStream(event.detail);
       });
 
-      // Create streaming session with Isabella avatar and ElevenLabs voice
+      // Create streaming session with a stable public avatar
       const sessionInfo = await avatar.current.createStartAvatar({
         quality: AvatarQuality.High,
-        avatarName: 'Isabella V3',
-        voice: {
-          voiceId: 't0IcnDolatli2xhqgLgn',
-          rate: 1.0,
-          emotion: VoiceEmotion.FRIENDLY,
-        },
-        language: 'fr',
+        avatarName: 'Angela-inblackskirt-20220820',
         disableIdleTimeout: false,
       });
 

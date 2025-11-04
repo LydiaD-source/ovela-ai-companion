@@ -64,9 +64,9 @@ export const useHeyGenAvatarStream = (options: UseHeyGenAvatarStreamOptions) => 
       setIsLoading(true);
       console.log('🚀 Creating new HeyGen session with Isabella voice (ElevenLabs t0IcnDolatli2xhqgLgn)...');
 
-      // Create streaming session with Angela avatar and Isabella's ElevenLabs voice
+      // Create streaming session with Isabella V3 avatar and ElevenLabs voice
       const avatarOverride = new URLSearchParams(window.location.search).get('heygenAvatar');
-      const chosenAvatar = avatarOverride || '38b52c989d4748ca900e2152498da3d4';
+      const chosenAvatar = avatarOverride || '017021724d054084998f375522ab90d3';
       // Get session token for LiveKit (v2)
       const sessionToken = await heygenClient.createSessionToken();
       const session = await heygenClient.createStreamingSession(

@@ -157,10 +157,10 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
         setStream(event.detail);
       });
 
-      // Create streaming session with a stable public avatar
+      // Create streaming session with Isabella V3 avatar
       const sessionInfo = await avatar.current.createStartAvatar({
         quality: AvatarQuality.High,
-        avatarName: 'Angela-inblackskirt-20220820',
+        avatarName: '017021724d054084998f375522ab90d3',
         disableIdleTimeout: false,
       });
 

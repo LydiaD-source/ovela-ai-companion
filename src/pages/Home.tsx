@@ -142,16 +142,14 @@ const Home = () => {
                   className="did-avatar-layer"
                   style={{ 
                     position: 'absolute',
-                    top: '9%',     // face region Y of the hero image
-                    left: '13%',   // face region X of the hero image
-                    width: '22%',  // face overlay width
-                    height: '30%', // face overlay height
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
                     zIndex: 12,
                     opacity: isStreaming || isLoading ? 1 : 0,
                     transition: 'opacity 0.5s ease-in-out',
                     pointerEvents: 'none',
-                    borderRadius: '50%',
-                    overflow: 'hidden',
                     background: 'transparent',
                   }}
                 >

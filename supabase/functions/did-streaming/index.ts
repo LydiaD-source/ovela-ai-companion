@@ -14,8 +14,11 @@ serve(async (req) => {
     const DID_API_KEY = Deno.env.get('DID_API_KEY');
     
     if (!DID_API_KEY) {
+      console.error('❌ DID_API_KEY not found in environment');
       throw new Error('DID_API_KEY not configured');
     }
+    
+    console.log('✅ DID_API_KEY found, length:', DID_API_KEY.length);
 
     const { action, data } = await req.json();
     console.log(`🎬 D-ID Action: ${action}`);
@@ -48,6 +51,12 @@ serve(async (req) => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error('❌ Create stream error:', response.status, errorText);
+          console.error('❌ Full response details:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            body: errorText
+          });
           throw new Error(`Failed to create stream: ${response.status} - ${errorText}`);
         }
 

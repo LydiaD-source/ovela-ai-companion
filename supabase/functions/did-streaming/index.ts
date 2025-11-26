@@ -150,20 +150,11 @@ serve(async (req) => {
               input: text,
               provider: {
                 type: 'elevenlabs',
-                voice_id: 't0IcnDolatli2xhqgLgn', // Isabella voice
-                voice_config: {
-                  model_id: 'eleven_flash_v2_5',
-                  stability: 0.75,
-                  similarity_boost: 0.70,
-                  style: 0.35,
-                  use_speaker_boost: true
-                }
+                voice_id: '9BWtsMINqrJLrRacOk9x', // Aria voice - reliable and feminine
               }
             },
             config: {
               stitch: true,
-              fluent: false,
-              speed: 0.78
             },
             session_id
           })

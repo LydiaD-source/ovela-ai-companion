@@ -137,11 +137,13 @@ export const useDIDAvatarStream = ({
       video.muted = true;
       Object.assign(video.style, {
         position: 'absolute',
-        top: '0',
+        bottom: '0',
         left: '0',
         width: '100%',
         height: '100%',
-        objectFit: 'cover',
+        maxHeight: '88vh',
+        objectFit: 'contain',
+        objectPosition: 'bottom center',
         opacity: '0',
         transition: 'opacity 0.3s ease-in-out',
         zIndex: '20',

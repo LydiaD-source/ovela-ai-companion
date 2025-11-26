@@ -21,13 +21,13 @@ serve(async (req) => {
     console.log(`🎬 D-ID Action: ${action}`);
     console.log('📝 Data:', JSON.stringify(data).substring(0, 200));
 
-    // Encode API key to base64 for Basic auth using Deno's native base64 encoding
-    // D-ID expects: Authorization: Basic base64(username:password)
+    // Encode API key to base64 for Basic auth
+    // D-ID expects: Authorization: Basic base64(api_key:)
     const encoder = new TextEncoder();
-    const keyData = encoder.encode(DID_API_KEY);
+    const keyData = encoder.encode(`${DID_API_KEY}:`);
     const encodedKey = btoa(String.fromCharCode.apply(null, Array.from(keyData)));
     const authHeader = `Basic ${encodedKey}`;
-    console.log('🔑 Auth header prepared');
+    console.log('🔑 Auth header prepared with key format: api_key:');
 
     switch (action) {
       // 1. Create Talk Stream

@@ -19,6 +19,15 @@ serve(async (req) => {
 
     const { action, data } = await req.json();
     console.log(`🎬 D-ID Action: ${action}`);
+    console.log('📝 Data:', JSON.stringify(data).substring(0, 200));
+
+    // Encode API key to base64 for Basic auth using Deno's native base64 encoding
+    // D-ID expects: Authorization: Basic base64(username:password)
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(DID_API_KEY);
+    const encodedKey = btoa(String.fromCharCode.apply(null, Array.from(keyData)));
+    const authHeader = `Basic ${encodedKey}`;
+    console.log('🔑 Auth header prepared');
 
     switch (action) {
       // 1. Create Talk Stream
@@ -30,7 +39,7 @@ serve(async (req) => {
         const response = await fetch('https://api.d-id.com/talks/streams', {
           method: 'POST',
           headers: {
-            'Authorization': `Basic ${DID_API_KEY}`,
+            'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ source_url })
@@ -38,8 +47,8 @@ serve(async (req) => {
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('❌ Create stream error:', errorText);
-          throw new Error(`Failed to create stream: ${response.status}`);
+          console.error('❌ Create stream error:', response.status, errorText);
+          throw new Error(`Failed to create stream: ${response.status} - ${errorText}`);
         }
 
         const result = await response.json();
@@ -59,7 +68,7 @@ serve(async (req) => {
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}/sdp`, {
           method: 'POST',
           headers: {
-            'Authorization': `Basic ${DID_API_KEY}`,
+            'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -90,7 +99,7 @@ serve(async (req) => {
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}/ice`, {
           method: 'POST',
           headers: {
-            'Authorization': `Basic ${DID_API_KEY}`,
+            'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -123,7 +132,7 @@ serve(async (req) => {
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}`, {
           method: 'POST',
           headers: {
-            'Authorization': `Basic ${DID_API_KEY}`,
+            'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -174,7 +183,7 @@ serve(async (req) => {
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Basic ${DID_API_KEY}`,
+            'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ session_id })

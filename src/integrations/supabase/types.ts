@@ -21,7 +21,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           success: boolean
           user_agent: string | null
         }
@@ -31,7 +31,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           success?: boolean
           user_agent?: string | null
         }
@@ -41,9 +41,45 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           success?: boolean
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      access_trace_log: {
+        Row: {
+          created_at: string
+          details: Json | null
+          email: string | null
+          event: string
+          id: string
+          level: string
+          path: string | null
+          request_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          email?: string | null
+          event: string
+          id?: string
+          level: string
+          path?: string | null
+          request_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          email?: string | null
+          event?: string
+          id?: string
+          level?: string
+          path?: string | null
+          request_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -62,6 +98,51 @@ export type Database = {
           created_at?: string | null
           email?: string
           id?: string
+        }
+        Relationships: []
+      }
+      admin_invites: {
+        Row: {
+          accepted_at: string | null
+          consumed: boolean | null
+          consumed_at: string | null
+          created_at: string
+          email: string
+          expires_at: string | null
+          id: string
+          invited_by: string | null
+          status: string
+          tier: string
+          token_used_by_id: string | null
+          used_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          consumed?: boolean | null
+          consumed_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string | null
+          status?: string
+          tier?: string
+          token_used_by_id?: string | null
+          used_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          consumed?: boolean | null
+          consumed_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string | null
+          status?: string
+          tier?: string
+          token_used_by_id?: string | null
+          used_at?: string | null
         }
         Relationships: []
       }
@@ -159,6 +240,8 @@ export type Database = {
           active: boolean
           category: string
           created_at: string
+          did_agent_id: string | null
+          did_registered_at: string | null
           display_order: number | null
           id: string
           image_url: string
@@ -170,6 +253,8 @@ export type Database = {
           active?: boolean
           category: string
           created_at?: string
+          did_agent_id?: string | null
+          did_registered_at?: string | null
           display_order?: number | null
           id?: string
           image_url: string
@@ -181,6 +266,8 @@ export type Database = {
           active?: boolean
           category?: string
           created_at?: string
+          did_agent_id?: string | null
+          did_registered_at?: string | null
           display_order?: number | null
           id?: string
           image_url?: string
@@ -718,6 +805,75 @@ export type Database = {
           },
         ]
       }
+      did_streaming_diagnostics: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          request_body: Json | null
+          request_headers: Json | null
+          request_id: string | null
+          response_body: Json | null
+          response_status: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          request_body?: Json | null
+          request_headers?: Json | null
+          request_id?: string | null
+          response_body?: Json | null
+          response_status?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          request_body?: Json | null
+          request_headers?: Json | null
+          request_id?: string | null
+          response_body?: Json | null
+          response_status?: number | null
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          body_text: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          subject_line: string
+          template_key: string
+          template_name: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          body_text: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          subject_line: string
+          template_key: string
+          template_name: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          body_text?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          subject_line?: string
+          template_key?: string
+          template_name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       feature_locks: {
         Row: {
           created_at: string
@@ -751,12 +907,68 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_links: {
+        Row: {
+          active: boolean | null
+          code: string
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          max_uses: number | null
+          status: string | null
+          type: string | null
+          updated_at: string
+          used: boolean | null
+          uses: number | null
+        }
+        Insert: {
+          active?: boolean | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          max_uses?: number | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string
+          used?: boolean | null
+          uses?: number | null
+        }
+        Update: {
+          active?: boolean | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          max_uses?: number | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string
+          used?: boolean | null
+          uses?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invite_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       isabella_license_agreements: {
         Row: {
           agreed_at: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           license_version: string
           pack_type: string
           user_agent: string | null
@@ -766,7 +978,7 @@ export type Database = {
           agreed_at?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           license_version?: string
           pack_type: string
           user_agent?: string | null
@@ -776,7 +988,7 @@ export type Database = {
           agreed_at?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           license_version?: string
           pack_type?: string
           user_agent?: string | null
@@ -920,7 +1132,7 @@ export type Database = {
           action: string
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           user_agent: string | null
           user_id: string
         }
@@ -928,7 +1140,7 @@ export type Database = {
           action: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id: string
         }
@@ -936,7 +1148,7 @@ export type Database = {
           action?: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string
         }
@@ -1030,6 +1242,39 @@ export type Database = {
         }
         Relationships: []
       }
+      premium_access_log: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string | null
+          grant_type: string
+          granted_at: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          grant_type: string
+          granted_at?: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          grant_type?: string
+          granted_at?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           adult_mode_enabled: boolean | null
@@ -1038,22 +1283,32 @@ export type Database = {
           consent_date: string | null
           created_at: string
           default_mode: string | null
+          effective_tier: string | null
           email: string | null
-          first_time_in_settings: boolean | null
+          first_time_in_settings: boolean
           full_name: string
           id: string
+          invited_premium_expires_at: string | null
+          invited_promo_access: boolean | null
+          is_first_login: boolean
           main_persona_name: string | null
-          memory_consent_ip: unknown | null
+          memory_consent_ip: unknown
           memory_deletion_date: string | null
           memory_enabled: boolean | null
           notifications_frequency: string | null
+          onboarding_complete: boolean | null
+          original_tier_before_invite: string | null
           persona_behavior: string | null
           persona_behaviors: Json | null
           preferred_language: string | null
           professional_account: boolean | null
+          promo_access: boolean
+          role: string | null
           subscription_active: boolean | null
           subscription_tier: string | null
           timezone: string | null
+          tutorial_shown: boolean | null
+          updated_at: string | null
           user_id: string
           username: string | null
           voice: string | null
@@ -1068,22 +1323,32 @@ export type Database = {
           consent_date?: string | null
           created_at?: string
           default_mode?: string | null
+          effective_tier?: string | null
           email?: string | null
-          first_time_in_settings?: boolean | null
+          first_time_in_settings?: boolean
           full_name: string
           id?: string
+          invited_premium_expires_at?: string | null
+          invited_promo_access?: boolean | null
+          is_first_login?: boolean
           main_persona_name?: string | null
-          memory_consent_ip?: unknown | null
+          memory_consent_ip?: unknown
           memory_deletion_date?: string | null
           memory_enabled?: boolean | null
           notifications_frequency?: string | null
+          onboarding_complete?: boolean | null
+          original_tier_before_invite?: string | null
           persona_behavior?: string | null
           persona_behaviors?: Json | null
           preferred_language?: string | null
           professional_account?: boolean | null
+          promo_access?: boolean
+          role?: string | null
           subscription_active?: boolean | null
           subscription_tier?: string | null
           timezone?: string | null
+          tutorial_shown?: boolean | null
+          updated_at?: string | null
           user_id: string
           username?: string | null
           voice?: string | null
@@ -1098,22 +1363,32 @@ export type Database = {
           consent_date?: string | null
           created_at?: string
           default_mode?: string | null
+          effective_tier?: string | null
           email?: string | null
-          first_time_in_settings?: boolean | null
+          first_time_in_settings?: boolean
           full_name?: string
           id?: string
+          invited_premium_expires_at?: string | null
+          invited_promo_access?: boolean | null
+          is_first_login?: boolean
           main_persona_name?: string | null
-          memory_consent_ip?: unknown | null
+          memory_consent_ip?: unknown
           memory_deletion_date?: string | null
           memory_enabled?: boolean | null
           notifications_frequency?: string | null
+          onboarding_complete?: boolean | null
+          original_tier_before_invite?: string | null
           persona_behavior?: string | null
           persona_behaviors?: Json | null
           preferred_language?: string | null
           professional_account?: boolean | null
+          promo_access?: boolean
+          role?: string | null
           subscription_active?: boolean | null
           subscription_tier?: string | null
           timezone?: string | null
+          tutorial_shown?: boolean | null
+          updated_at?: string | null
           user_id?: string
           username?: string | null
           voice?: string | null
@@ -1130,6 +1405,129 @@ export type Database = {
             referencedColumns: ["persona_name"]
           },
         ]
+      }
+      profiles_backup: {
+        Row: {
+          adult_mode_enabled: boolean | null
+          avatar: string | null
+          avatar_talking_photo_id: string | null
+          consent_date: string | null
+          created_at: string | null
+          default_mode: string | null
+          effective_tier: string | null
+          email: string | null
+          first_time_in_settings: boolean | null
+          full_name: string | null
+          id: string | null
+          invited_premium_expires_at: string | null
+          invited_promo_access: boolean | null
+          is_first_login: boolean | null
+          main_persona_name: string | null
+          memory_consent_ip: unknown
+          memory_deletion_date: string | null
+          memory_enabled: boolean | null
+          notifications_frequency: string | null
+          onboarding_complete: boolean | null
+          original_tier_before_invite: string | null
+          persona_behavior: string | null
+          persona_behaviors: Json | null
+          preferred_language: string | null
+          professional_account: boolean | null
+          promo_access: boolean | null
+          role: string | null
+          subscription_active: boolean | null
+          subscription_tier: string | null
+          timezone: string | null
+          tutorial_shown: boolean | null
+          updated_at: string | null
+          user_id: string | null
+          username: string | null
+          voice: string | null
+          voice_enabled: boolean | null
+          voice_id: string | null
+          voice_style: string | null
+        }
+        Insert: {
+          adult_mode_enabled?: boolean | null
+          avatar?: string | null
+          avatar_talking_photo_id?: string | null
+          consent_date?: string | null
+          created_at?: string | null
+          default_mode?: string | null
+          effective_tier?: string | null
+          email?: string | null
+          first_time_in_settings?: boolean | null
+          full_name?: string | null
+          id?: string | null
+          invited_premium_expires_at?: string | null
+          invited_promo_access?: boolean | null
+          is_first_login?: boolean | null
+          main_persona_name?: string | null
+          memory_consent_ip?: unknown
+          memory_deletion_date?: string | null
+          memory_enabled?: boolean | null
+          notifications_frequency?: string | null
+          onboarding_complete?: boolean | null
+          original_tier_before_invite?: string | null
+          persona_behavior?: string | null
+          persona_behaviors?: Json | null
+          preferred_language?: string | null
+          professional_account?: boolean | null
+          promo_access?: boolean | null
+          role?: string | null
+          subscription_active?: boolean | null
+          subscription_tier?: string | null
+          timezone?: string | null
+          tutorial_shown?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+          voice?: string | null
+          voice_enabled?: boolean | null
+          voice_id?: string | null
+          voice_style?: string | null
+        }
+        Update: {
+          adult_mode_enabled?: boolean | null
+          avatar?: string | null
+          avatar_talking_photo_id?: string | null
+          consent_date?: string | null
+          created_at?: string | null
+          default_mode?: string | null
+          effective_tier?: string | null
+          email?: string | null
+          first_time_in_settings?: boolean | null
+          full_name?: string | null
+          id?: string | null
+          invited_premium_expires_at?: string | null
+          invited_promo_access?: boolean | null
+          is_first_login?: boolean | null
+          main_persona_name?: string | null
+          memory_consent_ip?: unknown
+          memory_deletion_date?: string | null
+          memory_enabled?: boolean | null
+          notifications_frequency?: string | null
+          onboarding_complete?: boolean | null
+          original_tier_before_invite?: string | null
+          persona_behavior?: string | null
+          persona_behaviors?: Json | null
+          preferred_language?: string | null
+          professional_account?: boolean | null
+          promo_access?: boolean | null
+          role?: string | null
+          subscription_active?: boolean | null
+          subscription_tier?: string | null
+          timezone?: string | null
+          tutorial_shown?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+          voice?: string | null
+          voice_enabled?: boolean | null
+          voice_id?: string | null
+          voice_style?: string | null
+        }
+        Relationships: []
       }
       promotions: {
         Row: {
@@ -1228,7 +1626,7 @@ export type Database = {
           action: string
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           record_id: string | null
           table_name: string
           user_agent: string | null
@@ -1238,7 +1636,7 @@ export type Database = {
           action: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           record_id?: string | null
           table_name: string
           user_agent?: string | null
@@ -1248,7 +1646,7 @@ export type Database = {
           action?: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           record_id?: string | null
           table_name?: string
           user_agent?: string | null
@@ -1589,7 +1987,7 @@ export type Database = {
           consent_date: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           privacy_policy_version: string
           terms_of_service_version: string
           user_agent: string | null
@@ -1599,7 +1997,7 @@ export type Database = {
           consent_date?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           privacy_policy_version: string
           terms_of_service_version: string
           user_agent?: string | null
@@ -1609,7 +2007,7 @@ export type Database = {
           consent_date?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           privacy_policy_version?: string
           terms_of_service_version?: string
           user_agent?: string | null
@@ -1749,6 +2147,8 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           id: string
+          promo_expires_at: string | null
+          source: string | null
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
@@ -1762,6 +2162,8 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          promo_expires_at?: string | null
+          source?: string | null
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -1775,12 +2177,70 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          promo_expires_at?: string | null
+          source?: string | null
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_tier?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      user_subscriptions_backup: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string | null
+          promo_expires_at: string | null
+          source: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_tier: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string | null
+          promo_expires_at?: string | null
+          source?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string | null
+          promo_expires_at?: string | null
+          source?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1834,24 +2294,116 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_access_adult_content: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      _email_to_bigint: { Args: { keytext: string }; Returns: number }
+      admin_fix_orphaned_user: {
+        Args: { target_email: string; target_user_id: string }
+        Returns: Json
       }
+      can_access_adult_content: { Args: never; Returns: boolean }
       check_email_authorized: {
         Args: { check_email: string }
         Returns: boolean
       }
-      ensure_user_profile: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
+      complete_onboarding_atomic: {
+        Args: {
+          p_display_name?: string
+          p_email: string
+          p_invite_id?: string
+          p_user_id: string
+        }
+        Returns: Json
       }
-      generate_api_key: {
-        Args: Record<PropertyKey, never>
-        Returns: string
+      complete_onboarding_for_email: {
+        Args: { user_email: string }
+        Returns: Json
       }
+      complete_onboarding_invite: {
+        Args: { p_email: string; p_invite_token: string; p_user_id: string }
+        Returns: Json
+      }
+      debug_user_authorization: { Args: { check_email: string }; Returns: Json }
+      downgrade_expired_invites: { Args: never; Returns: undefined }
+      ensure_user_profile:
+        | {
+            Args: { uid: string; user_email: string }
+            Returns: {
+              adult_mode_enabled: boolean | null
+              avatar: string | null
+              avatar_talking_photo_id: string | null
+              consent_date: string | null
+              created_at: string
+              default_mode: string | null
+              effective_tier: string | null
+              email: string | null
+              first_time_in_settings: boolean
+              full_name: string
+              id: string
+              invited_premium_expires_at: string | null
+              invited_promo_access: boolean | null
+              is_first_login: boolean
+              main_persona_name: string | null
+              memory_consent_ip: unknown
+              memory_deletion_date: string | null
+              memory_enabled: boolean | null
+              notifications_frequency: string | null
+              onboarding_complete: boolean | null
+              original_tier_before_invite: string | null
+              persona_behavior: string | null
+              persona_behaviors: Json | null
+              preferred_language: string | null
+              professional_account: boolean | null
+              promo_access: boolean
+              role: string | null
+              subscription_active: boolean | null
+              subscription_tier: string | null
+              timezone: string | null
+              tutorial_shown: boolean | null
+              updated_at: string | null
+              user_id: string
+              username: string | null
+              voice: string | null
+              voice_enabled: boolean | null
+              voice_id: string | null
+              voice_style: string | null
+            }
+            SetofOptions: {
+              from: "*"
+              to: "profiles"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_effective_tier?: string
+              p_email: string
+              p_invited_promo_access?: boolean
+              p_premium_expires_at?: string
+              p_promo_access?: boolean
+              p_subscription_active?: boolean
+              p_subscription_tier?: string
+              p_tutorial_shown?: boolean
+              p_user_id: string
+            }
+            Returns: {
+              created: boolean
+              profile_id: string
+              updated: boolean
+            }[]
+          }
+        | { Args: never; Returns: Json }
+      ensure_user_profile_and_subscription: {
+        Args: {
+          p_invite_code?: string
+          p_user_email: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      expire_invite_based_premium: { Args: never; Returns: undefined }
+      generate_api_key: { Args: never; Returns: string }
       get_current_legal_versions: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           privacy_version: string
           terms_version: string
@@ -1871,7 +2423,7 @@ export type Database = {
         }[]
       }
       get_public_appearance_options: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           category: string
           created_at: string
@@ -1882,8 +2434,18 @@ export type Database = {
           tier: string
         }[]
       }
+      get_user_tier: { Args: { p_user_id: string }; Returns: string }
       has_active_custom_persona: {
         Args: { user_id_param: string }
+        Returns: boolean
+      }
+      has_active_invite_premium: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
+      has_active_premium: { Args: { check_user_id: string }; Returns: boolean }
+      has_active_premium_subscription: {
+        Args: { check_user_id: string }
         Returns: boolean
       }
       has_custom_subscription: {
@@ -1894,14 +2456,68 @@ export type Database = {
         Args: { feature_key_param: string; user_id_param: string }
         Returns: boolean
       }
-      is_admin_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      health_check_access_control: { Args: never; Returns: Json }
+      is_admin_or_premium: { Args: never; Returns: boolean }
+      is_admin_user: { Args: never; Returns: boolean }
+      is_user_authorized: { Args: { user_email: string }; Returns: boolean }
+      link_existing_profile_by_email: {
+        Args: { p_email: string; p_user_id: string }
+        Returns: undefined
       }
-      is_user_authorized: {
-        Args: { user_email: string }
-        Returns: boolean
+      onboard_invite_user:
+        | {
+            Args: {
+              p_invite_code: string
+              p_user_email: string
+              p_user_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: { p_email: string; p_invite_token: string; p_user_id: string }
+            Returns: Json
+          }
+      onboard_invite_user_atomic:
+        | { Args: { _email: string; _user_id: string }; Returns: Json }
+        | {
+            Args: {
+              p_email: string
+              p_full_name: string
+              p_subscription_tier?: string
+              p_user_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_email: string
+              p_invite_token: string
+              p_promo_expires_at: string
+              p_user_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: { p_email: string; p_invite_token: string; p_user_id: string }
+            Returns: {
+              created: boolean
+              message: string
+              profile_id: string
+              success: boolean
+              updated: boolean
+            }[]
+          }
+        | { Args: { p_email: string; p_invite_code: string }; Returns: Json }
+      onboard_user: {
+        Args: { _email: string; _full_name?: string; _user_id: string }
+        Returns: Json
       }
+      reset_tutorial_for_user: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      revert_expired_invite_premium: { Args: never; Returns: undefined }
+      revert_expired_promo_access: { Args: never; Returns: undefined }
       validate_api_key: {
         Args: { api_key: string }
         Returns: {

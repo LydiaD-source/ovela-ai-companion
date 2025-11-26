@@ -130,8 +130,8 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{ 
-                    opacity: 1,
-                    transition: 'opacity 0.5s ease-in-out'
+                    opacity: isStreaming ? 0 : 1,
+                    transition: 'opacity 0.3s ease-in-out'
                   }}
                 />
                 

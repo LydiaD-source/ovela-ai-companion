@@ -7,7 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import { useHeyGenAvatarStream } from '@/hooks/useHeyGenAvatarStream';
+import { useDIDAvatarStream } from '@/hooks/useDIDAvatarStream';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 import '@/styles/HeroSection.css';
 
@@ -21,18 +21,18 @@ const Home = () => {
   const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [isAvatarReady, setIsAvatarReady] = useState(false);
 
-  // HeyGen Avatar Stream Hook
-  const { speak: speakHeyGen, isStreaming, isLoading } = useHeyGenAvatarStream({
+  // D-ID Avatar Stream Hook
+  const { speak: speakDID, isStreaming, isLoading } = useDIDAvatarStream({
     containerRef: avatarContainerRef,
     onStreamStart: () => {
-      console.log('🎬 HeyGen stream started');
+      console.log('🎬 D-ID stream started');
       setIsAvatarReady(true);
     },
     onStreamEnd: () => {
-      console.log('🎬 HeyGen stream ended');
+      console.log('🎬 D-ID stream ended');
     },
     onError: (error) => {
-      console.error('❌ HeyGen stream error:', error);
+      console.error('❌ D-ID stream error:', error);
     },
   });
 
@@ -61,14 +61,14 @@ const Home = () => {
     
     setIsChatActive(true);
 
-    // Kick off a short greeting animation with HeyGen
+    // Kick off a short greeting animation with D-ID
     // Keep it short to minimize latency
     try {
       const greeting = "Hello, I'm Isabella. How can I help you today?";
-      console.log('🎬 Sending initial greeting to HeyGen');
-      await speakHeyGen(greeting);
+      console.log('🎬 Sending initial greeting to D-ID');
+      await speakDID(greeting, isabellaHeroImageUrl);
     } catch (e) {
-      console.error('❌ Initial HeyGen greeting failed:', e);
+      console.error('❌ Initial D-ID greeting failed:', e);
     }
   };
 
@@ -135,11 +135,11 @@ const Home = () => {
                   }}
                 />
                 
-                {/* HeyGen Stream Container - Overlays on top of static image */}
+                {/* D-ID Stream Container - Overlays on top of static image */}
                 <div 
                   ref={avatarContainerRef}
-                  id="heygen-container" 
-                  className="heygen-avatar-layer" 
+                  id="did-container" 
+                  className="did-avatar-layer"
                   style={{ 
                     position: 'absolute',
                     top: '9%',     // face region Y of the hero image
@@ -155,7 +155,7 @@ const Home = () => {
                     background: 'transparent',
                   }}
                 >
-                  {/* HeyGen videos will be injected here dynamically */}
+                  {/* D-ID videos will be injected here dynamically */}
                   {isLoading && (
                     <div style={{
                       position: 'absolute',
@@ -227,12 +227,12 @@ const Home = () => {
                         console.log('🎯 onAIResponse callback triggered with text:', text?.substring(0, 50));
                         console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
                         if (text && !isLoading) {
-                          console.log('🎬 Calling speakHeyGen (streaming mode - reuse connection)...');
-                          speakHeyGen(text).catch(err => {
-                            console.error('❌ speakHeyGen error:', err);
+                          console.log('🎬 Calling speakDID (streaming mode - reuse connection)...');
+                          speakDID(text, isabellaHeroImageUrl).catch(err => {
+                            console.error('❌ speakDID error:', err);
                           });
                         } else {
-                          console.log('⏭️ Skipping HeyGen - setup in progress');
+                          console.log('⏭️ Skipping D-ID - setup in progress');
                         }
                       }}
                     />

@@ -61,9 +61,21 @@ serve(async (req) => {
         }
 
         const result = await response.json();
-        console.log('✅ Stream created:', result.id);
         
-        return new Response(JSON.stringify(result), {
+        // Extract session_id from Set-Cookie header
+        const setCookieHeader = response.headers.get('set-cookie') || '';
+        console.log('🍪 Set-Cookie header:', setCookieHeader.substring(0, 100));
+        
+        // D-ID session_id is in the Set-Cookie header
+        const sessionId = setCookieHeader;
+        
+        console.log('✅ Stream created:', result.id);
+        console.log('✅ Session ID extracted:', sessionId ? sessionId.substring(0, 50) + '...' : 'none');
+        
+        return new Response(JSON.stringify({
+          ...result,
+          session_id: sessionId
+        }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }

@@ -66,8 +66,11 @@ export const useDIDAvatarStream = ({
   };
 
   const speak = async (text: string, imageUrl?: string) => {
-    console.log('🎤 useDIDAvatarStream.speak called');
-    console.log('📝 Text:', text?.substring(0, 80));
+    console.log('🎤 D-ID speak function called');
+    console.log('📝 Full text:', text);
+    console.log('🖼️ Image URL:', imageUrl);
+    console.log('📊 Current state - isLoading:', isLoading, 'isStreaming:', isStreaming);
+    console.log('🔗 Stream refs - streamId:', streamIdRef.current, 'sessionId:', sessionIdRef.current);
 
     if (!text) return;
     if (!containerRef.current) {

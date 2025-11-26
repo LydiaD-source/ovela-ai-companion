@@ -224,16 +224,26 @@ const Home = () => {
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
                       onAIResponse={(text) => {
-                        console.log('🎯 onAIResponse callback triggered with text:', text?.substring(0, 50));
+                        console.log('🎯 onAIResponse callback triggered!');
+                        console.log('📝 Text received:', text);
+                        console.log('🖼️ Image URL:', isabellaHeroImageUrl);
                         console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
-                        if (text && !isLoading) {
-                          console.log('🎬 Calling speakDID (streaming mode - reuse connection)...');
-                          speakDID(text, isabellaHeroImageUrl).catch(err => {
-                            console.error('❌ speakDID error:', err);
-                          });
-                        } else {
-                          console.log('⏭️ Skipping D-ID - setup in progress');
+                        
+                        if (!text) {
+                          console.warn('⚠️ No text received in onAIResponse');
+                          return;
                         }
+                        
+                        if (isLoading) {
+                          console.log('⏳ D-ID is still loading, will queue this text');
+                        }
+                        
+                        console.log('🎬 Calling speakDID now...');
+                        speakDID(text, isabellaHeroImageUrl).then(() => {
+                          console.log('✅ speakDID call completed');
+                        }).catch(err => {
+                          console.error('❌ speakDID error:', err);
+                        });
                       }}
                     />
                   </div>

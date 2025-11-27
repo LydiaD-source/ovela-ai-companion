@@ -146,6 +146,7 @@ serve(async (req) => {
           console.warn('⚠️ ELEVENLABS_API_KEY not found, falling back to D-ID TTS');
         }
         
+        // Per D-ID 2025 docs: voice_config must be inside provider object
         const scriptConfig = ELEVENLABS_API_KEY ? {
           script: {
             type: 'text',
@@ -155,19 +156,19 @@ serve(async (req) => {
               voice_id: '9BWtsMINqrJLrRacOk9x', // Aria voice
               voice_config: {
                 stability: 0.5,
-                similarity_boost: 0.75,
+                similarity_boost: 0.75
               }
             }
-          },
-          driver_expressions: {
-            expressions: [
-              { expression: 'neutral', start_frame: 0, intensity: 0.5 }
-            ]
           },
           config: {
             stitch: true,
             fluent: true,
             pad_audio: 0.0,
+            driver_expressions: {
+              expressions: [
+                { expression: 'neutral', start_frame: 0, intensity: 0.5 }
+              ]
+            }
           },
           session_id
         } : {

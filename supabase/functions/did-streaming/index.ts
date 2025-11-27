@@ -41,13 +41,23 @@ serve(async (req) => {
         
         console.log('📝 Creating talk stream with source:', source_url);
         
+        // D-ID 2025 API requires driver configuration for stream creation
+        const streamConfig = {
+          source_url,
+          driver_url: 'bank://lively',
+          config: {
+            stitch: true,
+            fluent: true,
+          }
+        };
+        
         const response = await fetch('https://api.d-id.com/talks/streams', {
           method: 'POST',
           headers: {
             'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ source_url })
+          body: JSON.stringify(streamConfig)
         });
 
         if (!response.ok) {

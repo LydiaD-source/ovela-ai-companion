@@ -141,26 +141,54 @@ serve(async (req) => {
         
         console.log('📝 Sending speak command:', text.substring(0, 50));
         
+        const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+        if (!ELEVENLABS_API_KEY) {
+          console.warn('⚠️ ELEVENLABS_API_KEY not found, falling back to D-ID TTS');
+        }
+        
+        const scriptConfig = ELEVENLABS_API_KEY ? {
+          script: {
+            type: 'text',
+            input: text,
+            provider: {
+              type: 'elevenlabs',
+              voice_id: '9BWtsMINqrJLrRacOk9x', // Aria voice
+              voice_config: {
+                stability: 0.5,
+                similarity_boost: 0.75,
+              }
+            }
+          },
+          driver_expressions: {
+            expressions: [
+              { expression: 'neutral', start_frame: 0, intensity: 0.5 }
+            ]
+          },
+          config: {
+            stitch: true,
+            fluent: true,
+            pad_audio: 0.0,
+          },
+          session_id
+        } : {
+          script: {
+            type: 'text',
+            input: text,
+          },
+          config: {
+            stitch: true,
+            fluent: true,
+          },
+          session_id
+        };
+        
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}`, {
           method: 'POST',
           headers: {
             'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            script: {
-              type: 'text',
-              input: text,
-              provider: {
-                type: 'elevenlabs',
-                voice_id: '9BWtsMINqrJLrRacOk9x', // Aria voice - reliable and feminine
-              }
-            },
-            config: {
-              stitch: true,
-            },
-            session_id
-          })
+          body: JSON.stringify(scriptConfig)
         });
 
         if (!response.ok) {

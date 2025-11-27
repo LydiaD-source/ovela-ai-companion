@@ -143,8 +143,6 @@ const Home = () => {
                     width: '100%',
                     height: '100%',
                     zIndex: 12,
-                    opacity: isStreaming ? 1 : 0,
-                    transition: 'opacity 0.3s ease-in-out',
                     pointerEvents: 'none',
                     background: 'transparent',
                   }}

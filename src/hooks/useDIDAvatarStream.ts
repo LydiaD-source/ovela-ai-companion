@@ -130,7 +130,7 @@ export const useDIDAvatarStream = ({
       });
       peerConnectionRef.current = pc;
 
-      // Video element
+      // Video element with chroma-key effect to remove black background
       const video = document.createElement('video');
       video.autoplay = true;
       video.playsInline = true;
@@ -147,9 +147,10 @@ export const useDIDAvatarStream = ({
         opacity: '0',
         transition: 'opacity 0.5s ease-in-out',
         zIndex: '20',
-        mixBlendMode: 'screen',
+        mixBlendMode: 'lighten',
         backgroundColor: 'transparent',
-        filter: 'contrast(1.15) brightness(1.1)',
+        // Aggressive filter to remove black background
+        filter: 'contrast(1.3) brightness(1.2) saturate(1.1)',
       } as CSSStyleDeclaration);
       videoRef.current = video;
       containerRef.current.appendChild(video);

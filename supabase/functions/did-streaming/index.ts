@@ -62,20 +62,11 @@ serve(async (req) => {
 
         const result = await response.json();
         
-        // Extract session_id from Set-Cookie header
-        const setCookieHeader = response.headers.get('set-cookie') || '';
-        console.log('🍪 Set-Cookie header:', setCookieHeader.substring(0, 100));
-        
-        // D-ID session_id is in the Set-Cookie header
-        const sessionId = setCookieHeader;
-        
         console.log('✅ Stream created:', result.id);
-        console.log('✅ Session ID extracted:', sessionId ? sessionId.substring(0, 50) + '...' : 'none');
+        console.log('✅ Session ID from response:', result.session_id);
         
-        return new Response(JSON.stringify({
-          ...result,
-          session_id: sessionId
-        }), {
+        // D-ID returns session_id directly in the JSON response
+        return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }

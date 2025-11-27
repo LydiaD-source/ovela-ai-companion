@@ -164,14 +164,18 @@ export const useDIDAvatarStream = ({
 
       const ctx = canvas.getContext('2d', { 
         willReadFrequently: true,
-        alpha: true 
+        alpha: true,
+        desynchronized: true // Better performance
       });
       if (!ctx) {
         throw new Error('Could not get canvas context');
       }
       
-      // Disable image smoothing for crisp, sharp rendering
+      // Disable ALL smoothing for maximum sharpness
       ctx.imageSmoothingEnabled = false;
+      (ctx as any).mozImageSmoothingEnabled = false;
+      (ctx as any).webkitImageSmoothingEnabled = false;
+      (ctx as any).msImageSmoothingEnabled = false;
 
       videoRef.current = video;
       
@@ -182,40 +186,34 @@ export const useDIDAvatarStream = ({
       // Process video frames to remove black background
       const processFrame = () => {
         if (!video.paused && !video.ended && video.readyState >= video.HAVE_CURRENT_DATA) {
-          // Use device pixel ratio for crisp rendering
-          const pixelRatio = window.devicePixelRatio || 1;
           const width = video.videoWidth;
           const height = video.videoHeight;
           
-          // Set canvas to high resolution
-          if (canvas.width !== width * pixelRatio || canvas.height !== height * pixelRatio) {
-            canvas.width = width * pixelRatio;
-            canvas.height = height * pixelRatio;
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
+          // Set canvas to EXACT video resolution (no scaling)
+          if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width;
+            canvas.height = height;
+            console.log('🎨 Canvas set to native resolution:', width, 'x', height);
           }
 
-          // Reset transform and apply pixel ratio scaling
-          ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-
-          // Draw video frame
+          // Draw at 1:1 pixel ratio for maximum quality
           ctx.drawImage(video, 0, 0, width, height);
 
           // Get image data
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const data = imageData.data;
 
-          // Remove black/dark pixels (chroma-key effect)
-          const threshold = 40; // Adjust this to control how much black is removed
+          // Remove black/dark pixels with optimized threshold
+          const threshold = 30; // Lower threshold for better detail preservation
           for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
             
-            // If pixel is dark (near black), make it transparent
+            // If pixel is very dark (near black), make it transparent
             const brightness = (r + g + b) / 3;
             if (brightness < threshold) {
-              data[i + 3] = 0; // Set alpha to 0 (transparent)
+              data[i + 3] = 0; // Fully transparent
             }
           }
 

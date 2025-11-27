@@ -182,14 +182,24 @@ export const useDIDAvatarStream = ({
       // Process video frames to remove black background
       const processFrame = () => {
         if (!video.paused && !video.ended && video.readyState >= video.HAVE_CURRENT_DATA) {
-          // Set canvas size to match video
-          if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+          // Use device pixel ratio for crisp rendering
+          const pixelRatio = window.devicePixelRatio || 1;
+          const width = video.videoWidth;
+          const height = video.videoHeight;
+          
+          // Set canvas to high resolution
+          if (canvas.width !== width * pixelRatio || canvas.height !== height * pixelRatio) {
+            canvas.width = width * pixelRatio;
+            canvas.height = height * pixelRatio;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
           }
 
+          // Reset transform and apply pixel ratio scaling
+          ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
           // Draw video frame
-          ctx.drawImage(video, 0, 0);
+          ctx.drawImage(video, 0, 0, width, height);
 
           // Get image data
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);

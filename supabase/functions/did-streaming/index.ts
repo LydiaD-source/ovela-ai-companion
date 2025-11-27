@@ -22,7 +22,44 @@ serve(async (req) => {
     
     console.log('✅ DID_API_KEY found, length:', DID_API_KEY.length);
 
-    const { action, data } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      console.error('❌ Failed to parse request body:', e);
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          error: 'invalid_json',
+          message: 'Request body must be valid JSON',
+          traceId: crypto.randomUUID()
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    const { action, data } = body;
+    
+    if (!action || !data) {
+      console.error('❌ Missing action or data in request:', body);
+      return new Response(
+        JSON.stringify({ 
+          ok: false, 
+          error: 'missing_fields',
+          message: 'Request must include "action" and "data" fields',
+          received: { hasAction: !!action, hasData: !!data },
+          traceId: crypto.randomUUID()
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     console.log(`🎬 D-ID Action: ${action}`);
     console.log('📝 Data:', JSON.stringify(data).substring(0, 200));
 

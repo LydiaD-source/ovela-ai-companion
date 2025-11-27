@@ -162,10 +162,16 @@ export const useDIDAvatarStream = ({
         backgroundColor: 'transparent',
       } as CSSStyleDeclaration);
 
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const ctx = canvas.getContext('2d', { 
+        willReadFrequently: true,
+        alpha: true 
+      });
       if (!ctx) {
         throw new Error('Could not get canvas context');
       }
+      
+      // Disable image smoothing for crisp, sharp rendering
+      ctx.imageSmoothingEnabled = false;
 
       videoRef.current = video;
       
@@ -217,6 +223,11 @@ export const useDIDAvatarStream = ({
           // Start processing frames once video is playing
           video.onloadedmetadata = () => {
             console.log('🎥 Video metadata loaded, dimensions:', video.videoWidth, 'x', video.videoHeight);
+            
+            // Set canvas to native video resolution for crisp rendering
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
             video.play().then(() => {
               console.log('🎥 Video playing, starting frame processing');
               processFrame();

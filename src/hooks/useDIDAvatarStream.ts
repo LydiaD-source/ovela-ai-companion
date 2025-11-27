@@ -168,6 +168,9 @@ export const useDIDAvatarStream = ({
       }
 
       videoRef.current = video;
+      
+      // Add both video (hidden) and canvas to DOM
+      containerRef.current.appendChild(video);
       containerRef.current.appendChild(canvas);
 
       // Process video frames to remove black background
@@ -206,8 +209,6 @@ export const useDIDAvatarStream = ({
         requestAnimationFrame(processFrame);
       };
 
-      containerRef.current.appendChild(canvas); // Append canvas for rendering
-
       pc.ontrack = (event) => {
         console.log('🎥 ontrack received');
         if (event.streams && event.streams[0]) {
@@ -215,12 +216,17 @@ export const useDIDAvatarStream = ({
           
           // Start processing frames once video is playing
           video.onloadedmetadata = () => {
-            console.log('🎥 Video metadata loaded, starting frame processing');
-            processFrame();
-            canvas.style.opacity = '1';
-            setIsLoading(false);
-            setIsStreaming(true);
-            onStreamStart?.();
+            console.log('🎥 Video metadata loaded, dimensions:', video.videoWidth, 'x', video.videoHeight);
+            video.play().then(() => {
+              console.log('🎥 Video playing, starting frame processing');
+              processFrame();
+              canvas.style.opacity = '1';
+              setIsLoading(false);
+              setIsStreaming(true);
+              onStreamStart?.();
+            }).catch(err => {
+              console.error('❌ Video play failed:', err);
+            });
           };
         }
       };

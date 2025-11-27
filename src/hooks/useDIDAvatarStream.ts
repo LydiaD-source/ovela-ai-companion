@@ -147,9 +147,9 @@ export const useDIDAvatarStream = ({
         opacity: '0',
         transition: 'opacity 0.5s ease-in-out',
         zIndex: '20',
-        mixBlendMode: 'lighten',
+        mixBlendMode: 'screen',
         backgroundColor: 'transparent',
-        filter: 'contrast(1.1) brightness(1.05)',
+        filter: 'contrast(1.15) brightness(1.1)',
       } as CSSStyleDeclaration);
       videoRef.current = video;
       containerRef.current.appendChild(video);

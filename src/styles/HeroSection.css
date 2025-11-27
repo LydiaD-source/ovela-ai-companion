@@ -125,6 +125,15 @@
   pointer-events: auto;
 }
 
+/* D-ID Avatar Layer - Transparent overlay */
+.did-avatar-layer {
+  background: transparent !important;
+}
+
+.did-avatar-layer video {
+  background: transparent !important;
+}
+
 /* Content Area (Center-Right - 65%) */
 .hero-text-container {
   display: flex;

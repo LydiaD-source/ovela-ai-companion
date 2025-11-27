@@ -227,6 +227,7 @@ export const useDIDAvatarStream = ({
         console.log('🎥 ontrack received');
         if (event.streams && event.streams[0]) {
           video.srcObject = event.streams[0];
+          console.log('🎥 Video srcObject set, stream:', event.streams[0].id);
           
           // Start processing frames once video is playing
           video.onloadedmetadata = () => {
@@ -235,17 +236,23 @@ export const useDIDAvatarStream = ({
             // Set canvas to native video resolution for crisp rendering
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
+            console.log('🎨 Canvas initial size set:', canvas.width, 'x', canvas.height);
             
             video.play().then(() => {
               console.log('🎥 Video playing, starting frame processing');
               processFrame();
               canvas.style.opacity = '1';
+              console.log('✅ Canvas visible, animation should start');
               setIsLoading(false);
               setIsStreaming(true);
               onStreamStart?.();
             }).catch(err => {
               console.error('❌ Video play failed:', err);
             });
+          };
+
+          video.onerror = (e) => {
+            console.error('❌ Video error event:', e);
           };
         }
       };

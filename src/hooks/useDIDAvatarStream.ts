@@ -38,6 +38,12 @@ export const useDIDAvatarStream = ({
       videoRef.current = null;
     }
 
+    // Clean up canvas elements
+    if (containerRef.current) {
+      const canvases = containerRef.current.querySelectorAll('canvas');
+      canvases.forEach(canvas => canvas.remove());
+    }
+
     if (peerConnectionRef.current) {
       peerConnectionRef.current.close();
       peerConnectionRef.current = null;
@@ -130,12 +136,18 @@ export const useDIDAvatarStream = ({
       });
       peerConnectionRef.current = pc;
 
-      // Video element with chroma-key effect to remove black background
+      // Video element with canvas-based chroma-key to remove black background
       const video = document.createElement('video');
       video.autoplay = true;
       video.playsInline = true;
       video.muted = true;
       Object.assign(video.style, {
+        display: 'none', // Hide original video, we'll use canvas
+      } as CSSStyleDeclaration);
+
+      // Canvas for processing and displaying the video with transparent blacks
+      const canvas = document.createElement('canvas');
+      Object.assign(canvas.style, {
         position: 'absolute',
         bottom: '0',
         left: '0',
@@ -147,22 +159,69 @@ export const useDIDAvatarStream = ({
         opacity: '0',
         transition: 'opacity 0.5s ease-in-out',
         zIndex: '20',
-        mixBlendMode: 'lighten',
         backgroundColor: 'transparent',
-        // Aggressive filter to remove black background
-        filter: 'contrast(1.3) brightness(1.2) saturate(1.1)',
       } as CSSStyleDeclaration);
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) {
+        throw new Error('Could not get canvas context');
+      }
+
       videoRef.current = video;
-      containerRef.current.appendChild(video);
+      containerRef.current.appendChild(canvas);
+
+      // Process video frames to remove black background
+      const processFrame = () => {
+        if (!video.paused && !video.ended && video.readyState >= video.HAVE_CURRENT_DATA) {
+          // Set canvas size to match video
+          if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+          }
+
+          // Draw video frame
+          ctx.drawImage(video, 0, 0);
+
+          // Get image data
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+
+          // Remove black/dark pixels (chroma-key effect)
+          const threshold = 40; // Adjust this to control how much black is removed
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // If pixel is dark (near black), make it transparent
+            const brightness = (r + g + b) / 3;
+            if (brightness < threshold) {
+              data[i + 3] = 0; // Set alpha to 0 (transparent)
+            }
+          }
+
+          // Put processed image data back
+          ctx.putImageData(imageData, 0, 0);
+        }
+        requestAnimationFrame(processFrame);
+      };
+
+      containerRef.current.appendChild(canvas); // Append canvas for rendering
 
       pc.ontrack = (event) => {
         console.log('🎥 ontrack received');
         if (event.streams && event.streams[0]) {
           video.srcObject = event.streams[0];
-          video.style.opacity = '1';
-          setIsLoading(false);
-          setIsStreaming(true);
-          onStreamStart?.();
+          
+          // Start processing frames once video is playing
+          video.onloadedmetadata = () => {
+            console.log('🎥 Video metadata loaded, starting frame processing');
+            processFrame();
+            canvas.style.opacity = '1';
+            setIsLoading(false);
+            setIsStreaming(true);
+            onStreamStart?.();
+          };
         }
       };
 

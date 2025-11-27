@@ -129,10 +129,6 @@ const Home = () => {
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"
-                  style={{ 
-                    opacity: isStreaming ? 0 : 1,
-                    transition: 'opacity 0.3s ease-in-out'
-                  }}
                 />
                 
                 {/* D-ID Stream Container - Overlays on top of static image */}

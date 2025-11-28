@@ -191,21 +191,7 @@ export const useDIDAvatarStream = ({
           const width = video.videoWidth;
           const height = video.videoHeight;
           
-          // Use device pixel ratio for sharp rendering on high-DPI screens
-          const dpr = window.devicePixelRatio || 1;
-          
-          // Set canvas to high-resolution (native video size × DPR)
-          if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
-            canvas.width = width * dpr;
-            canvas.height = height * dpr;
-            console.log('🎨 Canvas set to high-res:', canvas.width, 'x', canvas.height, `(DPR: ${dpr})`);
-            
-            // Reset transform and scale context to match DPR
-            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset any previous transforms
-            ctx.scale(dpr, dpr);
-          }
-
-          // Draw at native resolution with scaling for DPR
+          // Draw at native resolution
           ctx.drawImage(video, 0, 0, width, height);
 
           // Get image data
@@ -250,13 +236,10 @@ export const useDIDAvatarStream = ({
           video.onloadedmetadata = () => {
             console.log('🎥 Video metadata loaded, dimensions:', video.videoWidth, 'x', video.videoHeight);
             
-            // Set canvas to high-resolution for crisp rendering
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = video.videoWidth * dpr;
-            canvas.height = video.videoHeight * dpr;
-            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
-            ctx.scale(dpr, dpr);
-            console.log('🎨 Canvas initial size set:', canvas.width, 'x', canvas.height, `(DPR: ${dpr})`);
+            // Set canvas to native video resolution
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            console.log('🎨 Canvas size set:', canvas.width, 'x', canvas.height);
             
             video.play().then(() => {
               console.log('🎥 Video playing, starting frame processing');

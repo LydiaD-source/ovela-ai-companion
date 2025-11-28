@@ -200,7 +200,8 @@ export const useDIDAvatarStream = ({
             canvas.height = height * dpr;
             console.log('🎨 Canvas set to high-res:', canvas.width, 'x', canvas.height, `(DPR: ${dpr})`);
             
-            // Scale context to match DPR
+            // Reset transform and scale context to match DPR
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset any previous transforms
             ctx.scale(dpr, dpr);
           }
 
@@ -253,6 +254,7 @@ export const useDIDAvatarStream = ({
             const dpr = window.devicePixelRatio || 1;
             canvas.width = video.videoWidth * dpr;
             canvas.height = video.videoHeight * dpr;
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
             ctx.scale(dpr, dpr);
             console.log('🎨 Canvas initial size set:', canvas.width, 'x', canvas.height, `(DPR: ${dpr})`);
             

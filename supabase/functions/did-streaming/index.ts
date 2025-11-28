@@ -261,13 +261,19 @@ serve(async (req) => {
         
         console.log('📝 Deleting stream:', stream_id);
         
+        const deleteHeaders: HeadersInit = {
+          'Authorization': authHeader,
+          'Content-Type': 'application/json',
+        };
+        
+        // Add session_id as Cookie header if provided
+        if (session_id) {
+          deleteHeaders['Cookie'] = session_id;
+        }
+        
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}`, {
           method: 'DELETE',
-          headers: {
-            'Authorization': authHeader,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ session_id })
+          headers: deleteHeaders,
         });
 
         if (!response.ok) {

@@ -184,8 +184,23 @@ export const useDIDAvatarStream = ({
       containerRef.current.appendChild(canvas);
 
       // Process video frames to remove black background
+      let frameCount = 0;
       const processFrame = () => {
+        frameCount++;
+        if (frameCount % 60 === 0) { // Log every 60 frames (roughly 1 second)
+          console.log('🎬 processFrame running, count:', frameCount);
+        }
+        
         if (!video.paused && !video.ended && video.readyState >= video.HAVE_CURRENT_DATA) {
+          if (frameCount === 1) {
+            console.log('✅ First frame processed! Video state:', {
+              paused: video.paused,
+              ended: video.ended,
+              readyState: video.readyState,
+              dimensions: `${video.videoWidth}x${video.videoHeight}`
+            });
+          }
+          
           const width = video.videoWidth;
           const height = video.videoHeight;
           
@@ -219,6 +234,13 @@ export const useDIDAvatarStream = ({
 
           // Put processed image data back
           ctx.putImageData(imageData, 0, 0);
+        } else if (frameCount <= 10) { // Log why we're not processing for first 10 frames
+          console.log('⚠️ Frame skipped:', {
+            paused: video.paused,
+            ended: video.ended,
+            readyState: video.readyState,
+            readyStateRequired: video.HAVE_CURRENT_DATA
+          });
         }
         requestAnimationFrame(processFrame);
       };

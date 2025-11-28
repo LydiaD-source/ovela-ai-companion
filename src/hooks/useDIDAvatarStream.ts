@@ -147,6 +147,7 @@ export const useDIDAvatarStream = ({
 
       // Canvas for processing and displaying the video with transparent blacks
       const canvas = document.createElement('canvas');
+      
       Object.assign(canvas.style, {
         position: 'absolute',
         bottom: '0',
@@ -160,6 +161,7 @@ export const useDIDAvatarStream = ({
         transition: 'opacity 0.5s ease-in-out',
         zIndex: '20',
         backgroundColor: 'transparent',
+        imageRendering: 'crisp-edges', // Force sharp edges
       } as CSSStyleDeclaration);
 
       const ctx = canvas.getContext('2d', { 
@@ -189,31 +191,45 @@ export const useDIDAvatarStream = ({
           const width = video.videoWidth;
           const height = video.videoHeight;
           
-          // Set canvas to EXACT video resolution (no scaling)
-          if (canvas.width !== width || canvas.height !== height) {
-            canvas.width = width;
-            canvas.height = height;
-            console.log('🎨 Canvas set to native resolution:', width, 'x', height);
+          // Use device pixel ratio for sharp rendering on high-DPI screens
+          const dpr = window.devicePixelRatio || 1;
+          
+          // Set canvas to high-resolution (native video size × DPR)
+          if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            console.log('🎨 Canvas set to high-res:', canvas.width, 'x', canvas.height, `(DPR: ${dpr})`);
+            
+            // Scale context to match DPR
+            ctx.scale(dpr, dpr);
           }
 
-          // Draw at 1:1 pixel ratio for maximum quality
+          // Draw at native resolution with scaling for DPR
           ctx.drawImage(video, 0, 0, width, height);
 
           // Get image data
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const data = imageData.data;
 
-          // Remove black/dark pixels with optimized threshold
-          const threshold = 30; // Lower threshold for better detail preservation
+          // Optimized chroma-key with improved threshold
+          const threshold = 20; // More conservative threshold to preserve details
+          const fadeRange = 15; // Gradual transparency for smoother edges
+          
           for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
             
-            // If pixel is very dark (near black), make it transparent
+            // Calculate brightness
             const brightness = (r + g + b) / 3;
+            
             if (brightness < threshold) {
-              data[i + 3] = 0; // Fully transparent
+              // Fully transparent for very dark pixels
+              data[i + 3] = 0;
+            } else if (brightness < threshold + fadeRange) {
+              // Gradual fade for edge pixels to avoid harsh cutoff
+              const alpha = ((brightness - threshold) / fadeRange) * 255;
+              data[i + 3] = Math.min(data[i + 3], alpha);
             }
           }
 
@@ -233,10 +249,12 @@ export const useDIDAvatarStream = ({
           video.onloadedmetadata = () => {
             console.log('🎥 Video metadata loaded, dimensions:', video.videoWidth, 'x', video.videoHeight);
             
-            // Set canvas to native video resolution for crisp rendering
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            console.log('🎨 Canvas initial size set:', canvas.width, 'x', canvas.height);
+            // Set canvas to high-resolution for crisp rendering
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = video.videoWidth * dpr;
+            canvas.height = video.videoHeight * dpr;
+            ctx.scale(dpr, dpr);
+            console.log('🎨 Canvas initial size set:', canvas.width, 'x', canvas.height, `(DPR: ${dpr})`);
             
             video.play().then(() => {
               console.log('🎥 Video playing, starting frame processing');

@@ -7,6 +7,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
+import { useDIDAvatarStream } from '@/hooks/useDIDAvatarStream';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 import '@/styles/HeroSection.css';
 
@@ -17,7 +18,23 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
+  const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [isAvatarReady, setIsAvatarReady] = useState(false);
+
+  // D-ID Avatar Stream Hook
+  const { speak: speakDID, isStreaming, isLoading } = useDIDAvatarStream({
+    containerRef: avatarContainerRef,
+    onStreamStart: () => {
+      console.log('🎬 D-ID stream started');
+      setIsAvatarReady(true);
+    },
+    onStreamEnd: () => {
+      console.log('🎬 D-ID stream ended');
+    },
+    onError: (error) => {
+      console.error('❌ D-ID stream error:', error);
+    },
+  });
 
   // Check URL parameter to auto-open chat from Contact page
   useEffect(() => {
@@ -43,6 +60,15 @@ const Home = () => {
     }
     
     setIsChatActive(true);
+
+    // Kick off a short greeting animation with D-ID
+    try {
+      const greeting = "Hello, I'm Isabella. How can I help you today?";
+      console.log('🎬 Sending initial greeting to D-ID');
+      await speakDID(greeting, isabellaHeroImageUrl);
+    } catch (e) {
+      console.error('❌ Initial D-ID greeting failed:', e);
+    }
   };
 
   return (
@@ -103,6 +129,38 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                 />
+                
+                {/* D-ID Stream Container - Overlays on top of static image */}
+                <div 
+                  ref={avatarContainerRef}
+                  id="did-container" 
+                  className="did-avatar-layer"
+                  style={{ 
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 12,
+                    pointerEvents: 'none',
+                    background: 'transparent',
+                  }}
+                >
+                  {/* D-ID videos will be injected here dynamically */}
+                  {isLoading && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                    }}>
+                      <div
+                        aria-label="Preparing Isabella"
+                        className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -156,6 +214,28 @@ const Home = () => {
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
+                      onAIResponse={(text) => {
+                        console.log('🎯 onAIResponse callback triggered!');
+                        console.log('📝 Text received:', text);
+                        console.log('🖼️ Image URL:', isabellaHeroImageUrl);
+                        console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
+                        
+                        if (!text) {
+                          console.warn('⚠️ No text received in onAIResponse');
+                          return;
+                        }
+                        
+                        if (isLoading) {
+                          console.log('⏳ D-ID is still loading, will queue this text');
+                        }
+                        
+                        console.log('🎬 Calling speakDID now...');
+                        speakDID(text, isabellaHeroImageUrl).then(() => {
+                          console.log('✅ speakDID call completed');
+                        }).catch(err => {
+                          console.error('❌ speakDID error:', err);
+                        });
+                      }}
                     />
                   </div>
                   

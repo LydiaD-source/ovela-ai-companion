@@ -15,9 +15,6 @@ verify_jwt = false
 [functions.openai-realtime-relay]
 verify_jwt = false
 
-[functions.heygen-proxy]
-verify_jwt = false
-
 [functions.brand-templates]
 verify_jwt = false
 
@@ -28,4 +25,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.openai-realtime-token]
+verify_jwt = false
+
+[functions.did-streaming]
 verify_jwt = false

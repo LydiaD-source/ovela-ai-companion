@@ -88,7 +88,7 @@ export const useDIDAvatarStream = ({
       // If already connected, just send the speak command
       if (streamIdRef.current && sessionIdRef.current && peerConnectionRef.current) {
         console.log('🔁 Reusing existing stream to speak');
-        await supabase.functions.invoke('did-streaming', {
+        const speakResponse = await supabase.functions.invoke('did-streaming', {
           body: {
             action: 'talk_stream_speak',
             data: {
@@ -98,6 +98,13 @@ export const useDIDAvatarStream = ({
             },
           },
         });
+
+        if (speakResponse.error) {
+          console.error('❌ Speak error:', speakResponse.error);
+          throw new Error(`Speak failed: ${speakResponse.error.message}`);
+        }
+        
+        console.log('✅ Speak command sent');
         return;
       }
 
@@ -112,7 +119,7 @@ export const useDIDAvatarStream = ({
 
       // 1) Create stream
       console.log('🎬 Creating D-ID talk stream...');
-      const { data: streamData, error: streamError } = await supabase.functions.invoke('did-streaming', {
+      const response = await supabase.functions.invoke('did-streaming', {
         body: {
           action: 'create_talk_stream',
           data: {
@@ -123,7 +130,19 @@ export const useDIDAvatarStream = ({
         },
       });
 
-      if (streamError || !streamData) throw new Error(streamError?.message || 'Failed to create stream');
+      console.log('📡 D-ID response:', response);
+
+      if (response.error) {
+        console.error('❌ D-ID invoke error:', response.error);
+        throw new Error(`D-ID API error: ${response.error.message}`);
+      }
+
+      const streamData = response.data;
+      if (!streamData) {
+        throw new Error('No data received from D-ID');
+      }
+
+      console.log('✅ Stream data received:', streamData);
 
       const { id: streamId, offer, ice_servers, session_id } = streamData;
       streamIdRef.current = streamId;
@@ -257,7 +276,7 @@ export const useDIDAvatarStream = ({
       pc.onicecandidate = async (event) => {
         if (event.candidate) {
           try {
-            await supabase.functions.invoke('did-streaming', {
+            const iceResponse = await supabase.functions.invoke('did-streaming', {
               body: {
                 action: 'talk_stream_ice',
                 data: {
@@ -269,8 +288,12 @@ export const useDIDAvatarStream = ({
                 },
               },
             });
+
+            if (iceResponse.error) {
+              console.error('❌ ICE error:', iceResponse.error);
+            }
           } catch (e) {
-            console.error('ICE send failed', e);
+            console.error('❌ ICE send failed', e);
           }
         }
       };
@@ -283,24 +306,38 @@ export const useDIDAvatarStream = ({
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
 
-      await supabase.functions.invoke('did-streaming', {
+      const sdpResponse = await supabase.functions.invoke('did-streaming', {
         body: {
           action: 'talk_stream_sdp',
           data: { stream_id: streamId, session_id: session_id, answer },
         },
       });
 
+      if (sdpResponse.error) {
+        console.error('❌ SDP error:', sdpResponse.error);
+        throw new Error(`SDP exchange failed: ${sdpResponse.error.message}`);
+      }
+
+      console.log('✅ SDP exchanged successfully');
+
       // Kick off initial speech shortly after SDP to start media
       setTimeout(async () => {
         const toSpeak = pendingTextRef.current;
         if (!toSpeak) return;
         try {
-          await supabase.functions.invoke('did-streaming', {
+          const initialSpeakResponse = await supabase.functions.invoke('did-streaming', {
             body: {
               action: 'talk_stream_speak',
               data: { stream_id: streamIdRef.current, session_id: sessionIdRef.current, text: toSpeak },
             },
           });
+
+          if (initialSpeakResponse.error) {
+            console.error('❌ Initial speak error:', initialSpeakResponse.error);
+          } else {
+            console.log('✅ Initial speak sent successfully');
+          }
+          
           pendingTextRef.current = null;
         } catch (e) {
           console.error('❌ Initial speak after SDP failed:', e);

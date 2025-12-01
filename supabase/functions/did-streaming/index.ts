@@ -127,19 +127,15 @@ serve(async (req) => {
       case 'delete_talk_stream': {
         const { stream_id, session_id } = data;
         
-        const deleteHeaders: Record<string, string> = {
-          'Authorization': authHeader,
-          'Content-Type': 'application/json',
-        };
-        
-        // D-ID requires session_id as a Cookie header
-        if (session_id) {
-          deleteHeaders['Cookie'] = session_id;
-        }
-        
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}`, {
           method: 'DELETE',
-          headers: deleteHeaders,
+          headers: {
+            'Authorization': authHeader,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session_id,
+          }),
         });
 
         if (response.status === 204 || response.status === 200) {

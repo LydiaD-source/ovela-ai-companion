@@ -204,6 +204,8 @@ export const useDIDAvatarStream = ({
 
       // Process video frames to remove black background
       let frameCount = 0;
+      let canvasInitialized = false;
+      
       const processFrame = () => {
         // CRITICAL: Always call requestAnimationFrame FIRST to keep loop running
         requestAnimationFrame(processFrame);
@@ -215,6 +217,23 @@ export const useDIDAvatarStream = ({
 
         const width = video.videoWidth;
         const height = video.videoHeight;
+        
+        // CRITICAL: Skip if video has no dimensions yet
+        if (width === 0 || height === 0) {
+          if (frameCount === 0) {
+            console.warn('⚠️ Video has no dimensions yet, waiting...');
+          }
+          return;
+        }
+        
+        // Initialize canvas on first valid frame
+        if (!canvasInitialized) {
+          canvas.width = width;
+          canvas.height = height;
+          canvas.style.opacity = '1'; // Make canvas visible immediately
+          canvasInitialized = true;
+          console.log('✅ Canvas initialized:', width, 'x', height);
+        }
         
         // Log every 60 frames for debugging
         if (frameCount % 60 === 0) {
@@ -270,8 +289,8 @@ export const useDIDAvatarStream = ({
             
             video.play().then(() => {
               console.log('🎥 Video playing, starting frame processing');
+              console.log('🎥 Video dimensions:', video.videoWidth, 'x', video.videoHeight);
               processFrame();
-              canvas.style.opacity = '1';
               setIsLoading(false);
               setIsStreaming(true);
               onStreamStart?.();

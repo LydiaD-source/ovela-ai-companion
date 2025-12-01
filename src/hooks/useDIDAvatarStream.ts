@@ -275,9 +275,25 @@ export const useDIDAvatarStream = ({
 
       pc.ontrack = (event) => {
         console.log('🎥 ontrack received');
+        console.log('🎥 Track kind:', event.track.kind);
+        console.log('🎥 Track enabled:', event.track.enabled);
+        console.log('🎥 Track muted:', event.track.muted);
+        console.log('🎥 Track readyState:', event.track.readyState);
+        console.log('🎥 Number of streams:', event.streams?.length);
+        
         if (event.streams && event.streams[0]) {
-          video.srcObject = event.streams[0];
+          const stream = event.streams[0];
+          console.log('🎥 Stream ID:', stream.id);
+          console.log('🎥 Stream active:', stream.active);
+          console.log('🎥 Stream tracks:', stream.getTracks().map(t => `${t.kind}: ${t.readyState}`).join(', '));
+          
+          video.srcObject = stream;
           console.log('🎥 Video srcObject set');
+          
+          // Monitor track status changes
+          event.track.onended = () => console.log('⚠️ Track ended:', event.track.kind);
+          event.track.onmute = () => console.log('⚠️ Track muted:', event.track.kind);
+          event.track.onunmute = () => console.log('✅ Track unmuted:', event.track.kind);
           
           // Start processing frames once video is playing
           video.onloadedmetadata = () => {
@@ -290,6 +306,8 @@ export const useDIDAvatarStream = ({
             video.play().then(() => {
               console.log('🎥 Video playing, starting frame processing');
               console.log('🎥 Video dimensions:', video.videoWidth, 'x', video.videoHeight);
+              console.log('🎥 Video readyState:', video.readyState);
+              console.log('🎥 Video networkState:', video.networkState);
               processFrame();
               setIsLoading(false);
               setIsStreaming(true);

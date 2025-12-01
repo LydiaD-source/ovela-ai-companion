@@ -26,6 +26,8 @@ serve(async (req) => {
       case 'create_talk_stream': {
         const sourceUrl = data.source_url || 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png';
         
+        console.log('🎬 Creating stream with source:', sourceUrl);
+        
         const response = await fetch('https://api.d-id.com/talks/streams', {
           method: 'POST',
           headers: {
@@ -39,7 +41,14 @@ serve(async (req) => {
         });
 
         const result = await response.json();
-        console.log('✅ Stream created:', result);
+        console.log('✅ Stream created - Full response:', JSON.stringify(result, null, 2));
+        console.log('📊 Stream status:', result.status);
+        console.log('🆔 Stream ID:', result.id);
+        
+        if (!response.ok) {
+          console.error('❌ D-ID stream creation failed:', response.status, result);
+        }
+        
         return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -90,6 +99,29 @@ serve(async (req) => {
       case 'talk_stream_speak': {
         const { stream_id, session_id, text } = data;
         console.log('🎤 Speaking text:', text);
+        console.log('📡 Stream ID:', stream_id);
+        console.log('🔐 Session ID:', session_id?.substring(0, 50) + '...');
+        
+        const requestBody = {
+          script: {
+            type: 'text',
+            input: text,
+            provider: {
+              type: 'elevenlabs',
+              voice_id: '9BWtsMINqrJLrRacOk9x', // Aria voice
+              voice_config: {
+                stability: 0.5,
+                similarity_boost: 0.75,
+              }
+            }
+          },
+          config: {
+            stitch: true,
+          },
+          session_id,
+        };
+        
+        console.log('📤 Sending speak request:', JSON.stringify(requestBody, null, 2));
         
         const response = await fetch(`https://api.d-id.com/talks/streams/${stream_id}`, {
           method: 'POST',
@@ -97,28 +129,19 @@ serve(async (req) => {
             'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            script: {
-              type: 'text',
-              input: text,
-              provider: {
-                type: 'elevenlabs',
-                voice_id: '9BWtsMINqrJLrRacOk9x', // Aria voice
-                voice_config: {
-                  stability: 0.5,
-                  similarity_boost: 0.75,
-                }
-              }
-            },
-            config: {
-              stitch: true,
-            },
-            session_id,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         const result = await response.json();
-        console.log('✅ Speak response:', result);
+        console.log('✅ Speak response - Status:', response.status);
+        console.log('📥 Speak response - Full:', JSON.stringify(result, null, 2));
+        console.log('🎬 Video status:', result.status);
+        console.log('🎞️ Video ID:', result.video_id);
+        
+        if (!response.ok) {
+          console.error('❌ D-ID speak failed:', response.status, result);
+        }
+        
         return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });

@@ -203,42 +203,55 @@ export const useDIDAvatarStream = ({
       containerRef.current.appendChild(canvas);
 
       // Process video frames to remove black background
+      let frameCount = 0;
       const processFrame = () => {
-        if (!video.paused && !video.ended && video.readyState >= video.HAVE_CURRENT_DATA) {
-          const width = video.videoWidth;
-          const height = video.videoHeight;
-          
-          // Set canvas to EXACT video resolution (no scaling)
-          if (canvas.width !== width || canvas.height !== height) {
-            canvas.width = width;
-            canvas.height = height;
-          }
-
-          // Draw at 1:1 pixel ratio for maximum quality
-          ctx.drawImage(video, 0, 0, width, height);
-
-          // Get image data
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = imageData.data;
-
-          // Remove black/dark pixels with optimized threshold
-          const threshold = 30; // Lower threshold for better detail preservation
-          for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            
-            // If pixel is very dark (near black), make it transparent
-            const brightness = (r + g + b) / 3;
-            if (brightness < threshold) {
-              data[i + 3] = 0; // Fully transparent
-            }
-          }
-
-          // Put processed image data back
-          ctx.putImageData(imageData, 0, 0);
-        }
+        // CRITICAL: Always call requestAnimationFrame FIRST to keep loop running
         requestAnimationFrame(processFrame);
+        
+        // Check if video is ready and playing
+        if (video.paused || video.ended || video.readyState < video.HAVE_CURRENT_DATA) {
+          return; // Skip this frame but keep loop running
+        }
+
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+        
+        // Log every 60 frames for debugging
+        if (frameCount % 60 === 0) {
+          console.log('🎬 Processing frame:', frameCount, 'Video size:', width, 'x', height, 'Ready state:', video.readyState);
+        }
+        frameCount++;
+        
+        // Set canvas to EXACT video resolution (no scaling)
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          console.log('📐 Canvas resized to:', width, 'x', height);
+        }
+
+        // Draw at 1:1 pixel ratio for maximum quality
+        ctx.drawImage(video, 0, 0, width, height);
+
+        // Get image data
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        // Remove black/dark pixels with optimized threshold
+        const threshold = 30; // Lower threshold for better detail preservation
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          // If pixel is very dark (near black), make it transparent
+          const brightness = (r + g + b) / 3;
+          if (brightness < threshold) {
+            data[i + 3] = 0; // Fully transparent
+          }
+        }
+
+        // Put processed image data back
+        ctx.putImageData(imageData, 0, 0);
       };
 
       pc.ontrack = (event) => {

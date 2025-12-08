@@ -295,10 +295,12 @@ export const useDIDAvatarStream = ({
       sourceUrlRef.current = sourceUrl;
 
       // 1) Create stream (WebRTC connection only, NO script)
-      console.log('🎬 Creating D-ID stream...');
+      console.log('🎬 Creating D-ID stream with source:', sourceUrl);
       const response = await supabase.functions.invoke('did-streaming', {
         body: {
           action: 'createStream',
+          // Send both formats for compatibility with v8 deployed function
+          source_url: sourceUrl,
           data: { source_url: sourceUrl },
         },
       });

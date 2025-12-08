@@ -52,7 +52,16 @@ serve(async (req) => {
   }
 
   try {
-    const { action, data } = await req.json();
+    // Parse request body and support both nested (data.source_url) and flat (source_url) formats
+    const requestBody = await req.json();
+    const { action, data, source_url: topLevelSourceUrl, ...rest } = requestBody;
+    
+    console.log(`[${requestId}] Parsed request:`, { 
+      action, 
+      hasData: !!data, 
+      hasTopLevelSourceUrl: !!topLevelSourceUrl,
+      dataKeys: data ? Object.keys(data) : []
+    });
     
     if (!DID_API_KEY) {
       throw new Error('DID_API_KEY is not configured');
@@ -64,11 +73,14 @@ serve(async (req) => {
     switch (action) {
       // ============================================
       // CREATE STREAM - WebRTC connection only, NO script
+      // Accepts both: { data: { source_url } } OR { source_url } directly
       // ============================================
       case 'createStream': {
-        const { source_url } = data;
+        // Support both nested and flat parameter formats for compatibility
+        const source_url = data?.source_url || topLevelSourceUrl;
         
         if (!source_url) {
+          console.error(`[${requestId}] createStream missing source_url:`, { data, topLevelSourceUrl, requestBody });
           throw new Error('source_url is required for createStream');
         }
 

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface UseDIDAvatarStreamOptions {
@@ -8,6 +8,13 @@ export interface UseDIDAvatarStreamOptions {
   onError?: (error: Error) => void;
 }
 
+// Connection health check interval (ms)
+const HEALTH_CHECK_INTERVAL = 15000;
+// Max retries for startAnimation
+const MAX_ANIMATION_RETRIES = 3;
+// Delay between retries (ms)
+const RETRY_DELAY = 1000;
+
 export const useDIDAvatarStream = ({
   containerRef,
   onStreamStart,
@@ -16,6 +23,8 @@ export const useDIDAvatarStream = ({
 }: UseDIDAvatarStreamOptions) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [connectionState, setConnectionState] = useState<'idle' | 'connecting' | 'connected' | 'failed'>('idle');
+  
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const streamIdRef = useRef<string | null>(null);
@@ -25,15 +34,28 @@ export const useDIDAvatarStream = ({
   const animationFrameRef = useRef<number | null>(null);
   const sdpExchangedRef = useRef<boolean>(false);
   const pendingIceCandidates = useRef<RTCIceCandidate[]>([]);
+  const healthCheckRef = useRef<NodeJS.Timeout | null>(null);
+  const sourceUrlRef = useRef<string | null>(null);
+  const isCleaningUp = useRef<boolean>(false);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       cleanup();
     };
   }, []);
 
-  const cleanup = async () => {
+  const cleanup = useCallback(async () => {
+    if (isCleaningUp.current) return;
+    isCleaningUp.current = true;
+    
     console.log('🧹 Cleaning up D-ID stream');
+    
+    // Stop health check
+    if (healthCheckRef.current) {
+      clearInterval(healthCheckRef.current);
+      healthCheckRef.current = null;
+    }
     
     sdpExchangedRef.current = false;
     pendingIceCandidates.current = [];
@@ -72,18 +94,21 @@ export const useDIDAvatarStream = ({
           }
         });
       } catch (error) {
-        console.error('Error deleting stream:', error);
+        console.warn('⚠️ Error deleting stream:', error);
       }
     }
 
     streamIdRef.current = null;
     sessionIdRef.current = null;
+    sourceUrlRef.current = null;
     setIsStreaming(false);
     setIsLoading(false);
-  };
+    setConnectionState('idle');
+    isCleaningUp.current = false;
+  }, []);
 
   // Send queued ICE candidates after SDP is exchanged
-  const flushIceCandidates = async () => {
+  const flushIceCandidates = useCallback(async () => {
     if (!sdpExchangedRef.current) return;
     
     const candidates = [...pendingIceCandidates.current];
@@ -128,25 +153,15 @@ export const useDIDAvatarStream = ({
     } catch (e) {
       console.error('❌ ICE complete signal failed:', e);
     }
-  };
+  }, []);
 
-  const speak = async (text: string, imageUrl?: string) => {
-    console.log('🎤 D-ID speak function called');
-    console.log('📝 Text:', text?.substring(0, 50) + '...');
-    console.log('🖼️ Image URL:', imageUrl);
-
-    if (!text) return;
-    if (!containerRef.current) {
-      onError?.(new Error('Video container not available'));
-      return;
-    }
-
-    try {
-      // If already connected and SDP exchanged, just send the startAnimation command
-      if (streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current && 
-          peerConnectionRef.current?.connectionState === 'connected') {
-        console.log('🔁 Reusing existing stream to speak');
-        const speakResponse = await supabase.functions.invoke('did-streaming', {
+  // Start animation with retry logic
+  const sendStartAnimation = useCallback(async (text: string): Promise<boolean> => {
+    for (let attempt = 1; attempt <= MAX_ANIMATION_RETRIES; attempt++) {
+      console.log(`🎤 startAnimation attempt ${attempt}/${MAX_ANIMATION_RETRIES}...`);
+      
+      try {
+        const res = await supabase.functions.invoke('did-streaming', {
           body: {
             action: 'startAnimation',
             data: {
@@ -157,15 +172,52 @@ export const useDIDAvatarStream = ({
           },
         });
 
-        if (speakResponse.error) {
-          console.error('❌ startAnimation error:', speakResponse.error);
-          throw new Error(`startAnimation failed: ${speakResponse.error.message}`);
+        if (res.error || !res.data?.success) {
+          console.error(`❌ startAnimation attempt ${attempt} failed:`, res.error || res.data);
+          if (attempt < MAX_ANIMATION_RETRIES) {
+            console.log(`⏳ Waiting ${RETRY_DELAY}ms before retry...`);
+            await new Promise(r => setTimeout(r, RETRY_DELAY));
+          }
+        } else {
+          console.log('✅ Animation started successfully');
+          return true;
         }
-        
-        console.log('✅ Animation started on existing stream');
+      } catch (e) {
+        console.error(`❌ startAnimation attempt ${attempt} error:`, e);
+        if (attempt < MAX_ANIMATION_RETRIES) {
+          await new Promise(r => setTimeout(r, RETRY_DELAY));
+        }
+      }
+    }
+    console.error('❌ All startAnimation attempts failed');
+    return false;
+  }, []);
+
+  // Main speak function
+  const speak = useCallback(async (text: string, imageUrl?: string) => {
+    console.log('🎤 D-ID speak function called');
+    console.log('📝 Text:', text?.substring(0, 50) + '...');
+    console.log('🖼️ Image URL:', imageUrl);
+
+    if (!text) return;
+    if (!containerRef.current) {
+      onError?.(new Error('Video container not available'));
+      return;
+    }
+
+    const sourceUrl = imageUrl || 
+      'https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png';
+
+    try {
+      // If already connected and SDP exchanged, just send the startAnimation command
+      if (streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current && 
+          peerConnectionRef.current?.connectionState === 'connected') {
+        console.log('🔁 Reusing existing stream to speak');
+        await sendStartAnimation(text);
         return;
       }
 
+      // If loading, queue the text
       if (isLoading) {
         console.log('⏳ Setup in progress, queueing text');
         pendingTextRef.current = text;
@@ -173,12 +225,11 @@ export const useDIDAvatarStream = ({
       }
 
       setIsLoading(true);
+      setConnectionState('connecting');
       pendingTextRef.current = text;
       sdpExchangedRef.current = false;
       pendingIceCandidates.current = [];
-
-      const sourceUrl = imageUrl || 
-        'https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png';
+      sourceUrlRef.current = sourceUrl;
 
       // 1) Create stream (WebRTC connection only, NO script)
       console.log('🎬 Creating D-ID stream...');
@@ -201,22 +252,26 @@ export const useDIDAvatarStream = ({
       sessionIdRef.current = session_id;
       console.log('✅ Stream created:', streamId);
 
-      // 2) Setup WebRTC
+      // 2) Setup WebRTC with optimized settings
       const pc = new RTCPeerConnection({
         iceServers: ice_servers || [{ urls: 'stun:stun.l.google.com:19302' }],
+        // Optimize for low latency
+        iceCandidatePoolSize: 10,
       });
       peerConnectionRef.current = pc;
 
-      // Create hidden video element for source
+      // Create hidden video element for source - NO DISTORTION
       const video = document.createElement('video');
       video.autoplay = true;
       video.playsInline = true;
       video.muted = false; // Audio should come through
       video.style.display = 'none';
+      // Prevent any scaling artifacts
+      video.style.imageRendering = 'crisp-edges';
       videoRef.current = video;
       containerRef.current.appendChild(video);
 
-      // Create canvas for chroma-key processing
+      // Create canvas for chroma-key processing - CRISP, NO BLUR
       const canvas = document.createElement('canvas');
       Object.assign(canvas.style, {
         position: 'absolute',
@@ -228,9 +283,12 @@ export const useDIDAvatarStream = ({
         objectFit: 'contain',
         objectPosition: 'bottom center',
         opacity: '0',
-        transition: 'opacity 0.5s ease-in-out',
+        transition: 'opacity 0.3s ease-in-out',
         zIndex: '20',
         backgroundColor: 'transparent',
+        // CRITICAL: No blur or filters
+        imageRendering: 'auto',
+        filter: 'none',
       } as CSSStyleDeclaration);
       canvasRef.current = canvas;
       containerRef.current.appendChild(canvas);
@@ -238,13 +296,18 @@ export const useDIDAvatarStream = ({
       const ctx = canvas.getContext('2d', { 
         willReadFrequently: true,
         alpha: true,
+        desynchronized: true, // Reduce latency
       });
       
       if (!ctx) {
         throw new Error('Could not get canvas context');
       }
 
-      // Process video frames to remove black background
+      // Ensure crisp rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Process video frames to remove black background - OPTIMIZED
       let canvasInitialized = false;
       
       const processFrame = () => {
@@ -267,17 +330,19 @@ export const useDIDAvatarStream = ({
           console.log('✅ Canvas initialized:', width, 'x', height);
         }
         
+        // Only resize if needed (avoid flicker)
         if (canvas.width !== width || canvas.height !== height) {
           canvas.width = width;
           canvas.height = height;
         }
 
+        // Draw frame
         ctx.drawImage(video, 0, 0, width, height);
 
-        // Chroma-key: remove black/dark pixels
+        // Chroma-key: remove black/dark pixels - OPTIMIZED threshold
         const imageData = ctx.getImageData(0, 0, width, height);
         const data = imageData.data;
-        const threshold = 30;
+        const threshold = 25; // Slightly tighter for cleaner edges
 
         for (let i = 0; i < data.length; i += 4) {
           const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
@@ -315,49 +380,26 @@ export const useDIDAvatarStream = ({
       };
 
       pc.onconnectionstatechange = () => {
-        console.log('🔌 Connection state:', pc.connectionState);
+        const state = pc.connectionState;
+        console.log('🔌 Connection state:', state);
         
-        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+        if (state === 'connected') {
+          setConnectionState('connected');
+          
+          // Start health check
+          if (healthCheckRef.current) {
+            clearInterval(healthCheckRef.current);
+          }
+          healthCheckRef.current = setInterval(() => {
+            if (peerConnectionRef.current?.connectionState !== 'connected') {
+              console.warn('⚠️ Connection health check failed');
+              setConnectionState('failed');
+            }
+          }, HEALTH_CHECK_INTERVAL);
+        } else if (state === 'disconnected' || state === 'failed') {
+          setConnectionState('failed');
           onStreamEnd?.();
         }
-      };
-
-      // Helper function to send startAnimation with retry
-      const sendStartAnimation = async (text: string, retries = 3, delay = 1000) => {
-        for (let attempt = 1; attempt <= retries; attempt++) {
-          console.log(`🎤 startAnimation attempt ${attempt}/${retries}...`);
-          
-          try {
-            const res = await supabase.functions.invoke('did-streaming', {
-              body: {
-                action: 'startAnimation',
-                data: {
-                  stream_id: streamIdRef.current,
-                  session_id: sessionIdRef.current,
-                  text,
-                },
-              },
-            });
-
-            if (res.error || !res.data?.success) {
-              console.error(`❌ startAnimation attempt ${attempt} failed:`, res.error || res.data);
-              if (attempt < retries) {
-                console.log(`⏳ Waiting ${delay}ms before retry...`);
-                await new Promise(r => setTimeout(r, delay));
-              }
-            } else {
-              console.log('✅ Animation started successfully');
-              return true;
-            }
-          } catch (e) {
-            console.error(`❌ startAnimation attempt ${attempt} error:`, e);
-            if (attempt < retries) {
-              await new Promise(r => setTimeout(r, delay));
-            }
-          }
-        }
-        console.error('❌ All startAnimation attempts failed');
-        return false;
       };
 
       // Wait for video to be ready, then send animation
@@ -370,6 +412,7 @@ export const useDIDAvatarStream = ({
           processFrame();
           setIsLoading(false);
           setIsStreaming(true);
+          setConnectionState('connected');
           onStreamStart?.();
 
           // Now that video is playing, send the animation with retry
@@ -382,6 +425,7 @@ export const useDIDAvatarStream = ({
           }
         } catch (err) {
           console.error('❌ Video play failed:', err);
+          setConnectionState('failed');
         }
       };
 
@@ -419,14 +463,16 @@ export const useDIDAvatarStream = ({
     } catch (error) {
       console.error('❌ D-ID speak error:', error);
       setIsLoading(false);
+      setConnectionState('failed');
       onError?.(error instanceof Error ? error : new Error('Unknown error'));
     }
-  };
+  }, [containerRef, isLoading, onError, onStreamStart, flushIceCandidates, sendStartAnimation]);
 
   return {
     speak,
     isStreaming,
     isLoading,
+    connectionState,
     cleanup,
   };
 };

@@ -113,7 +113,10 @@ const Home = () => {
           <div className="hero-content-wrapper">
             
             {/* Left Side - Isabella (Anchor) */}
-            <div className="isabella-container">
+            <div 
+              className="isabella-container"
+              style={{ zIndex: isSpeaking || isStreaming ? 200 : 1 }}
+            >
               {/* Enhanced Isabella Backlight (Soft Golden Glow) - Positioned in container */}
               <div className="isabella-backlight"></div>
               
@@ -121,7 +124,7 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Fades when D-ID animation is active */}
+                {/* Isabella Image - Only hides when D-ID canvas is confirmed ready */}
                 <img 
                   src={isabellaHeroImageUrl}
                   alt="Isabella Navia - AI Model Ambassador"
@@ -130,7 +133,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isSpeaking || isStreaming ? 0 : 1,
+                    opacity: isAvatarReady && isSpeaking ? 0 : 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />
@@ -146,7 +149,7 @@ const Home = () => {
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    zIndex: 12,
+                    zIndex: isSpeaking || isStreaming ? 150 : 12, // Above chat overlay when animating
                     pointerEvents: 'none',
                     background: 'transparent',
                   }}

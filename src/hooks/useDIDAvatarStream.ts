@@ -312,7 +312,15 @@ export const useDIDAvatarStream = ({
         throw new Error(`D-ID createStream failed: ${response.error?.message || 'Unknown error'}`);
       }
 
-      const { id: streamId, offer, ice_servers, session_id } = response.data;
+      // v8 returns stream_id, v4 returns id - support both
+      const streamId = response.data.stream_id || response.data.id;
+      const { offer, ice_servers, session_id } = response.data;
+      
+      if (!streamId) {
+        console.error('❌ No stream_id or id in response:', response.data);
+        throw new Error('Stream ID missing from response');
+      }
+      
       streamIdRef.current = streamId;
       sessionIdRef.current = session_id;
       console.log('✅ Stream created:', streamId);

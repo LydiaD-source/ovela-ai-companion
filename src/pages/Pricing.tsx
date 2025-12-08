@@ -168,24 +168,24 @@ const Pricing = () => {
 
                 {/* CTA Button */}
                 <div className="mt-auto">
-                  <a href="/#chat">
-                  <button
-                    className="w-full transition-all duration-300 hover:scale-105"
-                    style={{
-                      padding: '14px 24px',
-                      borderRadius: '8px',
-                      background: 'transparent',
-                      border: '1.5px solid #D4AF37',
-                      color: '#D4AF37',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Request Isabella
-                  </button>
-                </a>
+                  <a href="/?chat=open">
+                    <button
+                      className="w-full transition-all duration-300 hover:scale-105"
+                      style={{
+                        padding: '14px 24px',
+                        borderRadius: '8px',
+                        background: 'transparent',
+                        border: '1.5px solid #D4AF37',
+                        color: '#D4AF37',
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Request Isabella
+                    </button>
+                  </a>
                 </div>
 
                 {/* Hover glow effect */}
@@ -301,7 +301,7 @@ const Pricing = () => {
             Partner with Isabella, the world's first AI Model Ambassador
           </h2>
           
-          <a href="/#chat">
+          <a href="/?chat=open">
             <button
               className="transition-all duration-300 hover:scale-105"
               style={{

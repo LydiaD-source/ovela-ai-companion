@@ -6,7 +6,7 @@ import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 const PartnerWithUs = () => {
   useCanonicalLink('/partner');
   const scrollToChat = () => {
-    window.location.href = '/#chat';
+    window.location.href = '/?chat=open';
   };
 
   return (

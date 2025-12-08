@@ -267,6 +267,13 @@ export const useDIDAvatarStream = ({
       if (text && streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current && 
           peerConnectionRef.current?.connectionState === 'connected') {
         console.log('🔁 Reusing existing stream to speak');
+        console.log('🎥 Canvas ref:', !!canvasRef.current);
+        console.log('🎥 Video ref:', !!videoRef.current);
+        if (canvasRef.current) {
+          console.log('🎥 Canvas opacity:', canvasRef.current.style.opacity);
+          // Ensure canvas is visible
+          canvasRef.current.style.opacity = '1';
+        }
         queueSpeech(text);
         return;
       }
@@ -365,9 +372,23 @@ export const useDIDAvatarStream = ({
 
       // Process video frames to remove black background - OPTIMIZED
       let canvasInitialized = false;
+      let frameCount = 0;
       
       const processFrame = () => {
         animationFrameRef.current = requestAnimationFrame(processFrame);
+        
+        // Log every 60 frames (approx once per second)
+        frameCount++;
+        if (frameCount % 60 === 0) {
+          console.log('🎬 processFrame running:', {
+            paused: video.paused,
+            ended: video.ended,
+            readyState: video.readyState,
+            videoWidth: video.videoWidth,
+            videoHeight: video.videoHeight,
+            canvasInitialized
+          });
+        }
         
         if (video.paused || video.ended || video.readyState < 2) {
           return;

@@ -22,7 +22,7 @@ const Home = () => {
   const [isAvatarReady, setIsAvatarReady] = useState(false);
 
   // D-ID Avatar Stream Hook
-  const { speak: speakDID, isStreaming, isLoading, connectionState } = useDIDAvatarStream({
+  const { speak: speakDID, isStreaming, isLoading, isSpeaking, connectionState, queueSpeech } = useDIDAvatarStream({
     containerRef: avatarContainerRef,
     onStreamStart: () => {
       console.log('🎬 D-ID stream started');
@@ -61,13 +61,14 @@ const Home = () => {
     
     setIsChatActive(true);
 
-    // Kick off a short greeting animation with D-ID
+    // Pre-establish D-ID connection WITHOUT sending animation
+    // The AI response will trigger the first animation
     try {
-      const greeting = "Hello, I'm Isabella. How can I help you today?";
-      console.log('🎬 Sending initial greeting to D-ID');
-      await speakDID(greeting, isabellaHeroImageUrl);
+      console.log('🎬 Pre-establishing D-ID connection...');
+      // Call speak with empty text just to establish connection
+      await speakDID('', isabellaHeroImageUrl);
     } catch (e) {
-      console.error('❌ Initial D-ID greeting failed:', e);
+      console.error('❌ D-ID connection setup failed:', e);
     }
   };
 
@@ -214,25 +215,23 @@ const Home = () => {
                       showOnlyPromoter={true}
                       onAIResponse={(text) => {
                         console.log('🎯 onAIResponse callback triggered!');
-                        console.log('📝 Text received:', text);
-                        console.log('🖼️ Image URL:', isabellaHeroImageUrl);
-                        console.log('🎯 isLoading:', isLoading, 'isStreaming:', isStreaming);
+                        console.log('📝 Text received:', text?.substring(0, 50));
                         
                         if (!text) {
                           console.warn('⚠️ No text received in onAIResponse');
                           return;
                         }
                         
-                        if (isLoading) {
-                          console.log('⏳ D-ID is still loading, will queue this text');
+                        // Use queueSpeech to prevent overlapping animations
+                        if (isStreaming && !isLoading) {
+                          console.log('🎬 Using queueSpeech for animation');
+                          queueSpeech(text);
+                        } else {
+                          console.log('🎬 Calling speakDID to establish connection + animate');
+                          speakDID(text, isabellaHeroImageUrl).catch(err => {
+                            console.error('❌ speakDID error:', err);
+                          });
                         }
-                        
-                        console.log('🎬 Calling speakDID now...');
-                        speakDID(text, isabellaHeroImageUrl).then(() => {
-                          console.log('✅ speakDID call completed');
-                        }).catch(err => {
-                          console.error('❌ speakDID error:', err);
-                        });
                       }}
                     />
                   </div>

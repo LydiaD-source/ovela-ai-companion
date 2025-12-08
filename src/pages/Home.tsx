@@ -24,10 +24,10 @@ const Home = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);
 
-  // Register video element globally for StreamingService (once on mount)
+  // Register video element globally for StreamingService
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || hasInitialized.current) return;
+    if (!video) return;
     
     hasInitialized.current = true;
     (window as any).__AVATAR_VIDEO_REF__ = video;
@@ -41,6 +41,8 @@ const Home = () => {
     console.log('[Home] ✅ Video element registered');
     
     return () => {
+      // Reset on unmount so it reinitializes when navigating back
+      hasInitialized.current = false;
       (window as any).__AVATAR_VIDEO_REF__ = null;
     };
   }, []);

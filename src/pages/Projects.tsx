@@ -253,7 +253,7 @@ const Projects = () => {
 
           {/* CTA */}
           <div className="text-center mt-12">
-            <a href="/#chat">
+            <a href="/?chat=open">
               <button
                 className="transition-all duration-300 hover:scale-105"
                 style={{

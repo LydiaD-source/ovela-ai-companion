@@ -297,20 +297,6 @@ export const useDIDAvatarStream = ({
           console.log('🎥 Stream tracks:', stream.getTracks().map(t => `${t.kind}: ${t.readyState}`).join(', '));
           
           video.srcObject = stream;
-          
-          video.onloadedmetadata = () => {
-            console.log('🎥 Video metadata loaded:', video.videoWidth, 'x', video.videoHeight);
-            
-            video.play().then(() => {
-              console.log('▶️ Video playing');
-              processFrame();
-              setIsLoading(false);
-              setIsStreaming(true);
-              onStreamStart?.();
-            }).catch(err => {
-              console.error('❌ Video play failed:', err);
-            });
-          };
         }
       };
 
@@ -331,33 +317,71 @@ export const useDIDAvatarStream = ({
       pc.onconnectionstatechange = () => {
         console.log('🔌 Connection state:', pc.connectionState);
         
-        if (pc.connectionState === 'connected') {
-          // Send animation once WebRTC is fully connected
-          const toSpeak = pendingTextRef.current;
-          if (toSpeak) {
-            console.log('🎤 Sending startAnimation after connection...');
-            supabase.functions.invoke('did-streaming', {
+        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+          onStreamEnd?.();
+        }
+      };
+
+      // Helper function to send startAnimation with retry
+      const sendStartAnimation = async (text: string, retries = 3, delay = 1000) => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          console.log(`🎤 startAnimation attempt ${attempt}/${retries}...`);
+          
+          try {
+            const res = await supabase.functions.invoke('did-streaming', {
               body: {
                 action: 'startAnimation',
                 data: {
                   stream_id: streamIdRef.current,
                   session_id: sessionIdRef.current,
-                  text: toSpeak,
+                  text,
                 },
               },
-            }).then(res => {
-              if (res.error || !res.data?.success) {
-                console.error('❌ startAnimation failed:', res.error || res.data);
-              } else {
-                console.log('✅ Animation started');
-              }
             });
-            pendingTextRef.current = null;
+
+            if (res.error || !res.data?.success) {
+              console.error(`❌ startAnimation attempt ${attempt} failed:`, res.error || res.data);
+              if (attempt < retries) {
+                console.log(`⏳ Waiting ${delay}ms before retry...`);
+                await new Promise(r => setTimeout(r, delay));
+              }
+            } else {
+              console.log('✅ Animation started successfully');
+              return true;
+            }
+          } catch (e) {
+            console.error(`❌ startAnimation attempt ${attempt} error:`, e);
+            if (attempt < retries) {
+              await new Promise(r => setTimeout(r, delay));
+            }
           }
         }
+        console.error('❌ All startAnimation attempts failed');
+        return false;
+      };
+
+      // Wait for video to be ready, then send animation
+      video.onloadedmetadata = async () => {
+        console.log('🎥 Video metadata loaded:', video.videoWidth, 'x', video.videoHeight);
         
-        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-          onStreamEnd?.();
+        try {
+          await video.play();
+          console.log('▶️ Video playing');
+          processFrame();
+          setIsLoading(false);
+          setIsStreaming(true);
+          onStreamStart?.();
+
+          // Now that video is playing, send the animation with retry
+          const toSpeak = pendingTextRef.current;
+          if (toSpeak) {
+            pendingTextRef.current = null;
+            // Small delay to ensure D-ID stream is fully ready
+            await new Promise(r => setTimeout(r, 500));
+            await sendStartAnimation(toSpeak);
+          }
+        } catch (err) {
+          console.error('❌ Video play failed:', err);
         }
       };
 

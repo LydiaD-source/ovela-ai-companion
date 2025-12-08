@@ -120,7 +120,7 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Hidden when D-ID stream is active to prevent duplicate */}
+                {/* Isabella Image - Always visible as base layer */}
                 <img 
                   src={isabellaHeroImageUrl}
                   alt="Isabella Navia - AI Model Ambassador"
@@ -128,13 +128,9 @@ const Home = () => {
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"
-                  style={{
-                    opacity: isStreaming ? 0 : 1,
-                    transition: 'opacity 0.5s ease-in-out',
-                  }}
                 />
                 
-                {/* D-ID Stream Container - Replaces static image when active */}
+                {/* D-ID Stream Container - Canvas overlays when animated */}
                 <div 
                   ref={avatarContainerRef}
                   id="did-container" 
@@ -151,20 +147,18 @@ const Home = () => {
                   }}
                 >
                   {/* D-ID canvas will be injected here dynamically */}
-                  {isLoading && !isStreaming && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                    }}>
-                      <div
-                        aria-label="Preparing Isabella"
-                        className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin"
-                      />
-                    </div>
-                  )}
+                  {/* Minimal loading indicator - small pulse on the button instead */}
                 </div>
+                
+                {/* Small loading indicator at bottom when connecting */}
+                {isLoading && (
+                  <div 
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm"
+                  >
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-xs text-soft-white/80">Connecting...</span>
+                  </div>
+                )}
               </div>
             </div>
 

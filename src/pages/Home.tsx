@@ -121,7 +121,7 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Always visible as base layer */}
+                {/* Isabella Image - Fades when D-ID animation is active */}
                 <img 
                   src={isabellaHeroImageUrl}
                   alt="Isabella Navia - AI Model Ambassador"
@@ -129,6 +129,10 @@ const Home = () => {
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"
+                  style={{
+                    opacity: isSpeaking || isStreaming ? 0 : 1,
+                    transition: 'opacity 0.3s ease-in-out',
+                  }}
                 />
                 
                 {/* D-ID Stream Container - Canvas overlays when animated */}

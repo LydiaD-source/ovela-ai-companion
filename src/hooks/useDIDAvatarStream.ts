@@ -466,12 +466,15 @@ export const useDIDAvatarStream = ({
         }
       };
 
-      pc.onconnectionstatechange = () => {
+      // CRITICAL: Wait for ICE connection BEFORE sending startAnimation (per WellnessGeni pipeline)
+      pc.onconnectionstatechange = async () => {
         const state = pc.connectionState;
         console.log('🔌 Connection state:', state);
         
         if (state === 'connected') {
           setConnectionState('connected');
+          setIsStreaming(true);
+          onStreamStart?.();
           
           // Start health check
           if (healthCheckRef.current) {
@@ -483,13 +486,23 @@ export const useDIDAvatarStream = ({
               setConnectionState('failed');
             }
           }, HEALTH_CHECK_INTERVAL);
+          
+          // CRITICAL: Only send startAnimation AFTER ICE is connected (WellnessGeni pattern)
+          const toSpeak = pendingTextRef.current;
+          if (toSpeak && sdpExchangedRef.current) {
+            pendingTextRef.current = null;
+            console.log('🎬 ICE connected! Sending pending speech now');
+            await sendStartAnimation(toSpeak);
+          } else {
+            console.log('✅ ICE connected, waiting for AI response');
+          }
         } else if (state === 'disconnected' || state === 'failed') {
           setConnectionState('failed');
           onStreamEnd?.();
         }
       };
 
-      // Wait for video to be ready, then send animation
+      // Video metadata loaded - start rendering but DON'T send animation yet
       video.onloadedmetadata = async () => {
         console.log('🎥 Video metadata loaded:', video.videoWidth, 'x', video.videoHeight);
         
@@ -498,21 +511,8 @@ export const useDIDAvatarStream = ({
           console.log('▶️ Video playing');
           processFrame();
           setIsLoading(false);
-          setIsStreaming(true);
-          setConnectionState('connected');
-          onStreamStart?.();
-
-          // Now that video is playing, send the animation if we have pending text
-          const toSpeak = pendingTextRef.current;
-          if (toSpeak) {
-            pendingTextRef.current = null;
-            // Small delay to ensure D-ID stream is fully ready
-            await new Promise(r => setTimeout(r, 500));
-            console.log('🎬 Sending pending speech after connection ready');
-            await sendStartAnimation(toSpeak);
-          } else {
-            console.log('✅ D-ID connection ready, waiting for AI response');
-          }
+          // Don't set connected here - wait for ICE connection
+          console.log('🎥 Video ready, waiting for ICE connection...');
         } catch (err) {
           console.error('❌ Video play failed:', err);
           setConnectionState('failed');

@@ -52,14 +52,15 @@ serve(async (req) => {
   }
 
   try {
-    // Parse request body and support both nested (data.source_url) and flat (source_url) formats
+    // Parse request body and support multiple parameter formats for backwards compatibility
     const requestBody = await req.json();
-    const { action, data, source_url: topLevelSourceUrl, ...rest } = requestBody;
+    const { action, data, source_url: topLevelSourceUrl, avatarUrl: topLevelAvatarUrl, ...rest } = requestBody;
     
     console.log(`[${requestId}] Parsed request:`, { 
       action, 
       hasData: !!data, 
       hasTopLevelSourceUrl: !!topLevelSourceUrl,
+      hasTopLevelAvatarUrl: !!topLevelAvatarUrl,
       dataKeys: data ? Object.keys(data) : []
     });
     
@@ -76,15 +77,20 @@ serve(async (req) => {
       // Accepts both: { data: { source_url } } OR { source_url } directly
       // ============================================
       case 'createStream': {
-        // Support both nested and flat parameter formats for compatibility
-        const source_url = data?.source_url || topLevelSourceUrl;
+        // Support multiple parameter formats for backwards compatibility
+        // Priority: data.source_url > data.avatarUrl > topLevelSourceUrl > topLevelAvatarUrl
+        const source_url = data?.source_url || data?.avatarUrl || topLevelSourceUrl || topLevelAvatarUrl;
         
         if (!source_url) {
-          console.error(`[${requestId}] createStream missing source_url:`, { data, topLevelSourceUrl, requestBody });
-          throw new Error('source_url is required for createStream');
+          console.error(`[${requestId}] createStream: Missing avatarUrl/source_url`, { data, topLevelSourceUrl, topLevelAvatarUrl });
+          return new Response(JSON.stringify({ success: false, error: { message: 'avatarUrl or source_url is required' } }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
-
-        console.log(`[${requestId}] createStream: ${source_url.substring(0, 60)}...`);
+        
+        const receivedAs = data?.source_url ? 'data.source_url' : data?.avatarUrl ? 'data.avatarUrl' : topLevelSourceUrl ? 'source_url' : 'avatarUrl';
+        console.log(`[${requestId}] createStream (NO script):`, { avatarUrl: source_url.substring(0, 80), receivedAs });
 
         const response = await fetch(`${DID_API_BASE}/talks/streams`, {
           method: 'POST',
@@ -116,13 +122,18 @@ serve(async (req) => {
         }
 
         console.log(`[${requestId}] createStream SUCCESS:`, {
-          id: result.id,
+          stream_id: result.id,
           session_id: result.session_id?.substring(0, 30) + '...',
+          has_offer: !!result.offer,
+          has_ice_servers: !!result.ice_servers,
+          ice_servers_count: result.ice_servers?.length || 0,
         });
 
+        // Return both id and stream_id for compatibility with all frontend versions
         return new Response(JSON.stringify({
           success: true,
           id: result.id,
+          stream_id: result.id,  // v8 format - preferred
           session_id: result.session_id,
           offer: result.offer,
           ice_servers: result.ice_servers,

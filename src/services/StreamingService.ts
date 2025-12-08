@@ -106,13 +106,15 @@ class PersistentStreamManager {
     this.state.avatarUrl = avatarUrl;
 
     try {
-      console.log('🎬 Creating D-ID stream...');
+      console.log('🎬 Creating D-ID stream with avatarUrl:', avatarUrl);
 
       // Step 1: Create stream
+      // v8 edge function expects source_url at TOP LEVEL (not nested in data)
       const { data: createData, error: createError } = await supabase.functions.invoke('did-streaming', {
         body: {
           action: 'createStream',
-          data: { source_url: avatarUrl },
+          source_url: avatarUrl,  // TOP LEVEL for v8 compatibility
+          avatarUrl: avatarUrl,   // Also send as avatarUrl for backwards compatibility
         },
       });
 

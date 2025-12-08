@@ -1,29 +1,65 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+// ============================================
+// D-ID Streaming Edge Function v4 - PRODUCTION READY
+// Optimized for high-traffic avatar animation
+// ============================================
 
 const DID_API_BASE = 'https://api.d-id.com';
 
+// Allowed origins for CORS (production domains)
+const ALLOWED_ORIGINS = [
+  'https://www.wellnessgeni.com',
+  'https://wellnessgeni.com',
+  'https://ovelainteractive.com',
+  'https://www.ovelainteractive.com',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+const DID_API_KEY = Deno.env.get('DID_API_KEY');
+const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+
+// Log startup config (once per cold start)
+console.log('[did-streaming] v4 PRODUCTION READY:', {
+  DID_API_KEY_SET: !!DID_API_KEY,
+  DID_API_KEY_LENGTH: DID_API_KEY?.length || 0,
+  ELEVEN_KEY_SET: !!ELEVENLABS_API_KEY,
+  ELEVEN_KEY_LENGTH: ELEVENLABS_API_KEY?.length || 0,
+  version: '2025-12-08-PRODUCTION-V4',
+});
+
+// Generate unique request ID for tracing
+const generateRequestId = () => Math.random().toString(16).slice(2, 10);
+
 serve(async (req) => {
+  const requestId = generateRequestId();
+  const origin = req.headers.get('origin') || '';
+  const isAllowed = ALLOWED_ORIGINS.some(o => origin.startsWith(o)) || origin === '';
+  
+  console.log(`[${requestId}] Request from origin: ${origin} Allowed: ${isAllowed}`);
+
+  // Dynamic CORS headers based on origin
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': isAllowed ? origin || '*' : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
+  };
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { action, data } = await req.json();
-    const DID_API_KEY = Deno.env.get('DID_API_KEY');
-    const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
-
+    
     if (!DID_API_KEY) {
       throw new Error('DID_API_KEY is not configured');
     }
 
     const authHeader = `Basic ${btoa(`${DID_API_KEY}:`)}`;
-    console.log(`🎬 D-ID action: ${action}`);
+    console.log(`[${requestId}] Action: ${action}`);
 
     switch (action) {
       // ============================================
@@ -36,7 +72,7 @@ serve(async (req) => {
           throw new Error('source_url is required for createStream');
         }
 
-        console.log('🔗 Creating D-ID stream with source:', source_url);
+        console.log(`[${requestId}] createStream: ${source_url.substring(0, 60)}...`);
 
         const response = await fetch(`${DID_API_BASE}/talks/streams`, {
           method: 'POST',
@@ -52,18 +88,24 @@ serve(async (req) => {
 
         const result = await response.json();
         
+        console.log(`[${requestId}] D-ID Response:`, {
+          ok: response.ok,
+          status: response.status,
+          hasSetCookie: !!response.headers.get('set-cookie'),
+          bodyPreview: JSON.stringify(result).substring(0, 200),
+        });
+
         if (!response.ok) {
-          console.error('❌ D-ID createStream failed:', response.status, result);
+          console.error(`[${requestId}] ❌ createStream failed:`, response.status, result);
           return new Response(JSON.stringify({ success: false, error: result }), {
             status: response.status,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
-        console.log('✅ Stream created:', {
+        console.log(`[${requestId}] createStream SUCCESS:`, {
           id: result.id,
-          status: result.status,
-          session_id: result.session_id?.substring(0, 20) + '...',
+          session_id: result.session_id?.substring(0, 30) + '...',
         });
 
         return new Response(JSON.stringify({
@@ -87,7 +129,10 @@ serve(async (req) => {
           throw new Error('stream_id, session_id, and answer are required');
         }
 
-        console.log('📡 Sending SDP answer to D-ID:', { stream_id, session_id: session_id.substring(0, 20) + '...' });
+        console.log(`[${requestId}] start (SDP):`, {
+          stream_id,
+          session_id: session_id.substring(0, 30) + '...',
+        });
 
         const response = await fetch(`${DID_API_BASE}/talks/streams/${stream_id}/sdp`, {
           method: 'POST',
@@ -101,24 +146,36 @@ serve(async (req) => {
           }),
         });
 
+        console.log(`[${requestId}] D-ID Response:`, {
+          ok: response.ok,
+          status: response.status,
+        });
+
+        if (response.status === 204) {
+          console.log(`[${requestId}] start SUCCESS (204)`);
+          return new Response(JSON.stringify({ success: true }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
         const result = await response.json();
 
         if (!response.ok) {
-          console.error('❌ D-ID SDP exchange failed:', response.status, result);
+          console.error(`[${requestId}] ❌ start failed:`, response.status, result);
           return new Response(JSON.stringify({ success: false, error: result }), {
             status: response.status,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
-        console.log('✅ SDP answer accepted');
+        console.log(`[${requestId}] start SUCCESS`);
         return new Response(JSON.stringify({ success: true, ...result }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
       // ============================================
-      // SEND ICE CANDIDATE - Forward ALL including null (gathering complete)
+      // SEND ICE CANDIDATE - Forward ALL including null
       // ============================================
       case 'sendIceCandidate': {
         const { stream_id, session_id, candidate, sdpMid, sdpMLineIndex } = data;
@@ -127,17 +184,10 @@ serve(async (req) => {
           throw new Error('stream_id and session_id are required');
         }
 
-        // candidate can be null (signals gathering complete)
-        console.log('🧊 Sending ICE candidate:', { 
-          stream_id, 
-          hasCandidate: candidate !== null,
-          sdpMid,
-          sdpMLineIndex 
-        });
-
+        // candidate can be null (signals ICE gathering complete)
         const body: Record<string, unknown> = { session_id };
         
-        if (candidate !== null) {
+        if (candidate !== null && candidate !== undefined) {
           body.candidate = candidate;
           body.sdpMid = sdpMid;
           body.sdpMLineIndex = sdpMLineIndex;
@@ -152,7 +202,13 @@ serve(async (req) => {
           body: JSON.stringify(body),
         });
 
-        // ICE endpoints often return 204
+        console.log(`[${requestId}] D-ID Response:`, {
+          ok: response.ok,
+          status: response.status,
+          hasSetCookie: !!response.headers.get('set-cookie'),
+          bodyPreview: response.status !== 204 ? await response.clone().text().then(t => t.substring(0, 200)) : '(204)',
+        });
+
         if (response.status === 204) {
           return new Response(JSON.stringify({ success: true }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -162,13 +218,14 @@ serve(async (req) => {
         const result = await response.json();
 
         if (!response.ok) {
-          console.error('❌ ICE candidate failed:', response.status, result);
+          console.error(`[${requestId}] ❌ sendIceCandidate failed:`, response.status, result);
           return new Response(JSON.stringify({ success: false, error: result }), {
             status: response.status,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
+        console.log(`[${requestId}] sendIceCandidate SUCCESS`);
         return new Response(JSON.stringify({ success: true, ...result }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -176,6 +233,7 @@ serve(async (req) => {
 
       // ============================================
       // START ANIMATION - Send text script AFTER WebRTC connected
+      // This is the main animation trigger
       // ============================================
       case 'startAnimation': {
         const { stream_id, session_id, text, voice_id } = data;
@@ -186,10 +244,12 @@ serve(async (req) => {
 
         const selectedVoice = voice_id || 'EXAVITQu4vr4xnSDxMaL'; // Default: Sarah
         
-        console.log('🎤 Starting animation:', { 
-          stream_id, 
-          textLength: text.length,
-          voice: selectedVoice 
+        console.log(`[${requestId}] startAnimation:`, {
+          stream_id,
+          session_id: session_id.substring(0, 100) + '...',
+          messageLength: text.length,
+          messagePreview: text.substring(0, 80),
+          voiceId: selectedVoice,
         });
 
         const headers: Record<string, string> = {
@@ -197,7 +257,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
         };
 
-        // Add ElevenLabs API key if available
+        // CRITICAL: Add ElevenLabs API key for voice synthesis
         if (ELEVENLABS_API_KEY) {
           headers['xi-elevenlabs-api-key'] = ELEVENLABS_API_KEY;
         }
@@ -221,7 +281,14 @@ serve(async (req) => {
           session_id,
         };
 
-        console.log('📤 Animation request body:', JSON.stringify(requestBody, null, 2));
+        console.log(`[${requestId}] D-ID Request:`, {
+          url: `${DID_API_BASE}/talks/streams/${stream_id}`,
+          method: 'POST',
+          hasAuth: true,
+          hasElevenKey: !!ELEVENLABS_API_KEY,
+          hasCookie: false,
+          payloadPreview: JSON.stringify(requestBody).substring(0, 200),
+        });
 
         const response = await fetch(`${DID_API_BASE}/talks/streams/${stream_id}`, {
           method: 'POST',
@@ -231,18 +298,22 @@ serve(async (req) => {
 
         const result = await response.json();
 
+        console.log(`[${requestId}] D-ID Response:`, {
+          ok: response.ok,
+          status: response.status,
+          hasSetCookie: !!response.headers.get('set-cookie'),
+          bodyPreview: JSON.stringify(result).substring(0, 200),
+        });
+
         if (!response.ok) {
-          console.error('❌ startAnimation failed:', response.status, result);
+          console.error(`[${requestId}] ❌ startAnimation failed:`, response.status, result);
           return new Response(JSON.stringify({ success: false, error: result }), {
             status: response.status,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
-        console.log('✅ Animation started:', { 
-          status: result.status,
-          duration: result.duration 
-        });
+        console.log(`[${requestId}] startAnimation SUCCESS - RTP frames should start flowing!`);
 
         return new Response(JSON.stringify({ success: true, ...result }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -261,7 +332,7 @@ serve(async (req) => {
 
         const selectedVoice = voice_id || 'EXAVITQu4vr4xnSDxMaL';
 
-        console.log('🎬 Creating async clip:', { source_url, textLength: text.length });
+        console.log(`[${requestId}] createClip:`, { source_url: source_url.substring(0, 50), textLength: text.length });
 
         const headers: Record<string, string> = {
           'Authorization': authHeader,
@@ -291,14 +362,14 @@ serve(async (req) => {
         const result = await response.json();
 
         if (!response.ok) {
-          console.error('❌ createClip failed:', response.status, result);
+          console.error(`[${requestId}] ❌ createClip failed:`, response.status, result);
           return new Response(JSON.stringify({ success: false, error: result }), {
             status: response.status,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
-        console.log('✅ Clip created:', { id: result.id, status: result.status });
+        console.log(`[${requestId}] createClip SUCCESS:`, { id: result.id, status: result.status });
 
         return new Response(JSON.stringify({ 
           success: true, 
@@ -329,7 +400,7 @@ serve(async (req) => {
         const result = await response.json();
 
         if (!response.ok) {
-          console.error('❌ getClip failed:', response.status, result);
+          console.error(`[${requestId}] ❌ getClip failed:`, response.status, result);
           return new Response(JSON.stringify({ success: false, error: result }), {
             status: response.status,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -346,7 +417,7 @@ serve(async (req) => {
       }
 
       // ============================================
-      // DELETE STREAM - Cleanup
+      // DELETE STREAM - Cleanup when user leaves
       // ============================================
       case 'deleteStream': {
         const { stream_id, session_id } = data;
@@ -355,7 +426,7 @@ serve(async (req) => {
           throw new Error('stream_id is required');
         }
 
-        console.log('🗑️ Deleting stream:', stream_id);
+        console.log(`[${requestId}] deleteStream:`, stream_id);
 
         const response = await fetch(`${DID_API_BASE}/talks/streams/${stream_id}`, {
           method: 'DELETE',
@@ -363,18 +434,18 @@ serve(async (req) => {
             'Authorization': authHeader,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ session_id }),
+          body: session_id ? JSON.stringify({ session_id }) : undefined,
         });
 
         if (response.status === 204 || response.status === 200) {
-          console.log('✅ Stream deleted');
+          console.log(`[${requestId}] deleteStream SUCCESS`);
           return new Response(JSON.stringify({ success: true }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
         const result = await response.text();
-        console.error('❌ Delete failed:', response.status, result);
+        console.error(`[${requestId}] ❌ deleteStream failed:`, response.status, result);
         
         return new Response(JSON.stringify({ success: false, status: response.status }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -386,12 +457,16 @@ serve(async (req) => {
         throw new Error(`Unknown action: ${action}`);
     }
   } catch (error) {
-    console.error('❌ D-ID streaming error:', error);
+    console.error(`[${requestId}] ❌ D-ID streaming error:`, error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+          'Content-Type': 'application/json',
+        },
       }
     );
   }

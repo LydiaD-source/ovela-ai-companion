@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
@@ -10,78 +10,65 @@ import { StreamingService } from '@/services/StreamingService';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 import '@/styles/HeroSection.css';
 
+// Isabella avatar URL - centralized constant
+const ISABELLA_AVATAR_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
+const ISABELLA_VIDEO_URL = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
 
 const Home = () => {
   useCanonicalLink('/');
-  console.log('🟢 HOME COMPONENT LOADED');
-  const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
-  const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
+  
   const [isChatActive, setIsChatActive] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const hasInitialized = useRef(false); // WellnessGeni pattern - prevent double init
-  const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hasInitialized = useRef(false);
 
-  // WellnessGeni pattern: Register video ref AFTER mount, once only
+  // Register video element globally for StreamingService (once on mount)
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || hasInitialized.current) return;
     
-    // Prevent double initialization
-    if (hasInitialized.current) return;
     hasInitialized.current = true;
-    
-    // CRITICAL: Make video globally accessible for StreamingService - matching WellnessGeni
     (window as any).__AVATAR_VIDEO_REF__ = video;
     
-    // Match WellnessGeni video setup - start muted for autoplay policy, unmute when speaking
-    video.muted = false; // D-ID audio should play
+    // Configure video for D-ID audio playback
+    video.muted = false;
     video.volume = 1.0;
     video.playsInline = true;
     video.autoplay = true;
     
-    console.log('[Home] ✅ Video element initialized and registered globally');
+    console.log('[Home] ✅ Video element registered');
     
     return () => {
       (window as any).__AVATAR_VIDEO_REF__ = null;
     };
-  }, []); // Empty dependency - runs once after mount
+  }, []);
 
-  // Control canvas visibility when speaking (chroma-keyed D-ID output)
+  // Control canvas visibility based on speaking state
   useEffect(() => {
     const canvas = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
+    if (!canvas) return;
     
-    if (canvas) {
-      if (isSpeaking) {
-        canvas.style.opacity = '1';
-        canvas.style.display = 'block';
-        console.log('[Home] 🎬 Canvas visible for animation');
-      } else {
-        canvas.style.opacity = '0';
-        // Don't hide with display:none - let it fade out
-        console.log('[Home] 🎬 Canvas hidden');
-      }
-    }
+    canvas.style.opacity = isSpeaking ? '1' : '0';
+    if (isSpeaking) canvas.style.display = 'block';
     
-    // Also ensure audio plays
-    const video = videoRef.current;
-    if (video && isSpeaking) {
-      video.muted = false;
-      video.volume = 1.0;
+    // Ensure audio plays when speaking
+    if (isSpeaking && videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.volume = 1.0;
     }
   }, [isSpeaking]);
 
-  // Subscribe to StreamingService state changes (WellnessGeni pattern)
+  // Subscribe to StreamingService state changes
   useEffect(() => {
     const unsubConnection = StreamingService.onConnectionChange((connected) => {
-      console.log('🔗 StreamingService connection:', connected);
-      setIsConnected(connected);
-      setIsLoading(false);
+      console.log('[Home] 🔗 Connection:', connected);
+      if (connected) setIsLoading(false);
     });
     
     const unsubSpeaking = StreamingService.onSpeakingChange((speaking) => {
-      console.log('🎤 StreamingService speaking:', speaking);
+      console.log('[Home] 🎤 Speaking:', speaking);
       setIsSpeaking(speaking);
     });
     
@@ -91,42 +78,52 @@ const Home = () => {
     };
   }, []);
 
-  // Check URL parameter to auto-open chat from Contact page
+  // Handle URL param to auto-open chat
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('chat') === 'open') {
       setIsChatActive(true);
-      // Clean up URL
       window.history.replaceState({}, '', '/');
     }
   }, []);
 
-  const activateChat = async () => {
-    console.log('🟢 ACTIVATE CHAT CLICKED');
+  // Stable callback for AI responses - triggers D-ID animation
+  const handleAIResponse = useCallback((text: string) => {
+    if (!text) return;
     
-    // Enable autoplay by playing a silent interaction first (browser policy workaround)
+    console.log('[Home] 🎯 AI Response received, triggering speak');
+    StreamingService.speak({
+      avatarUrl: ISABELLA_AVATAR_URL,
+      text,
+    }).catch(err => {
+      console.error('[Home] ❌ Speak error:', err);
+    });
+  }, []);
+
+  // Activate chat and initialize D-ID connection
+  const activateChat = useCallback(async () => {
+    console.log('[Home] 🟢 Activating chat');
+    
+    // Unlock audio context (browser autoplay policy workaround)
     try {
       const silentAudio = new Audio();
       silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
       await silentAudio.play();
-      console.log('✅ Audio context unlocked');
-    } catch (error) {
-      console.log('⚠️ Could not unlock audio context:', error);
+    } catch (e) {
+      // Ignore - audio context may already be unlocked
     }
     
-    // Show chat immediately
     setIsChatActive(true);
     setIsLoading(true);
 
-    // Start D-ID connection in background using StreamingService (WellnessGeni pattern)
-    console.log('🎬 Starting D-ID connection via StreamingService...');
-    StreamingService.init(isabellaHeroImageUrl).then(() => {
-      console.log('✅ StreamingService D-ID connection ready');
-    }).catch(e => {
-      console.error('❌ StreamingService connection failed:', e);
-      setIsLoading(false);
-    });
-  };
+    // Initialize D-ID stream in background
+    StreamingService.init(ISABELLA_AVATAR_URL)
+      .then(() => console.log('[Home] ✅ D-ID ready'))
+      .catch(e => {
+        console.error('[Home] ❌ D-ID init failed:', e);
+        setIsLoading(false);
+      });
+  }, []);
 
   return (
     <>
@@ -139,11 +136,11 @@ const Home = () => {
             "@type": "VideoObject",
             "name": "Isabella — The World's First AI Brand Ambassador",
             "description": "10-second introduction to Isabella, Ovela Interactive's AI marketing companion.",
-            "thumbnailUrl": `${isabellaVideoUrl}#t=0.5`,
+            "thumbnailUrl": `${ISABELLA_VIDEO_URL}#t=0.5`,
             "uploadDate": new Date().toISOString().split('T')[0],
             "duration": "PT10S",
-            "contentUrl": isabellaVideoUrl,
-            "embedUrl": isabellaVideoUrl,
+            "contentUrl": ISABELLA_VIDEO_URL,
+            "embedUrl": ISABELLA_VIDEO_URL,
             "publisher": {
               "@type": "Organization",
               "name": "Ovela Interactive",
@@ -171,7 +168,7 @@ const Home = () => {
             {/* Left Side - Isabella (Anchor) */}
             <div 
               className="isabella-container"
-              style={{ zIndex: isSpeaking || isConnected ? 200 : 1 }}
+              style={{ zIndex: isSpeaking ? 200 : 1 }}
             >
               {/* Enhanced Isabella Backlight (Soft Golden Glow) - Positioned in container */}
               <div className="isabella-backlight"></div>
@@ -182,7 +179,7 @@ const Home = () => {
               <div className="isabella-image-wrapper">
                 {/* Isabella Image - Hides when D-ID animation is active */}
                 <img 
-                  src={isabellaHeroImageUrl}
+                  src={ISABELLA_AVATAR_URL}
                   alt="Isabella Navia - AI Model Ambassador"
                   className="isabella-hero-image hero-image-raw"
                   loading="eager"
@@ -268,25 +265,7 @@ const Home = () => {
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
-                      onAIResponse={(text) => {
-                        console.log('🎯 onAIResponse callback triggered!');
-                        console.log('📝 Text received:', text?.substring(0, 50));
-                        console.log('🔗 isConnected:', isConnected, 'isSpeaking:', isSpeaking);
-                        
-                        if (!text) {
-                          console.warn('⚠️ No text received in onAIResponse');
-                          return;
-                        }
-                        
-                        // Use StreamingService.speak (WellnessGeni pattern)
-                        console.log('🎬 Calling StreamingService.speak for animation');
-                        StreamingService.speak({
-                          avatarUrl: isabellaHeroImageUrl,
-                          text,
-                        }).catch(err => {
-                          console.error('❌ StreamingService.speak error:', err);
-                        });
-                      }}
+                      onAIResponse={handleAIResponse}
                     />
                   </div>
                   

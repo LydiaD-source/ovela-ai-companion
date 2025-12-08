@@ -21,6 +21,8 @@ export const useDIDAvatarStream = ({
   const streamIdRef = useRef<string | null>(null);
   const sessionIdRef = useRef<string | null>(null);
   const pendingTextRef = useRef<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
@@ -31,6 +33,11 @@ export const useDIDAvatarStream = ({
   const cleanup = async () => {
     console.log('🧹 Cleaning up D-ID stream');
     
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.srcObject = null;
@@ -38,10 +45,9 @@ export const useDIDAvatarStream = ({
       videoRef.current = null;
     }
 
-    // Clean up canvas elements
-    if (containerRef.current) {
-      const canvases = containerRef.current.querySelectorAll('canvas');
-      canvases.forEach(canvas => canvas.remove());
+    if (canvasRef.current) {
+      canvasRef.current.remove();
+      canvasRef.current = null;
     }
 
     if (peerConnectionRef.current) {
@@ -49,11 +55,11 @@ export const useDIDAvatarStream = ({
       peerConnectionRef.current = null;
     }
 
-    if (streamIdRef.current && sessionIdRef.current) {
+    if (streamIdRef.current) {
       try {
         await supabase.functions.invoke('did-streaming', {
           body: {
-            action: 'delete_talk_stream',
+            action: 'deleteStream',
             data: {
               stream_id: streamIdRef.current,
               session_id: sessionIdRef.current
@@ -73,10 +79,8 @@ export const useDIDAvatarStream = ({
 
   const speak = async (text: string, imageUrl?: string) => {
     console.log('🎤 D-ID speak function called');
-    console.log('📝 Full text:', text);
+    console.log('📝 Text:', text?.substring(0, 50) + '...');
     console.log('🖼️ Image URL:', imageUrl);
-    console.log('📊 Current state - isLoading:', isLoading, 'isStreaming:', isStreaming);
-    console.log('🔗 Stream refs - streamId:', streamIdRef.current, 'sessionId:', sessionIdRef.current);
 
     if (!text) return;
     if (!containerRef.current) {
@@ -85,12 +89,12 @@ export const useDIDAvatarStream = ({
     }
 
     try {
-      // If already connected, just send the speak command
-      if (streamIdRef.current && sessionIdRef.current && peerConnectionRef.current) {
+      // If already connected, just send the startAnimation command
+      if (streamIdRef.current && sessionIdRef.current && peerConnectionRef.current?.connectionState === 'connected') {
         console.log('🔁 Reusing existing stream to speak');
         const speakResponse = await supabase.functions.invoke('did-streaming', {
           body: {
-            action: 'talk_stream_speak',
+            action: 'startAnimation',
             data: {
               stream_id: streamIdRef.current,
               session_id: sessionIdRef.current,
@@ -100,11 +104,11 @@ export const useDIDAvatarStream = ({
         });
 
         if (speakResponse.error) {
-          console.error('❌ Speak error:', speakResponse.error);
-          throw new Error(`Speak failed: ${speakResponse.error.message}`);
+          console.error('❌ startAnimation error:', speakResponse.error);
+          throw new Error(`startAnimation failed: ${speakResponse.error.message}`);
         }
         
-        console.log('✅ Speak command sent');
+        console.log('✅ Animation started on existing stream');
         return;
       }
 
@@ -117,34 +121,26 @@ export const useDIDAvatarStream = ({
       setIsLoading(true);
       pendingTextRef.current = text;
 
-      // 1) Create stream
-      console.log('🎬 Creating D-ID talk stream...');
+      const sourceUrl = imageUrl || 
+        'https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png';
+
+      // 1) Create stream (WebRTC connection only, NO script)
+      console.log('🎬 Creating D-ID stream...');
       const response = await supabase.functions.invoke('did-streaming', {
         body: {
-          action: 'create_talk_stream',
-          data: {
-            source_url:
-              imageUrl ||
-              'https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png',
-          },
+          action: 'createStream',
+          data: { source_url: sourceUrl },
         },
       });
 
-      console.log('📡 D-ID response:', response);
+      console.log('📡 createStream response:', response);
 
-      if (response.error) {
-        console.error('❌ D-ID invoke error:', response.error);
-        throw new Error(`D-ID API error: ${response.error.message}`);
+      if (response.error || !response.data?.success) {
+        console.error('❌ createStream error:', response.error || response.data);
+        throw new Error(`D-ID createStream failed: ${response.error?.message || 'Unknown error'}`);
       }
 
-      const streamData = response.data;
-      if (!streamData) {
-        throw new Error('No data received from D-ID');
-      }
-
-      console.log('✅ Stream data received:', streamData);
-
-      const { id: streamId, offer, ice_servers, session_id } = streamData;
+      const { id: streamId, offer, ice_servers, session_id } = response.data;
       streamIdRef.current = streamId;
       sessionIdRef.current = session_id;
       console.log('✅ Stream created:', streamId);
@@ -155,16 +151,16 @@ export const useDIDAvatarStream = ({
       });
       peerConnectionRef.current = pc;
 
-      // Video element with canvas-based chroma-key to remove black background
+      // Create hidden video element for source
       const video = document.createElement('video');
       video.autoplay = true;
       video.playsInline = true;
-      video.muted = true;
-      Object.assign(video.style, {
-        display: 'none', // Hide original video, we'll use canvas
-      } as CSSStyleDeclaration);
+      video.muted = false; // Audio should come through
+      video.style.display = 'none';
+      videoRef.current = video;
+      containerRef.current.appendChild(video);
 
-      // Canvas for processing and displaying the video with transparent blacks
+      // Create canvas for chroma-key processing
       const canvas = document.createElement('canvas');
       Object.assign(canvas.style, {
         position: 'absolute',
@@ -180,134 +176,77 @@ export const useDIDAvatarStream = ({
         zIndex: '20',
         backgroundColor: 'transparent',
       } as CSSStyleDeclaration);
+      canvasRef.current = canvas;
+      containerRef.current.appendChild(canvas);
 
       const ctx = canvas.getContext('2d', { 
         willReadFrequently: true,
         alpha: true,
-        desynchronized: true // Better performance
       });
+      
       if (!ctx) {
         throw new Error('Could not get canvas context');
       }
-      
-      // Disable ALL smoothing for maximum sharpness
-      ctx.imageSmoothingEnabled = false;
-      (ctx as any).mozImageSmoothingEnabled = false;
-      (ctx as any).webkitImageSmoothingEnabled = false;
-      (ctx as any).msImageSmoothingEnabled = false;
-
-      videoRef.current = video;
-      
-      // Add both video (hidden) and canvas to DOM
-      containerRef.current.appendChild(video);
-      containerRef.current.appendChild(canvas);
 
       // Process video frames to remove black background
-      let frameCount = 0;
       let canvasInitialized = false;
       
       const processFrame = () => {
-        // CRITICAL: Always call requestAnimationFrame FIRST to keep loop running
-        requestAnimationFrame(processFrame);
+        animationFrameRef.current = requestAnimationFrame(processFrame);
         
-        // Check if video is ready and playing
-        if (video.paused || video.ended || video.readyState < video.HAVE_CURRENT_DATA) {
-          return; // Skip this frame but keep loop running
+        if (video.paused || video.ended || video.readyState < 2) {
+          return;
         }
 
         const width = video.videoWidth;
         const height = video.videoHeight;
         
-        // CRITICAL: Skip if video has no dimensions yet
-        if (width === 0 || height === 0) {
-          if (frameCount === 0) {
-            console.warn('⚠️ Video has no dimensions yet, waiting...');
-          }
-          return;
-        }
+        if (width === 0 || height === 0) return;
         
-        // Initialize canvas on first valid frame
         if (!canvasInitialized) {
           canvas.width = width;
           canvas.height = height;
-          canvas.style.opacity = '1'; // Make canvas visible immediately
+          canvas.style.opacity = '1';
           canvasInitialized = true;
           console.log('✅ Canvas initialized:', width, 'x', height);
         }
         
-        // Log every 60 frames for debugging
-        if (frameCount % 60 === 0) {
-          console.log('🎬 Processing frame:', frameCount, 'Video size:', width, 'x', height, 'Ready state:', video.readyState);
-        }
-        frameCount++;
-        
-        // Set canvas to EXACT video resolution (no scaling)
         if (canvas.width !== width || canvas.height !== height) {
           canvas.width = width;
           canvas.height = height;
-          console.log('📐 Canvas resized to:', width, 'x', height);
         }
 
-        // Draw at 1:1 pixel ratio for maximum quality
         ctx.drawImage(video, 0, 0, width, height);
 
-        // Get image data
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        // Chroma-key: remove black/dark pixels
+        const imageData = ctx.getImageData(0, 0, width, height);
         const data = imageData.data;
+        const threshold = 30;
 
-        // Remove black/dark pixels with optimized threshold
-        const threshold = 30; // Lower threshold for better detail preservation
         for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          
-          // If pixel is very dark (near black), make it transparent
-          const brightness = (r + g + b) / 3;
+          const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
           if (brightness < threshold) {
-            data[i + 3] = 0; // Fully transparent
+            data[i + 3] = 0; // Make transparent
           }
         }
 
-        // Put processed image data back
         ctx.putImageData(imageData, 0, 0);
       };
 
       pc.ontrack = (event) => {
-        console.log('🎥 ontrack received');
-        console.log('🎥 Track kind:', event.track.kind);
-        console.log('🎥 Track enabled:', event.track.enabled);
-        console.log('🎥 Track muted:', event.track.muted);
-        console.log('🎥 Track readyState:', event.track.readyState);
-        console.log('🎥 Number of streams:', event.streams?.length);
+        console.log('🎥 ontrack received:', event.track.kind);
         
         if (event.streams && event.streams[0]) {
           const stream = event.streams[0];
-          console.log('🎥 Stream ID:', stream.id);
-          console.log('🎥 Stream active:', stream.active);
           console.log('🎥 Stream tracks:', stream.getTracks().map(t => `${t.kind}: ${t.readyState}`).join(', '));
           
           video.srcObject = stream;
-          console.log('🎥 Video srcObject set');
           
-          // Monitor track status changes
-          event.track.onended = () => console.log('⚠️ Track ended:', event.track.kind);
-          event.track.onmute = () => console.log('⚠️ Track muted:', event.track.kind);
-          event.track.onunmute = () => console.log('✅ Track unmuted:', event.track.kind);
-          
-          // Start processing frames once video is playing
           video.onloadedmetadata = () => {
-            console.log('🎥 Video metadata loaded');
-            
-            // Set canvas to native video resolution for crisp rendering
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            console.log('🎥 Video metadata loaded:', video.videoWidth, 'x', video.videoHeight);
             
             video.play().then(() => {
-              console.log('🎥 Video playing, starting frame processing');
-              console.log('🎥 Video dimensions:', video.videoWidth, 'x', video.videoHeight);
-              console.log('🎥 Video readyState:', video.readyState);
-              console.log('🎥 Video networkState:', video.networkState);
+              console.log('▶️ Video playing');
               processFrame();
               setIsLoading(false);
               setIsStreaming(true);
@@ -316,88 +255,91 @@ export const useDIDAvatarStream = ({
               console.error('❌ Video play failed:', err);
             });
           };
-
-          video.onerror = (e) => {
-            console.error('❌ Video error event:', e);
-          };
         }
       };
 
+      // Forward ALL ICE candidates including null (gathering complete)
       pc.onicecandidate = async (event) => {
-        if (event.candidate) {
-          try {
-            const iceResponse = await supabase.functions.invoke('did-streaming', {
-              body: {
-                action: 'talk_stream_ice',
-                data: {
-                  stream_id: streamId,
-                  session_id: session_id,
-                  candidate: event.candidate.candidate,
-                  sdpMid: event.candidate.sdpMid,
-                  sdpMLineIndex: event.candidate.sdpMLineIndex,
-                },
+        console.log('🧊 ICE candidate:', event.candidate ? 'candidate' : 'null (gathering complete)');
+        
+        try {
+          await supabase.functions.invoke('did-streaming', {
+            body: {
+              action: 'sendIceCandidate',
+              data: {
+                stream_id: streamId,
+                session_id: session_id,
+                candidate: event.candidate?.candidate || null,
+                sdpMid: event.candidate?.sdpMid || null,
+                sdpMLineIndex: event.candidate?.sdpMLineIndex ?? null,
               },
-            });
-
-            if (iceResponse.error) {
-              console.error('❌ ICE error:', iceResponse.error);
-            }
-          } catch (e) {
-            console.error('❌ ICE send failed', e);
-          }
+            },
+          });
+        } catch (e) {
+          console.error('❌ ICE send failed:', e);
         }
       };
 
       pc.onconnectionstatechange = () => {
-        console.log('🔌 PeerConnection state:', pc.connectionState);
+        console.log('🔌 Connection state:', pc.connectionState);
+        
+        if (pc.connectionState === 'connected') {
+          // Send animation once WebRTC is fully connected
+          const toSpeak = pendingTextRef.current;
+          if (toSpeak) {
+            console.log('🎤 Sending startAnimation after connection...');
+            supabase.functions.invoke('did-streaming', {
+              body: {
+                action: 'startAnimation',
+                data: {
+                  stream_id: streamIdRef.current,
+                  session_id: sessionIdRef.current,
+                  text: toSpeak,
+                },
+              },
+            }).then(res => {
+              if (res.error || !res.data?.success) {
+                console.error('❌ startAnimation failed:', res.error || res.data);
+              } else {
+                console.log('✅ Animation started');
+              }
+            });
+            pendingTextRef.current = null;
+          }
+        }
+        
+        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+          onStreamEnd?.();
+        }
       };
 
-      await pc.setRemoteDescription(offer);
+      // Set remote description (D-ID's offer)
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      
+      // Create and set local answer
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
 
+      // Send SDP answer to D-ID
+      console.log('📡 Sending SDP answer...');
       const sdpResponse = await supabase.functions.invoke('did-streaming', {
         body: {
-          action: 'talk_stream_sdp',
-          data: { stream_id: streamId, session_id: session_id, answer },
+          action: 'start',
+          data: { 
+            stream_id: streamId, 
+            session_id: session_id, 
+            answer: pc.localDescription 
+          },
         },
       });
 
-      if (sdpResponse.error) {
-        console.error('❌ SDP error:', sdpResponse.error);
-        throw new Error(`SDP exchange failed: ${sdpResponse.error.message}`);
+      if (sdpResponse.error || !sdpResponse.data?.success) {
+        console.error('❌ SDP exchange failed:', sdpResponse.error || sdpResponse.data);
+        throw new Error('SDP exchange failed');
       }
 
       console.log('✅ SDP exchanged successfully');
 
-      // Kick off initial speech shortly after SDP to start media
-      setTimeout(async () => {
-        const toSpeak = pendingTextRef.current;
-        if (!toSpeak) return;
-        try {
-          const initialSpeakResponse = await supabase.functions.invoke('did-streaming', {
-            body: {
-              action: 'talk_stream_speak',
-              data: { stream_id: streamIdRef.current, session_id: sessionIdRef.current, text: toSpeak },
-            },
-          });
-
-          if (initialSpeakResponse.error) {
-            console.error('❌ Initial speak error:', initialSpeakResponse.error);
-          } else {
-            console.log('✅ Initial speak sent successfully');
-          }
-          
-          pendingTextRef.current = null;
-        } catch (e) {
-          console.error('❌ Initial speak after SDP failed:', e);
-        }
-      }, 150);
-
-      video.onerror = (e) => {
-        console.error('❌ Video error:', e);
-        onError?.(new Error('Video playback failed'));
-      };
     } catch (error) {
       console.error('❌ D-ID speak error:', error);
       setIsLoading(false);

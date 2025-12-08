@@ -22,7 +22,7 @@ const Home = () => {
   const [isAvatarReady, setIsAvatarReady] = useState(false);
 
   // D-ID Avatar Stream Hook
-  const { speak: speakDID, isStreaming, isLoading } = useDIDAvatarStream({
+  const { speak: speakDID, isStreaming, isLoading, connectionState } = useDIDAvatarStream({
     containerRef: avatarContainerRef,
     onStreamStart: () => {
       console.log('🎬 D-ID stream started');

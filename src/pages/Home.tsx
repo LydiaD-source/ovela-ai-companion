@@ -120,7 +120,7 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Original Ultra HD Quality */}
+                {/* Isabella Image - Hidden when D-ID stream is active to prevent duplicate */}
                 <img 
                   src={isabellaHeroImageUrl}
                   alt="Isabella Navia - AI Model Ambassador"
@@ -128,9 +128,13 @@ const Home = () => {
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"
+                  style={{
+                    opacity: isStreaming ? 0 : 1,
+                    transition: 'opacity 0.5s ease-in-out',
+                  }}
                 />
                 
-                {/* D-ID Stream Container - Overlays on top of static image */}
+                {/* D-ID Stream Container - Replaces static image when active */}
                 <div 
                   ref={avatarContainerRef}
                   id="did-container" 
@@ -146,8 +150,8 @@ const Home = () => {
                     background: 'transparent',
                   }}
                 >
-                  {/* D-ID videos will be injected here dynamically */}
-                  {isLoading && (
+                  {/* D-ID canvas will be injected here dynamically */}
+                  {isLoading && !isStreaming && (
                     <div style={{
                       position: 'absolute',
                       top: '50%',

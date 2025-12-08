@@ -24,11 +24,6 @@ const Home = () => {
 
   // Subscribe to StreamingService state changes (WellnessGeni pattern)
   useEffect(() => {
-    // Expose video ref globally for StreamingService
-    if (videoRef.current) {
-      (window as any).__AVATAR_VIDEO_REF__ = videoRef.current;
-    }
-    
     const unsubConnection = StreamingService.onConnectionChange((connected) => {
       console.log('🔗 StreamingService connection:', connected);
       setIsConnected(connected);
@@ -45,6 +40,23 @@ const Home = () => {
       unsubSpeaking();
     };
   }, []);
+
+  // Expose video ref globally for StreamingService - must run after render
+  useEffect(() => {
+    if (videoRef.current) {
+      console.log('📹 Setting global video ref');
+      (window as any).__AVATAR_VIDEO_REF__ = videoRef.current;
+    }
+  });
+
+  // Also set it via callback ref to catch initial render
+  const setVideoRef = (el: HTMLVideoElement | null) => {
+    if (el) {
+      (videoRef as any).current = el;
+      (window as any).__AVATAR_VIDEO_REF__ = el;
+      console.log('📹 Video ref set via callback');
+    }
+  };
 
   // Check URL parameter to auto-open chat from Contact page
   useEffect(() => {
@@ -151,8 +163,8 @@ const Home = () => {
                 
                 {/* D-ID Video Element - StreamingService pattern */}
                 <video 
-                  ref={videoRef}
-                  id="did-video" 
+                  ref={setVideoRef}
+                  id="did-video"
                   className="did-avatar-layer"
                   autoPlay
                   playsInline

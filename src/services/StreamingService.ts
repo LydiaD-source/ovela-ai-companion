@@ -226,18 +226,20 @@ class PersistentStreamManager {
           return;
         }
         
-        console.log('[StreamService] 📺 Setting up video with CSS blend mode (no chroma-key)');
+        console.log('[StreamService] 📺 Setting up chroma-key canvas (strict black removal)');
         
-        // Use the video element directly with CSS mix-blend-mode
-        // This preserves full quality without pixel manipulation
+        // Hidden video receives D-ID stream
         this.hiddenVideo = document.createElement('video');
         this.hiddenVideo.autoplay = true;
         this.hiddenVideo.playsInline = true;
-        this.hiddenVideo.muted = true; // Mute this video - audio plays from main video element
+        this.hiddenVideo.muted = true;
         this.hiddenVideo.srcObject = event.streams[0];
+        this.hiddenVideo.style.display = 'none';
+        container.appendChild(this.hiddenVideo);
         
-        // Style for blend mode - removes black background without quality loss
-        Object.assign(this.hiddenVideo.style, {
+        // Canvas for chroma-key processing
+        this.chromaCanvas = document.createElement('canvas');
+        Object.assign(this.chromaCanvas.style, {
           position: 'absolute',
           bottom: '0',
           left: '50%',
@@ -250,20 +252,75 @@ class PersistentStreamManager {
           pointerEvents: 'none',
           opacity: '0',
           transition: 'opacity 0.3s ease-in-out',
-          mixBlendMode: 'screen', // This removes black background while preserving colors
-          filter: 'contrast(1.05) saturate(1.1)', // Slight boost to counteract blend mode
+        });
+        container.appendChild(this.chromaCanvas);
+        
+        (window as any).__AVATAR_CANVAS_REF__ = this.chromaCanvas;
+        
+        const ctx = this.chromaCanvas.getContext('2d', { 
+          willReadFrequently: true,
+          alpha: true,
         });
         
-        container.appendChild(this.hiddenVideo);
+        if (!ctx) {
+          console.error('[StreamService] ❌ Could not get canvas context');
+          return;
+        }
         
-        // Store ref globally so Home.tsx can control visibility
-        (window as any).__AVATAR_CANVAS_REF__ = this.hiddenVideo;
+        let canvasInitialized = false;
         
-        // Start video playback
+        const processFrame = () => {
+          this.animationFrameId = requestAnimationFrame(processFrame);
+          
+          if (!this.hiddenVideo || this.hiddenVideo.paused || this.hiddenVideo.ended || this.hiddenVideo.readyState < 2) {
+            return;
+          }
+          
+          const width = this.hiddenVideo.videoWidth;
+          const height = this.hiddenVideo.videoHeight;
+          
+          if (width === 0 || height === 0) return;
+          
+          if (!canvasInitialized && this.chromaCanvas) {
+            this.chromaCanvas.width = width;
+            this.chromaCanvas.height = height;
+            canvasInitialized = true;
+            console.log('[StreamService] ✅ Canvas:', width, 'x', height);
+          }
+          
+          if (this.chromaCanvas && (this.chromaCanvas.width !== width || this.chromaCanvas.height !== height)) {
+            this.chromaCanvas.width = width;
+            this.chromaCanvas.height = height;
+          }
+          
+          ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
+          
+          // STRICT chroma-key: only remove pure black background (D-ID sends black bg)
+          const imageData = ctx.getImageData(0, 0, width, height);
+          const data = imageData.data;
+          
+          // Very low threshold - only truly black pixels (r,g,b all < 10)
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // Only make pure black fully transparent - no gradual alpha
+            if (r < 10 && g < 10 && b < 10) {
+              data[i + 3] = 0;
+            }
+            // Everything else stays fully opaque (255)
+          }
+          
+          ctx.putImageData(imageData, 0, 0);
+        };
+        
         this.hiddenVideo.oncanplay = () => {
-          console.log('[StreamService] 📺 Blend video ready');
-          this.hiddenVideo?.play().catch(err => {
-            console.warn('[StreamService] ⚠️ Blend video play failed:', err);
+          console.log('[StreamService] 📺 Hidden video ready, starting chroma-key');
+          this.hiddenVideo?.play().then(() => {
+            processFrame();
+          }).catch(err => {
+            console.warn('[StreamService] ⚠️ Play failed:', err);
           });
         };
         

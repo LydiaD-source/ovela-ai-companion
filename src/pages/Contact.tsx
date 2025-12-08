@@ -103,7 +103,6 @@ const Contact = () => {
                 Studio
               </h3>
               <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                Bonaventura Armengol 15, 3R 3A<br />
                 AD500 Andorra La Vella
               </p>
             </div>

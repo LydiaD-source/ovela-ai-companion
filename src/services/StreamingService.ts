@@ -301,6 +301,10 @@ class PersistentStreamManager {
       throw new Error(errorMsg);
     }
     
+    // CRITICAL: Notify that speaking has started so the video becomes visible!
+    console.log('[StreamService] ✅ Animation triggered - notifying speaking state');
+    this.notifySpeaking(true);
+    
     console.log('[StreamService] ✅ Animation triggered - RTP frames flowing');
   }
   

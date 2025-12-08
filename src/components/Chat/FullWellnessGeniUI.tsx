@@ -68,22 +68,23 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     showGreetingImmediately ? [createGreetingMessage()] : []
   );
   const [inputText, setInputText] = useState('');
-  const [isLoading, setIsLoading] = useState(showGreetingImmediately && !animateGreeting);
+  const [isLoading, setIsLoading] = useState(false); // No loading - user can interact immediately
   const [isMuted, setIsMuted] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
-  const hasAnimatedGreeting = useRef(false);
+  const hasShownGreeting = useRef(showGreetingImmediately);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Show greeting when prop changes (for dynamic activation)
   useEffect(() => {
-    if (showGreetingImmediately && messages.length === 0) {
-      console.log('🎬 Showing greeting text immediately');
+    if (showGreetingImmediately && messages.length === 0 && !hasShownGreeting.current) {
+      console.log('🎬 Showing greeting text immediately (no animation wait)');
+      hasShownGreeting.current = true;
       setMessages([createGreetingMessage()]);
     }
   }, [showGreetingImmediately]);
@@ -106,18 +107,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     };
     initAudio();
   }, []);
-
-  // Animate greeting when D-ID becomes ready
-  useEffect(() => {
-    if (animateGreeting && !hasAnimatedGreeting.current && onAIResponse) {
-      hasAnimatedGreeting.current = true;
-      console.log('🎬 D-ID ready - animating Isabella greeting');
-      
-      // Trigger D-ID animation for the greeting
-      onAIResponse(GREETING_TEXT);
-      setIsLoading(false);
-    }
-  }, [animateGreeting, onAIResponse]);
 
   // Notify parent when ready
   useEffect(() => {

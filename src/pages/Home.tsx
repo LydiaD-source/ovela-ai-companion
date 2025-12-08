@@ -124,7 +124,7 @@ const Home = () => {
               <div className="isabella-spotlight"></div>
               
               <div className="isabella-image-wrapper">
-                {/* Isabella Image - Only hides when D-ID canvas is confirmed ready */}
+                {/* Isabella Image - Hides when D-ID animation is active */}
                 <img 
                   src={isabellaHeroImageUrl}
                   alt="Isabella Navia - AI Model Ambassador"
@@ -133,7 +133,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isAvatarReady && isSpeaking ? 0 : 1,
+                    opacity: isSpeaking ? 0 : 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />

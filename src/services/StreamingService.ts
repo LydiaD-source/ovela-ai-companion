@@ -298,16 +298,33 @@ class PersistentStreamManager {
           // Draw frame
           ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
           
-          // Chroma-key: remove black/dark pixels
+          // Improved chroma-key: preserve avatar sharpness
           const imageData = ctx.getImageData(0, 0, width, height);
           const data = imageData.data;
-          const threshold = 25; // Dark pixel threshold
+          
+          // Use strict threshold - only remove truly black background pixels
+          const blackThreshold = 15; // Very dark pixels only
+          const edgeThreshold = 35; // Slight softening at edges
           
           for (let i = 0; i < data.length; i += 4) {
-            const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            if (brightness < threshold) {
-              data[i + 3] = 0; // Make transparent
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // Calculate max channel value to detect near-black
+            const maxChannel = Math.max(r, g, b);
+            const brightness = (r + g + b) / 3;
+            
+            if (maxChannel < blackThreshold) {
+              // Pure black background - fully transparent
+              data[i + 3] = 0;
+            } else if (maxChannel < edgeThreshold && brightness < 20) {
+              // Edge pixels - gradual transparency for smoother edges
+              // This prevents hard cutoffs while preserving avatar details
+              const alpha = Math.round(((maxChannel - blackThreshold) / (edgeThreshold - blackThreshold)) * 255);
+              data[i + 3] = Math.min(data[i + 3], alpha);
             }
+            // Else: keep pixel fully opaque (avatar content)
           }
           
           ctx.putImageData(imageData, 0, 0);

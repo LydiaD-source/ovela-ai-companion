@@ -18,9 +18,24 @@ const Home = () => {
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const hasInitialized = useRef(false); // WellnessGeni pattern - prevent double init
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // WellnessGeni pattern: Register video ref AFTER mount, once only
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    // Prevent double initialization
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+    
+    // CRITICAL: Register AFTER ref is valid
+    (window as any).__AVATAR_VIDEO_REF__ = video;
+    console.log('[Home] ✅ Video element initialized and registered globally');
+  }, []); // Empty dependency - runs once after mount
 
   // Subscribe to StreamingService state changes (WellnessGeni pattern)
   useEffect(() => {
@@ -40,23 +55,6 @@ const Home = () => {
       unsubSpeaking();
     };
   }, []);
-
-  // Expose video ref globally for StreamingService - must run after render
-  useEffect(() => {
-    if (videoRef.current) {
-      console.log('📹 Setting global video ref');
-      (window as any).__AVATAR_VIDEO_REF__ = videoRef.current;
-    }
-  });
-
-  // Also set it via callback ref to catch initial render
-  const setVideoRef = (el: HTMLVideoElement | null) => {
-    if (el) {
-      (videoRef as any).current = el;
-      (window as any).__AVATAR_VIDEO_REF__ = el;
-      console.log('📹 Video ref set via callback');
-    }
-  };
 
   // Check URL parameter to auto-open chat from Contact page
   useEffect(() => {
@@ -163,7 +161,7 @@ const Home = () => {
                 
                 {/* D-ID Video Element - StreamingService pattern */}
                 <video 
-                  ref={setVideoRef}
+                  ref={videoRef}
                   id="did-video"
                   className="did-avatar-layer"
                   autoPlay

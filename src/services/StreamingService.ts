@@ -120,7 +120,14 @@ class PersistentStreamManager {
         throw new Error(createError?.message || createData?.error?.message || 'Failed to create stream');
       }
 
-      const { id: streamId, session_id: sessionId, offer, ice_servers } = createData;
+      // v8 returns stream_id, older versions return id - support both
+      const streamId = createData.stream_id || createData.id;
+      const { session_id: sessionId, offer, ice_servers } = createData;
+      
+      if (!streamId) {
+        console.error('❌ No stream_id or id in response:', createData);
+        throw new Error('Stream ID missing from createStream response');
+      }
       
       this.state.streamId = streamId;
       this.state.sessionId = sessionId;

@@ -60,21 +60,18 @@ const Home = () => {
       console.log('⚠️ Could not unlock audio context:', error);
     }
     
+    // Show chat immediately - no waiting for D-ID
     setIsChatActive(true);
+    setIsDIDReady(true); // Allow interaction immediately
 
-    // Pre-establish D-ID connection (silent - no animation yet)
-    // The autoGreet in FullWellnessGeniUI will trigger the AI greeting
-    // which will then animate via D-ID
-    try {
-      console.log('🎬 Pre-establishing D-ID connection...');
-      await speakDID('', isabellaHeroImageUrl);
-      setIsDIDReady(true);
-      console.log('✅ D-ID connection ready');
-    } catch (e) {
+    // Start D-ID connection in background (non-blocking)
+    // Animation will work for subsequent AI responses once connected
+    console.log('🎬 Starting D-ID connection in background...');
+    speakDID('', isabellaHeroImageUrl).then(() => {
+      console.log('✅ D-ID connection ready for animations');
+    }).catch(e => {
       console.error('❌ D-ID connection setup failed:', e);
-      // Still allow chat even if D-ID fails
-      setIsDIDReady(true);
-    }
+    });
   };
 
   return (

@@ -218,7 +218,8 @@ const Home = () => {
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
-                      autoGreet={isDIDReady}
+                      showGreetingImmediately={isChatActive}
+                      animateGreeting={isDIDReady}
                       onAIResponse={(text) => {
                         console.log('🎯 onAIResponse callback triggered!');
                         console.log('📝 Text received:', text?.substring(0, 50));

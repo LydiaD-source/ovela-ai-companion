@@ -39,8 +39,9 @@ interface FullWellnessGeniUIProps {
   allowedPersonas?: string[];
   showOnlyPromoter?: boolean;
   onAIResponse?: (text: string) => void;
-  autoGreet?: boolean; // Auto-send greeting on mount
-  onReady?: () => void; // Called when component is ready
+  showGreetingImmediately?: boolean; // Show greeting text immediately on mount
+  animateGreeting?: boolean; // Trigger D-ID animation for greeting
+  onReady?: () => void;
 }
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
@@ -49,22 +50,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true,
   onAIResponse,
-  autoGreet = false,
+  showGreetingImmediately = false,
+  animateGreeting = false,
   onReady
 }) => {
   const GREETING_TEXT = "Hi there! I'm Isabella, Ovela Interactive's AI Model Ambassador. I help brands tell their stories in a more human, intelligent way. How can I assist you today? 😊";
   
-  // Show greeting immediately when component mounts (before D-ID is ready)
-  const initialGreeting: Message = {
+  // Create initial greeting message
+  const createGreetingMessage = (): Message => ({
     id: 'greeting-initial',
     text: GREETING_TEXT,
     sender: 'assistant',
     timestamp: new Date()
-  };
+  });
   
-  const [messages, setMessages] = useState<Message[]>(autoGreet ? [initialGreeting] : []);
+  const [messages, setMessages] = useState<Message[]>(() => 
+    showGreetingImmediately ? [createGreetingMessage()] : []
+  );
   const [inputText, setInputText] = useState('');
-  const [isLoading, setIsLoading] = useState(autoGreet); // Start loading if autoGreet
+  const [isLoading, setIsLoading] = useState(showGreetingImmediately && !animateGreeting);
   const [isMuted, setIsMuted] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -76,15 +80,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Reset messages when guest mode changes (but preserve greeting if autoGreet)
+  // Show greeting when prop changes (for dynamic activation)
   useEffect(() => {
-    if (autoGreet) {
-      setMessages([initialGreeting]);
-      hasAnimatedGreeting.current = false;
-    } else {
-      setMessages([]);
+    if (showGreetingImmediately && messages.length === 0) {
+      console.log('🎬 Showing greeting text immediately');
+      setMessages([createGreetingMessage()]);
     }
-  }, [isGuestMode]);
+  }, [showGreetingImmediately]);
 
   useEffect(() => {
     const chatContainer = messagesEndRef.current?.parentElement;
@@ -105,9 +107,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     initAudio();
   }, []);
 
-  // Animate greeting when D-ID becomes ready (greeting text already shown)
+  // Animate greeting when D-ID becomes ready
   useEffect(() => {
-    if (autoGreet && !hasAnimatedGreeting.current && onAIResponse) {
+    if (animateGreeting && !hasAnimatedGreeting.current && onAIResponse) {
       hasAnimatedGreeting.current = true;
       console.log('🎬 D-ID ready - animating Isabella greeting');
       
@@ -115,7 +117,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       onAIResponse(GREETING_TEXT);
       setIsLoading(false);
     }
-  }, [autoGreet, onAIResponse]);
+  }, [animateGreeting, onAIResponse]);
 
   // Notify parent when ready
   useEffect(() => {

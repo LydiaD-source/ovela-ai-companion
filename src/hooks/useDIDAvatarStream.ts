@@ -14,6 +14,8 @@ const HEALTH_CHECK_INTERVAL = 15000;
 const MAX_ANIMATION_RETRIES = 3;
 // Delay between retries (ms)
 const RETRY_DELAY = 1000;
+// Debounce delay for speech queue (ms) - prevents overlapping
+const SPEECH_DEBOUNCE = 300;
 
 export const useDIDAvatarStream = ({
   containerRef,
@@ -23,6 +25,7 @@ export const useDIDAvatarStream = ({
 }: UseDIDAvatarStreamOptions) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [connectionState, setConnectionState] = useState<'idle' | 'connecting' | 'connected' | 'failed'>('idle');
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -37,6 +40,10 @@ export const useDIDAvatarStream = ({
   const healthCheckRef = useRef<NodeJS.Timeout | null>(null);
   const sourceUrlRef = useRef<string | null>(null);
   const isCleaningUp = useRef<boolean>(false);
+  // Speech queue to prevent overlapping animations
+  const speechQueueRef = useRef<string[]>([]);
+  const isProcessingQueueRef = useRef<boolean>(false);
+  const lastSpeechTimeRef = useRef<number>(0);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -157,6 +164,9 @@ export const useDIDAvatarStream = ({
 
   // Start animation with retry logic
   const sendStartAnimation = useCallback(async (text: string): Promise<boolean> => {
+    setIsSpeaking(true);
+    lastSpeechTimeRef.current = Date.now();
+    
     for (let attempt = 1; attempt <= MAX_ANIMATION_RETRIES; attempt++) {
       console.log(`🎤 startAnimation attempt ${attempt}/${MAX_ANIMATION_RETRIES}...`);
       
@@ -180,6 +190,12 @@ export const useDIDAvatarStream = ({
           }
         } else {
           console.log('✅ Animation started successfully');
+          // Estimate speaking duration based on text length (rough: 100 chars/sec)
+          const estimatedDuration = Math.max(2000, (text.length / 12) * 1000);
+          setTimeout(() => {
+            setIsSpeaking(false);
+            processNextInQueue();
+          }, estimatedDuration);
           return true;
         }
       } catch (e) {
@@ -190,16 +206,54 @@ export const useDIDAvatarStream = ({
       }
     }
     console.error('❌ All startAnimation attempts failed');
+    setIsSpeaking(false);
     return false;
   }, []);
+
+  // Process speech queue - ensures only one animation at a time
+  const processNextInQueue = useCallback(async () => {
+    if (isProcessingQueueRef.current) return;
+    if (speechQueueRef.current.length === 0) return;
+    if (!streamIdRef.current || !sessionIdRef.current) return;
+    if (!sdpExchangedRef.current) return;
+    
+    isProcessingQueueRef.current = true;
+    const text = speechQueueRef.current.shift();
+    
+    if (text) {
+      console.log('📤 Processing queued speech:', text.substring(0, 50) + '...');
+      await sendStartAnimation(text);
+    }
+    
+    isProcessingQueueRef.current = false;
+  }, [sendStartAnimation]);
+
+  // Queue speech with deduplication
+  const queueSpeech = useCallback((text: string) => {
+    // Skip if same text was just sent (debounce)
+    const now = Date.now();
+    if (now - lastSpeechTimeRef.current < SPEECH_DEBOUNCE) {
+      console.log('⏳ Speech debounced, skipping duplicate');
+      return;
+    }
+    
+    // If not speaking and queue is empty, send immediately
+    if (!isSpeaking && speechQueueRef.current.length === 0 && 
+        streamIdRef.current && sdpExchangedRef.current) {
+      sendStartAnimation(text);
+    } else {
+      // Otherwise queue it (but clear any existing queue to only keep latest)
+      console.log('📥 Queueing speech (replacing any pending):', text.substring(0, 50) + '...');
+      speechQueueRef.current = [text]; // Replace queue with latest
+    }
+  }, [isSpeaking, sendStartAnimation]);
 
   // Main speak function
   const speak = useCallback(async (text: string, imageUrl?: string) => {
     console.log('🎤 D-ID speak function called');
-    console.log('📝 Text:', text?.substring(0, 50) + '...');
+    console.log('📝 Text:', text ? text.substring(0, 50) + '...' : '(empty - connection only)');
     console.log('🖼️ Image URL:', imageUrl);
 
-    if (!text) return;
     if (!containerRef.current) {
       onError?.(new Error('Video container not available'));
       return;
@@ -210,23 +264,25 @@ export const useDIDAvatarStream = ({
 
     try {
       // If already connected and SDP exchanged, just send the startAnimation command
-      if (streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current && 
+      if (text && streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current && 
           peerConnectionRef.current?.connectionState === 'connected') {
         console.log('🔁 Reusing existing stream to speak');
-        await sendStartAnimation(text);
+        queueSpeech(text);
         return;
       }
 
       // If loading, queue the text
       if (isLoading) {
         console.log('⏳ Setup in progress, queueing text');
-        pendingTextRef.current = text;
+        if (text) pendingTextRef.current = text;
         return;
       }
 
+      // Store text for later (if provided)
+      if (text) pendingTextRef.current = text;
+
       setIsLoading(true);
       setConnectionState('connecting');
-      pendingTextRef.current = text;
       sdpExchangedRef.current = false;
       pendingIceCandidates.current = [];
       sourceUrlRef.current = sourceUrl;
@@ -415,13 +471,16 @@ export const useDIDAvatarStream = ({
           setConnectionState('connected');
           onStreamStart?.();
 
-          // Now that video is playing, send the animation with retry
+          // Now that video is playing, send the animation if we have pending text
           const toSpeak = pendingTextRef.current;
           if (toSpeak) {
             pendingTextRef.current = null;
             // Small delay to ensure D-ID stream is fully ready
             await new Promise(r => setTimeout(r, 500));
+            console.log('🎬 Sending pending speech after connection ready');
             await sendStartAnimation(toSpeak);
+          } else {
+            console.log('✅ D-ID connection ready, waiting for AI response');
           }
         } catch (err) {
           console.error('❌ Video play failed:', err);
@@ -466,13 +525,15 @@ export const useDIDAvatarStream = ({
       setConnectionState('failed');
       onError?.(error instanceof Error ? error : new Error('Unknown error'));
     }
-  }, [containerRef, isLoading, onError, onStreamStart, flushIceCandidates, sendStartAnimation]);
+  }, [containerRef, isLoading, onError, onStreamStart, flushIceCandidates, sendStartAnimation, queueSpeech]);
 
   return {
     speak,
     isStreaming,
     isLoading,
+    isSpeaking,
     connectionState,
     cleanup,
+    queueSpeech,
   };
 };

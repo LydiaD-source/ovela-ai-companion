@@ -48,15 +48,27 @@ const Home = () => {
     };
   }, []); // Empty dependency - runs once after mount
 
-  // Unmute video when speaking starts to ensure audio plays
+  // Control canvas visibility when speaking (chroma-keyed D-ID output)
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const canvas = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
     
-    if (isSpeaking) {
+    if (canvas) {
+      if (isSpeaking) {
+        canvas.style.opacity = '1';
+        canvas.style.display = 'block';
+        console.log('[Home] 🎬 Canvas visible for animation');
+      } else {
+        canvas.style.opacity = '0';
+        // Don't hide with display:none - let it fade out
+        console.log('[Home] 🎬 Canvas hidden');
+      }
+    }
+    
+    // Also ensure audio plays
+    const video = videoRef.current;
+    if (video && isSpeaking) {
       video.muted = false;
       video.volume = 1.0;
-      console.log('[Home] 🔊 Video unmuted for speech');
     }
   }, [isSpeaking]);
 
@@ -182,28 +194,15 @@ const Home = () => {
                   }}
                 />
                 
-                {/* D-ID Video Element - WellnessGeni pattern with crossorigin */}
+                {/* Hidden video element for audio playback only */}
                 <video 
                   ref={videoRef}
                   id="did-video"
-                  className="did-avatar-layer"
                   autoPlay
                   playsInline
                   crossOrigin="anonymous"
-                  data-isabela-stream="true"
                   style={{ 
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    zIndex: isSpeaking ? 150 : -1,
-                    pointerEvents: 'none',
-                    background: 'transparent',
-                    opacity: isSpeaking ? 1 : 0,
-                    display: isSpeaking ? 'block' : 'none',
-                    transition: 'opacity 0.3s ease-in-out',
+                    display: 'none', // Hidden - audio only, canvas handles video
                   }}
                 />
                 

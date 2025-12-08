@@ -35,8 +35,8 @@ const Home = () => {
     // CRITICAL: Make video globally accessible for StreamingService - matching WellnessGeni
     (window as any).__AVATAR_VIDEO_REF__ = video;
     
-    // Match WellnessGeni video setup
-    video.muted = true;
+    // Match WellnessGeni video setup - start muted for autoplay policy, unmute when speaking
+    video.muted = false; // D-ID audio should play
     video.volume = 1.0;
     video.playsInline = true;
     video.autoplay = true;
@@ -47,6 +47,18 @@ const Home = () => {
       (window as any).__AVATAR_VIDEO_REF__ = null;
     };
   }, []); // Empty dependency - runs once after mount
+
+  // Unmute video when speaking starts to ensure audio plays
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    if (isSpeaking) {
+      video.muted = false;
+      video.volume = 1.0;
+      console.log('[Home] 🔊 Video unmuted for speech');
+    }
+  }, [isSpeaking]);
 
   // Subscribe to StreamingService state changes (WellnessGeni pattern)
   useEffect(() => {
@@ -177,7 +189,6 @@ const Home = () => {
                   className="did-avatar-layer"
                   autoPlay
                   playsInline
-                  muted={false}
                   crossOrigin="anonymous"
                   data-isabela-stream="true"
                   style={{ 
@@ -187,11 +198,11 @@ const Home = () => {
                     width: '100%',
                     height: '100%',
                     objectFit: 'contain',
-                    zIndex: isSpeaking || isConnected ? 150 : 12,
+                    zIndex: isSpeaking ? 150 : -1,
                     pointerEvents: 'none',
                     background: 'transparent',
                     opacity: isSpeaking ? 1 : 0,
-                    visibility: isSpeaking ? 'visible' : 'hidden',
+                    display: isSpeaking ? 'block' : 'none',
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />

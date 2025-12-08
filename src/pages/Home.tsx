@@ -18,6 +18,7 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
+  const [isDIDReady, setIsDIDReady] = useState(false);
   const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [isAvatarReady, setIsAvatarReady] = useState(false);
 
@@ -61,14 +62,18 @@ const Home = () => {
     
     setIsChatActive(true);
 
-    // Pre-establish D-ID connection WITHOUT sending animation
-    // The AI response will trigger the first animation
+    // Pre-establish D-ID connection (silent - no animation yet)
+    // The autoGreet in FullWellnessGeniUI will trigger the AI greeting
+    // which will then animate via D-ID
     try {
       console.log('🎬 Pre-establishing D-ID connection...');
-      // Call speak with empty text just to establish connection
       await speakDID('', isabellaHeroImageUrl);
+      setIsDIDReady(true);
+      console.log('✅ D-ID connection ready');
     } catch (e) {
       console.error('❌ D-ID connection setup failed:', e);
+      // Still allow chat even if D-ID fails
+      setIsDIDReady(true);
     }
   };
 
@@ -213,6 +218,7 @@ const Home = () => {
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
+                      autoGreet={isDIDReady}
                       onAIResponse={(text) => {
                         console.log('🎯 onAIResponse callback triggered!');
                         console.log('📝 Text received:', text?.substring(0, 50));

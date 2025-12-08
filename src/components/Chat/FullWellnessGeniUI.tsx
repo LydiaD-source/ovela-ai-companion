@@ -39,6 +39,8 @@ interface FullWellnessGeniUIProps {
   allowedPersonas?: string[];
   showOnlyPromoter?: boolean;
   onAIResponse?: (text: string) => void;
+  autoGreet?: boolean; // Auto-send greeting on mount
+  onReady?: () => void; // Called when component is ready
 }
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
@@ -46,7 +48,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   defaultPersona = 'isabella-navia',
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true,
-  onAIResponse
+  onAIResponse,
+  autoGreet = false,
+  onReady
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -57,6 +61,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
+  const hasAutoGreeted = useRef(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -83,6 +88,28 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     };
     initAudio();
   }, []);
+
+  // Auto-greet: send initial greeting when component mounts and autoGreet is true
+  useEffect(() => {
+    if (autoGreet && !hasAutoGreeted.current && !isLoading) {
+      hasAutoGreeted.current = true;
+      console.log('🎬 Auto-greeting: sending initial hello to Isabella');
+      
+      // Small delay to ensure D-ID connection is established
+      const timer = setTimeout(() => {
+        sendMessage('hello');
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [autoGreet]);
+
+  // Notify parent when ready
+  useEffect(() => {
+    if (onReady) {
+      onReady();
+    }
+  }, [onReady]);
 
   // Detect contact intent
   const hasContactIntent = (text: string): boolean => {

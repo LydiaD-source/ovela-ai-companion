@@ -1,16 +1,8 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Ovela Interactive Robots.txt
+# Last updated: 2025-12-08
 
 User-agent: *
 Allow: /
 
+# Sitemap location
 Sitemap: https://ovelainteractive.com/sitemap.xml

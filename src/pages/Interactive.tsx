@@ -3,8 +3,10 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { IsabellaAvatarStream } from '@/components/Interactive/IsabellaAvatarStream';
+import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const Interactive = () => {
+  useCanonicalLink('/interactive');
   const navigate = useNavigate();
   const [showAvatar, setShowAvatar] = useState(false);
 
@@ -15,17 +17,6 @@ const Interactive = () => {
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Meet Isabella, the world\'s first interactive AI model. Engage with cutting-edge AI technology that brings brands to life through real-time conversations and dynamic content.');
-    }
-
-    // Add canonical link
-    const existingCanonical = document.querySelector('link[rel="canonical"]');
-    if (existingCanonical) {
-      existingCanonical.setAttribute('href', 'https://ovelainteractive.com/interactive');
-    } else {
-      const canonical = document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      canonical.setAttribute('href', 'https://ovelainteractive.com/interactive');
-      document.head.appendChild(canonical);
     }
 
     // Add Open Graph meta tags

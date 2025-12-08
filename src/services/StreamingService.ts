@@ -131,12 +131,26 @@ class PersistentStreamManager {
     // Step 1: Create stream - WellnessGeni uses avatarUrl at TOP LEVEL
     const createResp = await this.callBackend('createStream', { avatarUrl });
     
-    // Handle response - the edge function returns { ok, status, body } structure
-    // Check for ok:true OR success:true (backwards compatibility)
-    const isSuccess = createResp.ok === true || createResp.success === true;
-    const responseBody = createResp.body || createResp; // Data might be in body or at top level
+    // DEBUG: Log the exact values we're checking
+    console.log('[StreamService] 🔍 Response check:', {
+      'createResp.ok': createResp.ok,
+      'createResp.success': createResp.success,
+      'createResp.body exists': !!createResp.body,
+      'createResp.body?.id': createResp.body?.id,
+      'createResp.id': createResp.id
+    });
     
-    if (!isSuccess || !responseBody.id) {
+    // Handle response - the edge function returns { ok, status, body } structure
+    // The data is nested in body, not at top level
+    const responseBody = createResp.body || createResp;
+    const streamId = responseBody.id;
+    
+    // Success if we have ok:true OR status 2xx AND we got a stream ID
+    const isSuccess = (createResp.ok === true || createResp.success === true || (createResp.status >= 200 && createResp.status < 300));
+    
+    console.log('[StreamService] 🔍 Computed values:', { isSuccess, streamId, hasBody: !!responseBody });
+    
+    if (!isSuccess || !streamId) {
       console.error('[StreamService] ❌ createStream failed:', createResp);
       throw new Error(createResp.error?.message || responseBody.error?.message || 'Failed to create stream');
     }

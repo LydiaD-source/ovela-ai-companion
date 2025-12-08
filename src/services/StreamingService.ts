@@ -118,8 +118,16 @@ class PersistentStreamManager {
         },
       });
 
-      if (createError || !createData?.success) {
-        throw new Error(createError?.message || createData?.error?.message || 'Failed to create stream');
+      console.log('[StreamService] createStream response:', { createData, createError });
+
+      if (createError) {
+        console.error('[StreamService] ❌ Supabase invoke error:', createError);
+        throw new Error(createError.message || 'Failed to invoke edge function');
+      }
+      
+      if (!createData?.success) {
+        console.error('[StreamService] ❌ Edge function error:', createData);
+        throw new Error(createData?.error?.message || 'Edge function returned error');
       }
 
       // v8 returns stream_id, older versions return id - support both
@@ -127,14 +135,14 @@ class PersistentStreamManager {
       const { session_id: sessionId, offer, ice_servers } = createData;
       
       if (!streamId) {
-        console.error('❌ No stream_id or id in response:', createData);
+        console.error('[StreamService] ❌ No stream_id in response:', createData);
         throw new Error('Stream ID missing from createStream response');
       }
       
       this.state.streamId = streamId;
       this.state.sessionId = sessionId;
 
-      console.log('✅ Stream created:', { streamId, sessionId: sessionId?.substring(0, 20) + '...' });
+      console.log('[StreamService] ✅ Stream created:', { streamId, sessionId: sessionId?.substring(0, 20) + '...' });
 
       // Step 2: Create RTCPeerConnection
       const pc = new RTCPeerConnection({

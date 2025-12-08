@@ -159,7 +159,7 @@ const Home = () => {
                   }}
                 />
                 
-                {/* D-ID Video Element - StreamingService pattern */}
+                {/* D-ID Video Element - WellnessGeni pattern with crossorigin */}
                 <video 
                   ref={videoRef}
                   id="did-video"
@@ -167,6 +167,8 @@ const Home = () => {
                   autoPlay
                   playsInline
                   muted={false}
+                  crossOrigin="anonymous"
+                  data-isabela-stream="true"
                   style={{ 
                     position: 'absolute',
                     top: 0,
@@ -178,6 +180,7 @@ const Home = () => {
                     pointerEvents: 'none',
                     background: 'transparent',
                     opacity: isSpeaking ? 1 : 0,
+                    visibility: isSpeaking ? 'visible' : 'hidden',
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />

@@ -145,7 +145,8 @@ class PersistentStreamManager {
 
       // Handle ICE candidates - forward ALL including null
       pc.onicecandidate = async (event) => {
-        console.log('🧊 ICE candidate:', event.candidate ? 'has candidate' : 'gathering complete');
+        const candidateType = event.candidate?.type || 'gathering complete';
+        console.log('[StreamService] 🧊 ICE candidate:', candidateType);
         
         await supabase.functions.invoke('did-streaming', {
           body: {
@@ -160,26 +161,41 @@ class PersistentStreamManager {
           },
         });
       };
+      
+      // Handle ICE connection state
+      pc.oniceconnectionstatechange = () => {
+        console.log('[StreamService] 🧊 ICE state:', pc.iceConnectionState);
+        if (pc.iceConnectionState === 'connected') {
+          console.log('[StreamService] ✅ ICE CONNECTED - Persistent stream ready');
+        }
+      };
 
       // Handle incoming video track
       pc.ontrack = (event) => {
-        console.log('📹 Received track:', event.track.kind);
+        console.log('[StreamService] 🎬 ontrack:', event.track.kind);
         
         if (event.track.kind === 'video' && event.streams[0]) {
           const videoEl = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | null;
           
           if (videoEl) {
             videoEl.srcObject = event.streams[0];
-            console.log('✅ Video stream attached to element');
+            console.log('[StreamService] 📺 Stream attached to video');
+            
+            // CRITICAL: Explicitly call play() like WellnessGeni
+            videoEl.play().then(() => {
+              console.log('[StreamService] 📺 Video play() succeeded');
+            }).catch(err => {
+              console.warn('[StreamService] ⚠️ Video play() failed:', err);
+            });
           } else {
-            console.warn('⚠️ No video element ref found');
+            console.warn('[StreamService] ⚠️ No video element ref found');
           }
         }
       };
 
       // Handle connection state
       pc.onconnectionstatechange = () => {
-        console.log('🔌 Connection state:', pc.connectionState);
+        console.log('[StreamService] 🔌 Connection state:', pc.connectionState);
         
         if (pc.connectionState === 'connected') {
           this.state.isConnected = true;
@@ -195,32 +211,41 @@ class PersistentStreamManager {
       const dc = pc.createDataChannel('JanusDataChannel');
       this.state.dataChannel = dc;
 
-      dc.onopen = () => console.log('📡 Data channel open');
-      dc.onclose = () => console.log('📡 Data channel closed');
+      dc.onopen = () => console.log('[StreamService] 📢 DataChannel opened');
+      dc.onclose = () => console.log('[StreamService] 📢 DataChannel closed');
       
       dc.onmessage = (event) => {
+        console.log('[StreamService] 📢 DataChannel raw:', event.data);
         try {
           const message = JSON.parse(event.data);
-          console.log('📨 D-ID event:', message.type || message);
 
-          // Handle speaking events
-          if (message.type === 'stream/started' || message.type === 'talk_started') {
+          // Handle speaking events - match WellnessGeni pattern
+          if (message.type === 'stream/started' || event.data.includes('stream/started')) {
+            console.log('[StreamService] 🎬 stream/started detected');
             this.notifySpeakingChange(true);
-          } else if (message.type === 'stream/done' || message.type === 'talk_done') {
+          } else if (message.type === 'stream/done' || event.data.includes('stream/done')) {
+            console.log('[StreamService] 🎬 stream/done detected');
             this.notifySpeakingChange(false);
-            // DO NOT recreate stream on done events - keep connection persistent
           }
         } catch (e) {
-          console.log('📨 D-ID message:', event.data);
+          // Handle non-JSON messages like "stream/ready:{}"
+          if (event.data.includes('stream/started')) {
+            this.notifySpeakingChange(true);
+          } else if (event.data.includes('stream/done')) {
+            this.notifySpeakingChange(false);
+          }
         }
       };
 
       // Step 3: Set remote description (D-ID's offer)
+      console.log('[StreamService] 📥 Setting remote offer...');
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      console.log('[StreamService] 📥 Remote offer set');
 
       // Step 4: Create and set local description (our answer)
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
+      console.log('[StreamService] 📤 Local answer created');
 
       // Step 5: Send our answer to D-ID
       const { data: startData, error: startError } = await supabase.functions.invoke('did-streaming', {
@@ -241,7 +266,7 @@ class PersistentStreamManager {
         throw new Error(startError?.message || startData?.error?.message || 'Failed to start stream');
       }
 
-      console.log('✅ WebRTC connection established');
+      console.log('[StreamService] ✅ SDP answer sent');
 
     } catch (error) {
       console.error('❌ Stream creation failed:', error);
@@ -253,8 +278,10 @@ class PersistentStreamManager {
 
   // Speak text through the avatar
   async speak(text: string, voiceId?: string): Promise<void> {
+    console.log('[StreamService] 🗣️ speak:', { textLength: text.length, isConnected: this.state.isConnected });
+    
     if (!this.state.isConnected || !this.state.streamId || !this.state.sessionId) {
-      console.warn('⚠️ Not connected, attempting fallback...');
+      console.warn('[StreamService] ⚠️ Not connected, attempting fallback...');
       
       // Try fallback to createClip
       if (this.state.avatarUrl) {
@@ -264,7 +291,7 @@ class PersistentStreamManager {
       throw new Error('Not connected and no avatar URL for fallback');
     }
 
-    console.log('🎤 Sending speech:', { textLength: text.length, voiceId });
+    console.log('[StreamService] 🎤 Sending speech to D-ID...');
 
     const { data, error } = await supabase.functions.invoke('did-streaming', {
       body: {
@@ -279,7 +306,7 @@ class PersistentStreamManager {
     });
 
     if (error || !data?.success) {
-      console.error('❌ startAnimation failed:', error || data?.error);
+      console.error('[StreamService] ❌ startAnimation failed:', error || data?.error);
       
       // Fallback to clip
       if (this.state.avatarUrl) {
@@ -289,7 +316,7 @@ class PersistentStreamManager {
       throw new Error(error?.message || data?.error?.message || 'Animation failed');
     }
 
-    console.log('✅ Animation started');
+    console.log('[StreamService] ✅ Animation triggered - RTP frames flowing');
   }
 
   // Fallback: Create async clip

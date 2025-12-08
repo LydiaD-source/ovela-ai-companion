@@ -52,22 +52,38 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   autoGreet = false,
   onReady
 }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const GREETING_TEXT = "Hi there! I'm Isabella, Ovela Interactive's AI Model Ambassador. I help brands tell their stories in a more human, intelligent way. How can I assist you today? 😊";
+  
+  // Show greeting immediately when component mounts (before D-ID is ready)
+  const initialGreeting: Message = {
+    id: 'greeting-initial',
+    text: GREETING_TEXT,
+    sender: 'assistant',
+    timestamp: new Date()
+  };
+  
+  const [messages, setMessages] = useState<Message[]>(autoGreet ? [initialGreeting] : []);
   const [inputText, setInputText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(autoGreet); // Start loading if autoGreet
   const [isMuted, setIsMuted] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
-  const hasAutoGreeted = useRef(false);
+  const hasAnimatedGreeting = useRef(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Reset messages when guest mode changes (but preserve greeting if autoGreet)
   useEffect(() => {
-    setMessages([]);
+    if (autoGreet) {
+      setMessages([initialGreeting]);
+      hasAnimatedGreeting.current = false;
+    } else {
+      setMessages([]);
+    }
   }, [isGuestMode]);
 
   useEffect(() => {
@@ -89,33 +105,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     initAudio();
   }, []);
 
-  // Auto-greet: show Isabella's greeting directly (no user "hello" message)
+  // Animate greeting when D-ID becomes ready (greeting text already shown)
   useEffect(() => {
-    if (autoGreet && !hasAutoGreeted.current && !isLoading) {
-      hasAutoGreeted.current = true;
-      console.log('🎬 Auto-greeting: Isabella introduces herself');
+    if (autoGreet && !hasAnimatedGreeting.current && onAIResponse) {
+      hasAnimatedGreeting.current = true;
+      console.log('🎬 D-ID ready - animating Isabella greeting');
       
-      const greetingText = "Hi there! I'm Isabella, Ovela Interactive's AI Model Ambassador. I help brands tell their stories in a more human, intelligent way. How can I assist you today? 😊";
-      
-      // Small delay to ensure D-ID connection is established
-      const timer = setTimeout(() => {
-        // Add greeting directly to messages (no user message needed)
-        const greetingMessage: Message = {
-          id: Date.now().toString(),
-          text: greetingText,
-          sender: 'assistant',
-          timestamp: new Date()
-        };
-        setMessages([greetingMessage]);
-        
-        // Trigger D-ID animation
-        if (onAIResponse) {
-          console.log('🎬 Triggering D-ID for greeting');
-          onAIResponse(greetingText);
-        }
-      }, 500);
-      
-      return () => clearTimeout(timer);
+      // Trigger D-ID animation for the greeting
+      onAIResponse(GREETING_TEXT);
+      setIsLoading(false);
     }
   }, [autoGreet, onAIResponse]);
 

@@ -32,9 +32,20 @@ const Home = () => {
     if (hasInitialized.current) return;
     hasInitialized.current = true;
     
-    // CRITICAL: Register AFTER ref is valid
+    // CRITICAL: Make video globally accessible for StreamingService - matching WellnessGeni
     (window as any).__AVATAR_VIDEO_REF__ = video;
+    
+    // Match WellnessGeni video setup
+    video.muted = true;
+    video.volume = 1.0;
+    video.playsInline = true;
+    video.autoplay = true;
+    
     console.log('[Home] ✅ Video element initialized and registered globally');
+    
+    return () => {
+      (window as any).__AVATAR_VIDEO_REF__ = null;
+    };
   }, []); // Empty dependency - runs once after mount
 
   // Subscribe to StreamingService state changes (WellnessGeni pattern)

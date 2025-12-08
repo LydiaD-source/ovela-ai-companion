@@ -1,4 +1,10 @@
-import { supabase } from '@/integrations/supabase/client';
+// StreamingService.ts - Matching WellnessGeni's working implementation exactly
+// Uses direct fetch() to edge function, NOT supabase.functions.invoke()
+
+const BACKEND_FN = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/did-streaming';
+
+type ConnectionCallback = (connected: boolean) => void;
+type SpeakingCallback = (speaking: boolean) => void;
 
 interface SpeakParams {
   avatarUrl: string;
@@ -6,471 +12,323 @@ interface SpeakParams {
   voiceId?: string;
 }
 
-interface StreamState {
-  streamId: string | null;
-  sessionId: string | null;
-  peerConnection: RTCPeerConnection | null;
-  dataChannel: RTCDataChannel | null;
-  isConnected: boolean;
-  isConnecting: boolean;
-  avatarUrl: string | null;
-}
-
-type ConnectionCallback = (connected: boolean) => void;
-type SpeakingCallback = (speaking: boolean) => void;
-
 class PersistentStreamManager {
   private static instance: PersistentStreamManager | null = null;
   
-  private state: StreamState = {
-    streamId: null,
-    sessionId: null,
-    peerConnection: null,
-    dataChannel: null,
-    isConnected: false,
-    isConnecting: false,
-    avatarUrl: null,
-  };
-
-  private connectionCallbacks: Set<ConnectionCallback> = new Set();
-  private speakingCallbacks: Set<SpeakingCallback> = new Set();
-  private initPromise: Promise<void> | null = null;
-
-  private constructor() {
-    // Expose video ref globally for AvatarDisplay
-    if (typeof window !== 'undefined') {
-      (window as any).__AVATAR_VIDEO_REF__ = null;
-    }
-  }
-
+  private pc: RTCPeerConnection | null = null;
+  private streamId: string | null = null;
+  private sessionId: string | null = null;
+  private avatarUrl: string | null = null;
+  
+  private isInitializing = false;
+  private isConnected = false;
+  private isSpeaking = false;
+  
+  private connectionCallbacks: ConnectionCallback[] = [];
+  private speakingCallbacks: SpeakingCallback[] = [];
+  
+  private constructor() {}
+  
   static getInstance(): PersistentStreamManager {
     if (!PersistentStreamManager.instance) {
       PersistentStreamManager.instance = new PersistentStreamManager();
     }
     return PersistentStreamManager.instance;
   }
-
-  // Subscribe to connection state changes
+  
+  // Direct fetch to edge function - matching WellnessGeni exactly
+  private async callBackend(action: string, payload: Record<string, unknown> = {}): Promise<any> {
+    console.log(`[StreamService] 📤 callBackend: ${action}`, payload);
+    
+    const resp = await fetch(BACKEND_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, ...payload })
+    });
+    
+    const result = await resp.json();
+    console.log(`[StreamService] 📥 Response for ${action}:`, result);
+    return result;
+  }
+  
   onConnectionChange(callback: ConnectionCallback): () => void {
-    this.connectionCallbacks.add(callback);
-    // Immediately call with current state
-    callback(this.state.isConnected);
-    return () => this.connectionCallbacks.delete(callback);
+    this.connectionCallbacks.push(callback);
+    callback(this.isConnected);
+    return () => {
+      this.connectionCallbacks = this.connectionCallbacks.filter(cb => cb !== callback);
+    };
   }
-
-  // Subscribe to speaking state changes
+  
   onSpeakingChange(callback: SpeakingCallback): () => void {
-    this.speakingCallbacks.add(callback);
-    return () => this.speakingCallbacks.delete(callback);
+    this.speakingCallbacks.push(callback);
+    callback(this.isSpeaking);
+    return () => {
+      this.speakingCallbacks = this.speakingCallbacks.filter(cb => cb !== callback);
+    };
   }
-
-  private notifyConnectionChange(connected: boolean) {
+  
+  private notifyConnection(connected: boolean) {
+    this.isConnected = connected;
     this.connectionCallbacks.forEach(cb => cb(connected));
   }
-
-  private notifySpeakingChange(speaking: boolean) {
+  
+  private notifySpeaking(speaking: boolean) {
+    this.isSpeaking = speaking;
     this.speakingCallbacks.forEach(cb => cb(speaking));
   }
-
-  // Initialize once with guard to prevent race conditions
+  
   async initOnce(avatarUrl: string): Promise<void> {
-    // Already connected with same avatar
-    if (this.state.isConnected && this.state.avatarUrl === avatarUrl) {
-      console.log('🔄 Stream already connected, reusing');
+    console.log('[StreamService] 🎬 initOnce called with avatarUrl:', avatarUrl);
+    
+    if (this.isConnected && this.avatarUrl === avatarUrl) {
+      console.log('[StreamService] ✅ Already connected with same avatar');
       return;
     }
-
-    // Currently connecting - wait for it
-    if (this.initPromise) {
-      console.log('⏳ Init already in progress, waiting...');
-      return this.initPromise;
+    
+    if (this.isInitializing) {
+      console.log('[StreamService] ⏳ Already initializing, waiting...');
+      while (this.isInitializing) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return;
     }
-
-    // Different avatar - need to reconnect
-    if (this.state.isConnected && this.state.avatarUrl !== avatarUrl) {
-      console.log('🔄 Different avatar, reconnecting...');
-      await this.disconnect();
-    }
-
-    this.initPromise = this.createStream(avatarUrl);
+    
+    this.isInitializing = true;
+    this.avatarUrl = avatarUrl;
     
     try {
-      await this.initPromise;
+      // Disconnect existing connection if any
+      if (this.pc) {
+        this.disconnect();
+      }
+      
+      await this.createStream(avatarUrl);
+      console.log('[StreamService] ✅ Stream created successfully');
+    } catch (error) {
+      console.error('[StreamService] ❌ initOnce failed:', error);
+      throw error;
     } finally {
-      this.initPromise = null;
+      this.isInitializing = false;
     }
   }
-
+  
   private async createStream(avatarUrl: string): Promise<void> {
-    this.state.isConnecting = true;
-    this.state.avatarUrl = avatarUrl;
-
-    try {
-      console.log('🎬 Creating D-ID stream with avatarUrl:', avatarUrl);
-
-      // Step 1: Create stream
-      // v8 edge function expects source_url at TOP LEVEL (not nested in data)
-      const { data: createData, error: createError } = await supabase.functions.invoke('did-streaming', {
-        body: {
-          action: 'createStream',
-          source_url: avatarUrl,  // TOP LEVEL for v8 compatibility
-          avatarUrl: avatarUrl,   // Also send as avatarUrl for backwards compatibility
-        },
+    console.log('[StreamService] 🎬 Creating D-ID stream...');
+    
+    // Step 1: Create stream - WellnessGeni uses avatarUrl at TOP LEVEL
+    const createResp = await this.callBackend('createStream', { avatarUrl });
+    
+    if (!createResp.success) {
+      console.error('[StreamService] ❌ createStream failed:', createResp);
+      throw new Error(createResp.error?.message || 'Failed to create stream');
+    }
+    
+    // WellnessGeni uses body.id, NOT body.stream_id
+    this.streamId = createResp.id;
+    this.sessionId = createResp.session_id;
+    const offer = createResp.offer;
+    const iceServers = createResp.ice_servers || [];
+    
+    console.log('[StreamService] ✅ Stream created:', {
+      streamId: this.streamId,
+      sessionId: this.sessionId?.substring(0, 30) + '...',
+      hasOffer: !!offer,
+      iceServersCount: iceServers.length
+    });
+    
+    // Step 2: Setup RTCPeerConnection
+    this.pc = new RTCPeerConnection({ iceServers });
+    
+    // Handle ICE candidates
+    this.pc.onicecandidate = async (event) => {
+      const candidate = event.candidate;
+      console.log('[StreamService] 🧊 ICE candidate:', candidate?.type || 'null (gathering complete)');
+      
+      // WellnessGeni sends candidate object or null
+      await this.callBackend('sendIceCandidate', {
+        stream_id: this.streamId,
+        session_id: this.sessionId,
+        candidate: candidate ? {
+          candidate: candidate.candidate,
+          sdpMid: candidate.sdpMid,
+          sdpMLineIndex: candidate.sdpMLineIndex
+        } : null
       });
-
-      console.log('[StreamService] createStream response:', { createData, createError });
-
-      if (createError) {
-        console.error('[StreamService] ❌ Supabase invoke error:', createError);
-        throw new Error(createError.message || 'Failed to invoke edge function');
+    };
+    
+    this.pc.oniceconnectionstatechange = () => {
+      console.log('[StreamService] 🧊 ICE state:', this.pc?.iceConnectionState);
+      if (this.pc?.iceConnectionState === 'connected') {
+        console.log('[StreamService] ✅ ICE CONNECTED - Persistent stream ready');
+        this.notifyConnection(true);
+      } else if (this.pc?.iceConnectionState === 'disconnected' || this.pc?.iceConnectionState === 'failed') {
+        this.notifyConnection(false);
       }
+    };
+    
+    this.pc.onconnectionstatechange = () => {
+      console.log('[StreamService] 🔌 Connection state:', this.pc?.connectionState);
+    };
+    
+    // Handle incoming tracks
+    this.pc.ontrack = (event) => {
+      console.log('[StreamService] 🎬 ontrack:', event.track.kind);
       
-      if (!createData?.success) {
-        console.error('[StreamService] ❌ Edge function error:', createData);
-        throw new Error(createData?.error?.message || 'Edge function returned error');
-      }
-
-      // v8 returns stream_id, older versions return id - support both
-      const streamId = createData.stream_id || createData.id;
-      const { session_id: sessionId, offer, ice_servers } = createData;
-      
-      if (!streamId) {
-        console.error('[StreamService] ❌ No stream_id in response:', createData);
-        throw new Error('Stream ID missing from createStream response');
-      }
-      
-      this.state.streamId = streamId;
-      this.state.sessionId = sessionId;
-
-      console.log('[StreamService] ✅ Stream created:', { streamId, sessionId: sessionId?.substring(0, 20) + '...' });
-
-      // Step 2: Create RTCPeerConnection
-      const pc = new RTCPeerConnection({
-        iceServers: ice_servers || [{ urls: 'stun:stun.l.google.com:19302' }],
-      });
-
-      this.state.peerConnection = pc;
-
-      // Handle ICE candidates - forward ALL including null
-      pc.onicecandidate = async (event) => {
-        const candidateType = event.candidate?.type || 'gathering complete';
-        console.log('[StreamService] 🧊 ICE candidate:', candidateType);
+      if (event.track.kind === 'video') {
+        // WellnessGeni uses __ISABELA_VIDEO_REF__ - we use __AVATAR_VIDEO_REF__
+        const videoEl = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
         
-        await supabase.functions.invoke('did-streaming', {
-          body: {
-            action: 'sendIceCandidate',
-            data: {
-              stream_id: this.state.streamId,
-              session_id: this.state.sessionId,
-              candidate: event.candidate?.candidate || null,
-              sdpMid: event.candidate?.sdpMid || null,
-              sdpMLineIndex: event.candidate?.sdpMLineIndex ?? null,
-            },
-          },
-        });
-      };
-      
-      // Handle ICE connection state
-      pc.oniceconnectionstatechange = () => {
-        console.log('[StreamService] 🧊 ICE state:', pc.iceConnectionState);
-        if (pc.iceConnectionState === 'connected') {
-          console.log('[StreamService] ✅ ICE CONNECTED - Persistent stream ready');
-        }
-      };
-
-      // Handle incoming video track
-      pc.ontrack = (event) => {
-        console.log('[StreamService] 🎬 ontrack:', event.track.kind);
-        
-        if (event.track.kind === 'video' && event.streams[0]) {
-          const videoEl = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | null;
+        if (videoEl && event.streams[0]) {
+          console.log('[StreamService] 📺 Attaching stream to video element');
+          videoEl.srcObject = event.streams[0];
           
-          if (videoEl) {
-            videoEl.srcObject = event.streams[0];
-            console.log('[StreamService] 📺 Stream attached to video');
-            
-            // CRITICAL: Explicitly call play() like WellnessGeni
-            videoEl.play().then(() => {
-              console.log('[StreamService] 📺 Video play() succeeded');
-            }).catch(err => {
-              console.warn('[StreamService] ⚠️ Video play() failed:', err);
-            });
-          } else {
-            console.warn('[StreamService] ⚠️ No video element ref found');
-          }
+          videoEl.play().then(() => {
+            console.log('[StreamService] 📺 Video play() succeeded');
+          }).catch(err => {
+            console.warn('[StreamService] ⚠️ Video play() failed:', err);
+          });
+        } else {
+          console.warn('[StreamService] ⚠️ No video element found at __AVATAR_VIDEO_REF__');
         }
-      };
-
-      // Handle connection state
-      pc.onconnectionstatechange = () => {
-        console.log('[StreamService] 🔌 Connection state:', pc.connectionState);
-        
-        if (pc.connectionState === 'connected') {
-          this.state.isConnected = true;
-          this.state.isConnecting = false;
-          this.notifyConnectionChange(true);
-        } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-          this.state.isConnected = false;
-          this.notifyConnectionChange(false);
-        }
-      };
-
-      // Create data channel for D-ID events (Janus)
-      const dc = pc.createDataChannel('JanusDataChannel');
-      this.state.dataChannel = dc;
-
+      }
+    };
+    
+    // Handle data channel messages
+    this.pc.ondatachannel = (event) => {
+      const dc = event.channel;
+      console.log('[StreamService] 📢 DataChannel received:', dc.label);
+      
       dc.onopen = () => console.log('[StreamService] 📢 DataChannel opened');
       dc.onclose = () => console.log('[StreamService] 📢 DataChannel closed');
+      dc.onerror = (e) => console.error('[StreamService] 📢 DataChannel error:', e);
       
-      dc.onmessage = (event) => {
-        console.log('[StreamService] 📢 DataChannel raw:', event.data);
-        try {
-          const message = JSON.parse(event.data);
-
-          // Handle speaking events - match WellnessGeni pattern
-          if (message.type === 'stream/started' || event.data.includes('stream/started')) {
+      dc.onmessage = (msg) => {
+        console.log('[StreamService] 📢 DataChannel raw:', msg.data);
+        
+        // Parse stream events - WellnessGeni pattern
+        if (typeof msg.data === 'string') {
+          if (msg.data.includes('stream/started')) {
             console.log('[StreamService] 🎬 stream/started detected');
-            this.notifySpeakingChange(true);
-          } else if (message.type === 'stream/done' || event.data.includes('stream/done')) {
+            this.notifySpeaking(true);
+          } else if (msg.data.includes('stream/done')) {
             console.log('[StreamService] 🎬 stream/done detected');
-            this.notifySpeakingChange(false);
-          }
-        } catch (e) {
-          // Handle non-JSON messages like "stream/ready:{}"
-          if (event.data.includes('stream/started')) {
-            this.notifySpeakingChange(true);
-          } else if (event.data.includes('stream/done')) {
-            this.notifySpeakingChange(false);
+            this.notifySpeaking(false);
           }
         }
       };
-
-      // Step 3: Set remote description (D-ID's offer)
-      console.log('[StreamService] 📥 Setting remote offer...');
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      console.log('[StreamService] 📥 Remote offer set');
-
-      // Step 4: Create and set local description (our answer)
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      console.log('[StreamService] 📤 Local answer created');
-
-      // Step 5: Send our answer to D-ID
-      const { data: startData, error: startError } = await supabase.functions.invoke('did-streaming', {
-        body: {
-          action: 'start',
-          data: {
-            stream_id: streamId,
-            session_id: sessionId,
-            answer: {
-              type: answer.type,
-              sdp: answer.sdp,
-            },
-          },
-        },
-      });
-
-      if (startError || !startData?.success) {
-        throw new Error(startError?.message || startData?.error?.message || 'Failed to start stream');
-      }
-
-      console.log('[StreamService] ✅ SDP answer sent');
-
-    } catch (error) {
-      console.error('❌ Stream creation failed:', error);
-      this.state.isConnecting = false;
-      this.state.isConnected = false;
-      throw error;
-    }
-  }
-
-  // Speak text through the avatar
-  async speak(text: string, voiceId?: string): Promise<void> {
-    console.log('[StreamService] 🗣️ speak:', { textLength: text.length, isConnected: this.state.isConnected });
+    };
     
-    if (!this.state.isConnected || !this.state.streamId || !this.state.sessionId) {
-      console.warn('[StreamService] ⚠️ Not connected, attempting fallback...');
-      
-      // Try fallback to createClip
-      if (this.state.avatarUrl) {
-        return this.speakWithClip(text, voiceId);
-      }
-      
-      throw new Error('Not connected and no avatar URL for fallback');
-    }
-
-    console.log('[StreamService] 🎤 Sending speech to D-ID...');
-
-    const { data, error } = await supabase.functions.invoke('did-streaming', {
-      body: {
-        action: 'startAnimation',
-        data: {
-          stream_id: this.state.streamId,
-          session_id: this.state.sessionId,
-          text,
-          voice_id: voiceId,
-        },
-      },
+    // Step 3: Set remote description (offer from D-ID)
+    console.log('[StreamService] 📥 Setting remote offer...');
+    await this.pc.setRemoteDescription(new RTCSessionDescription(offer));
+    console.log('[StreamService] 📥 Remote offer set');
+    
+    // Step 4: Create and set local answer
+    console.log('[StreamService] 📤 Creating local answer...');
+    const answer = await this.pc.createAnswer();
+    await this.pc.setLocalDescription(answer);
+    console.log('[StreamService] 📤 Local answer created');
+    
+    // Step 5: Send answer to D-ID - WellnessGeni sends the full localDescription
+    await this.callBackend('start', {
+      stream_id: this.streamId,
+      session_id: this.sessionId,
+      answer: this.pc.localDescription
     });
-
-    if (error || !data?.success) {
-      console.error('[StreamService] ❌ startAnimation failed:', error || data?.error);
+    console.log('[StreamService] ✅ SDP answer sent');
+  }
+  
+  async speak(text: string, voiceId?: string): Promise<void> {
+    console.log('[StreamService] 🗣️ speak:', { text: text.substring(0, 50) + '...', voiceId });
+    
+    if (!this.streamId || !this.sessionId) {
+      console.error('[StreamService] ❌ Cannot speak - no active stream');
       
-      // Fallback to clip
-      if (this.state.avatarUrl) {
-        return this.speakWithClip(text, voiceId);
+      // Try to reinitialize if we have an avatar URL
+      if (this.avatarUrl) {
+        console.log('[StreamService] 🔄 Attempting to reinitialize stream...');
+        await this.initOnce(this.avatarUrl);
+      } else {
+        throw new Error('No active stream');
       }
-      
-      throw new Error(error?.message || data?.error?.message || 'Animation failed');
     }
-
+    
+    // Send animation request - WellnessGeni uses 'message' not 'text'
+    const resp = await this.callBackend('startAnimation', {
+      stream_id: this.streamId,
+      session_id: this.sessionId,
+      message: text,
+      voiceId: voiceId || 'EXAVITQu4vr4xnSDxMaL' // Sarah voice
+    });
+    
+    if (!resp.success) {
+      console.error('[StreamService] ❌ startAnimation failed:', resp);
+      throw new Error(resp.error?.message || 'Failed to start animation');
+    }
+    
     console.log('[StreamService] ✅ Animation triggered - RTP frames flowing');
   }
-
-  // Fallback: Create async clip
-  private async speakWithClip(text: string, voiceId?: string): Promise<void> {
-    if (!this.state.avatarUrl) {
-      throw new Error('No avatar URL for clip fallback');
+  
+  disconnect(): void {
+    console.log('[StreamService] 🔌 Disconnecting...');
+    
+    if (this.pc) {
+      this.pc.close();
+      this.pc = null;
     }
-
-    console.log('🎬 Falling back to createClip...');
-
-    const { data, error } = await supabase.functions.invoke('did-streaming', {
-      body: {
-        action: 'createClip',
-        data: {
-          source_url: this.state.avatarUrl,
-          text,
-          voice_id: voiceId,
-        },
-      },
-    });
-
-    if (error || !data?.success) {
-      throw new Error(error?.message || data?.error?.message || 'Clip creation failed');
-    }
-
-    // Poll for clip completion
-    const clipId = data.id;
-    let attempts = 0;
-    const maxAttempts = 30;
-
-    while (attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const { data: clipData } = await supabase.functions.invoke('did-streaming', {
-        body: {
-          action: 'getClip',
-          data: { clip_id: clipId },
-        },
-      });
-
-      if (clipData?.status === 'done' && clipData?.result_url) {
-        // Play the clip video
-        const videoEl = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | null;
-        if (videoEl) {
-          videoEl.src = clipData.result_url;
-          await videoEl.play();
-          this.notifySpeakingChange(true);
-          
-          videoEl.onended = () => {
-            this.notifySpeakingChange(false);
-          };
-        }
-        return;
-      }
-
-      if (clipData?.status === 'error') {
-        throw new Error('Clip generation failed');
-      }
-
-      attempts++;
-    }
-
-    throw new Error('Clip generation timed out');
+    
+    this.streamId = null;
+    this.sessionId = null;
+    this.notifyConnection(false);
+    this.notifySpeaking(false);
+    
+    console.log('[StreamService] ✅ Disconnected');
   }
-
-  // Disconnect and cleanup
-  async disconnect(): Promise<void> {
-    console.log('🔌 Disconnecting stream...');
-
-    if (this.state.streamId && this.state.sessionId) {
-      try {
-        await supabase.functions.invoke('did-streaming', {
-          body: {
-            action: 'deleteStream',
-            data: {
-              stream_id: this.state.streamId,
-              session_id: this.state.sessionId,
-            },
-          },
-        });
-      } catch (e) {
-        console.warn('⚠️ Stream deletion failed:', e);
-      }
-    }
-
-    if (this.state.dataChannel) {
-      this.state.dataChannel.close();
-    }
-
-    if (this.state.peerConnection) {
-      this.state.peerConnection.close();
-    }
-
-    this.state = {
-      streamId: null,
-      sessionId: null,
-      peerConnection: null,
-      dataChannel: null,
-      isConnected: false,
-      isConnecting: false,
-      avatarUrl: null,
-    };
-
-    this.notifyConnectionChange(false);
-    this.notifySpeakingChange(false);
-  }
-
-  // Get current state
+  
   getState() {
-    return { ...this.state };
+    return {
+      isConnected: this.isConnected,
+      isSpeaking: this.isSpeaking,
+      streamId: this.streamId,
+      sessionId: this.sessionId
+    };
   }
 }
 
-// Export singleton instance and convenience methods
+// Export singleton interface - matching WellnessGeni
 export const StreamingService = {
   getInstance: () => PersistentStreamManager.getInstance(),
   
-  async init(avatarUrl: string): Promise<void> {
+  init: async (avatarUrl: string) => {
     return PersistentStreamManager.getInstance().initOnce(avatarUrl);
   },
-
-  async speak(params: SpeakParams): Promise<void> {
+  
+  speak: async (params: SpeakParams) => {
     const manager = PersistentStreamManager.getInstance();
     
-    // Ensure initialized
-    await manager.initOnce(params.avatarUrl);
+    // Initialize if needed
+    if (!manager.getState().isConnected) {
+      await manager.initOnce(params.avatarUrl);
+    }
     
-    // Speak
     return manager.speak(params.text, params.voiceId);
   },
-
-  async disconnect(): Promise<void> {
-    return PersistentStreamManager.getInstance().disconnect();
+  
+  disconnect: () => {
+    PersistentStreamManager.getInstance().disconnect();
   },
-
-  onConnectionChange(callback: ConnectionCallback): () => void {
+  
+  onConnectionChange: (callback: ConnectionCallback) => {
     return PersistentStreamManager.getInstance().onConnectionChange(callback);
   },
-
-  onSpeakingChange(callback: SpeakingCallback): () => void {
+  
+  onSpeakingChange: (callback: SpeakingCallback) => {
     return PersistentStreamManager.getInstance().onSpeakingChange(callback);
   },
-
-  getState() {
+  
+  getState: () => {
     return PersistentStreamManager.getInstance().getState();
-  },
+  }
 };
 
 export default StreamingService;

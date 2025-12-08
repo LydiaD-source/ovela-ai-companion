@@ -40,15 +40,28 @@ class PersistentStreamManager {
   private async callBackend(action: string, payload: Record<string, unknown> = {}): Promise<any> {
     console.log(`[StreamService] 📤 callBackend: ${action}`, payload);
     
-    const resp = await fetch(BACKEND_FN, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, ...payload })
-    });
-    
-    const result = await resp.json();
-    console.log(`[StreamService] 📥 Response for ${action}:`, result);
-    return result;
+    try {
+      const resp = await fetch(BACKEND_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...payload })
+      });
+      
+      console.log(`[StreamService] 📥 Response status: ${resp.status} ${resp.statusText}`);
+      
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        console.error(`[StreamService] ❌ HTTP error: ${resp.status}`, errorText);
+        return { success: false, error: { message: `HTTP ${resp.status}: ${errorText}` } };
+      }
+      
+      const result = await resp.json();
+      console.log(`[StreamService] 📥 Response for ${action}:`, JSON.stringify(result, null, 2));
+      return result;
+    } catch (error) {
+      console.error(`[StreamService] ❌ Fetch error:`, error);
+      return { success: false, error: { message: String(error) } };
+    }
   }
   
   onConnectionChange(callback: ConnectionCallback): () => void {

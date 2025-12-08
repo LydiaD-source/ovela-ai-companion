@@ -131,16 +131,21 @@ class PersistentStreamManager {
     // Step 1: Create stream - WellnessGeni uses avatarUrl at TOP LEVEL
     const createResp = await this.callBackend('createStream', { avatarUrl });
     
-    if (!createResp.success) {
+    // Handle response - the edge function returns { ok, status, body } structure
+    // Check for ok:true OR success:true (backwards compatibility)
+    const isSuccess = createResp.ok === true || createResp.success === true;
+    const responseBody = createResp.body || createResp; // Data might be in body or at top level
+    
+    if (!isSuccess || !responseBody.id) {
       console.error('[StreamService] ❌ createStream failed:', createResp);
-      throw new Error(createResp.error?.message || 'Failed to create stream');
+      throw new Error(createResp.error?.message || responseBody.error?.message || 'Failed to create stream');
     }
     
-    // WellnessGeni uses body.id, NOT body.stream_id
-    this.streamId = createResp.id;
-    this.sessionId = createResp.session_id;
-    const offer = createResp.offer;
-    const iceServers = createResp.ice_servers || [];
+    // Extract data from the correct location
+    this.streamId = responseBody.id;
+    this.sessionId = responseBody.session_id;
+    const offer = responseBody.offer;
+    const iceServers = responseBody.ice_servers || [];
     
     console.log('[StreamService] ✅ Stream created:', {
       streamId: this.streamId,
@@ -274,9 +279,12 @@ class PersistentStreamManager {
       voiceId: voiceId || 'EXAVITQu4vr4xnSDxMaL' // Sarah voice
     });
     
-    if (!resp.success) {
+    // Handle response - check for ok:true OR success:true
+    const isSuccess = resp.ok === true || resp.success === true;
+    if (!isSuccess) {
       console.error('[StreamService] ❌ startAnimation failed:', resp);
-      throw new Error(resp.error?.message || 'Failed to start animation');
+      const errorMsg = resp.error?.message || resp.body?.error?.message || 'Failed to start animation';
+      throw new Error(errorMsg);
     }
     
     console.log('[StreamService] ✅ Animation triggered - RTP frames flowing');

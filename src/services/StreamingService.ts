@@ -27,6 +27,11 @@ class PersistentStreamManager {
   private connectionCallbacks: ConnectionCallback[] = [];
   private speakingCallbacks: SpeakingCallback[] = [];
   
+  // Canvas-based chroma-keying refs (removes black background from D-ID video)
+  private hiddenVideo: HTMLVideoElement | null = null;
+  private chromaCanvas: HTMLCanvasElement | null = null;
+  private animationFrameId: number | null = null;
+  
   private constructor() {}
   
   static getInstance(): PersistentStreamManager {
@@ -202,25 +207,134 @@ class PersistentStreamManager {
       console.log('[StreamService] 🔌 Connection state:', this.pc?.connectionState);
     };
     
-    // Handle incoming tracks
+    // Handle incoming tracks - use canvas chroma-keying to remove black background
     this.pc.ontrack = (event) => {
       console.log('[StreamService] 🎬 ontrack:', event.track.kind);
       
-      if (event.track.kind === 'video') {
-        // WellnessGeni uses __ISABELA_VIDEO_REF__ - we use __AVATAR_VIDEO_REF__
-        const videoEl = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
+      if (event.track.kind === 'video' && event.streams[0]) {
+        // Get container and target canvas from the registered video element's parent
+        const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
         
-        if (videoEl && event.streams[0]) {
-          console.log('[StreamService] 📺 Attaching stream to video element');
-          videoEl.srcObject = event.streams[0];
-          
-          videoEl.play().then(() => {
-            console.log('[StreamService] 📺 Video play() succeeded');
-          }).catch(err => {
-            console.warn('[StreamService] ⚠️ Video play() failed:', err);
-          });
-        } else {
+        if (!targetVideo) {
           console.warn('[StreamService] ⚠️ No video element found at __AVATAR_VIDEO_REF__');
+          return;
+        }
+        
+        const container = targetVideo.parentElement;
+        if (!container) {
+          console.warn('[StreamService] ⚠️ Video element has no parent container');
+          return;
+        }
+        
+        console.log('[StreamService] 📺 Setting up chroma-key canvas processing');
+        
+        // Create hidden video to receive D-ID stream
+        this.hiddenVideo = document.createElement('video');
+        this.hiddenVideo.autoplay = true;
+        this.hiddenVideo.playsInline = true;
+        this.hiddenVideo.muted = false; // Audio should play
+        this.hiddenVideo.style.display = 'none';
+        this.hiddenVideo.srcObject = event.streams[0];
+        container.appendChild(this.hiddenVideo);
+        
+        // Create canvas for chroma-key processing
+        this.chromaCanvas = document.createElement('canvas');
+        Object.assign(this.chromaCanvas.style, {
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          objectPosition: 'bottom center',
+          zIndex: '150',
+          backgroundColor: 'transparent',
+          pointerEvents: 'none',
+          opacity: '0',
+          transition: 'opacity 0.3s ease-in-out',
+        });
+        container.appendChild(this.chromaCanvas);
+        
+        // Store canvas ref globally so Home.tsx can control visibility
+        (window as any).__AVATAR_CANVAS_REF__ = this.chromaCanvas;
+        
+        const ctx = this.chromaCanvas.getContext('2d', { 
+          willReadFrequently: true,
+          alpha: true,
+        });
+        
+        if (!ctx) {
+          console.error('[StreamService] ❌ Could not get canvas context');
+          return;
+        }
+        
+        let canvasInitialized = false;
+        
+        // Process frames to remove black background
+        const processFrame = () => {
+          this.animationFrameId = requestAnimationFrame(processFrame);
+          
+          if (!this.hiddenVideo || this.hiddenVideo.paused || this.hiddenVideo.ended || this.hiddenVideo.readyState < 2) {
+            return;
+          }
+          
+          const width = this.hiddenVideo.videoWidth;
+          const height = this.hiddenVideo.videoHeight;
+          
+          if (width === 0 || height === 0) return;
+          
+          if (!canvasInitialized && this.chromaCanvas) {
+            this.chromaCanvas.width = width;
+            this.chromaCanvas.height = height;
+            canvasInitialized = true;
+            console.log('[StreamService] ✅ Canvas initialized:', width, 'x', height);
+          }
+          
+          if (this.chromaCanvas && (this.chromaCanvas.width !== width || this.chromaCanvas.height !== height)) {
+            this.chromaCanvas.width = width;
+            this.chromaCanvas.height = height;
+          }
+          
+          // Draw frame
+          ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
+          
+          // Chroma-key: remove black/dark pixels
+          const imageData = ctx.getImageData(0, 0, width, height);
+          const data = imageData.data;
+          const threshold = 25; // Dark pixel threshold
+          
+          for (let i = 0; i < data.length; i += 4) {
+            const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            if (brightness < threshold) {
+              data[i + 3] = 0; // Make transparent
+            }
+          }
+          
+          ctx.putImageData(imageData, 0, 0);
+        };
+        
+        // Start processing when video can play
+        this.hiddenVideo.oncanplay = () => {
+          console.log('[StreamService] 📺 Hidden video can play, starting chroma-key');
+          this.hiddenVideo?.play().then(() => {
+            console.log('[StreamService] 📺 Hidden video playing');
+            processFrame();
+          }).catch(err => {
+            console.warn('[StreamService] ⚠️ Hidden video play failed:', err);
+          });
+        };
+        
+        this.hiddenVideo.play().catch(() => {
+          // Will be handled by oncanplay
+        });
+      } else if (event.track.kind === 'audio') {
+        // Audio track - attach to the video element for playback
+        const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
+        if (targetVideo && event.streams[0]) {
+          console.log('[StreamService] 🔊 Attaching audio stream to video element');
+          targetVideo.srcObject = event.streams[0];
+          targetVideo.muted = false;
+          targetVideo.play().catch(() => {});
         }
       }
     };
@@ -310,6 +424,26 @@ class PersistentStreamManager {
   
   disconnect(): void {
     console.log('[StreamService] 🔌 Disconnecting...');
+    
+    // Clean up chroma-key processing
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+    
+    if (this.hiddenVideo) {
+      this.hiddenVideo.pause();
+      this.hiddenVideo.srcObject = null;
+      this.hiddenVideo.remove();
+      this.hiddenVideo = null;
+    }
+    
+    if (this.chromaCanvas) {
+      this.chromaCanvas.remove();
+      this.chromaCanvas = null;
+    }
+    
+    (window as any).__AVATAR_CANVAS_REF__ = null;
     
     if (this.pc) {
       this.pc.close();

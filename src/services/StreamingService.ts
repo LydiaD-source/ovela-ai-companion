@@ -226,25 +226,23 @@ class PersistentStreamManager {
           return;
         }
         
-        console.log('[StreamService] 📺 Setting up chroma-key canvas processing');
+        console.log('[StreamService] 📺 Setting up video with CSS blend mode (no chroma-key)');
         
-        // Create hidden video to receive D-ID stream
+        // Use the video element directly with CSS mix-blend-mode
+        // This preserves full quality without pixel manipulation
         this.hiddenVideo = document.createElement('video');
         this.hiddenVideo.autoplay = true;
         this.hiddenVideo.playsInline = true;
-        this.hiddenVideo.muted = false; // Audio should play
-        this.hiddenVideo.style.display = 'none';
+        this.hiddenVideo.muted = true; // Mute this video - audio plays from main video element
         this.hiddenVideo.srcObject = event.streams[0];
-        container.appendChild(this.hiddenVideo);
         
-        // Create canvas for chroma-key processing - positioned to match static image
-        this.chromaCanvas = document.createElement('canvas');
-        Object.assign(this.chromaCanvas.style, {
+        // Style for blend mode - removes black background without quality loss
+        Object.assign(this.hiddenVideo.style, {
           position: 'absolute',
-          bottom: '0', // Anchor to bottom like the static image
+          bottom: '0',
           left: '50%',
-          transform: 'translateX(-50%)', // Center horizontally
-          maxHeight: '88vh', // Match static image max-height
+          transform: 'translateX(-50%)',
+          maxHeight: '88vh',
           width: 'auto',
           height: 'auto',
           zIndex: '150',
@@ -252,98 +250,24 @@ class PersistentStreamManager {
           pointerEvents: 'none',
           opacity: '0',
           transition: 'opacity 0.3s ease-in-out',
-        });
-        container.appendChild(this.chromaCanvas);
-        
-        // Store canvas ref globally so Home.tsx can control visibility
-        (window as any).__AVATAR_CANVAS_REF__ = this.chromaCanvas;
-        
-        const ctx = this.chromaCanvas.getContext('2d', { 
-          willReadFrequently: true,
-          alpha: true,
+          mixBlendMode: 'screen', // This removes black background while preserving colors
+          filter: 'contrast(1.05) saturate(1.1)', // Slight boost to counteract blend mode
         });
         
-        if (!ctx) {
-          console.error('[StreamService] ❌ Could not get canvas context');
-          return;
-        }
+        container.appendChild(this.hiddenVideo);
         
-        let canvasInitialized = false;
+        // Store ref globally so Home.tsx can control visibility
+        (window as any).__AVATAR_CANVAS_REF__ = this.hiddenVideo;
         
-        // Process frames to remove black background
-        const processFrame = () => {
-          this.animationFrameId = requestAnimationFrame(processFrame);
-          
-          if (!this.hiddenVideo || this.hiddenVideo.paused || this.hiddenVideo.ended || this.hiddenVideo.readyState < 2) {
-            return;
-          }
-          
-          const width = this.hiddenVideo.videoWidth;
-          const height = this.hiddenVideo.videoHeight;
-          
-          if (width === 0 || height === 0) return;
-          
-          if (!canvasInitialized && this.chromaCanvas) {
-            this.chromaCanvas.width = width;
-            this.chromaCanvas.height = height;
-            canvasInitialized = true;
-            console.log('[StreamService] ✅ Canvas initialized:', width, 'x', height);
-          }
-          
-          if (this.chromaCanvas && (this.chromaCanvas.width !== width || this.chromaCanvas.height !== height)) {
-            this.chromaCanvas.width = width;
-            this.chromaCanvas.height = height;
-          }
-          
-          // Draw frame
-          ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
-          
-          // Improved chroma-key: preserve avatar sharpness
-          const imageData = ctx.getImageData(0, 0, width, height);
-          const data = imageData.data;
-          
-          // Use strict threshold - only remove truly black background pixels
-          const blackThreshold = 15; // Very dark pixels only
-          const edgeThreshold = 35; // Slight softening at edges
-          
-          for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            
-            // Calculate max channel value to detect near-black
-            const maxChannel = Math.max(r, g, b);
-            const brightness = (r + g + b) / 3;
-            
-            if (maxChannel < blackThreshold) {
-              // Pure black background - fully transparent
-              data[i + 3] = 0;
-            } else if (maxChannel < edgeThreshold && brightness < 20) {
-              // Edge pixels - gradual transparency for smoother edges
-              // This prevents hard cutoffs while preserving avatar details
-              const alpha = Math.round(((maxChannel - blackThreshold) / (edgeThreshold - blackThreshold)) * 255);
-              data[i + 3] = Math.min(data[i + 3], alpha);
-            }
-            // Else: keep pixel fully opaque (avatar content)
-          }
-          
-          ctx.putImageData(imageData, 0, 0);
-        };
-        
-        // Start processing when video can play
+        // Start video playback
         this.hiddenVideo.oncanplay = () => {
-          console.log('[StreamService] 📺 Hidden video can play, starting chroma-key');
-          this.hiddenVideo?.play().then(() => {
-            console.log('[StreamService] 📺 Hidden video playing');
-            processFrame();
-          }).catch(err => {
-            console.warn('[StreamService] ⚠️ Hidden video play failed:', err);
+          console.log('[StreamService] 📺 Blend video ready');
+          this.hiddenVideo?.play().catch(err => {
+            console.warn('[StreamService] ⚠️ Blend video play failed:', err);
           });
         };
         
-        this.hiddenVideo.play().catch(() => {
-          // Will be handled by oncanplay
-        });
+        this.hiddenVideo.play().catch(() => {});
       } else if (event.track.kind === 'audio') {
         // Audio track - attach to the video element for playback
         const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;

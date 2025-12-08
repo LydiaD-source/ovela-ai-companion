@@ -237,16 +237,16 @@ class PersistentStreamManager {
         this.hiddenVideo.srcObject = event.streams[0];
         container.appendChild(this.hiddenVideo);
         
-        // Create canvas for chroma-key processing
+        // Create canvas for chroma-key processing - positioned to match static image
         this.chromaCanvas = document.createElement('canvas');
         Object.assign(this.chromaCanvas.style, {
           position: 'absolute',
-          top: '0',
-          left: '0',
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          objectPosition: 'bottom center',
+          bottom: '0', // Anchor to bottom like the static image
+          left: '50%',
+          transform: 'translateX(-50%)', // Center horizontally
+          maxHeight: '88vh', // Match static image max-height
+          width: 'auto',
+          height: 'auto',
           zIndex: '150',
           backgroundColor: 'transparent',
           pointerEvents: 'none',

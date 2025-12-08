@@ -89,20 +89,35 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     initAudio();
   }, []);
 
-  // Auto-greet: send initial greeting when component mounts and autoGreet is true
+  // Auto-greet: show Isabella's greeting directly (no user "hello" message)
   useEffect(() => {
     if (autoGreet && !hasAutoGreeted.current && !isLoading) {
       hasAutoGreeted.current = true;
-      console.log('🎬 Auto-greeting: sending initial hello to Isabella');
+      console.log('🎬 Auto-greeting: Isabella introduces herself');
+      
+      const greetingText = "Hi there! I'm Isabella, Ovela Interactive's AI Model Ambassador. I help brands tell their stories in a more human, intelligent way. How can I assist you today? 😊";
       
       // Small delay to ensure D-ID connection is established
       const timer = setTimeout(() => {
-        sendMessage('hello');
-      }, 800);
+        // Add greeting directly to messages (no user message needed)
+        const greetingMessage: Message = {
+          id: Date.now().toString(),
+          text: greetingText,
+          sender: 'assistant',
+          timestamp: new Date()
+        };
+        setMessages([greetingMessage]);
+        
+        // Trigger D-ID animation
+        if (onAIResponse) {
+          console.log('🎬 Triggering D-ID for greeting');
+          onAIResponse(greetingText);
+        }
+      }, 500);
       
       return () => clearTimeout(timer);
     }
-  }, [autoGreet]);
+  }, [autoGreet, onAIResponse]);
 
   // Notify parent when ready
   useEffect(() => {

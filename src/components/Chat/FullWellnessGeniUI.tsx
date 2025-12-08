@@ -39,8 +39,6 @@ interface FullWellnessGeniUIProps {
   allowedPersonas?: string[];
   showOnlyPromoter?: boolean;
   onAIResponse?: (text: string) => void;
-  showGreetingImmediately?: boolean; // Show greeting text immediately on mount
-  animateGreeting?: boolean; // Trigger D-ID animation for greeting
   onReady?: () => void;
 }
 
@@ -50,44 +48,20 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true,
   onAIResponse,
-  showGreetingImmediately = false,
-  animateGreeting = false,
   onReady
 }) => {
-  const GREETING_TEXT = "Hi there! I'm Isabella, Ovela Interactive's AI Model Ambassador. I help brands tell their stories in a more human, intelligent way. How can I assist you today? 😊";
-  
-  // Create initial greeting message
-  const createGreetingMessage = (): Message => ({
-    id: 'greeting-initial',
-    text: GREETING_TEXT,
-    sender: 'assistant',
-    timestamp: new Date()
-  });
-  
-  const [messages, setMessages] = useState<Message[]>(() => 
-    showGreetingImmediately ? [createGreetingMessage()] : []
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // No loading - user can interact immediately
+  const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState(defaultPersona);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
-  const hasShownGreeting = useRef(showGreetingImmediately);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Show greeting when prop changes (for dynamic activation)
-  useEffect(() => {
-    if (showGreetingImmediately && messages.length === 0 && !hasShownGreeting.current) {
-      console.log('🎬 Showing greeting text immediately (no animation wait)');
-      hasShownGreeting.current = true;
-      setMessages([createGreetingMessage()]);
-    }
-  }, [showGreetingImmediately]);
 
   useEffect(() => {
     const chatContainer = messagesEndRef.current?.parentElement;

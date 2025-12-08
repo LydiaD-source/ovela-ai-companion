@@ -18,7 +18,6 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
-  const [isDIDReady, setIsDIDReady] = useState(false);
   const avatarContainerRef = useRef<HTMLDivElement>(null);
   const [isAvatarReady, setIsAvatarReady] = useState(false);
 
@@ -60,9 +59,8 @@ const Home = () => {
       console.log('⚠️ Could not unlock audio context:', error);
     }
     
-    // Show chat immediately - no waiting for D-ID
+    // Show chat immediately - D-ID connects when user sends first message
     setIsChatActive(true);
-    setIsDIDReady(true); // Allow interaction immediately
 
     // Start D-ID connection in background (non-blocking)
     // Animation will work for subsequent AI responses once connected
@@ -215,27 +213,21 @@ const Home = () => {
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
-                      showGreetingImmediately={isChatActive}
-                      animateGreeting={isDIDReady}
                       onAIResponse={(text) => {
                         console.log('🎯 onAIResponse callback triggered!');
                         console.log('📝 Text received:', text?.substring(0, 50));
+                        console.log('🔗 isStreaming:', isStreaming, 'isLoading:', isLoading, 'connectionState:', connectionState);
                         
                         if (!text) {
                           console.warn('⚠️ No text received in onAIResponse');
                           return;
                         }
                         
-                        // Use queueSpeech to prevent overlapping animations
-                        if (isStreaming && !isLoading) {
-                          console.log('🎬 Using queueSpeech for animation');
-                          queueSpeech(text);
-                        } else {
-                          console.log('🎬 Calling speakDID to establish connection + animate');
-                          speakDID(text, isabellaHeroImageUrl).catch(err => {
-                            console.error('❌ speakDID error:', err);
-                          });
-                        }
+                        // Always call speakDID - it handles connection + animation
+                        console.log('🎬 Calling speakDID for animation');
+                        speakDID(text, isabellaHeroImageUrl).catch(err => {
+                          console.error('❌ speakDID error:', err);
+                        });
                       }}
                     />
                   </div>

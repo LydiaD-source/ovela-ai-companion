@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useWellnessGeniChat } from '@/hooks/useWellnessGeniChat';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
@@ -7,7 +6,7 @@ import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import { useDIDAvatarStream } from '@/hooks/useDIDAvatarStream';
+import { StreamingService } from '@/services/StreamingService';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 import '@/styles/HeroSection.css';
 
@@ -18,23 +17,34 @@ const Home = () => {
   const isabellaVideoUrl = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
   const isabellaHeroImageUrl = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
   const [isChatActive, setIsChatActive] = useState(false);
-  const avatarContainerRef = useRef<HTMLDivElement>(null);
-  const [isAvatarReady, setIsAvatarReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // D-ID Avatar Stream Hook
-  const { speak: speakDID, isStreaming, isLoading, isSpeaking, connectionState, queueSpeech } = useDIDAvatarStream({
-    containerRef: avatarContainerRef,
-    onStreamStart: () => {
-      console.log('🎬 D-ID stream started');
-      setIsAvatarReady(true);
-    },
-    onStreamEnd: () => {
-      console.log('🎬 D-ID stream ended');
-    },
-    onError: (error) => {
-      console.error('❌ D-ID stream error:', error);
-    },
-  });
+  // Subscribe to StreamingService state changes (WellnessGeni pattern)
+  useEffect(() => {
+    // Expose video ref globally for StreamingService
+    if (videoRef.current) {
+      (window as any).__AVATAR_VIDEO_REF__ = videoRef.current;
+    }
+    
+    const unsubConnection = StreamingService.onConnectionChange((connected) => {
+      console.log('🔗 StreamingService connection:', connected);
+      setIsConnected(connected);
+      setIsLoading(false);
+    });
+    
+    const unsubSpeaking = StreamingService.onSpeakingChange((speaking) => {
+      console.log('🎤 StreamingService speaking:', speaking);
+      setIsSpeaking(speaking);
+    });
+    
+    return () => {
+      unsubConnection();
+      unsubSpeaking();
+    };
+  }, []);
 
   // Check URL parameter to auto-open chat from Contact page
   useEffect(() => {
@@ -59,16 +69,17 @@ const Home = () => {
       console.log('⚠️ Could not unlock audio context:', error);
     }
     
-    // Show chat immediately - D-ID connects when user sends first message
+    // Show chat immediately
     setIsChatActive(true);
+    setIsLoading(true);
 
-    // Start D-ID connection in background (non-blocking)
-    // Animation will work for subsequent AI responses once connected
-    console.log('🎬 Starting D-ID connection in background...');
-    speakDID('', isabellaHeroImageUrl).then(() => {
-      console.log('✅ D-ID connection ready for animations');
+    // Start D-ID connection in background using StreamingService (WellnessGeni pattern)
+    console.log('🎬 Starting D-ID connection via StreamingService...');
+    StreamingService.init(isabellaHeroImageUrl).then(() => {
+      console.log('✅ StreamingService D-ID connection ready');
     }).catch(e => {
-      console.error('❌ D-ID connection setup failed:', e);
+      console.error('❌ StreamingService connection failed:', e);
+      setIsLoading(false);
     });
   };
 
@@ -115,7 +126,7 @@ const Home = () => {
             {/* Left Side - Isabella (Anchor) */}
             <div 
               className="isabella-container"
-              style={{ zIndex: isSpeaking || isStreaming ? 200 : 1 }}
+              style={{ zIndex: isSpeaking || isConnected ? 200 : 1 }}
             >
               {/* Enhanced Isabella Backlight (Soft Golden Glow) - Positioned in container */}
               <div className="isabella-backlight"></div>
@@ -138,25 +149,28 @@ const Home = () => {
                   }}
                 />
                 
-                {/* D-ID Stream Container - Canvas overlays when animated */}
-                <div 
-                  ref={avatarContainerRef}
-                  id="did-container" 
+                {/* D-ID Video Element - StreamingService pattern */}
+                <video 
+                  ref={videoRef}
+                  id="did-video" 
                   className="did-avatar-layer"
+                  autoPlay
+                  playsInline
+                  muted={false}
                   style={{ 
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    zIndex: isSpeaking || isStreaming ? 150 : 12, // Above chat overlay when animating
+                    objectFit: 'contain',
+                    zIndex: isSpeaking || isConnected ? 150 : 12,
                     pointerEvents: 'none',
                     background: 'transparent',
+                    opacity: isSpeaking ? 1 : 0,
+                    transition: 'opacity 0.3s ease-in-out',
                   }}
-                >
-                  {/* D-ID canvas will be injected here dynamically */}
-                  {/* Minimal loading indicator - small pulse on the button instead */}
-                </div>
+                />
                 
                 {/* Small loading indicator at bottom when connecting */}
                 {isLoading && (
@@ -223,17 +237,20 @@ const Home = () => {
                       onAIResponse={(text) => {
                         console.log('🎯 onAIResponse callback triggered!');
                         console.log('📝 Text received:', text?.substring(0, 50));
-                        console.log('🔗 isStreaming:', isStreaming, 'isLoading:', isLoading, 'connectionState:', connectionState);
+                        console.log('🔗 isConnected:', isConnected, 'isSpeaking:', isSpeaking);
                         
                         if (!text) {
                           console.warn('⚠️ No text received in onAIResponse');
                           return;
                         }
                         
-                        // Always call speakDID - it handles connection + animation
-                        console.log('🎬 Calling speakDID for animation');
-                        speakDID(text, isabellaHeroImageUrl).catch(err => {
-                          console.error('❌ speakDID error:', err);
+                        // Use StreamingService.speak (WellnessGeni pattern)
+                        console.log('🎬 Calling StreamingService.speak for animation');
+                        StreamingService.speak({
+                          avatarUrl: isabellaHeroImageUrl,
+                          text,
+                        }).catch(err => {
+                          console.error('❌ StreamingService.speak error:', err);
                         });
                       }}
                     />

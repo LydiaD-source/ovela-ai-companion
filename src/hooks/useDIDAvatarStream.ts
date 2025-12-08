@@ -23,6 +23,8 @@ export const useDIDAvatarStream = ({
   const pendingTextRef = useRef<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const sdpExchangedRef = useRef<boolean>(false);
+  const pendingIceCandidates = useRef<RTCIceCandidate[]>([]);
 
   useEffect(() => {
     return () => {
@@ -32,6 +34,9 @@ export const useDIDAvatarStream = ({
 
   const cleanup = async () => {
     console.log('🧹 Cleaning up D-ID stream');
+    
+    sdpExchangedRef.current = false;
+    pendingIceCandidates.current = [];
     
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
@@ -77,6 +82,54 @@ export const useDIDAvatarStream = ({
     setIsLoading(false);
   };
 
+  // Send queued ICE candidates after SDP is exchanged
+  const flushIceCandidates = async () => {
+    if (!sdpExchangedRef.current) return;
+    
+    const candidates = [...pendingIceCandidates.current];
+    pendingIceCandidates.current = [];
+    
+    console.log(`🧊 Flushing ${candidates.length} queued ICE candidates`);
+    
+    for (const candidate of candidates) {
+      try {
+        await supabase.functions.invoke('did-streaming', {
+          body: {
+            action: 'sendIceCandidate',
+            data: {
+              stream_id: streamIdRef.current,
+              session_id: sessionIdRef.current,
+              candidate: candidate.candidate,
+              sdpMid: candidate.sdpMid,
+              sdpMLineIndex: candidate.sdpMLineIndex,
+            },
+          },
+        });
+      } catch (e) {
+        console.error('❌ ICE send failed:', e);
+      }
+    }
+    
+    // Send null candidate to signal gathering complete
+    try {
+      await supabase.functions.invoke('did-streaming', {
+        body: {
+          action: 'sendIceCandidate',
+          data: {
+            stream_id: streamIdRef.current,
+            session_id: sessionIdRef.current,
+            candidate: null,
+            sdpMid: null,
+            sdpMLineIndex: null,
+          },
+        },
+      });
+      console.log('🧊 ICE gathering complete signal sent');
+    } catch (e) {
+      console.error('❌ ICE complete signal failed:', e);
+    }
+  };
+
   const speak = async (text: string, imageUrl?: string) => {
     console.log('🎤 D-ID speak function called');
     console.log('📝 Text:', text?.substring(0, 50) + '...');
@@ -89,8 +142,9 @@ export const useDIDAvatarStream = ({
     }
 
     try {
-      // If already connected, just send the startAnimation command
-      if (streamIdRef.current && sessionIdRef.current && peerConnectionRef.current?.connectionState === 'connected') {
+      // If already connected and SDP exchanged, just send the startAnimation command
+      if (streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current && 
+          peerConnectionRef.current?.connectionState === 'connected') {
         console.log('🔁 Reusing existing stream to speak');
         const speakResponse = await supabase.functions.invoke('did-streaming', {
           body: {
@@ -120,6 +174,8 @@ export const useDIDAvatarStream = ({
 
       setIsLoading(true);
       pendingTextRef.current = text;
+      sdpExchangedRef.current = false;
+      pendingIceCandidates.current = [];
 
       const sourceUrl = imageUrl || 
         'https://res.cloudinary.com/di5gj4nyp/image/upload/w_1920,h_1080,c_fit,dpr_1.0,e_sharpen:200,q_auto:best,f_auto/v1759612035/Default_Fullbody_portrait_of_IsabellaV2_wearing_a_luxurious_go_0_fdabba15-5365-4f04-ab3b-b9079666cdc6_0_shq4b3.png';
@@ -258,25 +314,17 @@ export const useDIDAvatarStream = ({
         }
       };
 
-      // Forward ALL ICE candidates including null (gathering complete)
-      pc.onicecandidate = async (event) => {
-        console.log('🧊 ICE candidate:', event.candidate ? 'candidate' : 'null (gathering complete)');
-        
-        try {
-          await supabase.functions.invoke('did-streaming', {
-            body: {
-              action: 'sendIceCandidate',
-              data: {
-                stream_id: streamId,
-                session_id: session_id,
-                candidate: event.candidate?.candidate || null,
-                sdpMid: event.candidate?.sdpMid || null,
-                sdpMLineIndex: event.candidate?.sdpMLineIndex ?? null,
-              },
-            },
-          });
-        } catch (e) {
-          console.error('❌ ICE send failed:', e);
+      // Queue ICE candidates until SDP is exchanged
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log('🧊 ICE candidate generated, queuing...');
+          pendingIceCandidates.current.push(event.candidate);
+        } else {
+          console.log('🧊 ICE gathering complete');
+          // If SDP is already exchanged, flush now
+          if (sdpExchangedRef.current) {
+            flushIceCandidates();
+          }
         }
       };
 
@@ -320,7 +368,7 @@ export const useDIDAvatarStream = ({
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
 
-      // Send SDP answer to D-ID
+      // CRITICAL: Send SDP answer to D-ID FIRST, before any ICE candidates
       console.log('📡 Sending SDP answer...');
       const sdpResponse = await supabase.functions.invoke('did-streaming', {
         body: {
@@ -333,12 +381,16 @@ export const useDIDAvatarStream = ({
         },
       });
 
-      if (sdpResponse.error || !sdpResponse.data?.success) {
+      if (sdpResponse.error || (sdpResponse.data && !sdpResponse.data.success)) {
         console.error('❌ SDP exchange failed:', sdpResponse.error || sdpResponse.data);
         throw new Error('SDP exchange failed');
       }
 
       console.log('✅ SDP exchanged successfully');
+      sdpExchangedRef.current = true;
+
+      // NOW flush any queued ICE candidates
+      await flushIceCandidates();
 
     } catch (error) {
       console.error('❌ D-ID speak error:', error);

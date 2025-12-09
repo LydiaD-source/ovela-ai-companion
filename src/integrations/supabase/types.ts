@@ -2324,6 +2324,25 @@ export type Database = {
       debug_user_authorization: { Args: { check_email: string }; Returns: Json }
       downgrade_expired_invites: { Args: never; Returns: undefined }
       ensure_user_profile:
+        | { Args: never; Returns: Json }
+        | {
+            Args: {
+              p_effective_tier?: string
+              p_email: string
+              p_invited_promo_access?: boolean
+              p_premium_expires_at?: string
+              p_promo_access?: boolean
+              p_subscription_active?: boolean
+              p_subscription_tier?: string
+              p_tutorial_shown?: boolean
+              p_user_id: string
+            }
+            Returns: {
+              created: boolean
+              profile_id: string
+              updated: boolean
+            }[]
+          }
         | {
             Args: { uid: string; user_email: string }
             Returns: {
@@ -2373,25 +2392,6 @@ export type Database = {
               isSetofReturn: false
             }
           }
-        | {
-            Args: {
-              p_effective_tier?: string
-              p_email: string
-              p_invited_promo_access?: boolean
-              p_premium_expires_at?: string
-              p_promo_access?: boolean
-              p_subscription_active?: boolean
-              p_subscription_tier?: string
-              p_tutorial_shown?: boolean
-              p_user_id: string
-            }
-            Returns: {
-              created: boolean
-              profile_id: string
-              updated: boolean
-            }[]
-          }
-        | { Args: never; Returns: Json }
       ensure_user_profile_and_subscription: {
         Args: {
           p_invite_code?: string
@@ -2479,14 +2479,16 @@ export type Database = {
           }
       onboard_invite_user_atomic:
         | { Args: { _email: string; _user_id: string }; Returns: Json }
+        | { Args: { p_email: string; p_invite_code: string }; Returns: Json }
         | {
-            Args: {
-              p_email: string
-              p_full_name: string
-              p_subscription_tier?: string
-              p_user_id: string
-            }
-            Returns: undefined
+            Args: { p_email: string; p_invite_token: string; p_user_id: string }
+            Returns: {
+              created: boolean
+              message: string
+              profile_id: string
+              success: boolean
+              updated: boolean
+            }[]
           }
         | {
             Args: {
@@ -2498,16 +2500,14 @@ export type Database = {
             Returns: Json
           }
         | {
-            Args: { p_email: string; p_invite_token: string; p_user_id: string }
-            Returns: {
-              created: boolean
-              message: string
-              profile_id: string
-              success: boolean
-              updated: boolean
-            }[]
+            Args: {
+              p_email: string
+              p_full_name: string
+              p_subscription_tier?: string
+              p_user_id: string
+            }
+            Returns: undefined
           }
-        | { Args: { p_email: string; p_invite_code: string }; Returns: Json }
       onboard_user: {
         Args: { _email: string; _full_name?: string; _user_id: string }
         Returns: Json

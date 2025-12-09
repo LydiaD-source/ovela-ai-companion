@@ -33,6 +33,41 @@ const galleryItems: MediaItem[] = [
     type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381794/Flux_Dev_IsabellaV3_inspired_character_full_body_shot_on_a_roo_0_h22hc8.jpg',
     title: 'High Fashion Shoot'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301159/Flux_Dev_A_woman_walking_gracefully_on_a_bridge_at_sunset_wear_0_bwcm1u.jpg',
+    title: 'Sunset Bridge Walk'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301159/Flux_Dev_A_woman_standing_beside_a_modern_architectural_struct_1_fvr6di.jpg',
+    title: 'Architectural Elegance'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301159/Flux_Dev_A_stylish_young_woman_sitting_confidently_on_outdoor__1_lq2owv.jpg',
+    title: 'Confident Style'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_model_posing_on_a_city_rooftop_with_skyline_backgro_1_fdwdtw.jpg',
+    title: 'City Skyline Portrait'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_highfashion_portrait_of_a_woman_in_a_beige_minimali_1_rafapc.jpg',
+    title: 'Minimalist Chic'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_model_posing_on_a_city_rooftop_with_skyline_backgro_0_tsgo43.jpg',
+    title: 'Urban Rooftop'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_fashionable_woman_walking_in_a_European_street_wear_1_zagdmk.jpg',
+    title: 'European Street Style'
   }
 ];
 

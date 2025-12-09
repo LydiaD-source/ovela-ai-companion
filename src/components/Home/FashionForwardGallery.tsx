@@ -44,6 +44,16 @@ const galleryItems: MediaItem[] = [
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_highfashion_portrait_of_a_woman_in_a_beige_minimali_1_rafapc.jpg',
     title: 'Minimalist Chic'
   },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765303674/Flux_Dev_A_woman_in_a_pastelcolored_long_dress_posing_in_a_mod_1_xx2pjz.jpg',
+    title: 'Pastel Elegance'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765303684/Flux_Dev_A_stylish_woman_in_a_black_floorlength_dress_standing_1_kclqak.jpg',
+    title: 'Black Evening Gown'
+  }
 ];
 
 interface FashionForwardGalleryProps {

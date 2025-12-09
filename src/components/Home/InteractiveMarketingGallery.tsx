@@ -44,6 +44,41 @@ const galleryItems: MediaItem[] = [
     type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381191/Portfolio_Interactive_Mark_1_fdizhj.jpg',
     title: 'Interactive Marketing Portfolio'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301700/Flux_Dev_A_desk_setup_with_camera_ring_light_smartphone_editin_1_by8lak.jpg',
+    title: 'Content Creator Setup'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301699/Flux_Dev_A_creative_office_wall_filled_with_content_planning_b_1_hvqzfp.jpg',
+    title: 'Content Planning Board'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301698/Flux_Dev_A_young_marketing_professional_standing_in_front_of_a_0_nnljul.jpg',
+    title: 'Marketing Professional'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301677/Flux_Dev_A_sleek_digital_marketing_workspace_with_a_large_inte_0_qwup0s.jpg',
+    title: 'Digital Marketing Workspace'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301677/Flux_Dev_A_modern_workspace_with_a_laptop_floating_social_medi_1_pedfup.jpg',
+    title: 'Social Media Hub'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301677/Flux_Dev_A_female_digital_marketer_working_on_a_laptop_editing_0_fwuwxl.jpg',
+    title: 'Digital Marketer at Work'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301676/Flux_Dev_A_modern_meeting_room_with_two_professionals_discussi_0_xzczzj.jpg',
+    title: 'Strategy Meeting'
   }
 ];
 

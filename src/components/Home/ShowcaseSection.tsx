@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { InteractiveMarketingGallery } from './InteractiveMarketingGallery';
 import { FashionForwardGallery } from './FashionForwardGallery';
+import { MultiBrandGallery } from './MultiBrandGallery';
 
 const showcaseItems = [
   {
@@ -29,11 +30,13 @@ const showcaseItems = [
 export const ShowcaseSection = () => {
   const [isInteractiveGalleryOpen, setIsInteractiveGalleryOpen] = useState(false);
   const [isFashionGalleryOpen, setIsFashionGalleryOpen] = useState(false);
+  const [isMultiBrandGalleryOpen, setIsMultiBrandGalleryOpen] = useState(false);
 
   return (
     <section className="w-full bg-black">
       <InteractiveMarketingGallery isOpen={isInteractiveGalleryOpen} onClose={() => setIsInteractiveGalleryOpen(false)} />
       <FashionForwardGallery isOpen={isFashionGalleryOpen} onClose={() => setIsFashionGalleryOpen(false)} />
+      <MultiBrandGallery isOpen={isMultiBrandGalleryOpen} onClose={() => setIsMultiBrandGalleryOpen(false)} />
       {showcaseItems.map((item, index) => (
         <div
           key={index}
@@ -113,6 +116,22 @@ export const ShowcaseSection = () => {
               ) : item.title === 'Fashion Forward' ? (
                 <button
                   onClick={() => setIsFashionGalleryOpen(true)}
+                  className="inline-block transition-all duration-300 hover:underline"
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#E8CFA9',
+                    fontSize: '16px',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer'
+                  }}
+                >
+                  See Portfolio →
+                </button>
+              ) : item.title === 'Multi-Brand Excellence' ? (
+                <button
+                  onClick={() => setIsMultiBrandGalleryOpen(true)}
                   className="inline-block transition-all duration-300 hover:underline"
                   style={{
                     fontFamily: 'Inter, sans-serif',

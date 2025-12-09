@@ -27,16 +27,6 @@ const galleryItems: MediaItem[] = [
   },
   {
     type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381188/Portfolio_1_2_ziy05h.jpg',
-    title: 'Dior Nail Polish'
-  },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760358485/Flux_Dev_Use_Character_Element_fictional_female_character_insp_0_5_xuyw8u.jpg',
-    title: 'Apple Campaign'
-  },
-  {
-    type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381185/Flux_Dev_Use_Character_Element_fictional_female_character_insp_0_7_g2vqdu.jpg',
     title: 'Luxury Flatlay'
   },

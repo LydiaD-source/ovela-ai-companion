@@ -16,23 +16,8 @@ const galleryItems: MediaItem[] = [
   },
   {
     type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381799/Flux_Dev_Medium_shot_Isabella_using_iPhone_15_Pro_casual_chic__0_bnooay.jpg',
-    title: 'Modern Lifestyle'
-  },
-  {
-    type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381797/Flux_Dev_Mediumfull_body_shot_Isabella_walking_on_a_modern_bri_0_heiee8.jpg',
     title: 'Contemporary Fashion'
-  },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381795/Flux_Dev_IsabellaV3_inspired_character_medium_shot_on_a_roofto_0_m8w7wz.jpg',
-    title: 'Rooftop Editorial'
-  },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1760381794/Flux_Dev_IsabellaV3_inspired_character_full_body_shot_on_a_roo_0_h22hc8.jpg',
-    title: 'High Fashion Shoot'
   },
   {
     type: 'image',

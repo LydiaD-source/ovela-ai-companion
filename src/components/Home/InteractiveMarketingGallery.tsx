@@ -128,7 +128,7 @@ export const InteractiveMarketingGallery = ({ isOpen, onClose }: InteractiveMark
                       <img
                         src={item.src}
                         alt={item.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-top"
                       />
                     )}
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -44,16 +44,6 @@ const galleryItems: MediaItem[] = [
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_highfashion_portrait_of_a_woman_in_a_beige_minimali_1_rafapc.jpg',
     title: 'Minimalist Chic'
   },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_model_posing_on_a_city_rooftop_with_skyline_backgro_0_tsgo43.jpg',
-    title: 'Urban Rooftop'
-  },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1765301158/Flux_Dev_A_fashionable_woman_walking_in_a_European_street_wear_1_zagdmk.jpg',
-    title: 'European Street Style'
-  }
 ];
 
 interface FashionForwardGalleryProps {

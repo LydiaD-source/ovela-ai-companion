@@ -805,6 +805,24 @@ export type Database = {
           },
         ]
       }
+      debug_env: {
+        Row: {
+          created_at: string | null
+          id: number
+          key_prefix: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          key_prefix?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          key_prefix?: string | null
+        }
+        Relationships: []
+      }
       did_streaming_diagnostics: {
         Row: {
           created_at: string | null

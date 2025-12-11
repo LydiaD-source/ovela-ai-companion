@@ -8,6 +8,7 @@ const Projects = () => {
   const [mutedVideos, setMutedVideos] = useState<{ [key: number]: boolean }>({
     1: true,
     2: true,
+    3: true,
     4: true
   });
 
@@ -32,9 +33,9 @@ const Projects = () => {
     },
     {
       id: 3,
-      name: 'HeShave',
+      name: 'Ambassador',
       description: 'A campaign designed for impact. Isabella steps into the role of ambassador, translating brand values into relatable, memorable experiences.',
-      imagePlaceholder: 'Isabella for HeShave'
+      imagePlaceholder: 'Isabella Ambassador'
     },
     {
       id: 4,
@@ -122,6 +123,16 @@ const Projects = () => {
                     playsInline
                     onClick={() => toggleMute(2)}
                   />
+                ) : project.id === 3 ? (
+                  <video
+                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1765466491/202512091646_clvppn.mp4"
+                    className="w-full h-full object-cover cursor-pointer"
+                    autoPlay
+                    loop
+                    muted={mutedVideos[3]}
+                    playsInline
+                    onClick={() => toggleMute(3)}
+                  />
                 ) : project.id === 4 ? (
                   <video
                     src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1760713364/202510171024_1_jxyq2j.mp4"
@@ -143,7 +154,7 @@ const Projects = () => {
                   </div>
                 )}
                 {/* Sound indicator */}
-                {(project.id === 1 || project.id === 2 || project.id === 4) && (
+                {(project.id === 1 || project.id === 2 || project.id === 3 || project.id === 4) && (
                   <div 
                     className="absolute bottom-4 right-4 bg-black/50 rounded-full p-2 backdrop-blur-sm"
                     style={{ pointerEvents: 'none' }}

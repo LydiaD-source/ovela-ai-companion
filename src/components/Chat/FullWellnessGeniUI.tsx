@@ -64,20 +64,23 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Real-time Web Speech API hook
+  // Real-time Web Speech API hook with auto-send on silence
   const {
     isListening,
     isSupported: isWebSpeechSupported,
     interimTranscript,
     finalTranscript,
+    conversationPhase,
     start: startListening,
     stop: stopListening,
     error: speechError
   } = useWebSpeechSTT({
-    onFinalTranscript: (text) => {
-      console.log('[WebSpeechSTT] 📤 Final transcript received, sending message:', text);
+    onAutoSend: (text) => {
+      console.log('[WebSpeechSTT] 📤 Auto-sending message:', text);
       sendMessage(text);
-    }
+    },
+    silenceTimeout: 1000, // 1 second pause = turn complete
+    continuous: true // keep mic active for natural conversation
   });
 
   useEffect(() => {
@@ -581,15 +584,42 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         ))}
         
-        {/* Real-time voice input indicator */}
-        {isListening && (
+        {/* Real-time voice input indicator with phase awareness */}
+        {(isListening || conversationPhase === 'processing' || conversationPhase === 'waiting') && (
           <div className="flex justify-start">
-            <div className="bg-red-500/20 rounded-xl p-3 mr-4 border border-red-500/30">
+            <div className={`rounded-xl p-3 mr-4 border transition-all duration-300 ${
+              conversationPhase === 'processing' 
+                ? 'bg-champagne-gold/20 border-champagne-gold/30' 
+                : conversationPhase === 'waiting'
+                ? 'bg-soft-purple/20 border-soft-purple/30'
+                : 'bg-red-500/20 border-red-500/30'
+            }`}>
               <div className="flex items-center gap-2">
-                <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-sm text-red-400">
-                  {interimTranscript || finalTranscript || t('chat.listening') || 'Listening...'}
-                </span>
+                {/* Animated indicator based on phase */}
+                {conversationPhase === 'listening' && (
+                  <>
+                    <div className="flex gap-1">
+                      <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
+                      <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+                      <div className="h-2 w-2 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                    </div>
+                    <span className="text-sm text-red-400">
+                      {interimTranscript || finalTranscript || t('chat.listening') || 'Listening...'}
+                    </span>
+                  </>
+                )}
+                {conversationPhase === 'processing' && (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-champagne-gold" />
+                    <span className="text-sm text-champagne-gold">{t('chat.thinking') || 'Thinking...'}</span>
+                  </>
+                )}
+                {conversationPhase === 'waiting' && (
+                  <>
+                    <div className="h-3 w-3 bg-soft-purple rounded-full animate-pulse" />
+                    <span className="text-sm text-soft-purple">{t('chat.yourTurn') || 'Your turn...'}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>

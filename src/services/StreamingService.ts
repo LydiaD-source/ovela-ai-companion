@@ -34,6 +34,9 @@ class PersistentStreamManager {
   private chromaCanvas: HTMLCanvasElement | null = null;
   private animationFrameId: number | null = null;
   
+  // Speech timeout fallback (D-ID DataChannel events can be unreliable)
+  private speakingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  
   private constructor() {}
   
   static getInstance(): PersistentStreamManager {
@@ -86,8 +89,22 @@ class PersistentStreamManager {
   }
   
   private notifySpeaking(speaking: boolean) {
+    // Clear any existing timeout when speech state changes
+    if (this.speakingTimeoutId) {
+      clearTimeout(this.speakingTimeoutId);
+      this.speakingTimeoutId = null;
+    }
+    
     this.isSpeaking = speaking;
+    console.log('[StreamService] 🔊 Speaking state:', speaking);
     this.speakingCallbacks.forEach(cb => cb(speaking));
+  }
+  
+  // Estimate speech duration: ~100ms per character for D-ID TTS
+  private estimateSpeechDuration(text: string): number {
+    const baseMs = 1500; // Minimum 1.5s
+    const msPerChar = 80; // ~80ms per character average
+    return Math.max(baseMs, text.length * msPerChar);
   }
   
   async initOnce(avatarUrl: string): Promise<void> {
@@ -382,6 +399,18 @@ class PersistentStreamManager {
     // Notify speaking state immediately
     this.notifySpeaking(true);
     console.log('[StreamService] ✅ Animation triggered');
+    
+    // FALLBACK TIMEOUT: D-ID DataChannel events can be unreliable
+    // Set a timeout based on text length to auto-reset speaking state
+    const estimatedDuration = this.estimateSpeechDuration(text);
+    console.log('[StreamService] ⏱️ Speech timeout fallback set for', estimatedDuration, 'ms');
+    
+    this.speakingTimeoutId = setTimeout(() => {
+      if (this.isSpeaking) {
+        console.log('[StreamService] ⏱️ Timeout reached - setting speaking to false');
+        this.notifySpeaking(false);
+      }
+    }, estimatedDuration);
   }
   
   disconnect(): void {

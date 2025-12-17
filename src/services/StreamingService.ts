@@ -91,9 +91,10 @@ class PersistentStreamManager {
   }
   
   async initOnce(avatarUrl: string): Promise<void> {
-    // Already connected with same avatar - reuse existing stream
-    if (this.isConnected && this.avatarUrl === avatarUrl && this.streamId) {
-      console.log('[StreamService] ✅ Reusing existing stream');
+    // Already have a stream (connected or still negotiating) - reuse it
+    // Don't check isConnected because ICE negotiation may still be in progress
+    if (this.streamId && this.sessionId && this.avatarUrl === avatarUrl) {
+      console.log('[StreamService] ✅ Reusing existing stream (streamId exists)');
       return;
     }
     

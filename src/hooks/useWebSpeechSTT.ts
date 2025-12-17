@@ -343,24 +343,29 @@ export const useWebSpeechSTT = ({
    * AI starts → STOP recognition
    * AI finishes → START recognition
    */
+  /**
+   * Turn Control - Only manages AI speaking state
+   * DOES NOT auto-activate voice session - user must explicitly click mic
+   * AI starts → pause recognition (if active)
+   * AI finishes → resume recognition (only if user had started it)
+   */
   const setAISpeaking = useCallback((speaking: boolean) => {
     if (speaking) {
-      // AI starts speaking
+      // AI starts speaking - pause recognition but DON'T activate session
       globalAISpeaking = true;
       clearTimers();
-      setConversationPhase('ai_speaking');
-      resetTranscripts();
       
-      // Ensure session is active
-      if (!globalIsActive) {
-        globalIsActive = true;
+      // Only update phase if voice was already active
+      if (globalIsActive) {
+        setConversationPhase('ai_speaking');
+        resetTranscripts();
+        stopRecognition();
       }
-      
-      stopRecognition();
     } else {
       // AI finishes speaking
       globalAISpeaking = false;
       
+      // Only resume if user explicitly started voice mode
       if (globalIsActive) {
         setConversationPhase('listening');
         startRecognition();

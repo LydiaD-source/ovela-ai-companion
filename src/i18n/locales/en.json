@@ -2,77 +2,58 @@
   "nav": {
     "home": "Home",
     "about": "About",
-    "projects": "Projects",
+    "projects": "Portfolio",
     "pricing": "Pricing",
     "contact": "Contact",
     "partner": "Partner With Us"
   },
   "hero": {
-    "title": "Meet Isabella",
-    "subtitle": "Your AI-Powered Digital Ambassador",
-    "description": "Transform your brand presence with Isabella, an intelligent virtual ambassador that engages, informs, and converts.",
-    "cta": "Talk to Isabella",
-    "learnMore": "Learn More"
+    "title": "The Future of Modeling is",
+    "titleHighlight": "Interactive",
+    "subtitle": "Isabella ✨",
+    "description": "— Ovela's first AI model ambassador. Ask about Ovela, book a project, or design your own AI-powered ambassador.",
+    "cta": "Start Chatting with Isabella",
+    "explore": "↓ Explore Isabella's Portfolio ↓",
+    "connecting": "Connecting..."
   },
   "about": {
-    "title": "About Isabella",
-    "subtitle": "The Future of Brand Engagement",
-    "description": "Isabella is a cutting-edge AI ambassador designed to represent your brand with elegance, intelligence, and authenticity."
+    "title": "Redefining Modeling Through AI",
+    "description": "Isabella is more than a model — she's an interactive AI ambassador who adapts to your brand, engages your audience in real-time, and scales across infinite campaigns without limitations."
   },
   "howItWorks": {
     "title": "How It Works",
     "step1": {
-      "title": "Connect",
-      "description": "Integrate Isabella seamlessly into your digital platforms"
+      "title": "Chat with Isabella",
+      "description": "Start a conversation to explore what she can do for your brand"
     },
     "step2": {
-      "title": "Customize",
-      "description": "Tailor her personality and knowledge to match your brand"
+      "title": "Book a Shoot or Campaign",
+      "description": "Choose from ready-made looks or create custom visuals"
     },
     "step3": {
-      "title": "Engage",
-      "description": "Watch as she captivates and converts your audience"
+      "title": "Review Lookbook",
+      "description": "Browse portfolio examples and finalize your selections"
+    },
+    "step4": {
+      "title": "Design Your Own Ambassador",
+      "description": "Build a custom AI model tailored to your brand identity"
     }
   },
-  "showcase": {
-    "title": "Isabella in Action",
-    "subtitle": "See how Isabella transforms brand experiences"
-  },
   "cta": {
-    "title": "Ready to Transform Your Brand?",
-    "description": "Join the future of digital brand ambassadorship",
-    "button": "Get Started"
+    "title": "Work With Isabella",
+    "description": "Partner with the world's first AI model ambassador for your brand, campaign, or vision.",
+    "button": "Chat With Isabella"
   },
   "footer": {
-    "rights": "All rights reserved",
+    "copyright": "© Ovela Interactive 2025",
+    "terms": "Terms & Conditions",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Service"
+    "contact": "Contact Us"
   },
   "chat": {
-    "placeholder": "Type your message...",
+    "placeholder": "Type in any language — Isabella speaks 🌍 EN, ES, FR, DE, PT...",
     "send": "Send",
     "connecting": "Connecting...",
-    "connected": "Connected"
-  },
-  "pricing": {
-    "title": "Pricing",
-    "subtitle": "Choose the perfect plan for your brand",
-    "contact": "Contact Us",
-    "customSolution": "Custom Solution"
-  },
-  "contact": {
-    "title": "Contact Us",
-    "name": "Name",
-    "email": "Email",
-    "message": "Message",
-    "submit": "Send Message"
-  },
-  "language": {
-    "select": "Language",
-    "en": "English",
-    "es": "Spanish",
-    "fr": "French",
-    "de": "German",
-    "pt": "Portuguese"
+    "thinking": "Isabella is thinking..."
   }
 }

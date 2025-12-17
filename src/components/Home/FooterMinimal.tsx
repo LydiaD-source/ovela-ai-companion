@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Instagram, Youtube, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import LegalDocumentModal from '@/components/UI/LegalDocumentModal';
 
 export const FooterMinimal = () => {
+  const { t } = useTranslation();
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
 
@@ -45,7 +47,7 @@ export const FooterMinimal = () => {
               >
                 <Link to="/contact">
                   <Mail className="mr-2 h-4 w-4" />
-                  Contact Us
+                  {t('footer.contact')}
                 </Link>
               </Button>
             </div>
@@ -59,7 +61,7 @@ export const FooterMinimal = () => {
                   color: '#FFFFFF'
                 }}
               >
-                © Ovela Interactive 2025
+                {t('footer.copyright')}
               </div>
               <div className="flex items-center gap-4 text-sm">
                 <button
@@ -67,7 +69,7 @@ export const FooterMinimal = () => {
                   className="transition-colors underline-offset-4 hover:underline"
                   style={{ color: 'rgba(232, 207, 169, 0.7)' }}
                 >
-                  Terms & Conditions
+                  {t('footer.terms')}
                 </button>
                 <span style={{ color: 'rgba(232, 207, 169, 0.3)' }}>|</span>
                 <button
@@ -75,7 +77,7 @@ export const FooterMinimal = () => {
                   className="transition-colors underline-offset-4 hover:underline"
                   style={{ color: 'rgba(232, 207, 169, 0.7)' }}
                 >
-                  Privacy Policy
+                  {t('footer.privacy')}
                 </button>
               </div>
             </div>
@@ -124,13 +126,13 @@ export const FooterMinimal = () => {
         open={privacyOpen}
         onOpenChange={setPrivacyOpen}
         documentType="privacy_policy"
-        title="Privacy Policy"
+        title={t('footer.privacy')}
       />
       <LegalDocumentModal
         open={termsOpen}
         onOpenChange={setTermsOpen}
         documentType="terms_of_service"
-        title="Terms & Conditions"
+        title={t('footer.terms')}
       />
     </>
   );

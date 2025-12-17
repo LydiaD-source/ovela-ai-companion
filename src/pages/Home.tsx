@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
@@ -15,6 +16,7 @@ const ISABELLA_AVATAR_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v
 const ISABELLA_VIDEO_URL = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
 
 const Home = () => {
+  const { t } = useTranslation();
   useCanonicalLink('/');
   
   const [isChatActive, setIsChatActive] = useState(false);
@@ -211,7 +213,7 @@ const Home = () => {
                     className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm"
                   >
                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <span className="text-xs text-soft-white/80">Connecting...</span>
+                    <span className="text-xs text-soft-white/80">{t('hero.connecting')}</span>
                   </div>
                 )}
               </div>
@@ -223,18 +225,18 @@ const Home = () => {
               <div className={`hero-content-fade ${isChatActive ? 'hidden' : ''}`}>
                 {/* Headline - Luxury Serif */}
                 <h1 className="hero-headline">
-                  The Future of Modeling is{' '}
+                  {t('hero.title')}{' '}
                   <span className="hero-gradient-text">
-                    Interactive
+                    {t('hero.titleHighlight')}
                   </span>
                 </h1>
                 
                 {/* Subheadline - Elegant Sans-Serif */}
                 <p className="hero-subheadline">
                   <span className="hero-highlight-name">
-                    Isabella ✨
+                    {t('hero.subtitle')}
                   </span>
-                  {' — Ovela\'s first AI model ambassador. Ask about Ovela, book a project, or design your own AI-powered ambassador.'}
+                  {' '}{t('hero.description')}
                 </p>
                 
                 {/* CTA Section */}
@@ -244,7 +246,7 @@ const Home = () => {
                     onClick={activateChat}
                     className="hero-btn-primary"
                   >
-                    Start Chatting with Isabella
+                    {t('hero.cta')}
                   </button>
                   
                   {/* Secondary CTA - Text Link */}
@@ -252,7 +254,7 @@ const Home = () => {
                     href="#lookbook"
                     className="hero-link-secondary"
                   >
-                    ↓ Explore Isabella's Portfolio ↓
+                    {t('hero.explore')}
                   </a>
                 </div>
               </div>

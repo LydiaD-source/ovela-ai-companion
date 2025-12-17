@@ -2,77 +2,58 @@
   "nav": {
     "home": "Startseite",
     "about": "Über Uns",
-    "projects": "Projekte",
+    "projects": "Portfolio",
     "pricing": "Preise",
     "contact": "Kontakt",
     "partner": "Partner Werden"
   },
   "hero": {
-    "title": "Lernen Sie Isabella Kennen",
-    "subtitle": "Ihre KI-Gestützte Digitale Botschafterin",
-    "description": "Transformieren Sie Ihre Markenpräsenz mit Isabella, einer intelligenten virtuellen Botschafterin, die engagiert, informiert und konvertiert.",
-    "cta": "Mit Isabella Sprechen",
-    "learnMore": "Mehr Erfahren"
+    "title": "Die Zukunft des Modelns ist",
+    "titleHighlight": "Interaktiv",
+    "subtitle": "Isabella ✨",
+    "description": "— Ovelas erste KI-Modelbotschafterin. Fragen Sie nach Ovela, buchen Sie ein Projekt oder gestalten Sie Ihren eigenen KI-gestützten Botschafter.",
+    "cta": "Mit Isabella chatten",
+    "explore": "↓ Isabellas Portfolio entdecken ↓",
+    "connecting": "Verbinde..."
   },
   "about": {
-    "title": "Über Isabella",
-    "subtitle": "Die Zukunft des Marken-Engagements",
-    "description": "Isabella ist eine hochmoderne KI-Botschafterin, die entwickelt wurde, um Ihre Marke mit Eleganz, Intelligenz und Authentizität zu repräsentieren."
+    "title": "Modeln durch KI neu definiert",
+    "description": "Isabella ist mehr als ein Model — sie ist eine interaktive KI-Botschafterin, die sich an Ihre Marke anpasst, Ihr Publikum in Echtzeit anspricht und über unendliche Kampagnen ohne Einschränkungen skaliert."
   },
   "howItWorks": {
     "title": "So Funktioniert Es",
     "step1": {
-      "title": "Verbinden",
-      "description": "Integrieren Sie Isabella nahtlos in Ihre digitalen Plattformen"
+      "title": "Mit Isabella chatten",
+      "description": "Starten Sie ein Gespräch, um zu entdecken, was sie für Ihre Marke tun kann"
     },
     "step2": {
-      "title": "Anpassen",
-      "description": "Passen Sie ihre Persönlichkeit und ihr Wissen an Ihre Marke an"
+      "title": "Shooting oder Kampagne buchen",
+      "description": "Wählen Sie aus fertigen Looks oder erstellen Sie individuelle Visuals"
     },
     "step3": {
-      "title": "Engagieren",
-      "description": "Beobachten Sie, wie sie Ihr Publikum fesselt und konvertiert"
+      "title": "Lookbook ansehen",
+      "description": "Durchstöbern Sie Portfolio-Beispiele und finalisieren Sie Ihre Auswahl"
+    },
+    "step4": {
+      "title": "Eigenen Botschafter gestalten",
+      "description": "Erstellen Sie ein individuelles KI-Modell für Ihre Markenidentität"
     }
   },
-  "showcase": {
-    "title": "Isabella in Aktion",
-    "subtitle": "Sehen Sie, wie Isabella Markenerlebnisse transformiert"
-  },
   "cta": {
-    "title": "Bereit, Ihre Marke zu Transformieren?",
-    "description": "Werden Sie Teil der Zukunft digitaler Markenbotschafter",
-    "button": "Jetzt Starten"
+    "title": "Arbeiten Sie Mit Isabella",
+    "description": "Werden Sie Partner der weltweit ersten KI-Modelbotschafterin für Ihre Marke, Kampagne oder Vision.",
+    "button": "Mit Isabella Chatten"
   },
   "footer": {
-    "rights": "Alle Rechte vorbehalten",
-    "privacy": "Datenschutzrichtlinie",
-    "terms": "Nutzungsbedingungen"
+    "copyright": "© Ovela Interactive 2025",
+    "terms": "AGB",
+    "privacy": "Datenschutz",
+    "contact": "Kontakt"
   },
   "chat": {
-    "placeholder": "Nachricht eingeben...",
+    "placeholder": "Schreiben Sie in jeder Sprache — Isabella spricht 🌍 EN, ES, FR, DE, PT...",
     "send": "Senden",
     "connecting": "Verbinde...",
-    "connected": "Verbunden"
-  },
-  "pricing": {
-    "title": "Preise",
-    "subtitle": "Wählen Sie den perfekten Plan für Ihre Marke",
-    "contact": "Kontaktieren Sie Uns",
-    "customSolution": "Individuelle Lösung"
-  },
-  "contact": {
-    "title": "Kontaktieren Sie Uns",
-    "name": "Name",
-    "email": "E-Mail",
-    "message": "Nachricht",
-    "submit": "Nachricht Senden"
-  },
-  "language": {
-    "select": "Sprache",
-    "en": "Englisch",
-    "es": "Spanisch",
-    "fr": "Französisch",
-    "de": "Deutsch",
-    "pt": "Portugiesisch"
+    "thinking": "Isabella denkt nach..."
   }
 }

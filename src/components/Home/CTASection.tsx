@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface CTASectionProps {
   onChatClick: () => void;
 }
 
 export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
+  const { t } = useTranslation();
+
   return (
     <section
       className="w-full py-24 md:py-32 flex items-center justify-center"
@@ -20,7 +23,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
             color: '#E8CFA9'
           }}
         >
-          Work With Isabella
+          {t('cta.title')}
         </h2>
         <p
           className="text-lg md:text-xl mb-10 leading-relaxed"
@@ -29,7 +32,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
             color: '#FFFFFF'
           }}
         >
-          Partner with the world's first AI model ambassador for your brand, campaign, or vision.
+          {t('cta.description')}
         </p>
 
         <div className="flex justify-center items-center">
@@ -52,7 +55,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
               boxShadow: '0 8px 24px rgba(212, 175, 55, 0.4)'
             }}
           >
-            Chat With Isabella
+            {t('cta.button')}
           </button>
         </div>
       </div>

@@ -2,77 +2,58 @@
   "nav": {
     "home": "Accueil",
     "about": "À Propos",
-    "projects": "Projets",
+    "projects": "Portfolio",
     "pricing": "Tarifs",
     "contact": "Contact",
     "partner": "Devenir Partenaire"
   },
   "hero": {
-    "title": "Découvrez Isabella",
-    "subtitle": "Votre Ambassadrice Digitale Propulsée par l'IA",
-    "description": "Transformez la présence de votre marque avec Isabella, une ambassadrice virtuelle intelligente qui engage, informe et convertit.",
-    "cta": "Parler à Isabella",
-    "learnMore": "En Savoir Plus"
+    "title": "L'Avenir du Mannequinat est",
+    "titleHighlight": "Interactif",
+    "subtitle": "Isabella ✨",
+    "description": "— La première ambassadrice IA d'Ovela. Posez des questions sur Ovela, réservez un projet ou créez votre propre ambassadeur IA.",
+    "cta": "Discuter avec Isabella",
+    "explore": "↓ Découvrez le Portfolio d'Isabella ↓",
+    "connecting": "Connexion..."
   },
   "about": {
-    "title": "À Propos d'Isabella",
-    "subtitle": "L'Avenir de l'Engagement de Marque",
-    "description": "Isabella est une ambassadrice IA de pointe conçue pour représenter votre marque avec élégance, intelligence et authenticité."
+    "title": "Redéfinir le Mannequinat par l'IA",
+    "description": "Isabella est plus qu'un mannequin — c'est une ambassadrice IA interactive qui s'adapte à votre marque, engage votre audience en temps réel et s'étend sur des campagnes infinies sans limitations."
   },
   "howItWorks": {
     "title": "Comment Ça Marche",
     "step1": {
-      "title": "Connectez",
-      "description": "Intégrez Isabella facilement dans vos plateformes digitales"
+      "title": "Discutez avec Isabella",
+      "description": "Démarrez une conversation pour découvrir ce qu'elle peut faire pour votre marque"
     },
     "step2": {
-      "title": "Personnalisez",
-      "description": "Adaptez sa personnalité et ses connaissances à votre marque"
+      "title": "Réservez une Séance ou Campagne",
+      "description": "Choisissez parmi des looks prêts ou créez des visuels personnalisés"
     },
     "step3": {
-      "title": "Engagez",
-      "description": "Regardez-la captiver et convertir votre audience"
+      "title": "Consultez le Lookbook",
+      "description": "Parcourez les exemples du portfolio et finalisez vos sélections"
+    },
+    "step4": {
+      "title": "Créez Votre Propre Ambassadeur",
+      "description": "Construisez un modèle IA personnalisé adapté à l'identité de votre marque"
     }
   },
-  "showcase": {
-    "title": "Isabella en Action",
-    "subtitle": "Découvrez comment Isabella transforme les expériences de marque"
-  },
   "cta": {
-    "title": "Prêt à Transformer Votre Marque?",
-    "description": "Rejoignez l'avenir de l'ambassadeur digital de marque",
-    "button": "Commencer"
+    "title": "Travaillez Avec Isabella",
+    "description": "Associez-vous à la première ambassadrice IA du monde pour votre marque, campagne ou vision.",
+    "button": "Discuter Avec Isabella"
   },
   "footer": {
-    "rights": "Tous droits réservés",
+    "copyright": "© Ovela Interactive 2025",
+    "terms": "Conditions Générales",
     "privacy": "Politique de Confidentialité",
-    "terms": "Conditions d'Utilisation"
+    "contact": "Contactez-Nous"
   },
   "chat": {
-    "placeholder": "Tapez votre message...",
+    "placeholder": "Écrivez dans n'importe quelle langue — Isabella parle 🌍 EN, ES, FR, DE, PT...",
     "send": "Envoyer",
     "connecting": "Connexion...",
-    "connected": "Connecté"
-  },
-  "pricing": {
-    "title": "Tarifs",
-    "subtitle": "Choisissez le forfait parfait pour votre marque",
-    "contact": "Contactez-Nous",
-    "customSolution": "Solution Personnalisée"
-  },
-  "contact": {
-    "title": "Contactez-Nous",
-    "name": "Nom",
-    "email": "Email",
-    "message": "Message",
-    "submit": "Envoyer le Message"
-  },
-  "language": {
-    "select": "Langue",
-    "en": "Anglais",
-    "es": "Espagnol",
-    "fr": "Français",
-    "de": "Allemand",
-    "pt": "Portugais"
+    "thinking": "Isabella réfléchit..."
   }
 }

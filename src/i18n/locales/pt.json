@@ -2,77 +2,58 @@
   "nav": {
     "home": "Início",
     "about": "Sobre",
-    "projects": "Projetos",
+    "projects": "Portfólio",
     "pricing": "Preços",
     "contact": "Contato",
     "partner": "Seja Parceiro"
   },
   "hero": {
-    "title": "Conheça Isabella",
-    "subtitle": "Sua Embaixadora Digital Movida por IA",
-    "description": "Transforme a presença da sua marca com Isabella, uma embaixadora virtual inteligente que engaja, informa e converte.",
-    "cta": "Fale com Isabella",
-    "learnMore": "Saiba Mais"
+    "title": "O Futuro da Modelagem é",
+    "titleHighlight": "Interativo",
+    "subtitle": "Isabella ✨",
+    "description": "— A primeira embaixadora modelo IA da Ovela. Pergunte sobre a Ovela, reserve um projeto ou crie seu próprio embaixador movido por IA.",
+    "cta": "Converse com Isabella",
+    "explore": "↓ Explore o Portfólio de Isabella ↓",
+    "connecting": "Conectando..."
   },
   "about": {
-    "title": "Sobre Isabella",
-    "subtitle": "O Futuro do Engajamento de Marca",
-    "description": "Isabella é uma embaixadora de IA de ponta projetada para representar sua marca com elegância, inteligência e autenticidade."
+    "title": "Redefinindo a Modelagem com IA",
+    "description": "Isabella é mais do que uma modelo — ela é uma embaixadora de IA interativa que se adapta à sua marca, engaja seu público em tempo real e escala em campanhas infinitas sem limitações."
   },
   "howItWorks": {
     "title": "Como Funciona",
     "step1": {
-      "title": "Conecte",
-      "description": "Integre Isabella perfeitamente às suas plataformas digitais"
+      "title": "Converse com Isabella",
+      "description": "Inicie uma conversa para explorar o que ela pode fazer pela sua marca"
     },
     "step2": {
-      "title": "Personalize",
-      "description": "Adapte sua personalidade e conhecimento à sua marca"
+      "title": "Reserve uma Sessão ou Campanha",
+      "description": "Escolha looks prontos ou crie visuais personalizados"
     },
     "step3": {
-      "title": "Engaje",
-      "description": "Veja como ela cativa e converte seu público"
+      "title": "Revise o Lookbook",
+      "description": "Navegue pelos exemplos do portfólio e finalize suas seleções"
+    },
+    "step4": {
+      "title": "Crie Seu Próprio Embaixador",
+      "description": "Construa um modelo de IA personalizado para a identidade da sua marca"
     }
   },
-  "showcase": {
-    "title": "Isabella em Ação",
-    "subtitle": "Veja como Isabella transforma experiências de marca"
-  },
   "cta": {
-    "title": "Pronto para Transformar Sua Marca?",
-    "description": "Junte-se ao futuro do embaixador digital de marca",
-    "button": "Começar"
+    "title": "Trabalhe Com Isabella",
+    "description": "Seja parceiro da primeira embaixadora modelo IA do mundo para sua marca, campanha ou visão.",
+    "button": "Converse Com Isabella"
   },
   "footer": {
-    "rights": "Todos os direitos reservados",
+    "copyright": "© Ovela Interactive 2025",
+    "terms": "Termos e Condições",
     "privacy": "Política de Privacidade",
-    "terms": "Termos de Serviço"
+    "contact": "Fale Conosco"
   },
   "chat": {
-    "placeholder": "Digite sua mensagem...",
+    "placeholder": "Digite em qualquer idioma — Isabella fala 🌍 EN, ES, FR, DE, PT...",
     "send": "Enviar",
     "connecting": "Conectando...",
-    "connected": "Conectado"
-  },
-  "pricing": {
-    "title": "Preços",
-    "subtitle": "Escolha o plano perfeito para sua marca",
-    "contact": "Fale Conosco",
-    "customSolution": "Solução Personalizada"
-  },
-  "contact": {
-    "title": "Fale Conosco",
-    "name": "Nome",
-    "email": "Email",
-    "message": "Mensagem",
-    "submit": "Enviar Mensagem"
-  },
-  "language": {
-    "select": "Idioma",
-    "en": "Inglês",
-    "es": "Espanhol",
-    "fr": "Francês",
-    "de": "Alemão",
-    "pt": "Português"
+    "thinking": "Isabella está pensando..."
   }
 }

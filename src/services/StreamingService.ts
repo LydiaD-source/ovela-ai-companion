@@ -1,6 +1,6 @@
 /**
- * StreamingService.ts - D-ID Avatar Streaming Service
- * Clean, optimized implementation for persistent WebRTC streaming
+ * StreamingService.ts - D-ID Avatar Streaming
+ * Optimized WebRTC streaming with robust speech detection
  */
 
 const BACKEND_FN = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/did-streaming';
@@ -13,6 +13,12 @@ interface SpeakParams {
   text: string;
   voiceId?: string;
 }
+
+// Speech duration estimation constants
+const BASE_SPEECH_MS = 1200;
+const MS_PER_CHAR = 65;
+const MS_PER_WORD = 250;
+const MAX_SPEECH_MS = 60000;
 
 class PersistentStreamManager {
   private static instance: PersistentStreamManager | null = null;
@@ -29,12 +35,9 @@ class PersistentStreamManager {
   private connectionCallbacks: ConnectionCallback[] = [];
   private speakingCallbacks: SpeakingCallback[] = [];
   
-  // Chroma-key elements
   private hiddenVideo: HTMLVideoElement | null = null;
   private chromaCanvas: HTMLCanvasElement | null = null;
   private animationFrameId: number | null = null;
-  
-  // Speech timeout fallback (D-ID DataChannel events can be unreliable)
   private speakingTimeoutId: ReturnType<typeof setTimeout> | null = null;
   
   private constructor() {}
@@ -47,24 +50,18 @@ class PersistentStreamManager {
   }
   
   private async callBackend(action: string, payload: Record<string, unknown> = {}): Promise<any> {
-    try {
-      const resp = await fetch(BACKEND_FN, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...payload })
-      });
-      
-      if (!resp.ok) {
-        const errorText = await resp.text();
-        console.error(`[StreamService] ❌ HTTP ${resp.status}:`, errorText);
-        throw new Error(`HTTP ${resp.status}: ${errorText}`);
-      }
-      
-      return await resp.json();
-    } catch (error) {
-      console.error(`[StreamService] ❌ ${action} failed:`, error);
-      throw error;
+    const resp = await fetch(BACKEND_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, ...payload })
+    });
+    
+    if (!resp.ok) {
+      const errorText = await resp.text();
+      throw new Error(`HTTP ${resp.status}: ${errorText}`);
     }
+    
+    return resp.json();
   }
   
   onConnectionChange(callback: ConnectionCallback): () => void {
@@ -89,41 +86,46 @@ class PersistentStreamManager {
   }
   
   private notifySpeaking(speaking: boolean) {
-    // Clear any existing timeout when speech state changes
     if (this.speakingTimeoutId) {
       clearTimeout(this.speakingTimeoutId);
       this.speakingTimeoutId = null;
     }
     
+    if (this.isSpeaking === speaking) return;
+    
     this.isSpeaking = speaking;
-    console.log('[StreamService] 🔊 Speaking state:', speaking);
     this.speakingCallbacks.forEach(cb => cb(speaking));
   }
   
-  // Estimate speech duration: ~100ms per character for D-ID TTS
+  /**
+   * Estimate speech duration based on text length and word count
+   * More accurate than simple character count
+   */
   private estimateSpeechDuration(text: string): number {
-    const baseMs = 1500; // Minimum 1.5s
-    const msPerChar = 80; // ~80ms per character average
-    return Math.max(baseMs, text.length * msPerChar);
+    const words = text.trim().split(/\s+/).length;
+    const chars = text.length;
+    
+    // Use word-based estimation for longer text, char-based for short
+    const wordBased = BASE_SPEECH_MS + (words * MS_PER_WORD);
+    const charBased = BASE_SPEECH_MS + (chars * MS_PER_CHAR);
+    
+    // Take the larger estimate and add buffer
+    const estimate = Math.max(wordBased, charBased) * 1.15;
+    return Math.min(estimate, MAX_SPEECH_MS);
   }
   
   async initOnce(avatarUrl: string): Promise<void> {
-    // Already have a stream (connected or still negotiating) - reuse it
-    // Don't check isConnected because ICE negotiation may still be in progress
+    // Reuse existing stream
     if (this.streamId && this.sessionId && this.avatarUrl === avatarUrl) {
-      console.log('[StreamService] ✅ Reusing existing stream (streamId exists)');
       return;
     }
     
-    // Already initializing - wait for that to complete
+    // Wait for existing init
     if (this.initPromise) {
-      console.log('[StreamService] ⏳ Waiting for existing init...');
       return this.initPromise;
     }
     
     this.avatarUrl = avatarUrl;
-    
-    // Store promise so concurrent calls wait
     this.initPromise = this.doInit(avatarUrl);
     
     try {
@@ -134,26 +136,21 @@ class PersistentStreamManager {
   }
   
   private async doInit(avatarUrl: string): Promise<void> {
-    console.log('[StreamService] 🎬 Initializing stream...');
-    
-    // Clean up existing connection
     if (this.pc) {
       this.disconnect();
     }
     
     await this.createStream(avatarUrl);
-    console.log('[StreamService] ✅ Stream ready');
   }
   
   private async createStream(avatarUrl: string): Promise<void> {
-    // Step 1: Create stream
     const createResp = await this.callBackend('createStream', { avatarUrl });
     
     const responseBody = createResp.body || createResp;
     const streamId = responseBody.id;
     
     if (!streamId) {
-      throw new Error(responseBody.error?.message || 'Failed to create stream - no ID returned');
+      throw new Error(responseBody.error?.message || 'Failed to create stream');
     }
     
     this.streamId = streamId;
@@ -161,165 +158,37 @@ class PersistentStreamManager {
     const offer = responseBody.offer;
     const iceServers = responseBody.ice_servers || [];
     
-    console.log('[StreamService] ✅ Stream created:', this.streamId);
-    
-    // Step 2: Setup RTCPeerConnection
     this.pc = new RTCPeerConnection({ iceServers });
     
-    // Handle ICE candidates
+    // ICE handling
     this.pc.onicecandidate = async (event) => {
-      const candidate = event.candidate;
-      console.log('[StreamService] 🧊 ICE candidate:', candidate?.type || 'null (gathering complete)');
-      
-      // WellnessGeni sends candidate object or null
       await this.callBackend('sendIceCandidate', {
         stream_id: this.streamId,
         session_id: this.sessionId,
-        candidate: candidate ? {
-          candidate: candidate.candidate,
-          sdpMid: candidate.sdpMid,
-          sdpMLineIndex: candidate.sdpMLineIndex
+        candidate: event.candidate ? {
+          candidate: event.candidate.candidate,
+          sdpMid: event.candidate.sdpMid,
+          sdpMLineIndex: event.candidate.sdpMLineIndex
         } : null
       });
     };
     
     this.pc.oniceconnectionstatechange = () => {
-      console.log('[StreamService] 🧊 ICE state:', this.pc?.iceConnectionState);
-      if (this.pc?.iceConnectionState === 'connected') {
-        console.log('[StreamService] ✅ ICE CONNECTED - Persistent stream ready');
+      const state = this.pc?.iceConnectionState;
+      if (state === 'connected') {
         this.notifyConnection(true);
-      } else if (this.pc?.iceConnectionState === 'disconnected' || this.pc?.iceConnectionState === 'failed') {
+      } else if (state === 'disconnected' || state === 'failed') {
         this.notifyConnection(false);
       }
     };
     
-    this.pc.onconnectionstatechange = () => {
-      console.log('[StreamService] 🔌 Connection state:', this.pc?.connectionState);
-    };
-    
-    // Handle incoming tracks - use canvas chroma-keying to remove black background
+    // Track handling with chroma-key
     this.pc.ontrack = (event) => {
-      console.log('[StreamService] 🎬 ontrack:', event.track.kind);
-      
       if (event.track.kind === 'video' && event.streams[0]) {
-        // Get container and target canvas from the registered video element's parent
-        const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
-        
-        if (!targetVideo) {
-          console.warn('[StreamService] ⚠️ No video element found at __AVATAR_VIDEO_REF__');
-          return;
-        }
-        
-        const container = targetVideo.parentElement;
-        if (!container) {
-          console.warn('[StreamService] ⚠️ Video element has no parent container');
-          return;
-        }
-        
-        console.log('[StreamService] 📺 Setting up chroma-key canvas (strict black removal)');
-        
-        // Hidden video receives D-ID stream
-        this.hiddenVideo = document.createElement('video');
-        this.hiddenVideo.autoplay = true;
-        this.hiddenVideo.playsInline = true;
-        this.hiddenVideo.muted = true;
-        this.hiddenVideo.srcObject = event.streams[0];
-        this.hiddenVideo.style.display = 'none';
-        container.appendChild(this.hiddenVideo);
-        
-        // Canvas for chroma-key processing
-        this.chromaCanvas = document.createElement('canvas');
-        Object.assign(this.chromaCanvas.style, {
-          position: 'absolute',
-          bottom: '0',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          maxHeight: '88vh',
-          width: 'auto',
-          height: 'auto',
-          zIndex: '150',
-          backgroundColor: 'transparent',
-          pointerEvents: 'none',
-          opacity: '0',
-          transition: 'opacity 0.3s ease-in-out',
-        });
-        container.appendChild(this.chromaCanvas);
-        
-        (window as any).__AVATAR_CANVAS_REF__ = this.chromaCanvas;
-        
-        const ctx = this.chromaCanvas.getContext('2d', { 
-          willReadFrequently: true,
-          alpha: true,
-        });
-        
-        if (!ctx) {
-          console.error('[StreamService] ❌ Could not get canvas context');
-          return;
-        }
-        
-        let canvasInitialized = false;
-        
-        const processFrame = () => {
-          this.animationFrameId = requestAnimationFrame(processFrame);
-          
-          if (!this.hiddenVideo || this.hiddenVideo.paused || this.hiddenVideo.ended || this.hiddenVideo.readyState < 2) {
-            return;
-          }
-          
-          const width = this.hiddenVideo.videoWidth;
-          const height = this.hiddenVideo.videoHeight;
-          
-          if (width === 0 || height === 0) return;
-          
-          if (!canvasInitialized && this.chromaCanvas) {
-            this.chromaCanvas.width = width;
-            this.chromaCanvas.height = height;
-            canvasInitialized = true;
-            console.log('[StreamService] ✅ Canvas:', width, 'x', height);
-          }
-          
-          if (this.chromaCanvas && (this.chromaCanvas.width !== width || this.chromaCanvas.height !== height)) {
-            this.chromaCanvas.width = width;
-            this.chromaCanvas.height = height;
-          }
-          
-          ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
-          
-          // STRICT chroma-key: only remove pure black background (D-ID sends black bg)
-          const imageData = ctx.getImageData(0, 0, width, height);
-          const data = imageData.data;
-          
-          // Very low threshold - only truly black pixels (r,g,b all < 10)
-          for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            
-            // Only make pure black fully transparent - no gradual alpha
-            if (r < 10 && g < 10 && b < 10) {
-              data[i + 3] = 0;
-            }
-            // Everything else stays fully opaque (255)
-          }
-          
-          ctx.putImageData(imageData, 0, 0);
-        };
-        
-        this.hiddenVideo.oncanplay = () => {
-          console.log('[StreamService] 📺 Hidden video ready, starting chroma-key');
-          this.hiddenVideo?.play().then(() => {
-            processFrame();
-          }).catch(err => {
-            console.warn('[StreamService] ⚠️ Play failed:', err);
-          });
-        };
-        
-        this.hiddenVideo.play().catch(() => {});
+        this.setupChromaKey(event.streams[0]);
       } else if (event.track.kind === 'audio') {
-        // Audio track - attach to the video element for playback
         const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
         if (targetVideo && event.streams[0]) {
-          console.log('[StreamService] 🔊 Attaching audio stream to video element');
           targetVideo.srcObject = event.streams[0];
           targetVideo.muted = false;
           targetVideo.play().catch(() => {});
@@ -327,63 +196,123 @@ class PersistentStreamManager {
       }
     };
     
-    // Handle data channel messages
+    // DataChannel for speech events
     this.pc.ondatachannel = (event) => {
       const dc = event.channel;
-      console.log('[StreamService] 📢 DataChannel received:', dc.label);
-      
-      dc.onopen = () => console.log('[StreamService] 📢 DataChannel opened');
-      dc.onclose = () => console.log('[StreamService] 📢 DataChannel closed');
-      dc.onerror = (e) => console.error('[StreamService] 📢 DataChannel error:', e);
       
       dc.onmessage = (msg) => {
-        console.log('[StreamService] 📢 DataChannel raw:', msg.data);
-        
-        // Parse stream events - WellnessGeni pattern
         if (typeof msg.data === 'string') {
           if (msg.data.includes('stream/started')) {
-            console.log('[StreamService] 🎬 stream/started detected');
             this.notifySpeaking(true);
           } else if (msg.data.includes('stream/done')) {
-            console.log('[StreamService] 🎬 stream/done detected');
             this.notifySpeaking(false);
           }
         }
       };
     };
     
-    // Step 3: Set remote description (offer from D-ID)
-    console.log('[StreamService] 📥 Setting remote offer...');
+    // SDP exchange
     await this.pc.setRemoteDescription(new RTCSessionDescription(offer));
-    console.log('[StreamService] 📥 Remote offer set');
-    
-    // Step 4: Create and set local answer
-    console.log('[StreamService] 📤 Creating local answer...');
     const answer = await this.pc.createAnswer();
     await this.pc.setLocalDescription(answer);
-    console.log('[StreamService] 📤 Local answer created');
     
-    // Step 5: Send answer to D-ID - WellnessGeni sends the full localDescription
     await this.callBackend('start', {
       stream_id: this.streamId,
       session_id: this.sessionId,
       answer: this.pc.localDescription
     });
-    console.log('[StreamService] ✅ SDP answer sent');
+  }
+  
+  private setupChromaKey(stream: MediaStream) {
+    const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
+    if (!targetVideo?.parentElement) return;
+    
+    const container = targetVideo.parentElement;
+    
+    // Hidden video for D-ID stream
+    this.hiddenVideo = document.createElement('video');
+    this.hiddenVideo.autoplay = true;
+    this.hiddenVideo.playsInline = true;
+    this.hiddenVideo.muted = true;
+    this.hiddenVideo.srcObject = stream;
+    this.hiddenVideo.style.display = 'none';
+    container.appendChild(this.hiddenVideo);
+    
+    // Canvas for chroma-key processing
+    this.chromaCanvas = document.createElement('canvas');
+    Object.assign(this.chromaCanvas.style, {
+      position: 'absolute',
+      bottom: '0',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      maxHeight: '88vh',
+      width: 'auto',
+      height: 'auto',
+      zIndex: '150',
+      backgroundColor: 'transparent',
+      pointerEvents: 'none',
+      opacity: '0',
+      transition: 'opacity 0.3s ease-in-out',
+    });
+    container.appendChild(this.chromaCanvas);
+    
+    (window as any).__AVATAR_CANVAS_REF__ = this.chromaCanvas;
+    
+    const ctx = this.chromaCanvas.getContext('2d', { willReadFrequently: true, alpha: true });
+    if (!ctx) return;
+    
+    let canvasReady = false;
+    
+    const processFrame = () => {
+      this.animationFrameId = requestAnimationFrame(processFrame);
+      
+      if (!this.hiddenVideo || this.hiddenVideo.paused || this.hiddenVideo.readyState < 2) return;
+      
+      const { videoWidth: width, videoHeight: height } = this.hiddenVideo;
+      if (!width || !height) return;
+      
+      if (!canvasReady && this.chromaCanvas) {
+        this.chromaCanvas.width = width;
+        this.chromaCanvas.height = height;
+        canvasReady = true;
+      }
+      
+      if (this.chromaCanvas && (this.chromaCanvas.width !== width || this.chromaCanvas.height !== height)) {
+        this.chromaCanvas.width = width;
+        this.chromaCanvas.height = height;
+      }
+      
+      ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
+      
+      // Remove pure black background (D-ID default)
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+      
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i] < 12 && data[i + 1] < 12 && data[i + 2] < 12) {
+          data[i + 3] = 0;
+        }
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+    };
+    
+    this.hiddenVideo.oncanplay = () => {
+      this.hiddenVideo?.play().then(processFrame).catch(() => {});
+    };
+    
+    this.hiddenVideo.play().catch(() => {});
   }
   
   async speak(text: string, voiceId?: string): Promise<void> {
-    // Auto-reinitialize if stream is not active
     if (!this.streamId || !this.sessionId) {
       if (this.avatarUrl) {
-        console.log('[StreamService] 🔄 Reinitializing stream for speak...');
         await this.initOnce(this.avatarUrl);
       } else {
-        throw new Error('No active stream and no avatar URL to reinitialize');
+        throw new Error('No active stream');
       }
     }
     
-    // Send animation request
     const resp = await this.callBackend('startAnimation', {
       stream_id: this.streamId,
       session_id: this.sessionId,
@@ -391,36 +320,27 @@ class PersistentStreamManager {
       voiceId: voiceId || 'EXAVITQu4vr4xnSDxMaL'
     });
     
-    const isSuccess = resp.ok === true || resp.success === true;
-    if (!isSuccess) {
-      throw new Error(resp.error?.message || resp.body?.error?.message || 'Animation failed');
+    if (!(resp.ok === true || resp.success === true)) {
+      throw new Error(resp.error?.message || 'Animation failed');
     }
     
-    // Notify speaking state immediately
     this.notifySpeaking(true);
-    console.log('[StreamService] ✅ Animation triggered');
     
-    // FALLBACK TIMEOUT: D-ID DataChannel events can be unreliable
-    // Set a timeout based on text length to auto-reset speaking state
-    const estimatedDuration = this.estimateSpeechDuration(text);
-    console.log('[StreamService] ⏱️ Speech timeout fallback set for', estimatedDuration, 'ms');
-    
+    // Fallback timeout if DataChannel events don't fire
+    const duration = this.estimateSpeechDuration(text);
     this.speakingTimeoutId = setTimeout(() => {
       if (this.isSpeaking) {
-        console.log('[StreamService] ⏱️ Timeout reached - setting speaking to false');
         this.notifySpeaking(false);
       }
-    }, estimatedDuration);
+    }, duration);
   }
   
   disconnect(): void {
-    // Cancel animation frame
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
     
-    // Clean up hidden video
     if (this.hiddenVideo) {
       this.hiddenVideo.pause();
       this.hiddenVideo.srcObject = null;
@@ -428,7 +348,6 @@ class PersistentStreamManager {
       this.hiddenVideo = null;
     }
     
-    // Clean up canvas
     if (this.chromaCanvas) {
       this.chromaCanvas.remove();
       this.chromaCanvas = null;
@@ -436,7 +355,6 @@ class PersistentStreamManager {
     
     (window as any).__AVATAR_CANVAS_REF__ = null;
     
-    // Close WebRTC connection
     if (this.pc) {
       this.pc.close();
       this.pc = null;
@@ -446,8 +364,6 @@ class PersistentStreamManager {
     this.sessionId = null;
     this.notifyConnection(false);
     this.notifySpeaking(false);
-    
-    console.log('[StreamService] ✅ Disconnected');
   }
   
   getState() {
@@ -459,13 +375,12 @@ class PersistentStreamManager {
   }
 }
 
-// Exported singleton API
+// Exported API
 export const StreamingService = {
   init: (avatarUrl: string) => PersistentStreamManager.getInstance().initOnce(avatarUrl),
   
   speak: async (params: SpeakParams) => {
     const manager = PersistentStreamManager.getInstance();
-    // Only init if we don't have a stream at all (don't check isConnected - ICE may still be negotiating)
     if (!manager.getState().hasStream) {
       await manager.initOnce(params.avatarUrl);
     }

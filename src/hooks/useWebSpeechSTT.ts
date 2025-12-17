@@ -163,28 +163,33 @@ export const useWebSpeechSTT = ({
     };
 
     recognition.onend = () => {
-      console.log('[STT] 🛑 Recognition ENDED | session:', sessionActiveRef.current);
+      console.log('[STT] 🛑 Recognition ENDED | session:', sessionActiveRef.current, '| aiSpeaking:', aiSpeakingRef.current);
       setIsListening(false);
       
-      // AUTO-RESTART if session is still active
-      // This keeps recognition alive through the entire conversation
-      if (sessionActiveRef.current) {
-        console.log('[STT] 🔄 Auto-restarting (session active)...');
-        setTimeout(() => {
-          if (sessionActiveRef.current && recognitionRef.current) {
-            try {
-              recognitionRef.current.start();
-            } catch (e) {
-              // Already started or other error, retry once
-              setTimeout(() => {
-                try { recognitionRef.current?.start(); } catch (e2) {}
-              }, 100);
-            }
-          }
-        }, 50);
-      } else {
+      // If session not active, go idle
+      if (!sessionActiveRef.current) {
         setConversationPhase('idle');
+        return;
       }
+      
+      // ========== HARD GUARD ==========
+      // NEVER restart while AI is speaking - this causes dead STT state
+      if (aiSpeakingRef.current) {
+        console.log('[STT] ⏸️ AI speaking — NOT restarting (will restart when AI finishes)');
+        return;
+      }
+      
+      // Only restart if session active AND AI not speaking
+      console.log('[STT] 🔄 Auto-restarting (AI not speaking)...');
+      setTimeout(() => {
+        if (sessionActiveRef.current && !aiSpeakingRef.current && recognitionRef.current) {
+          try {
+            recognitionRef.current.start();
+          } catch (e) {
+            // Already started is fine
+          }
+        }
+      }, 50);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -355,22 +360,32 @@ export const useWebSpeechSTT = ({
       
       // Immediately ready for user input
       if (sessionActiveRef.current) {
-        console.log('[STT] 🎤 Ready for user input');
+        console.log('[STT] ▶️ AI finished — explicitly restarting recognition');
         setConversationPhase('listening');
         
-        // Recognition should already be running
-        // If it somehow stopped, restart it
-        if (!isListening && recognitionRef.current) {
-          console.log('[STT] 🔄 Ensuring recognition is running...');
+        // EXPLICIT RESTART - recognition likely ended during AI speech
+        // This is the key fix: always restart when AI finishes
+        if (recognitionRef.current) {
           try {
             recognitionRef.current.start();
-          } catch (e) {
-            // Already running is fine
+            console.log('[STT] 🎙️ Recognition restarted successfully');
+          } catch (e: any) {
+            if (e.message?.includes('already started')) {
+              console.log('[STT] ✅ Recognition was already running');
+            } else {
+              // Retry once after small delay
+              console.log('[STT] ⚠️ Start failed, retrying...');
+              setTimeout(() => {
+                if (sessionActiveRef.current && !aiSpeakingRef.current) {
+                  try { recognitionRef.current?.start(); } catch (e2) {}
+                }
+              }, 100);
+            }
           }
         }
       }
     }
-  }, [clearSilenceTimer, isListening]);
+  }, [clearSilenceTimer]);
 
   return {
     isListening,

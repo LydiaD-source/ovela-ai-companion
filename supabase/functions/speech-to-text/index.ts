@@ -42,10 +42,38 @@ serve(async (req) => {
   }
 
   try {
-    const { audio, mimeType } = await req.json();
+    // CRITICAL: Use req.text() + JSON.parse() for reliable large payload handling
+    // Do NOT use req.json() - it fails with large base64 audio in Deno
+    let bodyText: string;
+    try {
+      bodyText = await req.text();
+    } catch (readError) {
+      console.error('❌ Failed to read request body:', readError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unable to read request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    let body: { audio?: string; mimeType?: string };
+    try {
+      body = JSON.parse(bodyText);
+    } catch (parseError) {
+      console.error('❌ Failed to parse JSON:', parseError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON payload' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { audio, mimeType } = body;
     
     if (!audio) {
-      throw new Error('No audio data provided');
+      console.error('❌ Missing audio data in request');
+      return new Response(
+        JSON.stringify({ success: false, error: 'No audio data provided' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const OPENAI_API_KEY = (Deno.env.get('OPENAI_API_KEY') || '').trim();

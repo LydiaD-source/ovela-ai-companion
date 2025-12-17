@@ -62,6 +62,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
+  const [emailInputMode, setEmailInputMode] = useState(false); // When true, user types email instead of speaking
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -121,6 +122,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const hasContactIntent = (text: string): boolean => {
     const contactIntent = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect|talk to|speak with)/i;
     return contactIntent.test(text);
+  };
+
+  // Detect if AI is asking for email
+  const isAskingForEmail = (text: string): boolean => {
+    const emailAskPatterns = /(email address|your email|best email|what('s| is) your email)/i;
+    return emailAskPatterns.test(text);
   };
 
   // Validate email format
@@ -419,6 +426,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
+      // Check if Isabella is asking for email - switch to typing mode
+      if (isAskingForEmail(assistantText)) {
+        console.log('[Chat] 📧 Email requested - switching to typing mode');
+        setEmailInputMode(true);
+        stopListening(); // Pause STT so user can type
+      }
+
       // Trigger D-ID avatar if callback is provided
       console.log('💬 About to trigger onAIResponse callback');
       console.log('💬 onAIResponse exists:', typeof onAIResponse);
@@ -481,6 +495,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // If in email input mode, exit it after sending
+    if (emailInputMode) {
+      console.log('[Chat] 📧 Email submitted, exiting typing mode');
+      setEmailInputMode(false);
+    }
     sendMessage(inputText);
   };
 
@@ -659,18 +678,26 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       {/* Chat Input */}
       <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
+        {emailInputMode && (
+          <p className="text-xs text-champagne-gold mb-2 flex items-center gap-1">
+            ⌨️ Please type your email address below
+          </p>
+        )}
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
-            type="text"
-            value={isListening ? (finalTranscript + ' ' + interimTranscript).trim() : inputText}
-            onChange={(e) => !isListening && setInputText(e.target.value)}
-            placeholder={isListening ? (t('chat.listening') || 'Listening...') : t('chat.placeholder')}
-            className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
-            disabled={isLoading || isListening}
+            type={emailInputMode ? "email" : "text"}
+            value={isListening && !emailInputMode ? (finalTranscript + ' ' + interimTranscript).trim() : inputText}
+            onChange={(e) => (!isListening || emailInputMode) && setInputText(e.target.value)}
+            placeholder={emailInputMode ? "your@email.com" : (isListening ? (t('chat.listening') || 'Listening...') : t('chat.placeholder'))}
+            className={`flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold ${
+              emailInputMode ? 'ring-2 ring-champagne-gold/50' : ''
+            }`}
+            disabled={isLoading || (isListening && !emailInputMode)}
+            autoFocus={emailInputMode}
           />
           <Button 
             type="submit" 
-            disabled={isLoading || isListening || !inputText.trim()}
+            disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()}
             className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
           >
             <Send className="w-4 h-4" />

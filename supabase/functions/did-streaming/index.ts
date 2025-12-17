@@ -155,7 +155,10 @@ serve(async (req) => {
       // START - Send SDP answer after local description set
       // ============================================
       case 'start': {
-        const { stream_id, session_id, answer } = data || {};
+        // Support both nested data object and top-level fields
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
+        const answer = data?.answer || rest.answer;
 
         if (!stream_id || !session_id || !answer) {
           console.error(`[${requestId}] start: Missing required fields`, { stream_id, session_id, hasAnswer: !!answer });
@@ -214,7 +217,12 @@ serve(async (req) => {
       // SEND ICE CANDIDATE - Forward ALL including null
       // ============================================
       case 'sendIceCandidate': {
-        const { stream_id, session_id, candidate, sdpMid, sdpMLineIndex } = data || {};
+        // Support both nested data object and top-level fields
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
+        const candidate = data?.candidate ?? rest.candidate;
+        const sdpMid = data?.sdpMid ?? rest.sdpMid;
+        const sdpMLineIndex = data?.sdpMLineIndex ?? rest.sdpMLineIndex;
 
         if (!stream_id || !session_id) {
           console.error(`[${requestId}] sendIceCandidate: Missing required fields`, { stream_id, session_id });
@@ -276,7 +284,11 @@ serve(async (req) => {
       // This is the main animation trigger
       // ============================================
       case 'startAnimation': {
-        const { stream_id, session_id, text, voice_id } = data || {};
+        // Support both nested data object and top-level fields
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
+        const text = data?.text || rest.text;
+        const voice_id = data?.voice_id || rest.voice_id;
 
         if (!stream_id || !session_id || !text) {
           console.error(`[${requestId}] startAnimation: Missing required fields`, { stream_id, session_id, hasText: !!text });
@@ -464,7 +476,9 @@ serve(async (req) => {
       // DELETE STREAM - Cleanup when user leaves
       // ============================================
       case 'deleteStream': {
-        const { stream_id, session_id } = data || {};
+        // Support both nested data object and top-level fields
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
 
         if (!stream_id) {
           console.error(`[${requestId}] deleteStream: Missing stream_id`);

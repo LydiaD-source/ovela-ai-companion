@@ -270,6 +270,7 @@ const Home = () => {
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
                       onAIResponse={handleAIResponse}
+                      isAISpeaking={isSpeaking}
                     />
                   </div>
                   

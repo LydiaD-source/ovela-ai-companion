@@ -57,6 +57,7 @@
     "thinking": "Isabella is thinking...",
     "transcribing": "Transcribing your voice...",
     "listening": "Listening...",
-    "yourTurn": "Your turn..."
+    "yourTurn": "Your turn...",
+    "isabellaSpeaking": "Isabella speaking..."
   }
 }

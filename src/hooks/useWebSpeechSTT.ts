@@ -63,7 +63,7 @@ export const useWebSpeechSTT = ({
   const hasSentRef = useRef(false);
   const hasSpokenRef = useRef(false);
   const conversationActiveRef = useRef(false);
-  const aiSpeakingRef = useRef(false);
+  const mutedRef = useRef(false); // Mute instead of stop - ignore input while AI speaks
   
   const interimRef = useRef('');
   const finalRef = useRef('');
@@ -87,37 +87,8 @@ export const useWebSpeechSTT = ({
     }
   }, []);
 
-  const startRecognition = useCallback(() => {
-    if (!recognitionRef.current || !conversationActiveRef.current || aiSpeakingRef.current) {
-      console.log('[STT] Cannot start:', { 
-        hasRef: !!recognitionRef.current, 
-        active: conversationActiveRef.current, 
-        aiSpeaking: aiSpeakingRef.current 
-      });
-      return;
-    }
-    
-    try {
-      recognitionRef.current.start();
-      console.log('[STT] ✅ Recognition started');
-    } catch (e: any) {
-      if (e.message?.includes('already started')) {
-        console.log('[STT] Already running');
-      } else {
-        console.log('[STT] Start failed, retrying...', e);
-        setTimeout(() => {
-          try {
-            recognitionRef.current?.start();
-          } catch (e2) {
-            console.error('[STT] Retry failed:', e2);
-          }
-        }, 100);
-      }
-    }
-  }, []);
-
   const autoSendMessage = useCallback(() => {
-    if (hasSentRef.current || !hasSpokenRef.current) {
+    if (hasSentRef.current || !hasSpokenRef.current || mutedRef.current) {
       return;
     }
 
@@ -129,26 +100,19 @@ export const useWebSpeechSTT = ({
     console.log('[STT] 📤 SENDING:', message);
     hasSentRef.current = true;
     hasSpokenRef.current = false;
+    mutedRef.current = true; // Mute while processing
     setConversationPhase('processing');
     
-    // Stop recognition while processing
-    try {
-      recognitionRef.current?.stop();
-    } catch (e) {}
-    setIsListening(false);
-    
-    // Clear transcripts
+    // Clear transcripts but keep recognition running
     finalRef.current = '';
     interimRef.current = '';
     setFinalTranscript('');
     setInterimTranscript('');
     
-    // Send message
     if (onAutoSendRef.current) {
       onAutoSendRef.current(message);
     }
 
-    // Allow sending again after brief delay
     setTimeout(() => {
       hasSentRef.current = false;
     }, 500);
@@ -165,36 +129,48 @@ export const useWebSpeechSTT = ({
     recognition.onstart = () => {
       console.log('[STT] 🎙️ Started');
       setIsListening(true);
-      setConversationPhase('listening');
+      if (!mutedRef.current) {
+        setConversationPhase('listening');
+      }
       setError(null);
     };
 
     recognition.onend = () => {
-      console.log('[STT] 🛑 Ended, active:', conversationActiveRef.current, 'aiSpeaking:', aiSpeakingRef.current);
+      console.log('[STT] 🛑 Ended, active:', conversationActiveRef.current);
       setIsListening(false);
       
-      // Auto-restart if conversation is active and AI is not speaking
-      if (conversationActiveRef.current && !aiSpeakingRef.current) {
+      // Auto-restart to keep continuous listening
+      if (conversationActiveRef.current) {
         console.log('[STT] 🔄 Auto-restarting...');
         setTimeout(() => {
-          if (conversationActiveRef.current && !aiSpeakingRef.current) {
-            startRecognition();
+          if (conversationActiveRef.current) {
+            try {
+              recognition.start();
+            } catch (e) {
+              console.log('[STT] Restart failed:', e);
+            }
           }
-        }, 300);
+        }, 100);
+      } else {
+        setConversationPhase('idle');
       }
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.log('[STT] ⚠️ Error:', event.error);
-      
       if (event.error === 'aborted' || event.error === 'no-speech') {
         return;
       }
-      
+      console.log('[STT] ⚠️ Error:', event.error);
       setError(event.error);
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      // IGNORE all input while muted (AI speaking or processing)
+      if (mutedRef.current) {
+        console.log('[STT] 🔇 Ignoring input (muted)');
+        return;
+      }
+
       let interim = '';
       let final = '';
 
@@ -230,7 +206,6 @@ export const useWebSpeechSTT = ({
         setInterimTranscript('');
       }
 
-      // Reset silence timer
       clearSilenceTimer();
       
       if (hasSpokenRef.current) {
@@ -247,7 +222,7 @@ export const useWebSpeechSTT = ({
       conversationActiveRef.current = false;
       recognition.abort();
     };
-  }, [SpeechRecognitionAPI, lang, silenceTimeout, clearSilenceTimer, autoSendMessage, startRecognition]);
+  }, [SpeechRecognitionAPI, lang, silenceTimeout, clearSilenceTimer, autoSendMessage]);
 
   const start = useCallback(() => {
     if (!isSupported) {
@@ -255,9 +230,8 @@ export const useWebSpeechSTT = ({
       return;
     }
 
-    console.log('[STT] ▶️ START conversation');
+    console.log('[STT] ▶️ START');
     
-    // Reset state
     interimRef.current = '';
     finalRef.current = '';
     setInterimTranscript('');
@@ -266,17 +240,28 @@ export const useWebSpeechSTT = ({
     hasSentRef.current = false;
     hasSpokenRef.current = false;
     conversationActiveRef.current = true;
-    aiSpeakingRef.current = false;
-    
-    startRecognition();
-  }, [isSupported, startRecognition]);
+    mutedRef.current = false;
+    setConversationPhase('listening');
+
+    try {
+      recognitionRef.current?.start();
+    } catch (e) {
+      setTimeout(() => {
+        try {
+          recognitionRef.current?.start();
+        } catch (e2) {
+          console.error('[STT] Start failed:', e2);
+        }
+      }, 100);
+    }
+  }, [isSupported]);
 
   const stop = useCallback(() => {
-    console.log('[STT] ⏹️ STOP conversation');
+    console.log('[STT] ⏹️ STOP');
     clearSilenceTimer();
     conversationActiveRef.current = false;
+    mutedRef.current = false;
     
-    // Send any remaining text
     const text = (finalRef.current + ' ' + interimRef.current).trim();
     if (text && text.length >= MIN_MESSAGE_LENGTH && onAutoSendRef.current && !hasSentRef.current) {
       hasSentRef.current = true;
@@ -296,38 +281,33 @@ export const useWebSpeechSTT = ({
   }, [clearSilenceTimer]);
 
   const setAISpeaking = useCallback((speaking: boolean) => {
-    console.log('[STT] 🔊 AI speaking:', speaking, 'conversation active:', conversationActiveRef.current);
-    aiSpeakingRef.current = speaking;
+    console.log('[STT] 🔊 AI speaking:', speaking);
     
     if (speaking) {
-      // AI is speaking - pause mic
-      setConversationPhase('ai_speaking');
+      // Mute - ignore input but keep recognition running
+      mutedRef.current = true;
       clearSilenceTimer();
-      try {
-        recognitionRef.current?.stop();
-      } catch (e) {}
-      setIsListening(false);
+      setConversationPhase('ai_speaking');
+      // Clear any partial transcripts from AI voice pickup
+      interimRef.current = '';
+      finalRef.current = '';
+      setInterimTranscript('');
+      setFinalTranscript('');
+      hasSpokenRef.current = false;
     } else {
-      // AI finished - resume mic if conversation is active
+      // Unmute - start accepting input again
       if (conversationActiveRef.current) {
-        console.log('[STT] ▶️ AI done, resuming mic...');
-        setConversationPhase('waiting');
-        
-        // Small delay to ensure AI audio has stopped
+        console.log('[STT] ▶️ AI done, unmuting');
+        // Small delay to let AI audio fully stop
         setTimeout(() => {
-          if (conversationActiveRef.current && !aiSpeakingRef.current) {
-            interimRef.current = '';
-            finalRef.current = '';
-            setInterimTranscript('');
-            setFinalTranscript('');
-            hasSentRef.current = false;
-            hasSpokenRef.current = false;
-            startRecognition();
-          }
-        }, 500);
+          mutedRef.current = false;
+          hasSentRef.current = false;
+          hasSpokenRef.current = false;
+          setConversationPhase('listening');
+        }, 300);
       }
     }
-  }, [clearSilenceTimer, startRecognition]);
+  }, [clearSilenceTimer]);
 
   return {
     isListening,

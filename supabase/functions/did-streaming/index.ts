@@ -53,15 +53,7 @@ serve(async (req) => {
 
   try {
     // Parse request body and support multiple parameter formats for backwards compatibility
-    const rawBody = await req.text();
-    let requestBody;
-    try {
-      requestBody = JSON.parse(rawBody);
-    } catch (parseError) {
-      console.error(`[${requestId}] Failed to parse JSON:`, rawBody.substring(0, 500));
-      throw new Error('Invalid JSON body');
-    }
-    
+    const requestBody = await req.json();
     const { action, data, source_url: topLevelSourceUrl, avatarUrl: topLevelAvatarUrl, ...rest } = requestBody;
     
     console.log(`[${requestId}] Parsed request:`, { 
@@ -69,8 +61,7 @@ serve(async (req) => {
       hasData: !!data, 
       hasTopLevelSourceUrl: !!topLevelSourceUrl,
       hasTopLevelAvatarUrl: !!topLevelAvatarUrl,
-      dataKeys: data ? Object.keys(data) : [],
-      rawBodyPreview: rawBody.substring(0, 300)
+      dataKeys: data ? Object.keys(data) : []
     });
     
     if (!DID_API_KEY) {
@@ -155,17 +146,10 @@ serve(async (req) => {
       // START - Send SDP answer after local description set
       // ============================================
       case 'start': {
-        // Support both nested data object and top-level fields
-        const stream_id = data?.stream_id || rest.stream_id;
-        const session_id = data?.session_id || rest.session_id;
-        const answer = data?.answer || rest.answer;
+        const { stream_id, session_id, answer } = data;
 
         if (!stream_id || !session_id || !answer) {
-          console.error(`[${requestId}] start: Missing required fields`, { stream_id, session_id, hasAnswer: !!answer });
-          return new Response(JSON.stringify({ success: false, error: { message: 'stream_id, session_id, and answer are required' } }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          throw new Error('stream_id, session_id, and answer are required');
         }
 
         console.log(`[${requestId}] start (SDP):`, {
@@ -217,19 +201,10 @@ serve(async (req) => {
       // SEND ICE CANDIDATE - Forward ALL including null
       // ============================================
       case 'sendIceCandidate': {
-        // Support both nested data object and top-level fields
-        const stream_id = data?.stream_id || rest.stream_id;
-        const session_id = data?.session_id || rest.session_id;
-        const candidate = data?.candidate ?? rest.candidate;
-        const sdpMid = data?.sdpMid ?? rest.sdpMid;
-        const sdpMLineIndex = data?.sdpMLineIndex ?? rest.sdpMLineIndex;
+        const { stream_id, session_id, candidate, sdpMid, sdpMLineIndex } = data;
 
         if (!stream_id || !session_id) {
-          console.error(`[${requestId}] sendIceCandidate: Missing required fields`, { stream_id, session_id });
-          return new Response(JSON.stringify({ success: false, error: { message: 'stream_id and session_id are required' } }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          throw new Error('stream_id and session_id are required');
         }
 
         // candidate can be null (signals ICE gathering complete)
@@ -284,19 +259,10 @@ serve(async (req) => {
       // This is the main animation trigger
       // ============================================
       case 'startAnimation': {
-        // Support both nested data object and top-level fields
-        const stream_id = data?.stream_id || rest.stream_id;
-        const session_id = data?.session_id || rest.session_id;
-        // Support both 'text' and 'message' field names for compatibility
-        const text = data?.text || rest.text || data?.message || rest.message;
-        const voice_id = data?.voice_id || rest.voice_id || data?.voiceId || rest.voiceId;
+        const { stream_id, session_id, text, voice_id } = data;
 
         if (!stream_id || !session_id || !text) {
-          console.error(`[${requestId}] startAnimation: Missing required fields`, { stream_id, session_id, hasText: !!text });
-          return new Response(JSON.stringify({ success: false, error: { message: 'stream_id, session_id, and text are required' } }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          throw new Error('stream_id, session_id, and text are required');
         }
 
         const selectedVoice = voice_id || 'EXAVITQu4vr4xnSDxMaL'; // Default: Sarah
@@ -477,12 +443,9 @@ serve(async (req) => {
       // DELETE STREAM - Cleanup when user leaves
       // ============================================
       case 'deleteStream': {
-        // Support both nested data object and top-level fields
-        const stream_id = data?.stream_id || rest.stream_id;
-        const session_id = data?.session_id || rest.session_id;
+        const { stream_id, session_id } = data;
 
         if (!stream_id) {
-          console.error(`[${requestId}] deleteStream: Missing stream_id`);
           throw new Error('stream_id is required');
         }
 
@@ -517,17 +480,11 @@ serve(async (req) => {
         throw new Error(`Unknown action: ${action}`);
     }
   } catch (error) {
-    // CRITICAL: Return status 200 with predictable structure to avoid breaking WebRTC lifecycle
     console.error(`[${requestId}] ❌ D-ID streaming error:`, error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        data: null, 
-        stream_id: null, 
-        error: error?.message || 'Streaming failed' 
-      }),
+      JSON.stringify({ success: false, error: error.message }),
       {
-        status: 200,  // Intentionally 200 to prevent WebRTC collapse
+        status: 500,
         headers: { 
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',

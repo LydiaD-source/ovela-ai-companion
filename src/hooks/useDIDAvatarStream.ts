@@ -118,15 +118,6 @@ export const useDIDAvatarStream = ({
   const flushIceCandidates = useCallback(async () => {
     if (!sdpExchangedRef.current) return;
     
-    // Guard: ensure refs are valid before sending
-    if (!streamIdRef.current || !sessionIdRef.current) {
-      console.warn('⚠️ flushIceCandidates: refs not ready, skipping', {
-        hasStreamId: !!streamIdRef.current,
-        hasSessionId: !!sessionIdRef.current
-      });
-      return;
-    }
-    
     const candidates = [...pendingIceCandidates.current];
     pendingIceCandidates.current = [];
     
@@ -173,21 +164,11 @@ export const useDIDAvatarStream = ({
 
   // Start animation with retry logic
   const sendStartAnimation = useCallback(async (text: string): Promise<boolean> => {
-    // Guard: ensure refs are valid before sending
-    if (!streamIdRef.current || !sessionIdRef.current) {
-      console.error('❌ sendStartAnimation: refs not ready', {
-        hasStreamId: !!streamIdRef.current,
-        hasSessionId: !!sessionIdRef.current
-      });
-      return false;
-    }
-    
     setIsSpeaking(true);
     lastSpeechTimeRef.current = Date.now();
     
     for (let attempt = 1; attempt <= MAX_ANIMATION_RETRIES; attempt++) {
       console.log(`🎤 startAnimation attempt ${attempt}/${MAX_ANIMATION_RETRIES}...`);
-      console.log(`📡 Using stream_id: ${streamIdRef.current}, session_id: ${sessionIdRef.current?.substring(0, 30)}...`);
       
       try {
         const res = await supabase.functions.invoke('did-streaming', {
@@ -256,18 +237,9 @@ export const useDIDAvatarStream = ({
       return;
     }
     
-    // Guard: ensure refs are valid before sending
-    if (!streamIdRef.current || !sessionIdRef.current) {
-      console.warn('⚠️ queueSpeech: refs not ready, queueing for later', {
-        hasStreamId: !!streamIdRef.current,
-        hasSessionId: !!sessionIdRef.current
-      });
-      speechQueueRef.current = [text];
-      return;
-    }
-    
     // If not speaking and queue is empty, send immediately
-    if (!isSpeaking && speechQueueRef.current.length === 0 && sdpExchangedRef.current) {
+    if (!isSpeaking && speechQueueRef.current.length === 0 && 
+        streamIdRef.current && sdpExchangedRef.current) {
       sendStartAnimation(text);
     } else {
       // Otherwise queue it (but clear any existing queue to only keep latest)

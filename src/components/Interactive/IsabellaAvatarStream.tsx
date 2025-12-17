@@ -42,12 +42,7 @@ interface SpeechRecognitionAlternative {
   confidence: number;
 }
 
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognition;
-    webkitSpeechRecognition: new () => SpeechRecognition;
-  }
-}
+// Using window.SpeechRecognition directly - types defined in useWebSpeechSTT.ts
 
 interface IsabellaAvatarStreamProps {
   onStreamingChange?: (isStreaming: boolean) => void;
@@ -63,7 +58,7 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
 
   const mediaStream = useRef<HTMLVideoElement>(null);
   const avatar = useRef<StreamingAvatar | null>(null);
-  const recognition = useRef<SpeechRecognition | null>(null);
+  const recognition = useRef<any>(null);
 
   // Initialize avatar on mount
   useEffect(() => {

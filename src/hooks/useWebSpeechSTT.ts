@@ -8,6 +8,8 @@
  * - Multi-language support
  */
 
+import { useState, useRef, useCallback, useEffect } from 'react';
+
 // Module-level state - survives component remounts
 let globalIsActive = false;
 let globalAISpeaking = false;
@@ -79,8 +81,6 @@ const INCOMPLETE_PATTERNS = /\b(but|and|or|so|because|however|although|if|when|t
 
 // Sentence-ending patterns (user likely finished)
 const COMPLETE_PATTERNS = /[.!?]$|thanks|thank you|please|okay|ok|yes|no|sure|right|got it|that's it|that's all|done|finished$/i;
-
-import { useState, useRef, useCallback, useEffect } from 'react';
 
 // Smart pause detection helper
 const getSilenceTimeout = (text: string, speechStartTime: number): number => {

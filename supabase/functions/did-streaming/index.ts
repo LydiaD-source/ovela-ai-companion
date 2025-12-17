@@ -146,7 +146,10 @@ serve(async (req) => {
       // START - Send SDP answer after local description set
       // ============================================
       case 'start': {
-        const { stream_id, session_id, answer } = data;
+        // Support both wrapped (data.X) and top-level parameters
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
+        const answer = data?.answer || rest.answer;
 
         if (!stream_id || !session_id || !answer) {
           throw new Error('stream_id, session_id, and answer are required');
@@ -201,7 +204,12 @@ serve(async (req) => {
       // SEND ICE CANDIDATE - Forward ALL including null
       // ============================================
       case 'sendIceCandidate': {
-        const { stream_id, session_id, candidate, sdpMid, sdpMLineIndex } = data;
+        // Support both wrapped (data.X) and top-level parameters
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
+        const candidate = data?.candidate ?? rest.candidate;
+        const sdpMid = data?.sdpMid || rest.sdpMid;
+        const sdpMLineIndex = data?.sdpMLineIndex ?? rest.sdpMLineIndex;
 
         if (!stream_id || !session_id) {
           throw new Error('stream_id and session_id are required');
@@ -259,7 +267,11 @@ serve(async (req) => {
       // This is the main animation trigger
       // ============================================
       case 'startAnimation': {
-        const { stream_id, session_id, text, voice_id } = data;
+        // Support both wrapped (data.X) and top-level parameters
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
+        const text = data?.text || data?.message || rest.text || rest.message;
+        const voice_id = data?.voice_id || data?.voiceId || rest.voice_id || rest.voiceId;
 
         if (!stream_id || !session_id || !text) {
           throw new Error('stream_id, session_id, and text are required');
@@ -347,7 +359,10 @@ serve(async (req) => {
       // CREATE CLIP - Fallback async video generation
       // ============================================
       case 'createClip': {
-        const { source_url, text, voice_id } = data;
+        // Support both wrapped (data.X) and top-level parameters
+        const source_url = data?.source_url || rest.source_url;
+        const text = data?.text || rest.text;
+        const voice_id = data?.voice_id || rest.voice_id;
 
         if (!source_url || !text) {
           throw new Error('source_url and text are required for createClip');
@@ -407,7 +422,8 @@ serve(async (req) => {
       // GET CLIP - Check clip status and get video URL
       // ============================================
       case 'getClip': {
-        const { clip_id } = data;
+        // Support both wrapped (data.X) and top-level parameters
+        const clip_id = data?.clip_id || rest.clip_id;
 
         if (!clip_id) {
           throw new Error('clip_id is required');
@@ -443,7 +459,9 @@ serve(async (req) => {
       // DELETE STREAM - Cleanup when user leaves
       // ============================================
       case 'deleteStream': {
-        const { stream_id, session_id } = data;
+        // Support both wrapped (data.X) and top-level parameters
+        const stream_id = data?.stream_id || rest.stream_id;
+        const session_id = data?.session_id || rest.session_id;
 
         if (!stream_id) {
           throw new Error('stream_id is required');

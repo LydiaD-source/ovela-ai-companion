@@ -64,6 +64,17 @@ export const useWebSpeechSTT = ({
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hasSentRef = useRef(false);
   const shouldRestartRef = useRef(false);
+  const isActiveRef = useRef(false);
+  
+  // Use refs to track transcript for stable callbacks
+  const interimRef = useRef('');
+  const finalRef = useRef('');
+  const onAutoSendRef = useRef(onAutoSend);
+  
+  // Update ref when callback changes
+  useEffect(() => {
+    onAutoSendRef.current = onAutoSend;
+  }, [onAutoSend]);
   
   // Check browser support
   const SpeechRecognitionAPI = typeof window !== 'undefined' 
@@ -79,16 +90,14 @@ export const useWebSpeechSTT = ({
     }
   }, []);
 
-  // Auto-send function with double-send protection
+  // Auto-send function - reads from refs for stability
   const autoSendMessage = useCallback(() => {
     if (hasSentRef.current) {
       console.log('[WebSpeechSTT] ⏳ Already sent, skipping');
       return;
     }
 
-    const currentFinal = finalTranscript;
-    const currentInterim = interimTranscript;
-    const message = (currentFinal + ' ' + currentInterim).trim();
+    const message = (finalRef.current + ' ' + interimRef.current).trim();
     
     if (!message) {
       console.log('[WebSpeechSTT] 📭 No message to send');
@@ -99,13 +108,15 @@ export const useWebSpeechSTT = ({
     hasSentRef.current = true;
     setConversationPhase('processing');
     
-    // Clear transcripts
+    // Clear transcripts (both state and refs)
+    finalRef.current = '';
+    interimRef.current = '';
     setFinalTranscript('');
     setInterimTranscript('');
     
     // Call the send callback
-    if (onAutoSend) {
-      onAutoSend(message);
+    if (onAutoSendRef.current) {
+      onAutoSendRef.current(message);
     }
 
     // Reset send guard after short delay
@@ -115,12 +126,13 @@ export const useWebSpeechSTT = ({
         setConversationPhase('waiting');
       }
     }, 500);
-  }, [finalTranscript, interimTranscript, onAutoSend, continuous]);
+  }, [continuous]);
 
-  // Initialize recognition instance
+  // Initialize recognition instance - only once
   useEffect(() => {
     if (!SpeechRecognitionAPI) return;
 
+    console.log('[WebSpeechSTT] 🔧 Initializing recognition instance');
     const recognition = new SpeechRecognitionAPI();
     recognition.continuous = true;
     recognition.interimResults = true;
@@ -132,24 +144,28 @@ export const useWebSpeechSTT = ({
       setConversationPhase('listening');
       setError(null);
       hasSentRef.current = false;
+      isActiveRef.current = true;
     };
 
     recognition.onend = () => {
-      console.log('[WebSpeechSTT] 🛑 Recognition ended');
+      console.log('[WebSpeechSTT] 🛑 Recognition ended, isActive:', isActiveRef.current, 'shouldRestart:', shouldRestartRef.current);
       setIsListening(false);
       
       // Auto-restart if continuous mode and we should continue
-      if (continuous && shouldRestartRef.current && !hasSentRef.current) {
+      if (isActiveRef.current && shouldRestartRef.current && !hasSentRef.current) {
         console.log('[WebSpeechSTT] 🔄 Auto-restarting recognition');
         setTimeout(() => {
           try {
-            recognition.start();
+            if (isActiveRef.current && shouldRestartRef.current) {
+              recognition.start();
+            }
           } catch (e) {
             console.log('[WebSpeechSTT] Could not restart:', e);
           }
         }, 100);
       } else if (!shouldRestartRef.current) {
         setConversationPhase('idle');
+        isActiveRef.current = false;
       }
     };
 
@@ -157,13 +173,19 @@ export const useWebSpeechSTT = ({
       console.error('[WebSpeechSTT] ❌ Error:', event.error);
       
       // Don't show error for aborted (user stopped) or no-speech
-      if (event.error === 'aborted' || event.error === 'no-speech') {
+      if (event.error === 'aborted') {
+        return;
+      }
+      
+      if (event.error === 'no-speech') {
         // For no-speech, restart if continuous
-        if (event.error === 'no-speech' && continuous && shouldRestartRef.current) {
+        if (isActiveRef.current && shouldRestartRef.current) {
           console.log('[WebSpeechSTT] 🔄 Restarting after no-speech');
           setTimeout(() => {
             try {
-              recognition.start();
+              if (isActiveRef.current && shouldRestartRef.current) {
+                recognition.start();
+              }
             } catch (e) {
               console.log('[WebSpeechSTT] Could not restart:', e);
             }
@@ -175,6 +197,7 @@ export const useWebSpeechSTT = ({
       setError(event.error);
       setIsListening(false);
       setConversationPhase('idle');
+      isActiveRef.current = false;
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -194,17 +217,18 @@ export const useWebSpeechSTT = ({
       // Update interim transcript (shows as user speaks)
       if (interim) {
         console.log('[WebSpeechSTT] 📝 Interim:', interim);
+        interimRef.current = interim;
         setInterimTranscript(interim);
       }
 
       // When we get final transcript, accumulate it
       if (final) {
         console.log('[WebSpeechSTT] ✅ Final segment:', final);
-        setFinalTranscript(prev => {
-          const newFinal = prev ? `${prev} ${final}` : final;
-          return newFinal;
-        });
-        setInterimTranscript(''); // Clear interim when we have final
+        const newFinal = finalRef.current ? `${finalRef.current} ${final}` : final;
+        finalRef.current = newFinal;
+        setFinalTranscript(newFinal);
+        interimRef.current = ''; // Clear interim when we have final
+        setInterimTranscript('');
       }
 
       // Reset silence timer on every speech event
@@ -219,11 +243,13 @@ export const useWebSpeechSTT = ({
     recognitionRef.current = recognition;
 
     return () => {
+      console.log('[WebSpeechSTT] 🧹 Cleanup - stopping recognition');
       clearSilenceTimer();
       shouldRestartRef.current = false;
+      isActiveRef.current = false;
       recognition.abort();
     };
-  }, [SpeechRecognitionAPI, lang, silenceTimeout, continuous, clearSilenceTimer, autoSendMessage]);
+  }, [SpeechRecognitionAPI, lang, silenceTimeout, clearSilenceTimer, autoSendMessage]);
 
   const start = useCallback(() => {
     if (!isSupported) {
@@ -231,44 +257,65 @@ export const useWebSpeechSTT = ({
       return;
     }
 
+    console.log('[WebSpeechSTT] ▶️ Starting voice input');
+    
     // Reset state for new session
+    interimRef.current = '';
+    finalRef.current = '';
     setInterimTranscript('');
     setFinalTranscript('');
     setError(null);
     hasSentRef.current = false;
     shouldRestartRef.current = true;
+    isActiveRef.current = true;
     setConversationPhase('listening');
 
     try {
       recognitionRef.current?.start();
     } catch (e) {
-      // Already started
-      console.log('[WebSpeechSTT] Already running');
+      // Already started - try stopping and restarting
+      console.log('[WebSpeechSTT] Attempting restart');
+      try {
+        recognitionRef.current?.stop();
+        setTimeout(() => {
+          try {
+            recognitionRef.current?.start();
+          } catch (e2) {
+            console.error('[WebSpeechSTT] Failed to restart:', e2);
+          }
+        }, 100);
+      } catch (e2) {
+        console.error('[WebSpeechSTT] Failed to stop/restart:', e2);
+      }
     }
   }, [isSupported]);
 
   const stop = useCallback(() => {
+    console.log('[WebSpeechSTT] ⏹️ Stopping voice input');
     clearSilenceTimer();
     shouldRestartRef.current = false;
+    isActiveRef.current = false;
     
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       
       // Send any remaining transcript
-      const completeTranscript = (finalTranscript + ' ' + interimTranscript).trim();
+      const completeTranscript = (finalRef.current + ' ' + interimRef.current).trim();
       
-      if (completeTranscript && onAutoSend && !hasSentRef.current) {
+      if (completeTranscript && onAutoSendRef.current && !hasSentRef.current) {
         console.log('[WebSpeechSTT] 📤 Sending on stop:', completeTranscript);
         hasSentRef.current = true;
-        onAutoSend(completeTranscript);
+        onAutoSendRef.current(completeTranscript);
       }
       
       // Reset transcripts
+      interimRef.current = '';
+      finalRef.current = '';
       setInterimTranscript('');
       setFinalTranscript('');
       setConversationPhase('idle');
     }
-  }, [finalTranscript, interimTranscript, onAutoSend, clearSilenceTimer]);
+  }, [clearSilenceTimer]);
 
   return {
     isListening,

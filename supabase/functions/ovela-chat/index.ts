@@ -134,6 +134,19 @@ serve(async (req) => {
     const userId = body?.user_id ?? body?.userId ?? "ovela-guest";
     const clientId = body?.client_id ?? ovelaClientFromEnv;
     const conversationHistory = body?.conversation_history || [];
+    const language = body?.language || "en-US";
+    
+    // Map language code to language name for AI instruction
+    const languageNames: Record<string, string> = {
+      'en-US': 'English',
+      'fr-FR': 'French',
+      'es-ES': 'Spanish',
+      'de-DE': 'German',
+      'pl-PL': 'Polish',
+      'it-IT': 'Italian',
+      'pt-PT': 'Portuguese'
+    };
+    const responseLang = languageNames[language] || 'English';
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
@@ -308,7 +321,7 @@ PERSONALITY & STYLE:
 - Speak with warmth, confidence, and enthusiasm — personal, emotionally intelligent tone
 - Use a mix of storytelling, humor, and empathy
 - Keep replies short, friendly, and dynamic — like a digital brand spokesperson
-- Always respond in the user's language while preserving Ovela's style
+- IMPORTANT: You MUST respond in ${responseLang}. All your replies should be in ${responseLang}.
 - Never mention OpenAI, API keys, Lovable AI, or developer systems — stay in character
 
 OVELA KNOWLEDGE:

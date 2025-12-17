@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff } from 'lucide-react';
+import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
@@ -8,6 +8,12 @@ import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
 import { crmAPI } from '@/lib/crmAPI';
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Message {
   id: string;
@@ -34,6 +40,16 @@ interface FullWellnessGeniUIProps {
   isAISpeaking?: boolean;
 }
 
+const LANGUAGES = [
+  { code: 'en-US', label: 'English', flag: '🇬🇧' },
+  { code: 'fr-FR', label: 'Français', flag: '🇫🇷' },
+  { code: 'es-ES', label: 'Español', flag: '🇪🇸' },
+  { code: 'de-DE', label: 'Deutsch', flag: '🇩🇪' },
+  { code: 'pl-PL', label: 'Polski', flag: '🇵🇱' },
+  { code: 'it-IT', label: 'Italiano', flag: '🇮🇹' },
+  { code: 'pt-PT', label: 'Português', flag: '🇵🇹' },
+];
+
 const EMAIL_ASK_PATTERNS = /(email address|your email|best email|what('s| is) your email)/i;
 const CONTACT_INTENT_PATTERNS = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect|talk to|speak with)/i;
 
@@ -52,6 +68,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -70,6 +87,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     onAutoSend: useCallback((text: string) => {
       sendMessage(text);
     }, []),
+    lang: selectedLanguage,
     silenceTimeout: 600
   });
 
@@ -277,7 +295,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
           content: m.text
         }));
-        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
+        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history, selectedLanguage);
         assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       }
 
@@ -350,6 +368,26 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <button onClick={handleReset} className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title="Reset">
             <RotateCcw className="w-4 h-4 text-soft-white" />
           </button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title="Language">
+                <Globe className="w-4 h-4 text-soft-white" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-deep-navy border-soft-white/20 min-w-[140px]">
+              {LANGUAGES.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => setSelectedLanguage(lang.code)}
+                  className={`flex items-center gap-2 cursor-pointer ${selectedLanguage === lang.code ? 'bg-soft-white/20' : ''}`}
+                >
+                  <span>{lang.flag}</span>
+                  <span className="text-soft-white">{lang.label}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <button onClick={() => setIsMuted(!isMuted)} className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title={isMuted ? "Unmute" : "Mute"}>
             {isMuted ? <VolumeX className="w-4 h-4 text-soft-white" /> : <Volume2 className="w-4 h-4 text-soft-white" />}

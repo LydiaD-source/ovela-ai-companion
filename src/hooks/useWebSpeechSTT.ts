@@ -69,12 +69,45 @@ const DUPLICATE_WINDOW_MS = 2500;
 const MIN_MESSAGE_LENGTH = 2;
 const RESTART_DELAY_MS = 100;
 
+// Pause timing - allow natural speech breaks
+const SHORT_PAUSE_MS = 1200;     // Brief pause - keep listening
+const LONG_PAUSE_MS = 2200;      // Long pause - likely done speaking
+const MAX_ACCUMULATE_MS = 8000;  // Maximum time to accumulate speech
+
+// Incomplete sentence indicators (user likely has more to say)
+const INCOMPLETE_PATTERNS = /\b(but|and|or|so|because|however|although|if|when|then|also|like|about|for|with|the|a|an|to|of|that|this|in|on|at|by|from|as|is|are|was|were|be|been|have|has|had|do|does|did|will|would|could|should|can|may|might|must|shall|i|you|he|she|it|we|they|my|your|his|her|its|our|their|what|which|who|whom|whose|where|why|how|,|\.{3}|-{2,})$/i;
+
+// Sentence-ending patterns (user likely finished)
+const COMPLETE_PATTERNS = /[.!?]$|thanks|thank you|please|okay|ok|yes|no|sure|right|got it|that's it|that's all|done|finished$/i;
+
 import { useState, useRef, useCallback, useEffect } from 'react';
+
+// Smart pause detection helper
+const getSilenceTimeout = (text: string, speechStartTime: number): number => {
+  const trimmed = text.trim();
+  const elapsed = Date.now() - speechStartTime;
+  
+  // If user has been speaking for a while, use shorter timeout
+  if (elapsed > MAX_ACCUMULATE_MS) return SHORT_PAUSE_MS;
+  
+  // Check if sentence seems complete
+  if (COMPLETE_PATTERNS.test(trimmed)) return SHORT_PAUSE_MS;
+  
+  // Check if sentence seems incomplete
+  if (INCOMPLETE_PATTERNS.test(trimmed)) return LONG_PAUSE_MS;
+  
+  // Short sentences likely need more context
+  const wordCount = trimmed.split(/\s+/).length;
+  if (wordCount < 4) return LONG_PAUSE_MS;
+  
+  // Default medium pause
+  return 1600;
+};
 
 export const useWebSpeechSTT = ({
   onAutoSend,
   lang = 'en-US',
-  silenceTimeout = 700
+  silenceTimeout = 1500  // Increased default
 }: UseWebSpeechSTTProps = {}): UseWebSpeechSTTReturn => {
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -89,6 +122,7 @@ export const useWebSpeechSTT = ({
   const interimRef = useRef('');
   const finalRef = useRef('');
   const onAutoSendRef = useRef(onAutoSend);
+  const speechStartTimeRef = useRef<number>(0);
   
   const isSupported = !!SpeechRecognitionAPI;
 
@@ -174,6 +208,7 @@ export const useWebSpeechSTT = ({
     recognition.onstart = () => {
       setIsListening(true);
       setError(null);
+      speechStartTimeRef.current = Date.now(); // Track when user started speaking
       if (!globalAISpeaking) {
         setConversationPhase('listening');
       }
@@ -237,13 +272,23 @@ export const useWebSpeechSTT = ({
         setInterimTranscript('');
       }
 
-      // Silence detection - send after user pauses
+      // Smart silence detection - allow natural pauses
       clearTimers();
       const currentText = (finalRef.current + ' ' + interimRef.current).trim();
+      
       if (currentText.length >= MIN_MESSAGE_LENGTH && !globalAISpeaking) {
+        // Track when speech started for this utterance
+        if (speechStartTimeRef.current === 0) {
+          speechStartTimeRef.current = Date.now();
+        }
+        
+        // Calculate dynamic timeout based on sentence completeness
+        const dynamicTimeout = getSilenceTimeout(currentText, speechStartTimeRef.current);
+        
         silenceTimerRef.current = setTimeout(() => {
+          speechStartTimeRef.current = 0; // Reset for next utterance
           sendMessage(currentText);
-        }, silenceTimeout);
+        }, dynamicTimeout);
       }
     };
 

@@ -287,8 +287,9 @@ serve(async (req) => {
         // Support both nested data object and top-level fields
         const stream_id = data?.stream_id || rest.stream_id;
         const session_id = data?.session_id || rest.session_id;
-        const text = data?.text || rest.text;
-        const voice_id = data?.voice_id || rest.voice_id;
+        // Support both 'text' and 'message' field names for compatibility
+        const text = data?.text || rest.text || data?.message || rest.message;
+        const voice_id = data?.voice_id || rest.voice_id || data?.voiceId || rest.voiceId;
 
         if (!stream_id || !session_id || !text) {
           console.error(`[${requestId}] startAnimation: Missing required fields`, { stream_id, session_id, hasText: !!text });

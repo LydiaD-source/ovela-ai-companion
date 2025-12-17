@@ -1,6 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const AboutSection = () => {
+  const { t } = useTranslation();
+  
   return (
     <section className="w-full h-screen flex flex-col md:flex-row">
       {/* Left: Image */}
@@ -30,7 +33,7 @@ export const AboutSection = () => {
               color: '#E8CFA9'
             }}
           >
-            Redefining Modeling Through AI
+            {t('about.title')}
           </h2>
           <p
             className="text-base md:text-lg leading-relaxed"
@@ -40,7 +43,7 @@ export const AboutSection = () => {
               color: '#F5F5F5'
             }}
           >
-            Isabella is more than a model — she's an interactive AI ambassador who adapts to your brand, engages your audience in real-time, and scales across infinite campaigns without limitations.
+            {t('about.description')}
           </p>
         </div>
       </div>

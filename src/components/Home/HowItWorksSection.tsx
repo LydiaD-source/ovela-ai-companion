@@ -1,30 +1,33 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { MessageCircle, Camera, BookOpen, Sparkles } from 'lucide-react';
 
-const steps = [
-  {
-    icon: MessageCircle,
-    title: 'Chat with Isabella',
-    description: 'Start a conversation to explore what she can do for your brand'
-  },
-  {
-    icon: Camera,
-    title: 'Book a Shoot or Campaign',
-    description: 'Choose from ready-made looks or create custom visuals'
-  },
-  {
-    icon: BookOpen,
-    title: 'Review Lookbook',
-    description: 'Browse portfolio examples and finalize your selections'
-  },
-  {
-    icon: Sparkles,
-    title: 'Design Your Own Ambassador',
-    description: 'Build a custom AI model tailored to your brand identity'
-  }
-];
-
 export const HowItWorksSection = () => {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      icon: MessageCircle,
+      titleKey: 'howItWorks.step1.title',
+      descriptionKey: 'howItWorks.step1.description'
+    },
+    {
+      icon: Camera,
+      titleKey: 'howItWorks.step2.title',
+      descriptionKey: 'howItWorks.step2.description'
+    },
+    {
+      icon: BookOpen,
+      titleKey: 'howItWorks.step3.title',
+      descriptionKey: 'howItWorks.step3.description'
+    },
+    {
+      icon: Sparkles,
+      titleKey: 'howItWorks.step4.title',
+      descriptionKey: 'howItWorks.step4.description'
+    }
+  ];
+
   return (
     <section
       className="w-full py-16 md:py-20"
@@ -38,7 +41,7 @@ export const HowItWorksSection = () => {
             color: '#E8CFA9'
           }}
         >
-          How It Works
+          {t('howItWorks.title')}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
@@ -60,7 +63,7 @@ export const HowItWorksSection = () => {
                     color: '#E8CFA9'
                   }}
                 >
-                  {step.title}
+                  {t(step.titleKey)}
                 </h3>
                 <p
                   className="text-base"
@@ -69,7 +72,7 @@ export const HowItWorksSection = () => {
                     color: '#FFFFFF'
                   }}
                 >
-                  {step.description}
+                  {t(step.descriptionKey)}
                 </p>
               </div>
             );

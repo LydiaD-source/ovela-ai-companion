@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Volume2, VolumeX, Send, Loader2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,6 +51,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   onAIResponse,
   onReady
 }) => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -543,7 +545,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <div className="bg-soft-white/10 rounded-xl p-3 mr-4">
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-soft-white" />
-                <span className="text-sm text-soft-white">Isabella is thinking...</span>
+                <span className="text-sm text-soft-white">{t('chat.thinking')}</span>
               </div>
             </div>
           </div>
@@ -558,7 +560,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type in any language — Isabella speaks 🌍 EN, ES, FR, DE, PT..."
+            placeholder={t('chat.placeholder')}
             className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
             disabled={isLoading}
           />

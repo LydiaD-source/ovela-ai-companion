@@ -53,7 +53,15 @@ serve(async (req) => {
 
   try {
     // Parse request body and support multiple parameter formats for backwards compatibility
-    const requestBody = await req.json();
+    const rawBody = await req.text();
+    let requestBody;
+    try {
+      requestBody = JSON.parse(rawBody);
+    } catch (parseError) {
+      console.error(`[${requestId}] Failed to parse JSON:`, rawBody.substring(0, 500));
+      throw new Error('Invalid JSON body');
+    }
+    
     const { action, data, source_url: topLevelSourceUrl, avatarUrl: topLevelAvatarUrl, ...rest } = requestBody;
     
     console.log(`[${requestId}] Parsed request:`, { 
@@ -61,7 +69,8 @@ serve(async (req) => {
       hasData: !!data, 
       hasTopLevelSourceUrl: !!topLevelSourceUrl,
       hasTopLevelAvatarUrl: !!topLevelAvatarUrl,
-      dataKeys: data ? Object.keys(data) : []
+      dataKeys: data ? Object.keys(data) : [],
+      rawBodyPreview: rawBody.substring(0, 300)
     });
     
     if (!DID_API_KEY) {
@@ -150,7 +159,10 @@ serve(async (req) => {
 
         if (!stream_id || !session_id || !answer) {
           console.error(`[${requestId}] start: Missing required fields`, { stream_id, session_id, hasAnswer: !!answer });
-          throw new Error('stream_id, session_id, and answer are required');
+          return new Response(JSON.stringify({ success: false, error: { message: 'stream_id, session_id, and answer are required' } }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
         console.log(`[${requestId}] start (SDP):`, {
@@ -206,7 +218,10 @@ serve(async (req) => {
 
         if (!stream_id || !session_id) {
           console.error(`[${requestId}] sendIceCandidate: Missing required fields`, { stream_id, session_id });
-          throw new Error('stream_id and session_id are required');
+          return new Response(JSON.stringify({ success: false, error: { message: 'stream_id and session_id are required' } }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
         // candidate can be null (signals ICE gathering complete)
@@ -265,7 +280,10 @@ serve(async (req) => {
 
         if (!stream_id || !session_id || !text) {
           console.error(`[${requestId}] startAnimation: Missing required fields`, { stream_id, session_id, hasText: !!text });
-          throw new Error('stream_id, session_id, and text are required');
+          return new Response(JSON.stringify({ success: false, error: { message: 'stream_id, session_id, and text are required' } }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
         const selectedVoice = voice_id || 'EXAVITQu4vr4xnSDxMaL'; // Default: Sarah

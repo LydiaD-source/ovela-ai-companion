@@ -435,8 +435,8 @@ export const StreamingService = {
   
   speak: async (params: SpeakParams) => {
     const manager = PersistentStreamManager.getInstance();
-    // Ensure connected before speaking
-    if (!manager.getState().isConnected) {
+    // Only init if we don't have a stream at all (don't check isConnected - ICE may still be negotiating)
+    if (!manager.getState().hasStream) {
       await manager.initOnce(params.avatarUrl);
     }
     return manager.speak(params.text, params.voiceId);

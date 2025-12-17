@@ -558,7 +558,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ask Isabella about modeling, pricing, availability..."
+            placeholder="Type in any language — Isabella speaks 🌍 EN, ES, FR, DE, PT..."
             className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
             disabled={isLoading}
           />

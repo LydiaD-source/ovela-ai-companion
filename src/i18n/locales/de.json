@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "about": "Über Uns",
+    "projects": "Projekte",
+    "pricing": "Preise",
+    "contact": "Kontakt",
+    "partner": "Partner Werden"
+  },
+  "hero": {
+    "title": "Lernen Sie Isabella Kennen",
+    "subtitle": "Ihre KI-Gestützte Digitale Botschafterin",
+    "description": "Transformieren Sie Ihre Markenpräsenz mit Isabella, einer intelligenten virtuellen Botschafterin, die engagiert, informiert und konvertiert.",
+    "cta": "Mit Isabella Sprechen",
+    "learnMore": "Mehr Erfahren"
+  },
+  "about": {
+    "title": "Über Isabella",
+    "subtitle": "Die Zukunft des Marken-Engagements",
+    "description": "Isabella ist eine hochmoderne KI-Botschafterin, die entwickelt wurde, um Ihre Marke mit Eleganz, Intelligenz und Authentizität zu repräsentieren."
+  },
+  "howItWorks": {
+    "title": "So Funktioniert Es",
+    "step1": {
+      "title": "Verbinden",
+      "description": "Integrieren Sie Isabella nahtlos in Ihre digitalen Plattformen"
+    },
+    "step2": {
+      "title": "Anpassen",
+      "description": "Passen Sie ihre Persönlichkeit und ihr Wissen an Ihre Marke an"
+    },
+    "step3": {
+      "title": "Engagieren",
+      "description": "Beobachten Sie, wie sie Ihr Publikum fesselt und konvertiert"
+    }
+  },
+  "showcase": {
+    "title": "Isabella in Aktion",
+    "subtitle": "Sehen Sie, wie Isabella Markenerlebnisse transformiert"
+  },
+  "cta": {
+    "title": "Bereit, Ihre Marke zu Transformieren?",
+    "description": "Werden Sie Teil der Zukunft digitaler Markenbotschafter",
+    "button": "Jetzt Starten"
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen"
+  },
+  "chat": {
+    "placeholder": "Nachricht eingeben...",
+    "send": "Senden",
+    "connecting": "Verbinde...",
+    "connected": "Verbunden"
+  },
+  "pricing": {
+    "title": "Preise",
+    "subtitle": "Wählen Sie den perfekten Plan für Ihre Marke",
+    "contact": "Kontaktieren Sie Uns",
+    "customSolution": "Individuelle Lösung"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie Uns",
+    "name": "Name",
+    "email": "E-Mail",
+    "message": "Nachricht",
+    "submit": "Nachricht Senden"
+  },
+  "language": {
+    "select": "Sprache",
+    "en": "Englisch",
+    "es": "Spanisch",
+    "fr": "Französisch",
+    "de": "Deutsch",
+    "pt": "Portugiesisch"
+  }
+}

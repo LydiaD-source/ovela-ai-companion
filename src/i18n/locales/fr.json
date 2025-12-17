@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "projects": "Projets",
+    "pricing": "Tarifs",
+    "contact": "Contact",
+    "partner": "Devenir Partenaire"
+  },
+  "hero": {
+    "title": "Découvrez Isabella",
+    "subtitle": "Votre Ambassadrice Digitale Propulsée par l'IA",
+    "description": "Transformez la présence de votre marque avec Isabella, une ambassadrice virtuelle intelligente qui engage, informe et convertit.",
+    "cta": "Parler à Isabella",
+    "learnMore": "En Savoir Plus"
+  },
+  "about": {
+    "title": "À Propos d'Isabella",
+    "subtitle": "L'Avenir de l'Engagement de Marque",
+    "description": "Isabella est une ambassadrice IA de pointe conçue pour représenter votre marque avec élégance, intelligence et authenticité."
+  },
+  "howItWorks": {
+    "title": "Comment Ça Marche",
+    "step1": {
+      "title": "Connectez",
+      "description": "Intégrez Isabella facilement dans vos plateformes digitales"
+    },
+    "step2": {
+      "title": "Personnalisez",
+      "description": "Adaptez sa personnalité et ses connaissances à votre marque"
+    },
+    "step3": {
+      "title": "Engagez",
+      "description": "Regardez-la captiver et convertir votre audience"
+    }
+  },
+  "showcase": {
+    "title": "Isabella en Action",
+    "subtitle": "Découvrez comment Isabella transforme les expériences de marque"
+  },
+  "cta": {
+    "title": "Prêt à Transformer Votre Marque?",
+    "description": "Rejoignez l'avenir de l'ambassadeur digital de marque",
+    "button": "Commencer"
+  },
+  "footer": {
+    "rights": "Tous droits réservés",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation"
+  },
+  "chat": {
+    "placeholder": "Tapez votre message...",
+    "send": "Envoyer",
+    "connecting": "Connexion...",
+    "connected": "Connecté"
+  },
+  "pricing": {
+    "title": "Tarifs",
+    "subtitle": "Choisissez le forfait parfait pour votre marque",
+    "contact": "Contactez-Nous",
+    "customSolution": "Solution Personnalisée"
+  },
+  "contact": {
+    "title": "Contactez-Nous",
+    "name": "Nom",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Envoyer le Message"
+  },
+  "language": {
+    "select": "Langue",
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français",
+    "de": "Allemand",
+    "pt": "Portugais"
+  }
+}

@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/UI/LanguageSwitcher';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Pricing', path: '/pricing' },
+    { name: t('nav.home'), path: '/' },
+    { name: t('nav.about'), path: '/about' },
+    { name: t('nav.pricing'), path: '/pricing' },
     { name: 'Portfolio', path: '/projects' },
-    { name: 'Partner With Us', path: '/partner' },
-    { name: 'Contact', path: '/contact' },
+    { name: t('nav.partner'), path: '/partner' },
+    { name: t('nav.contact'), path: '/contact' },
   ];
 
   // Close dropdown when clicking outside
@@ -43,15 +46,18 @@ const Navigation = () => {
           <div className="text-sm font-medium" style={{ color: 'hsl(var(--champagne-gold))' }}>Interactive</div>
         </Link>
 
-        {/* Hamburger Menu Button */}
-        <button
-          className="pointer-events-auto p-2 transition-colors duration-200 relative z-50"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-          style={{ color: 'white' }}
-        >
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
+        {/* Language Switcher and Hamburger Menu */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          <LanguageSwitcher />
+          <button
+            className="p-2 transition-colors duration-200 relative z-50"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+            style={{ color: 'white' }}
+          >
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
       </div>
 
       {/* Luxury Dropdown Menu */}

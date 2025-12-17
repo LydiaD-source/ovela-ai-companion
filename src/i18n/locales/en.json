@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "partner": "Partner With Us"
+  },
+  "hero": {
+    "title": "Meet Isabella",
+    "subtitle": "Your AI-Powered Digital Ambassador",
+    "description": "Transform your brand presence with Isabella, an intelligent virtual ambassador that engages, informs, and converts.",
+    "cta": "Talk to Isabella",
+    "learnMore": "Learn More"
+  },
+  "about": {
+    "title": "About Isabella",
+    "subtitle": "The Future of Brand Engagement",
+    "description": "Isabella is a cutting-edge AI ambassador designed to represent your brand with elegance, intelligence, and authenticity."
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": {
+      "title": "Connect",
+      "description": "Integrate Isabella seamlessly into your digital platforms"
+    },
+    "step2": {
+      "title": "Customize",
+      "description": "Tailor her personality and knowledge to match your brand"
+    },
+    "step3": {
+      "title": "Engage",
+      "description": "Watch as she captivates and converts your audience"
+    }
+  },
+  "showcase": {
+    "title": "Isabella in Action",
+    "subtitle": "See how Isabella transforms brand experiences"
+  },
+  "cta": {
+    "title": "Ready to Transform Your Brand?",
+    "description": "Join the future of digital brand ambassadorship",
+    "button": "Get Started"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "chat": {
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "connecting": "Connecting...",
+    "connected": "Connected"
+  },
+  "pricing": {
+    "title": "Pricing",
+    "subtitle": "Choose the perfect plan for your brand",
+    "contact": "Contact Us",
+    "customSolution": "Custom Solution"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "submit": "Send Message"
+  },
+  "language": {
+    "select": "Language",
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "pt": "Portuguese"
+  }
+}

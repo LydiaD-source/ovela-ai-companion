@@ -54,6 +54,7 @@
     "placeholder": "Type in any language — Isabella speaks 🌍 EN, ES, FR, DE, PT...",
     "send": "Send",
     "connecting": "Connecting...",
-    "thinking": "Isabella is thinking..."
+    "thinking": "Isabella is thinking...",
+    "transcribing": "Transcribing your voice..."
   }
 }

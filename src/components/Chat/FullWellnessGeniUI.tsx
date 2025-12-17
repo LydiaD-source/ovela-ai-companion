@@ -61,6 +61,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
+  const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -512,6 +513,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <VoiceInputButton 
             onTranscript={(text) => sendMessage(text)}
             disabled={isLoading}
+            onProcessingChange={setIsVoiceProcessing}
           />
         </div>
       </div>
@@ -540,6 +542,18 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         ))}
         
+        {/* Voice processing indicator */}
+        {isVoiceProcessing && (
+          <div className="flex justify-start">
+            <div className="bg-champagne-gold/20 rounded-xl p-3 mr-4 border border-champagne-gold/30">
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 border-2 border-champagne-gold border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm text-champagne-gold">{t('chat.transcribing') || 'Transcribing...'}</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-soft-white/10 rounded-xl p-3 mr-4">
@@ -560,13 +574,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder={t('chat.placeholder')}
+            placeholder={isVoiceProcessing ? (t('chat.transcribing') || 'Transcribing...') : t('chat.placeholder')}
             className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
-            disabled={isLoading}
+            disabled={isLoading || isVoiceProcessing}
           />
           <Button 
             type="submit" 
-            disabled={isLoading || !inputText.trim()}
+            disabled={isLoading || isVoiceProcessing || !inputText.trim()}
             className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
           >
             <Send className="w-4 h-4" />

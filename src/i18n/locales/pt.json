@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "projects": "Projetos",
+    "pricing": "Preços",
+    "contact": "Contato",
+    "partner": "Seja Parceiro"
+  },
+  "hero": {
+    "title": "Conheça Isabella",
+    "subtitle": "Sua Embaixadora Digital Movida por IA",
+    "description": "Transforme a presença da sua marca com Isabella, uma embaixadora virtual inteligente que engaja, informa e converte.",
+    "cta": "Fale com Isabella",
+    "learnMore": "Saiba Mais"
+  },
+  "about": {
+    "title": "Sobre Isabella",
+    "subtitle": "O Futuro do Engajamento de Marca",
+    "description": "Isabella é uma embaixadora de IA de ponta projetada para representar sua marca com elegância, inteligência e autenticidade."
+  },
+  "howItWorks": {
+    "title": "Como Funciona",
+    "step1": {
+      "title": "Conecte",
+      "description": "Integre Isabella perfeitamente às suas plataformas digitais"
+    },
+    "step2": {
+      "title": "Personalize",
+      "description": "Adapte sua personalidade e conhecimento à sua marca"
+    },
+    "step3": {
+      "title": "Engaje",
+      "description": "Veja como ela cativa e converte seu público"
+    }
+  },
+  "showcase": {
+    "title": "Isabella em Ação",
+    "subtitle": "Veja como Isabella transforma experiências de marca"
+  },
+  "cta": {
+    "title": "Pronto para Transformar Sua Marca?",
+    "description": "Junte-se ao futuro do embaixador digital de marca",
+    "button": "Começar"
+  },
+  "footer": {
+    "rights": "Todos os direitos reservados",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço"
+  },
+  "chat": {
+    "placeholder": "Digite sua mensagem...",
+    "send": "Enviar",
+    "connecting": "Conectando...",
+    "connected": "Conectado"
+  },
+  "pricing": {
+    "title": "Preços",
+    "subtitle": "Escolha o plano perfeito para sua marca",
+    "contact": "Fale Conosco",
+    "customSolution": "Solução Personalizada"
+  },
+  "contact": {
+    "title": "Fale Conosco",
+    "name": "Nome",
+    "email": "Email",
+    "message": "Mensagem",
+    "submit": "Enviar Mensagem"
+  },
+  "language": {
+    "select": "Idioma",
+    "en": "Inglês",
+    "es": "Espanhol",
+    "fr": "Francês",
+    "de": "Alemão",
+    "pt": "Português"
+  }
+}

@@ -54,6 +54,7 @@
     "placeholder": "Écrivez dans n'importe quelle langue — Isabella parle 🌍 EN, ES, FR, DE, PT...",
     "send": "Envoyer",
     "connecting": "Connexion...",
-    "thinking": "Isabella réfléchit..."
+    "thinking": "Isabella réfléchit...",
+    "transcribing": "Transcription de votre voix..."
   }
 }

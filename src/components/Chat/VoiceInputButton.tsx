@@ -6,11 +6,13 @@ import { supabase } from '@/integrations/supabase/client';
 interface VoiceInputButtonProps {
   onTranscript: (text: string) => void;
   disabled?: boolean;
+  onProcessingChange?: (isProcessing: boolean) => void;
 }
 
 export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({ 
   onTranscript,
-  disabled 
+  disabled,
+  onProcessingChange
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -18,6 +20,12 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
   const chunksRef = useRef<Blob[]>([]);
   const mimeTypeRef = useRef<string | undefined>(undefined);
   const { toast } = useToast();
+
+  // Notify parent when processing state changes
+  const updateProcessing = (processing: boolean) => {
+    setIsProcessing(processing);
+    onProcessingChange?.(processing);
+  };
 
   const getSupportedMimeType = (): string | undefined => {
     const types = [
@@ -60,7 +68,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
 
       mediaRecorder.onstop = async () => {
         console.log('🎙️ Recording stopped, processing...');
-        setIsProcessing(true);
+        updateProcessing(true);
 
         try {
           const audioBlob = new Blob(chunksRef.current, { type: mimeTypeRef.current || 'audio/webm' });
@@ -107,8 +115,8 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
               });
             }
 
-            setIsProcessing(false);
-          };
+              updateProcessing(false);
+            };
         } catch (err) {
           console.error('❌ Error processing audio:', err);
           toast({
@@ -116,7 +124,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
             description: err instanceof Error ? err.message : 'Failed to process audio',
             variant: 'destructive'
           });
-          setIsProcessing(false);
+          updateProcessing(false);
         }
 
         // Stop all tracks

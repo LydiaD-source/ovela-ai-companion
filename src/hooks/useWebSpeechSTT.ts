@@ -1,13 +1,15 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 /**
- * TURN-BASED SPEECH-TO-TEXT
+ * TURN-BASED SPEECH-TO-TEXT - Clean Implementation
  * 
- * Uses module-level state to survive component remounts.
- * This ensures the conversation state persists even if React re-renders.
+ * Simple approach:
+ * - STOP recognition when AI speaks
+ * - START recognition when AI finishes
+ * - No trying to keep recognition alive while ignoring results
  */
 
-// MODULE-LEVEL STATE - survives component remounts
+// Module-level state - survives component remounts
 let globalIsActive = false;
 let globalAISpeaking = false;
 let globalLastSentText = '';
@@ -72,24 +74,20 @@ export const useWebSpeechSTT = ({
   lang = 'en-US',
   silenceTimeout = 800
 }: UseWebSpeechSTTProps = {}): UseWebSpeechSTTReturn => {
-  // React state for UI
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [finalTranscript, setFinalTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [conversationPhase, setConversationPhase] = useState<'idle' | 'listening' | 'processing' | 'ai_speaking'>('idle');
   
-  // Refs for recognition instance and timers
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isRecognitionRunningRef = useRef(false);
   
   // Transcript buffers
   const interimRef = useRef('');
   const finalRef = useRef('');
   const onAutoSendRef = useRef(onAutoSend);
   
-  // Sync callback ref
   useEffect(() => {
     onAutoSendRef.current = onAutoSend;
   }, [onAutoSend]);
@@ -110,43 +108,59 @@ export const useWebSpeechSTT = ({
     setFinalTranscript('');
   }, []);
 
-  const startRecognition = useCallback(() => {
+  // Force stop recognition
+  const forceStopRecognition = useCallback(() => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+        console.log('[STT] 🛑 Recognition force stopped');
+      } catch (e) {
+        // Ignore
+      }
+    }
+    setIsListening(false);
+  }, []);
+
+  // Force start recognition
+  const forceStartRecognition = useCallback(() => {
     if (!recognitionRef.current) {
       console.log('[STT] ❌ No recognition instance');
       return;
     }
     
-    if (isRecognitionRunningRef.current) {
-      console.log('[STT] ℹ️ Already running');
-      return;
+    // First ensure it's stopped
+    try {
+      recognitionRef.current.abort();
+    } catch (e) {
+      // Ignore
     }
     
-    try {
-      recognitionRef.current.start();
-      console.log('[STT] ✅ Recognition started');
-    } catch (e: any) {
-      if (e.message?.includes('already started')) {
-        console.log('[STT] ℹ️ Already running (caught)');
-        isRecognitionRunningRef.current = true;
-      } else {
-        console.log('[STT] ⚠️ Start failed:', e.message);
-        setTimeout(() => {
-          if (!isRecognitionRunningRef.current && recognitionRef.current) {
-            try { 
-              recognitionRef.current.start(); 
-              console.log('[STT] ✅ Retry succeeded');
-            } catch (e2) {
-              console.log('[STT] ❌ Retry failed');
+    // Small delay then start fresh
+    setTimeout(() => {
+      if (!globalAISpeaking && globalIsActive && recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          console.log('[STT] ✅ Recognition force started');
+        } catch (e: any) {
+          console.log('[STT] ⚠️ Start error:', e.message);
+          // Retry once more
+          setTimeout(() => {
+            if (!globalAISpeaking && globalIsActive && recognitionRef.current) {
+              try {
+                recognitionRef.current.start();
+                console.log('[STT] ✅ Retry succeeded');
+              } catch (e2) {
+                console.log('[STT] ❌ Retry failed');
+              }
             }
-          }
-        }, 150);
+          }, 200);
+        }
       }
-    }
+    }, 100);
   }, []);
 
   const autoSendMessage = useCallback(() => {
     if (globalAISpeaking) {
-      console.log('[STT] ⏸️ Not sending - AI speaking');
       return;
     }
 
@@ -186,7 +200,6 @@ export const useWebSpeechSTT = ({
 
     recognition.onstart = () => {
       console.log('[STT] 🎙️ Recognition STARTED');
-      isRecognitionRunningRef.current = true;
       setIsListening(true);
       setError(null);
       if (!globalAISpeaking) {
@@ -195,25 +208,26 @@ export const useWebSpeechSTT = ({
     };
 
     recognition.onend = () => {
-      console.log('[STT] 🛑 Recognition ENDED | globalActive:', globalIsActive, '| globalAISpeaking:', globalAISpeaking);
-      isRecognitionRunningRef.current = false;
+      console.log('[STT] 🛑 Recognition ENDED | active:', globalIsActive, '| aiSpeaking:', globalAISpeaking);
       setIsListening(false);
       
-      // Auto-restart if active and AI not speaking
+      // ONLY auto-restart if active AND AI not speaking
       if (globalIsActive && !globalAISpeaking) {
-        console.log('[STT] 🔄 Auto-restarting...');
+        console.log('[STT] 🔄 Auto-restarting in onend...');
         setTimeout(() => {
           if (globalIsActive && !globalAISpeaking && recognitionRef.current) {
             try {
               recognitionRef.current.start();
+              console.log('[STT] ✅ Auto-restart succeeded');
             } catch (e) {
-              console.log('[STT] ⚠️ Restart failed in onend');
+              console.log('[STT] ⚠️ Auto-restart failed');
             }
           }
-        }, 100);
+        }, 150);
       } else if (!globalIsActive) {
         setConversationPhase('idle');
       }
+      // If AI is speaking, we do nothing - setAISpeaking(false) will restart
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -225,8 +239,9 @@ export const useWebSpeechSTT = ({
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      // Skip if AI is speaking
       if (globalAISpeaking) {
-        return; // Silent ignore while AI speaks
+        return;
       }
 
       let interim = '';
@@ -273,7 +288,6 @@ export const useWebSpeechSTT = ({
 
     return () => {
       clearSilenceTimer();
-      isRecognitionRunningRef.current = false;
       try { recognition.abort(); } catch (e) {}
     };
   }, [lang, silenceTimeout, clearSilenceTimer, autoSendMessage]);
@@ -292,8 +306,8 @@ export const useWebSpeechSTT = ({
     resetTranscripts();
     setError(null);
     setConversationPhase('listening');
-    startRecognition();
-  }, [isSupported, resetTranscripts, startRecognition]);
+    forceStartRecognition();
+  }, [isSupported, resetTranscripts, forceStartRecognition]);
 
   const stop = useCallback(() => {
     console.log('[STT] ⏹️ STOP');
@@ -312,54 +326,52 @@ export const useWebSpeechSTT = ({
     
     globalIsActive = false;
     globalAISpeaking = false;
-    isRecognitionRunningRef.current = false;
     
-    try { recognitionRef.current?.stop(); } catch (e) {}
-    
+    forceStopRecognition();
     resetTranscripts();
     setConversationPhase('idle');
-    setIsListening(false);
-  }, [clearSilenceTimer, resetTranscripts]);
+  }, [clearSilenceTimer, resetTranscripts, forceStopRecognition]);
 
   /**
-   * TURN CONTROL - Uses global state to survive remounts
+   * TURN CONTROL - Simple and Clean
+   * 
+   * AI starts speaking → STOP recognition
+   * AI finishes speaking → START recognition
    */
   const setAISpeaking = useCallback((speaking: boolean) => {
     console.log('[STT] 🔊 setAISpeaking:', speaking, '| globalActive:', globalIsActive);
     
     if (speaking) {
-      // AI STARTED SPEAKING
+      // === AI STARTS SPEAKING ===
       globalAISpeaking = true;
       clearSilenceTimer();
       setConversationPhase('ai_speaking');
       resetTranscripts();
       
-      // Auto-activate conversation
+      // Auto-activate conversation if not already
       if (!globalIsActive) {
         console.log('[STT] 🚀 Auto-activating conversation');
         globalIsActive = true;
       }
       
+      // STOP recognition while AI speaks
+      forceStopRecognition();
+      
     } else {
-      // AI FINISHED SPEAKING
-      const wasActive = globalIsActive;
+      // === AI FINISHES SPEAKING ===
       globalAISpeaking = false;
       
-      console.log('[STT] ▶️ AI finished | wasActive:', wasActive);
+      console.log('[STT] ▶️ AI finished speaking | globalActive:', globalIsActive);
       
-      if (wasActive) {
-        console.log('[STT] ▶️ Starting user turn NOW');
+      if (globalIsActive) {
+        console.log('[STT] ▶️ Starting user turn');
         setConversationPhase('listening');
         
-        // Force start recognition
-        setTimeout(() => {
-          if (!globalAISpeaking && globalIsActive) {
-            startRecognition();
-          }
-        }, 50);
+        // START recognition for user's turn
+        forceStartRecognition();
       }
     }
-  }, [clearSilenceTimer, resetTranscripts, startRecognition]);
+  }, [clearSilenceTimer, resetTranscripts, forceStopRecognition, forceStartRecognition]);
 
   return {
     isListening,

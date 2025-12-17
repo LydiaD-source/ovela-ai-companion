@@ -1,13 +1,17 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 /**
- * TURN-BASED SPEECH-TO-TEXT - Bulletproof Version
+ * TURN-BASED SPEECH-TO-TEXT
  * 
- * Key fixes:
- * - No dependency on wasAISpeaking (refs can reset on remount)
- * - Duplicate send prevention with lastSentText tracking
- * - Aggressive restart when AI finishes speaking
+ * Uses module-level state to survive component remounts.
+ * This ensures the conversation state persists even if React re-renders.
  */
+
+// MODULE-LEVEL STATE - survives component remounts
+let globalIsActive = false;
+let globalAISpeaking = false;
+let globalLastSentText = '';
+let globalLastSentTime = 0;
 
 interface UseWebSpeechSTTProps {
   onAutoSend?: (text: string) => void;
@@ -56,44 +60,40 @@ declare global {
   }
 }
 
+const SpeechRecognitionAPI = typeof window !== 'undefined' 
+  ? (window.SpeechRecognition || window.webkitSpeechRecognition) 
+  : null;
+
+const DUPLICATE_WINDOW_MS = 3000;
+const MIN_MESSAGE_LENGTH = 2;
+
 export const useWebSpeechSTT = ({
   onAutoSend,
   lang = 'en-US',
   silenceTimeout = 800
 }: UseWebSpeechSTTProps = {}): UseWebSpeechSTTReturn => {
+  // React state for UI
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [finalTranscript, setFinalTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [conversationPhase, setConversationPhase] = useState<'idle' | 'listening' | 'processing' | 'ai_speaking'>('idle');
   
+  // Refs for recognition instance and timers
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // State tracking with refs
-  const isActiveRef = useRef(false);
-  const aiSpeakingRef = useRef(false);
   const isRecognitionRunningRef = useRef(false);
   
-  // Transcript tracking
+  // Transcript buffers
   const interimRef = useRef('');
   const finalRef = useRef('');
   const onAutoSendRef = useRef(onAutoSend);
   
-  // DUPLICATE PREVENTION: Track last sent text and timestamp
-  const lastSentTextRef = useRef('');
-  const lastSentTimeRef = useRef(0);
-  const DUPLICATE_WINDOW_MS = 3000; // 3 seconds
-  
-  const MIN_MESSAGE_LENGTH = 2;
-  
+  // Sync callback ref
   useEffect(() => {
     onAutoSendRef.current = onAutoSend;
   }, [onAutoSend]);
   
-  const SpeechRecognitionAPI = typeof window !== 'undefined' 
-    ? (window.SpeechRecognition || window.webkitSpeechRecognition) 
-    : null;
   const isSupported = !!SpeechRecognitionAPI;
 
   const clearSilenceTimer = useCallback(() => {
@@ -110,7 +110,6 @@ export const useWebSpeechSTT = ({
     setFinalTranscript('');
   }, []);
 
-  // Start recognition safely
   const startRecognition = useCallback(() => {
     if (!recognitionRef.current) {
       console.log('[STT] ❌ No recognition instance');
@@ -131,7 +130,6 @@ export const useWebSpeechSTT = ({
         isRecognitionRunningRef.current = true;
       } else {
         console.log('[STT] ⚠️ Start failed:', e.message);
-        // Retry once after delay
         setTimeout(() => {
           if (!isRecognitionRunningRef.current && recognitionRef.current) {
             try { 
@@ -147,7 +145,7 @@ export const useWebSpeechSTT = ({
   }, []);
 
   const autoSendMessage = useCallback(() => {
-    if (aiSpeakingRef.current) {
+    if (globalAISpeaking) {
       console.log('[STT] ⏸️ Not sending - AI speaking');
       return;
     }
@@ -157,17 +155,17 @@ export const useWebSpeechSTT = ({
       return;
     }
 
-    // DUPLICATE CHECK: Don't send same text within window
+    // Duplicate check
     const now = Date.now();
-    if (message === lastSentTextRef.current && (now - lastSentTimeRef.current) < DUPLICATE_WINDOW_MS) {
+    if (message === globalLastSentText && (now - globalLastSentTime) < DUPLICATE_WINDOW_MS) {
       console.log('[STT] 🚫 Duplicate prevented:', message);
       resetTranscripts();
       return;
     }
 
     console.log('[STT] 📤 AUTO-SEND:', message);
-    lastSentTextRef.current = message;
-    lastSentTimeRef.current = now;
+    globalLastSentText = message;
+    globalLastSentTime = now;
     
     setConversationPhase('processing');
     resetTranscripts();
@@ -177,7 +175,7 @@ export const useWebSpeechSTT = ({
     }
   }, [resetTranscripts]);
 
-  // Initialize recognition ONCE
+  // Initialize recognition
   useEffect(() => {
     if (!SpeechRecognitionAPI) return;
 
@@ -191,21 +189,29 @@ export const useWebSpeechSTT = ({
       isRecognitionRunningRef.current = true;
       setIsListening(true);
       setError(null);
-      if (!aiSpeakingRef.current) {
+      if (!globalAISpeaking) {
         setConversationPhase('listening');
       }
     };
 
     recognition.onend = () => {
-      console.log('[STT] 🛑 Recognition ENDED | active:', isActiveRef.current, '| aiSpeaking:', aiSpeakingRef.current);
+      console.log('[STT] 🛑 Recognition ENDED | globalActive:', globalIsActive, '| globalAISpeaking:', globalAISpeaking);
       isRecognitionRunningRef.current = false;
       setIsListening(false);
       
-      // Auto-restart if conversation is active and AI not speaking
-      if (isActiveRef.current && !aiSpeakingRef.current) {
-        console.log('[STT] 🔄 Auto-restarting (onend)');
-        setTimeout(() => startRecognition(), 100);
-      } else if (!isActiveRef.current) {
+      // Auto-restart if active and AI not speaking
+      if (globalIsActive && !globalAISpeaking) {
+        console.log('[STT] 🔄 Auto-restarting...');
+        setTimeout(() => {
+          if (globalIsActive && !globalAISpeaking && recognitionRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (e) {
+              console.log('[STT] ⚠️ Restart failed in onend');
+            }
+          }
+        }, 100);
+      } else if (!globalIsActive) {
         setConversationPhase('idle');
       }
     };
@@ -219,9 +225,8 @@ export const useWebSpeechSTT = ({
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      // GUARD: Ignore results while AI is speaking
-      if (aiSpeakingRef.current) {
-        return;
+      if (globalAISpeaking) {
+        return; // Silent ignore while AI speaks
       }
 
       let interim = '';
@@ -254,10 +259,10 @@ export const useWebSpeechSTT = ({
         setInterimTranscript('');
       }
 
-      // Silence detection for auto-send
+      // Silence detection
       clearSilenceTimer();
       const currentText = (finalRef.current + ' ' + interimRef.current).trim();
-      if (currentText.length >= MIN_MESSAGE_LENGTH && !aiSpeakingRef.current) {
+      if (currentText.length >= MIN_MESSAGE_LENGTH && !globalAISpeaking) {
         silenceTimerRef.current = setTimeout(() => {
           autoSendMessage();
         }, silenceTimeout);
@@ -268,13 +273,12 @@ export const useWebSpeechSTT = ({
 
     return () => {
       clearSilenceTimer();
-      isActiveRef.current = false;
       isRecognitionRunningRef.current = false;
       try { recognition.abort(); } catch (e) {}
     };
-  }, [SpeechRecognitionAPI, lang, silenceTimeout, clearSilenceTimer, autoSendMessage, startRecognition]);
+  }, [lang, silenceTimeout, clearSilenceTimer, autoSendMessage]);
 
-  // ========== PUBLIC API ==========
+  // PUBLIC API
   
   const start = useCallback(() => {
     if (!isSupported) {
@@ -283,8 +287,8 @@ export const useWebSpeechSTT = ({
     }
 
     console.log('[STT] ▶️ START (user initiated)');
-    isActiveRef.current = true;
-    aiSpeakingRef.current = false;
+    globalIsActive = true;
+    globalAISpeaking = false;
     resetTranscripts();
     setError(null);
     setConversationPhase('listening');
@@ -298,17 +302,16 @@ export const useWebSpeechSTT = ({
     // Send pending text
     const text = (finalRef.current + ' ' + interimRef.current).trim();
     if (text && text.length >= MIN_MESSAGE_LENGTH && onAutoSendRef.current) {
-      // Check duplicate before sending
       const now = Date.now();
-      if (text !== lastSentTextRef.current || (now - lastSentTimeRef.current) >= DUPLICATE_WINDOW_MS) {
-        lastSentTextRef.current = text;
-        lastSentTimeRef.current = now;
+      if (text !== globalLastSentText || (now - globalLastSentTime) >= DUPLICATE_WINDOW_MS) {
+        globalLastSentText = text;
+        globalLastSentTime = now;
         onAutoSendRef.current(text);
       }
     }
     
-    isActiveRef.current = false;
-    aiSpeakingRef.current = false;
+    globalIsActive = false;
+    globalAISpeaking = false;
     isRecognitionRunningRef.current = false;
     
     try { recognitionRef.current?.stop(); } catch (e) {}
@@ -319,39 +322,38 @@ export const useWebSpeechSTT = ({
   }, [clearSilenceTimer, resetTranscripts]);
 
   /**
-   * TURN CONTROL
-   * 
-   * When AI starts speaking: pause STT, set phase
-   * When AI finishes speaking: ALWAYS restart STT if active
+   * TURN CONTROL - Uses global state to survive remounts
    */
   const setAISpeaking = useCallback((speaking: boolean) => {
-    console.log('[STT] 🔊 setAISpeaking:', speaking, '| active:', isActiveRef.current, '| running:', isRecognitionRunningRef.current);
+    console.log('[STT] 🔊 setAISpeaking:', speaking, '| globalActive:', globalIsActive);
     
     if (speaking) {
-      // === AI STARTED SPEAKING ===
-      aiSpeakingRef.current = true;
+      // AI STARTED SPEAKING
+      globalAISpeaking = true;
       clearSilenceTimer();
       setConversationPhase('ai_speaking');
       resetTranscripts();
       
-      // Auto-activate conversation (text message triggered AI response)
-      if (!isActiveRef.current) {
-        console.log('[STT] 🚀 Auto-activating conversation for voice response');
-        isActiveRef.current = true;
+      // Auto-activate conversation
+      if (!globalIsActive) {
+        console.log('[STT] 🚀 Auto-activating conversation');
+        globalIsActive = true;
       }
       
     } else {
-      // === AI FINISHED SPEAKING ===
-      aiSpeakingRef.current = false;
+      // AI FINISHED SPEAKING
+      const wasActive = globalIsActive;
+      globalAISpeaking = false;
       
-      // ALWAYS restart if conversation is active
-      if (isActiveRef.current) {
-        console.log('[STT] ▶️ AI finished → Starting user turn NOW');
+      console.log('[STT] ▶️ AI finished | wasActive:', wasActive);
+      
+      if (wasActive) {
+        console.log('[STT] ▶️ Starting user turn NOW');
         setConversationPhase('listening');
         
-        // Force restart recognition
+        // Force start recognition
         setTimeout(() => {
-          if (!aiSpeakingRef.current && isActiveRef.current) {
+          if (!globalAISpeaking && globalIsActive) {
             startRecognition();
           }
         }, 50);

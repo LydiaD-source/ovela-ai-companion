@@ -20,14 +20,29 @@ export interface IsabellaResponse {
   emotion?: string;
 }
 
+export interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 class IsabellaAPI {
   /**
    * Send a message to Isabella and get a response
+   * @param message - Current user message
+   * @param persona - Isabella's persona
+   * @param conversationHistory - Previous messages for context (last 10 kept for efficiency)
    */
-  async sendMessage(message: string, persona?: string): Promise<IsabellaResponse> {
+  async sendMessage(
+    message: string, 
+    persona?: string,
+    conversationHistory?: ConversationMessage[]
+  ): Promise<IsabellaResponse> {
     try {
       const { data: userInfo } = await supabase.auth.getUser();
       const uid = userInfo?.user?.id ?? 'ovela-guest';
+      
+      // Keep only last 10 messages for efficiency
+      const recentHistory = conversationHistory?.slice(-10) || [];
       
       const { data, error } = await supabase.functions.invoke('ovela-chat', {
         body: {
@@ -36,7 +51,8 @@ class IsabellaAPI {
           user_id: uid,
           persona: persona || 'isabella-navia',
           source: 'ovela',
-          context: 'ovela-interactive'
+          context: 'ovela-interactive',
+          conversation_history: recentHistory
         }
       });
 
@@ -61,33 +77,21 @@ class IsabellaAPI {
   }
 
   /**
-   * Get Isabella's persona information (placeholder - not implemented yet)
+   * Get Isabella's persona information
    */
   async getPersonaInfo(persona: string = 'isabella-navia') {
-    try {
-      // For now, return basic persona info
-      return {
-        name: 'Isabella Navia',
-        persona: persona,
-        description: 'AI model and brand ambassador for Ovela Interactive'
-      };
-    } catch (error) {
-      console.error('Error fetching persona info:', error);
-      throw error;
-    }
+    return {
+      name: 'Isabella Navia',
+      persona: persona,
+      description: 'AI model and brand ambassador for Ovela Interactive'
+    };
   }
 
   /**
-   * Initialize a guest session (placeholder - not needed with Supabase)
+   * Initialize a guest session
    */
   async initGuestSession(source: string = 'ovela') {
-    try {
-      // For now, return success status
-      return { success: true, source };
-    } catch (error) {
-      console.error('Error initializing guest session:', error);
-      throw error;
-    }
+    return { success: true, source };
   }
 }
 

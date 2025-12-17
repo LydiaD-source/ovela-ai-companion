@@ -272,8 +272,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           else if (!message) assistantText = "What would you like our team to help you with?";
         }
       } else {
-        // Normal conversation
-        const isa = await isabellaAPI.sendMessage(text, defaultPersona);
+        // Normal conversation - pass full history for context
+        const history = messages.map(m => ({
+          role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
+          content: m.text
+        }));
+        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
         assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       }
 

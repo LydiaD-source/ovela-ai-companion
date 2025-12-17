@@ -146,21 +146,11 @@ serve(async (req) => {
       // START - Send SDP answer after local description set
       // ============================================
       case 'start': {
-        if (!data) {
-          console.error(`[${requestId}] start: Missing data object`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'Missing data object' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        const { stream_id, session_id, answer } = data;
+        const { stream_id, session_id, answer } = data || {};
 
         if (!stream_id || !session_id || !answer) {
-          console.error(`[${requestId}] start: Missing required fields`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'stream_id, session_id, and answer are required' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          console.error(`[${requestId}] start: Missing required fields`, { stream_id, session_id, hasAnswer: !!answer });
+          throw new Error('stream_id, session_id, and answer are required');
         }
 
         console.log(`[${requestId}] start (SDP):`, {
@@ -212,21 +202,11 @@ serve(async (req) => {
       // SEND ICE CANDIDATE - Forward ALL including null
       // ============================================
       case 'sendIceCandidate': {
-        if (!data) {
-          console.error(`[${requestId}] sendIceCandidate: Missing data object`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'Missing data object' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        const { stream_id, session_id, candidate, sdpMid, sdpMLineIndex } = data;
+        const { stream_id, session_id, candidate, sdpMid, sdpMLineIndex } = data || {};
 
         if (!stream_id || !session_id) {
-          console.error(`[${requestId}] sendIceCandidate: Missing required fields`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'stream_id and session_id are required' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          console.error(`[${requestId}] sendIceCandidate: Missing required fields`, { stream_id, session_id });
+          throw new Error('stream_id and session_id are required');
         }
 
         // candidate can be null (signals ICE gathering complete)
@@ -281,21 +261,11 @@ serve(async (req) => {
       // This is the main animation trigger
       // ============================================
       case 'startAnimation': {
-        if (!data) {
-          console.error(`[${requestId}] startAnimation: Missing data object`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'Missing data object' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        const { stream_id, session_id, text, voice_id } = data;
+        const { stream_id, session_id, text, voice_id } = data || {};
 
         if (!stream_id || !session_id || !text) {
-          console.error(`[${requestId}] startAnimation: Missing required fields`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'stream_id, session_id, and text are required' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          console.error(`[${requestId}] startAnimation: Missing required fields`, { stream_id, session_id, hasText: !!text });
+          throw new Error('stream_id, session_id, and text are required');
         }
 
         const selectedVoice = voice_id || 'EXAVITQu4vr4xnSDxMaL'; // Default: Sarah
@@ -476,21 +446,11 @@ serve(async (req) => {
       // DELETE STREAM - Cleanup when user leaves
       // ============================================
       case 'deleteStream': {
-        if (!data) {
-          console.error(`[${requestId}] deleteStream: Missing data object`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'Missing data object' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        const { stream_id, session_id } = data;
+        const { stream_id, session_id } = data || {};
 
         if (!stream_id) {
           console.error(`[${requestId}] deleteStream: Missing stream_id`);
-          return new Response(JSON.stringify({ success: false, data: null, stream_id: null, error: 'stream_id is required' }), {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
+          throw new Error('stream_id is required');
         }
 
         console.log(`[${requestId}] deleteStream:`, stream_id);

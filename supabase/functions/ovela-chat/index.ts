@@ -247,6 +247,8 @@ serve(async (req) => {
       incomingMessage: incomingMessage ? "[RECEIVED]" : "[empty]",
       persona,
       clientId,
+      language,
+      responseLang,
       usedGuide: !!effectiveGuide,
       guideSource,
       guidePreview: effectiveGuide ? effectiveGuide.substring(0, 100) + '...' : '[none]',

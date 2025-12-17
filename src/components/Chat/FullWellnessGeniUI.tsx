@@ -68,6 +68,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
 
+  // Ref to hold latest sendMessage to avoid stale closures
+  const sendMessageRef = useRef<(text: string) => void>(() => {});
+
   // Web Speech STT with auto-send
   const {
     isListening,
@@ -81,7 +84,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     error: speechError
   } = useWebSpeechSTT({
     onAutoSend: useCallback((text: string) => {
-      sendMessage(text);
+      sendMessageRef.current(text);
     }, []),
     lang: selectedLanguage,
     silenceTimeout: 600
@@ -336,7 +339,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [leadDraft, isCollectingLead, leadSubmitted, defaultPersona, onAIResponse, isMuted, extractContactDetails, submitLeadToCRM, stopListening]);
+  }, [leadDraft, isCollectingLead, leadSubmitted, defaultPersona, onAIResponse, isMuted, extractContactDetails, submitLeadToCRM, stopListening, selectedLanguage, messages]);
+
+  // Keep sendMessageRef updated with latest sendMessage
+  useEffect(() => {
+    sendMessageRef.current = sendMessage;
+  }, [sendMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

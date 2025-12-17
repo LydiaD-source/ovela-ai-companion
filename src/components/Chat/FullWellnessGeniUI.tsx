@@ -62,6 +62,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -514,6 +515,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             onTranscript={(text) => sendMessage(text)}
             disabled={isLoading}
             onProcessingChange={setIsVoiceProcessing}
+            onRecordingChange={setIsRecording}
           />
         </div>
       </div>
@@ -542,8 +544,20 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         ))}
         
-        {/* Voice processing indicator */}
-        {isVoiceProcessing && (
+        {/* Voice recording indicator - shows while user is speaking */}
+        {isRecording && (
+          <div className="flex justify-start">
+            <div className="bg-red-500/20 rounded-xl p-3 mr-4 border border-red-500/30">
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-sm text-red-400">{t('chat.listening') || 'Listening...'}</span>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Voice processing indicator - shows while transcribing */}
+        {isVoiceProcessing && !isRecording && (
           <div className="flex justify-start">
             <div className="bg-champagne-gold/20 rounded-xl p-3 mr-4 border border-champagne-gold/30">
               <div className="flex items-center gap-2">
@@ -574,13 +588,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder={isVoiceProcessing ? (t('chat.transcribing') || 'Transcribing...') : t('chat.placeholder')}
+            placeholder={isRecording ? (t('chat.listening') || 'Listening...') : isVoiceProcessing ? (t('chat.transcribing') || 'Transcribing...') : t('chat.placeholder')}
             className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
-            disabled={isLoading || isVoiceProcessing}
+            disabled={isLoading || isVoiceProcessing || isRecording}
           />
           <Button 
             type="submit" 
-            disabled={isLoading || isVoiceProcessing || !inputText.trim()}
+            disabled={isLoading || isVoiceProcessing || isRecording || !inputText.trim()}
             className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
           >
             <Send className="w-4 h-4" />

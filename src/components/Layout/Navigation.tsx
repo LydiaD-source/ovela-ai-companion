@@ -13,7 +13,7 @@ const Navigation = () => {
     { name: t('nav.home'), path: '/' },
     { name: t('nav.about'), path: '/about' },
     { name: t('nav.pricing'), path: '/pricing' },
-    { name: 'Portfolio', path: '/projects' },
+    { name: t('nav.projects'), path: '/projects' },
     { name: t('nav.partner'), path: '/partner' },
     { name: t('nav.contact'), path: '/contact' },
   ];

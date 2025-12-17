@@ -129,7 +129,7 @@ const Projects = () => {
                   />
                 ) : project.id === 3 ? (
                   <video
-                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1765466491/202512091646_clvppn.mp4"
+                    src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1765894467/superiorapartment.mp4"
                     className="w-full h-full object-cover cursor-pointer"
                     autoPlay
                     loop

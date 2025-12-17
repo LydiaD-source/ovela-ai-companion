@@ -48,9 +48,8 @@ const Pricing = () => {
       title: t('pricing.packages.ambassadorVideo.title'),
       description: t('pricing.packages.ambassadorVideo.description'),
       price: t('pricing.packages.ambassadorVideo.price'),
-      thumbnail: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1765894467/superiorapartment.mp4',
-      icon: Video,
-      isVideo: true
+      thumbnail: '/images/pricing-ambassador-video.jpg',
+      icon: Video
     }
   ];
 
@@ -119,30 +118,15 @@ const Pricing = () => {
               >
                 {/* Thumbnail */}
                 <div className="mb-6 rounded-xl overflow-hidden" style={{ height: '120px', width: '120px', margin: '0 auto' }}>
-                  {(pkg as any).isVideo ? (
-                    <video
-                      src={pkg.thumbnail}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover"
-                      style={{
-                        filter: 'brightness(0.9) contrast(1.1)',
-                        transition: 'transform 0.3s ease'
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={pkg.thumbnail}
-                      alt={pkg.title}
-                      className="w-full h-full object-cover"
-                      style={{
-                        filter: 'brightness(0.9) contrast(1.1)',
-                        transition: 'transform 0.3s ease'
-                      }}
-                    />
-                  )}
+                  <img
+                    src={pkg.thumbnail}
+                    alt={pkg.title}
+                    className="w-full h-full object-cover"
+                    style={{
+                      filter: 'brightness(0.9) contrast(1.1)',
+                      transition: 'transform 0.3s ease'
+                    }}
+                  />
                 </div>
 
                 {/* Title */}

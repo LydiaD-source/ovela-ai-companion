@@ -7,12 +7,14 @@ interface VoiceInputButtonProps {
   onTranscript: (text: string) => void;
   disabled?: boolean;
   onProcessingChange?: (isProcessing: boolean) => void;
+  onRecordingChange?: (isRecording: boolean) => void;
 }
 
 export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({ 
   onTranscript,
   disabled,
-  onProcessingChange
+  onProcessingChange,
+  onRecordingChange
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -134,6 +136,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
       mediaRecorder.start();
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
+      onRecordingChange?.(true);
       console.log('🎙️ Recording started');
 
     } catch (err) {
@@ -151,6 +154,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
       console.log('🛑 Stopping recording...');
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      onRecordingChange?.(false);
     }
   };
 

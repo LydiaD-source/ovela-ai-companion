@@ -55,6 +55,7 @@
     "send": "Enviar",
     "connecting": "Conectando...",
     "thinking": "Isabella está pensando...",
-    "transcribing": "Transcrevendo sua voz..."
+    "transcribing": "Transcrevendo sua voz...",
+    "listening": "Ouvindo..."
   }
 }

@@ -166,21 +166,21 @@ export const useWebSpeechSTT = ({
       console.log('[STT] 🛑 Recognition ENDED | session:', sessionActiveRef.current, '| aiSpeaking:', aiSpeakingRef.current);
       setIsListening(false);
       
-      // If session not active, go idle
       if (!sessionActiveRef.current) {
         setConversationPhase('idle');
         return;
       }
       
-      // ========== HARD GUARD ==========
-      // NEVER restart while AI is speaking - this causes dead STT state
+      // ========== ALEXA APPROACH ==========
+      // NEVER restart while AI is speaking - wait for setAISpeaking(false)
       if (aiSpeakingRef.current) {
-        console.log('[STT] ⏸️ AI speaking — NOT restarting (will restart when AI finishes)');
+        console.log('[STT] ⏸️ AI speaking — waiting for AI to finish before restart');
         return;
       }
       
-      // Only restart if session active AND AI not speaking
-      console.log('[STT] 🔄 Auto-restarting (AI not speaking)...');
+      // AI is NOT speaking - safe to restart for continued user input
+      // This handles the case where recognition naturally times out between user utterances
+      console.log('[STT] 🔄 Restarting (AI not speaking, user turn active)');
       setTimeout(() => {
         if (sessionActiveRef.current && !aiSpeakingRef.current && recognitionRef.current) {
           try {
@@ -189,7 +189,7 @@ export const useWebSpeechSTT = ({
             // Already started is fine
           }
         }
-      }, 50);
+      }, 100);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -343,7 +343,7 @@ export const useWebSpeechSTT = ({
       clearSilenceTimer();
       setConversationPhase('ai_speaking');
       
-      // Clear transcripts - any partial user input is discarded
+      // Clear any partial user input
       interimRef.current = '';
       finalRef.current = '';
       setInterimTranscript('');
@@ -351,39 +351,45 @@ export const useWebSpeechSTT = ({
       hasSpokenRef.current = false;
       hasSentRef.current = false;
       
-      // NOTE: We do NOT stop recognition!
-      // It keeps running, we just ignore results
+      // Don't stop recognition - let it run, we just ignore results
+      // (It will likely stop on its own due to silence/audio routing)
       
     } else {
       // === AI FINISHED SPEAKING ===
+      // This is THE ONLY place we restart recognition (Alexa approach)
       aiSpeakingRef.current = false;
       
-      // Immediately ready for user input
-      if (sessionActiveRef.current) {
-        console.log('[STT] ▶️ AI finished — explicitly restarting recognition');
-        setConversationPhase('listening');
+      if (!sessionActiveRef.current) return;
+      
+      console.log('[STT] ▶️ AI finished — user turn begins');
+      setConversationPhase('listening');
+      
+      // Small delay to let audio system settle after TTS
+      setTimeout(() => {
+        // Double-check state hasn't changed
+        if (!sessionActiveRef.current || aiSpeakingRef.current) return;
         
-        // EXPLICIT RESTART - recognition likely ended during AI speech
-        // This is the key fix: always restart when AI finishes
+        console.log('[STT] 🎙️ Starting recognition for user turn');
+        
         if (recognitionRef.current) {
           try {
             recognitionRef.current.start();
-            console.log('[STT] 🎙️ Recognition restarted successfully');
+            console.log('[STT] ✅ Recognition started');
           } catch (e: any) {
             if (e.message?.includes('already started')) {
               console.log('[STT] ✅ Recognition was already running');
             } else {
-              // Retry once after small delay
-              console.log('[STT] ⚠️ Start failed, retrying...');
+              console.log('[STT] ⚠️ Start failed:', e.message);
+              // One retry
               setTimeout(() => {
                 if (sessionActiveRef.current && !aiSpeakingRef.current) {
                   try { recognitionRef.current?.start(); } catch (e2) {}
                 }
-              }, 100);
+              }, 200);
             }
           }
         }
-      }
+      }, 150); // 150ms delay for audio system to settle
     }
   }, [clearSilenceTimer]);
 

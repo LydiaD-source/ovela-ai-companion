@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe } from 'lucide-react';
+import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
@@ -8,12 +8,6 @@ import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
 import { crmAPI } from '@/lib/crmAPI';
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface Message {
   id: string;
@@ -69,8 +63,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
 
   // Web Speech STT with auto-send
   const {
@@ -108,6 +104,20 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   useEffect(() => {
     onReady?.();
   }, [onReady]);
+
+  // Close language menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (languageMenuRef.current && !languageMenuRef.current.contains(event.target as Node)) {
+        setShowLanguageMenu(false);
+      }
+    };
+    
+    if (showLanguageMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showLanguageMenu]);
 
   // Validation helpers
   const isValidEmail = (email: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
@@ -369,46 +379,56 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <RotateCcw className="w-4 h-4 text-soft-white" />
           </button>
           
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <button 
-                className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors flex items-center gap-1" 
-                title="Chat Language"
-                type="button"
-              >
-                <Globe className="w-4 h-4 text-soft-white" />
-                <span className="text-xs text-soft-white/70">
-                  {LANGUAGES.find(l => l.code === selectedLanguage)?.flag}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              side="bottom"
-              sideOffset={8}
-              className="z-[9999] bg-deep-navy/95 backdrop-blur-sm border border-soft-white/20 min-w-[160px] shadow-xl"
+          {/* Custom Language Selector */}
+          <div className="relative" ref={languageMenuRef}>
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowLanguageMenu(!showLanguageMenu);
+              }}
+              className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors flex items-center gap-1" 
+              title="Chat Language"
+              type="button"
             >
-              {LANGUAGES.map((lang) => (
-                <DropdownMenuItem
-                  key={lang.code}
-                  onSelect={() => {
-                    setSelectedLanguage(lang.code);
-                    toast({
-                      title: "Language Changed",
-                      description: `Chat language set to ${lang.label}`,
-                    });
-                  }}
-                  className={`flex items-center gap-2 cursor-pointer text-soft-white hover:bg-soft-white/20 focus:bg-soft-white/20 ${
-                    selectedLanguage === lang.code ? 'bg-soft-white/30 font-medium' : ''
-                  }`}
-                >
-                  <span className="text-lg">{lang.flag}</span>
-                  <span>{lang.label}</span>
-                  {selectedLanguage === lang.code && <span className="ml-auto text-champagne-gold">✓</span>}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <Globe className="w-4 h-4 text-soft-white" />
+              <span className="text-xs text-soft-white/70">
+                {LANGUAGES.find(l => l.code === selectedLanguage)?.flag}
+              </span>
+            </button>
+            
+            {/* Language Dropdown Menu */}
+            {showLanguageMenu && (
+              <div 
+                className="absolute right-0 top-full mt-2 z-[9999] bg-deep-navy/95 backdrop-blur-sm border border-soft-white/20 rounded-lg shadow-xl min-w-[160px] py-1"
+                style={{ position: 'absolute' }}
+              >
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedLanguage(lang.code);
+                      setShowLanguageMenu(false);
+                      toast({
+                        title: "Language Changed",
+                        description: `Chat language set to ${lang.label}`,
+                      });
+                    }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 text-left text-soft-white hover:bg-soft-white/20 transition-colors ${
+                      selectedLanguage === lang.code ? 'bg-soft-white/30 font-medium' : ''
+                    }`}
+                    type="button"
+                  >
+                    <span className="text-lg">{lang.flag}</span>
+                    <span className="text-sm">{lang.label}</span>
+                    {selectedLanguage === lang.code && <Check className="w-4 h-4 ml-auto text-champagne-gold" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           
           <button onClick={() => setIsMuted(!isMuted)} className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title={isMuted ? "Unmute" : "Mute"}>
             {isMuted ? <VolumeX className="w-4 h-4 text-soft-white" /> : <Volume2 className="w-4 h-4 text-soft-white" />}

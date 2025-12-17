@@ -369,21 +369,42 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             <RotateCcw className="w-4 h-4 text-soft-white" />
           </button>
           
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <button className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title="Language">
+              <button 
+                className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors flex items-center gap-1" 
+                title="Chat Language"
+                type="button"
+              >
                 <Globe className="w-4 h-4 text-soft-white" />
+                <span className="text-xs text-soft-white/70">
+                  {LANGUAGES.find(l => l.code === selectedLanguage)?.flag}
+                </span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-deep-navy border-soft-white/20 min-w-[140px]">
+            <DropdownMenuContent 
+              align="end" 
+              side="bottom"
+              sideOffset={8}
+              className="z-[9999] bg-deep-navy/95 backdrop-blur-sm border border-soft-white/20 min-w-[160px] shadow-xl"
+            >
               {LANGUAGES.map((lang) => (
                 <DropdownMenuItem
                   key={lang.code}
-                  onClick={() => setSelectedLanguage(lang.code)}
-                  className={`flex items-center gap-2 cursor-pointer ${selectedLanguage === lang.code ? 'bg-soft-white/20' : ''}`}
+                  onSelect={() => {
+                    setSelectedLanguage(lang.code);
+                    toast({
+                      title: "Language Changed",
+                      description: `Chat language set to ${lang.label}`,
+                    });
+                  }}
+                  className={`flex items-center gap-2 cursor-pointer text-soft-white hover:bg-soft-white/20 focus:bg-soft-white/20 ${
+                    selectedLanguage === lang.code ? 'bg-soft-white/30 font-medium' : ''
+                  }`}
                 >
-                  <span>{lang.flag}</span>
-                  <span className="text-soft-white">{lang.label}</span>
+                  <span className="text-lg">{lang.flag}</span>
+                  <span>{lang.label}</span>
+                  {selectedLanguage === lang.code && <span className="ml-auto text-champagne-gold">✓</span>}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

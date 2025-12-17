@@ -224,7 +224,7 @@ const Home = () => {
               {/* Content Wrapper - Fades out when chat is active */}
               <div className={`hero-content-fade ${isChatActive ? 'hidden' : ''}`}>
                 {/* Headline - Luxury Serif */}
-                <h1 className="hero-headline">
+                <h1 className="hero-headline animate-fade-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
                   {t('hero.title')}{' '}
                   <span className="hero-gradient-text">
                     {t('hero.titleHighlight')}
@@ -232,7 +232,7 @@ const Home = () => {
                 </h1>
                 
                 {/* Subheadline - Elegant Sans-Serif */}
-                <p className="hero-subheadline">
+                <p className="hero-subheadline animate-fade-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
                   <span className="hero-highlight-name">
                     {t('hero.subtitle')}
                   </span>
@@ -240,7 +240,7 @@ const Home = () => {
                 </p>
                 
                 {/* CTA Section */}
-                <div className="hero-cta-section">
+                <div className="hero-cta-section animate-fade-up" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
                   {/* Primary CTA Button */}
                   <button 
                     onClick={activateChat}

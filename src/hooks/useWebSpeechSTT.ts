@@ -335,11 +335,14 @@ export const useWebSpeechSTT = ({
    * - No restart needed - recognition is still running
    */
   const setAISpeaking = useCallback((speaking: boolean) => {
-    console.log('[STT] 🔊 AI Speaking:', speaking);
+    console.log('[STT] 🔊 AI Speaking:', speaking, '| session:', sessionActiveRef.current);
+    
+    // Update ref FIRST before any other logic
+    const wasAISpeaking = aiSpeakingRef.current;
+    aiSpeakingRef.current = speaking;
     
     if (speaking) {
       // === AI STARTED SPEAKING ===
-      aiSpeakingRef.current = true;
       clearSilenceTimer();
       setConversationPhase('ai_speaking');
       
@@ -351,45 +354,47 @@ export const useWebSpeechSTT = ({
       hasSpokenRef.current = false;
       hasSentRef.current = false;
       
-      // Don't stop recognition - let it run, we just ignore results
-      // (It will likely stop on its own due to silence/audio routing)
+      // Recognition may or may not stop on its own - we don't force it
+      console.log('[STT] 🔇 Now ignoring user input while AI speaks');
       
-    } else {
-      // === AI FINISHED SPEAKING ===
-      // This is THE ONLY place we restart recognition (Alexa approach)
-      aiSpeakingRef.current = false;
+    } else if (wasAISpeaking) {
+      // === AI FINISHED SPEAKING (transition from true → false) ===
+      console.log('[STT] ▶️ AI finished speaking');
       
-      if (!sessionActiveRef.current) return;
+      if (!sessionActiveRef.current) {
+        console.log('[STT] Session not active, not restarting');
+        return;
+      }
       
-      console.log('[STT] ▶️ AI finished — user turn begins');
       setConversationPhase('listening');
       
-      // Small delay to let audio system settle after TTS
-      setTimeout(() => {
-        // Double-check state hasn't changed
-        if (!sessionActiveRef.current || aiSpeakingRef.current) return;
-        
-        console.log('[STT] 🎙️ Starting recognition for user turn');
-        
-        if (recognitionRef.current) {
-          try {
-            recognitionRef.current.start();
-            console.log('[STT] ✅ Recognition started');
-          } catch (e: any) {
-            if (e.message?.includes('already started')) {
-              console.log('[STT] ✅ Recognition was already running');
-            } else {
-              console.log('[STT] ⚠️ Start failed:', e.message);
-              // One retry
-              setTimeout(() => {
-                if (sessionActiveRef.current && !aiSpeakingRef.current) {
-                  try { recognitionRef.current?.start(); } catch (e2) {}
+      // IMMEDIATE restart - this is the critical fix
+      // The 150ms delay was causing issues, try immediate first
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          console.log('[STT] ✅ Recognition restarted immediately');
+        } catch (e: any) {
+          if (e.message?.includes('already started')) {
+            console.log('[STT] ✅ Recognition was already running');
+          } else {
+            console.log('[STT] ⚠️ Immediate start failed, retrying in 100ms:', e.message);
+            // Retry once after short delay
+            setTimeout(() => {
+              if (sessionActiveRef.current && !aiSpeakingRef.current && recognitionRef.current) {
+                try {
+                  recognitionRef.current.start();
+                  console.log('[STT] ✅ Recognition restarted on retry');
+                } catch (e2) {
+                  console.log('[STT] ❌ Retry also failed');
                 }
-              }, 200);
-            }
+              }
+            }, 100);
           }
         }
-      }, 150); // 150ms delay for audio system to settle
+      } else {
+        console.log('[STT] ⚠️ No recognition instance available');
+      }
     }
   }, [clearSilenceTimer]);
 

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Volume2, VolumeX, Send, Loader2, RotateCcw } from 'lucide-react';
+import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { VoiceInputButton } from './VoiceInputButton';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
 import { crmAPI } from '@/lib/crmAPI';
-
+import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 interface Message {
   id: string;
   text: string;
@@ -61,11 +60,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
-  const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Real-time Web Speech API hook
+  const {
+    isListening,
+    isSupported: isWebSpeechSupported,
+    interimTranscript,
+    finalTranscript,
+    start: startListening,
+    stop: stopListening,
+    error: speechError
+  } = useWebSpeechSTT({
+    onFinalTranscript: (text) => {
+      console.log('[WebSpeechSTT] 📤 Final transcript received, sending message:', text);
+      sendMessage(text);
+    }
+  });
 
   useEffect(() => {
     const chatContainer = messagesEndRef.current?.parentElement;
@@ -511,12 +524,36 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             )}
           </button>
           
-          <VoiceInputButton 
-            onTranscript={(text) => sendMessage(text)}
+          <button
+            onClick={() => {
+              if (!isWebSpeechSupported) {
+                toast({
+                  title: "Voice Input Not Supported",
+                  description: "Live voice input works best in Chrome or Edge.",
+                  variant: "destructive"
+                });
+                return;
+              }
+              if (isListening) {
+                stopListening();
+              } else {
+                startListening();
+              }
+            }}
             disabled={isLoading}
-            onProcessingChange={setIsVoiceProcessing}
-            onRecordingChange={setIsRecording}
-          />
+            className={`p-2 rounded-full transition-colors ${
+              isListening 
+                ? 'bg-red-500/80 hover:bg-red-500 animate-pulse' 
+                : 'bg-soft-white/10 hover:bg-soft-white/20'
+            }`}
+            title={isListening ? 'Stop listening' : 'Start voice input'}
+          >
+            {isListening ? (
+              <MicOff className="w-4 h-4 text-white" />
+            ) : (
+              <Mic className="w-4 h-4 text-soft-white" />
+            )}
+          </button>
         </div>
       </div>
 
@@ -544,25 +581,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           </div>
         ))}
         
-        {/* Voice recording indicator - shows while user is speaking */}
-        {isRecording && (
+        {/* Real-time voice input indicator */}
+        {isListening && (
           <div className="flex justify-start">
             <div className="bg-red-500/20 rounded-xl p-3 mr-4 border border-red-500/30">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse" />
-                <span className="text-sm text-red-400">{t('chat.listening') || 'Listening...'}</span>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Voice processing indicator - shows while transcribing */}
-        {isVoiceProcessing && !isRecording && (
-          <div className="flex justify-start">
-            <div className="bg-champagne-gold/20 rounded-xl p-3 mr-4 border border-champagne-gold/30">
-              <div className="flex items-center gap-2">
-                <div className="h-4 w-4 border-2 border-champagne-gold border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm text-champagne-gold">{t('chat.transcribing') || 'Transcribing...'}</span>
+                <span className="text-sm text-red-400">
+                  {interimTranscript || finalTranscript || t('chat.listening') || 'Listening...'}
+                </span>
               </div>
             </div>
           </div>
@@ -586,15 +613,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={isRecording ? (t('chat.listening') || 'Listening...') : isVoiceProcessing ? (t('chat.transcribing') || 'Transcribing...') : t('chat.placeholder')}
+            value={isListening ? (finalTranscript + ' ' + interimTranscript).trim() : inputText}
+            onChange={(e) => !isListening && setInputText(e.target.value)}
+            placeholder={isListening ? (t('chat.listening') || 'Listening...') : t('chat.placeholder')}
             className="flex-1 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold"
-            disabled={isLoading || isVoiceProcessing || isRecording}
+            disabled={isLoading || isListening}
           />
           <Button 
             type="submit" 
-            disabled={isLoading || isVoiceProcessing || isRecording || !inputText.trim()}
+            disabled={isLoading || isListening || !inputText.trim()}
             className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal"
           >
             <Send className="w-4 h-4" />

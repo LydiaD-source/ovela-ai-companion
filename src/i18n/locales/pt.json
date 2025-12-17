@@ -20,6 +20,17 @@
     "title": "Redefinindo a Modelagem com IA",
     "description": "Isabella é mais do que uma modelo — ela é uma embaixadora de IA interativa que se adapta à sua marca, engaja seu público em tempo real e escala em campanhas infinitas sem limitações."
   },
+  "aboutPage": {
+    "heroTitle": "Onde a Modelagem Interativa Começou",
+    "heroDescription": "A Ovela está redefinindo a modelagem através da IA — mas a jornada começou com uma visão de conectar pessoas de forma mais humana.",
+    "birthTitle": "O Nascimento da Ovela",
+    "birthDescription": "A Ovela foi fundada na crença de que modelos deveriam fazer mais do que representar — deveriam interagir. Ao combinar a estética da moda de luxo com IA avançada, a Ovela criou Isabella, a primeira modelo embaixadora interativa do mundo. Nosso objetivo sempre foi humanizar a tecnologia e capacitar marcas a contar suas histórias de uma forma que pareça viva, envolvente e inesquecível.",
+    "wellnessGeniTitle": "De WellnessGeni para Ovela",
+    "wellnessGeniDescription": "Antes da Ovela, existia o WellnessGeni — o aplicativo interativo onde Isabella apareceu pela primeira vez como coach de bem-estar, motivadora e companheira. Ela encorajava as pessoas a treinar, manter-se positivas e se sentir apoiadas em suas vidas diárias. Foi aqui que vimos o verdadeiro potencial de uma modelo de IA que poderia se conectar profundamente com as pessoas, não apenas representar produtos.",
+    "wellnessGeniQuote": "\"Isabella começou como uma guia para bem-estar e encorajamento — e se tornou a primeira modelo embaixadora de IA interativa do mundo.\"",
+    "futureTitle": "Moldando o Amanhã",
+    "futureDescription": "Hoje, a Ovela carrega o espírito do WellnessGeni em cada projeto. Do companheirismo pessoal à narrativa de marca, Isabella lidera uma nova era de modelagem e marketing interativo. Com a Ovela, o futuro não é apenas sobre assistir — é sobre se envolver."
+  },
   "howItWorks": {
     "title": "Como Funciona",
     "step1": {
@@ -39,10 +50,199 @@
       "description": "Construa um modelo de IA personalizado para a identidade da sua marca"
     }
   },
+  "showcase": {
+    "fashionForward": {
+      "title": "Moda de Vanguarda",
+      "description": "Campanhas editoriais de alto nível que capturam atenção e impulsionam o engajamento"
+    },
+    "interactiveMarketing": {
+      "title": "Marketing Interativo",
+      "description": "Isabella transforma campanhas tradicionais em conversas. Marcas de luxo agora podem engajar audiências diretamente através de experiências interativas."
+    },
+    "multiBrand": {
+      "title": "Excelência Multi-Marca",
+      "description": "Representação perfeita em diversas indústrias e públicos"
+    },
+    "seePortfolio": "Ver Portfólio",
+    "seeFullPortfolio": "Ver Portfólio Completo"
+  },
+  "lookbook": {
+    "captions": {
+      "inMotion": "Isabella em Movimento",
+      "editorial": "Excelência Editorial",
+      "runway": "Pronta para Passarela",
+      "brandPartnerships": "Parcerias de Marca",
+      "fashionForward": "Moda de Vanguarda",
+      "timelessElegance": "Elegância Atemporal",
+      "modernIcon": "Ícone Moderno"
+    }
+  },
   "cta": {
     "title": "Trabalhe Com Isabella",
     "description": "Seja parceiro da primeira embaixadora modelo IA do mundo para sua marca, campanha ou visão.",
     "button": "Converse Com Isabella"
+  },
+  "pricing": {
+    "title": "Trabalhe Com Isabella — O Futuro da Modelagem Interativa",
+    "subtitle": "Seja parceiro da primeira embaixadora modelo IA do mundo para campanhas de luxo que cativam e inspiram.",
+    "packages": {
+      "productPromotion": {
+        "title": "Promoção de Produtos",
+        "description": "Isabella se torna o rosto dos seus produtos de luxo através de fotografia deslumbrante e conteúdo de vídeo cinematográfico que captura atenção e gera desejo.",
+        "price": "A partir de €1.500/mês"
+      },
+      "socialMedia": {
+        "title": "Presença em Redes Sociais",
+        "description": "Amplifique a presença da sua marca com a voz autêntica de Isabella. De stories do Instagram a trends do TikTok, ela cria conteúdo envolvente que ressoa.",
+        "price": "A partir de €250/post"
+      },
+      "eventPresence": {
+        "title": "Presença em Eventos",
+        "description": "Leve Isabella para seus eventos virtuais, lançamentos de produtos e ativações de marca. Uma presença de IA interativa que engaja e inspira seu público.",
+        "price": "A partir de €2.000/evento"
+      },
+      "customAmbassador": {
+        "title": "Campanha de Embaixador Personalizada",
+        "description": "Uma parceria sob medida adaptada à visão da sua marca. Isabella se adapta à sua estética, valores e mensagens para uma colaboração verdadeiramente única.",
+        "price": "Preço Personalizado"
+      },
+      "websiteIntegration": {
+        "title": "Integração de Website",
+        "description": "Transforme sua presença digital com uma Isabella interativa incorporada ao seu site. Personalizada para melhorar a experiência do usuário e a narrativa da marca.",
+        "price": "€2.000 instalação + €500/mês"
+      },
+      "ambassadorVideo": {
+        "title": "Vídeo de Embaixador",
+        "description": "Um vídeo polido de 60 segundos com Isabella como porta-voz da sua marca. Perfeito para campanhas, anúncios e comunicados em redes sociais.",
+        "price": "A partir de €750"
+      }
+    },
+    "requestButton": "Solicitar Isabella",
+    "addonsTitle": "Complementos Exclusivos",
+    "addons": {
+      "customOutfit": "Estilismo de Roupa Personalizada",
+      "voiceLines": "Linhas de Voz Exclusivas",
+      "multiLanguage": "Interação Multilíngue",
+      "animation3d": "Pacotes de Animação 3D"
+    },
+    "ctaTitle": "Seja parceiro de Isabella, a primeira Embaixadora Modelo IA do mundo",
+    "ctaButton": "Contatar Ovela"
+  },
+  "contact": {
+    "title": "Contate a Ovela Interactive",
+    "subtitle": "Adoraríamos ouvir de você. Se você está interessado em colaborações criativas, parcerias de modelagem ou tem perguntas sobre nossos projetos, nossa equipe está aqui para ajudar.",
+    "directContact": "Contato Direto",
+    "email": "Email",
+    "studio": "Estúdio",
+    "hours": "Horário",
+    "hoursValue": "Segunda–Sexta\n9h–18h CET",
+    "chatTitle": "Converse com Isabella",
+    "chatDescription": "Prefere uma conversa rápida? Você pode falar diretamente com Isabella, nossa assistente virtual, que pode responder perguntas básicas e conectá-lo com o membro certo da equipe.",
+    "chatButton": "Iniciar Conversa com Isabella",
+    "footerText": "Ovela Interactive © 2025 — Modelagem e Marketing Movidos por IA"
+  },
+  "partner": {
+    "title": "Seja Parceiro De",
+    "subtitle": "A modelo de IA mais flexível com quem você já trabalhou. Sem exigências, sem atrasos, possibilidades ilimitadas.",
+    "servicesTitle": "Serviços que Oferecemos",
+    "services": {
+      "brandBuilding": {
+        "title": "Construção de Marca e Representação",
+        "desc": "Gestão completa de voz e identidade de marca"
+      },
+      "productPromotions": {
+        "title": "Promoções de Produtos",
+        "desc": "Campanhas direcionadas que convertem audiências"
+      },
+      "modelingContracts": {
+        "title": "Contratos de Modelagem",
+        "desc": "Acordos de modelagem de curto e longo prazo"
+      },
+      "whiteLabelAI": {
+        "title": "Licenciamento de IA White-Label",
+        "desc": "Soluções de IA personalizadas para seu negócio"
+      },
+      "anySize": {
+        "title": "Qualquer Tamanho, Qualquer Indústria",
+        "desc": "Soluções escaláveis para todo tipo de negócio"
+      },
+      "customProjects": {
+        "title": "Projetos Personalizados",
+        "desc": "Campanhas sob medida para requisitos únicos"
+      }
+    },
+    "whyWorkTitle": "Por Que Trabalhar Conosco?",
+    "benefits": {
+      "available": {
+        "title": "Sempre Disponível",
+        "desc": "Acessibilidade 24/7"
+      },
+      "fast": {
+        "title": "Rápido e Escalável",
+        "desc": "Sem conflitos de agenda"
+      },
+      "costEffective": {
+        "title": "Custo-Benefício",
+        "desc": "Resultados consistentes"
+      },
+      "reliable": {
+        "title": "Confiável",
+        "desc": "Nunca atrasa"
+      },
+      "novelty": {
+        "title": "Fator Novidade",
+        "desc": "Efeito wow da IA"
+      }
+    },
+    "promiseTitle": "Nossa Promessa de Colaboração",
+    "promiseDescription": "Isabella é a modelo mais flexível com quem você já trabalhou. Ela não é exigente, nunca perde prazos e pode assumir múltiplas tarefas ao mesmo tempo. Diferente de modelos humanas, Isabella entrega consistência, velocidade e adaptabilidade. É por isso que marcas estão recorrendo a modelos de IA: para evitar atrasos, custos e limitações do talento tradicional.",
+    "processTitle": "Processo Fácil de 3 Passos",
+    "process": {
+      "step1": {
+        "title": "Fale com Isabella",
+        "desc": "Comece a conversar diretamente com ela sobre suas necessidades"
+      },
+      "step2": {
+        "title": "Defina Sua Campanha",
+        "desc": "Isabella coleta requisitos de indústria, termos e escopo"
+      },
+      "step3": {
+        "title": "Lançar e Entregar",
+        "desc": "Isabella ativa campanhas enquanto a Ovela garante a integração"
+      }
+    },
+    "chatButton": "Converse Com Isabella",
+    "chatSubtext": "Conecte-se com Isabella na página inicial"
+  },
+  "projects": {
+    "title": "Projetos de Isabella",
+    "subtitle": "Do coaching de bem-estar à moda de luxo — descubra a jornada de Isabella como a primeira Embaixadora Modelo IA do mundo.",
+    "items": {
+      "luxDefTec": {
+        "name": "Lux Def Tec",
+        "description": "Uma vitrine de elegância e inovação, onde Isabella dá vida aos produtos através de presença imersiva. Este projeto reflete a visão da Ovela de combinar IA com arte."
+      },
+      "robocareAI": {
+        "name": "Robocare AI",
+        "description": "Oferecendo cuidado e compreensão para quem precisa de companhia 24/7"
+      },
+      "ambassador": {
+        "name": "Embaixador",
+        "description": "Uma campanha projetada para impacto. Isabella assume o papel de embaixadora, traduzindo valores de marca em experiências memoráveis e identificáveis."
+      },
+      "wellnessGeni": {
+        "name": "WellnessGeni — Onde Isabella Começou",
+        "description": "Antes da Ovela, existia o WellnessGeni — um app interativo onde Isabella apareceu pela primeira vez como coach de bem-estar, motivadora e companheira. Ela inspirava pessoas a treinar, manter-se positivas e se sentir apoiadas em suas vidas diárias. Este foi o projeto que revelou seu verdadeiro potencial — o momento em que uma modelo de IA se tornou pela primeira vez uma embaixadora de confiança."
+      }
+    },
+    "upcomingTitle": "Colaborações Futuras",
+    "upcomingSubtitle": "A jornada de Isabella continua — de sessões de alta costura a campanhas de estilo de vida, novos capítulos estão no horizonte.",
+    "upcoming": {
+      "lingerie": "Sessão de Lingerie 2025",
+      "calendar": "Calendário de Luxo 2025",
+      "runway": "Demo de Passarela de Alta Moda"
+    },
+    "ctaButton": "Seja Parceiro de Isabella →"
   },
   "footer": {
     "copyright": "© Ovela Interactive 2025",

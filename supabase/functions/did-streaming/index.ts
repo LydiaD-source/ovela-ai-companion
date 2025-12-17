@@ -207,19 +207,43 @@ serve(async (req) => {
         // Support both wrapped (data.X) and top-level parameters
         const stream_id = data?.stream_id || rest.stream_id;
         const session_id = data?.session_id || rest.session_id;
-        const candidate = data?.candidate ?? rest.candidate;
-        const sdpMid = data?.sdpMid || rest.sdpMid;
-        const sdpMLineIndex = data?.sdpMLineIndex ?? rest.sdpMLineIndex;
+        
+        // Handle candidate - can be an object with nested properties or a string
+        // Frontend sends: { candidate: { candidate: "...", sdpMid: "...", sdpMLineIndex: 0 } }
+        const rawCandidate = data?.candidate ?? rest.candidate;
+        
+        // Extract the actual candidate string and SDP info
+        // If candidate is an object with a 'candidate' property, extract the values
+        let candidateString: string | null = null;
+        let sdpMid: string | null = null;
+        let sdpMLineIndex: number | null = null;
+        
+        if (rawCandidate && typeof rawCandidate === 'object') {
+          candidateString = rawCandidate.candidate || null;
+          sdpMid = rawCandidate.sdpMid ?? data?.sdpMid ?? rest.sdpMid ?? null;
+          sdpMLineIndex = rawCandidate.sdpMLineIndex ?? data?.sdpMLineIndex ?? rest.sdpMLineIndex ?? null;
+        } else if (typeof rawCandidate === 'string') {
+          candidateString = rawCandidate;
+          sdpMid = data?.sdpMid || rest.sdpMid || null;
+          sdpMLineIndex = data?.sdpMLineIndex ?? rest.sdpMLineIndex ?? null;
+        }
 
         if (!stream_id || !session_id) {
           throw new Error('stream_id and session_id are required');
         }
 
+        console.log(`[${requestId}] sendIceCandidate:`, {
+          stream_id,
+          hasCandidate: !!candidateString,
+          sdpMid,
+          sdpMLineIndex,
+        });
+
         // candidate can be null (signals ICE gathering complete)
         const body: Record<string, unknown> = { session_id };
         
-        if (candidate !== null && candidate !== undefined) {
-          body.candidate = candidate;
+        if (candidateString !== null) {
+          body.candidate = candidateString;
           body.sdpMid = sdpMid;
           body.sdpMLineIndex = sdpMLineIndex;
         }
@@ -233,14 +257,8 @@ serve(async (req) => {
           body: JSON.stringify(body),
         });
 
-        console.log(`[${requestId}] D-ID Response:`, {
-          ok: response.ok,
-          status: response.status,
-          hasSetCookie: !!response.headers.get('set-cookie'),
-          bodyPreview: response.status !== 204 ? await response.clone().text().then(t => t.substring(0, 200)) : '(204)',
-        });
-
         if (response.status === 204) {
+          console.log(`[${requestId}] sendIceCandidate SUCCESS (204)`);
           return new Response(JSON.stringify({ success: true }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });

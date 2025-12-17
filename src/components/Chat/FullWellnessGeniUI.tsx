@@ -82,7 +82,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       console.log('[FullWellnessGeniUI] 📤 Auto-sending:', text);
       sendMessage(text);
     },
-    silenceTimeout: 1200 // 1.2 seconds pause = turn complete
+    silenceTimeout: 600 // 600ms - faster response after user pauses
   });
 
   // Sync AI speaking state with speech recognition
@@ -593,16 +593,17 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         ))}
         
         {/* Real-time voice input indicator with phase awareness */}
-        {(isListening || conversationPhase !== 'idle') && (
+        {/* Only show when actually in a conversation state */}
+        {conversationPhase !== 'idle' && (
           <div className="flex justify-start">
             <div className={`rounded-xl p-3 mr-4 border transition-all duration-300 ${
               conversationPhase === 'processing' 
                 ? 'bg-champagne-gold/20 border-champagne-gold/30' 
                 : conversationPhase === 'ai_speaking'
                 ? 'bg-soft-purple/20 border-soft-purple/30'
-                : conversationPhase === 'waiting'
-                ? 'bg-green-500/20 border-green-500/30'
-                : 'bg-red-500/20 border-red-500/30'
+                : conversationPhase === 'listening'
+                ? 'bg-red-500/20 border-red-500/30'
+                : 'bg-green-500/20 border-green-500/30'
             }`}>
               <div className="flex items-center gap-2">
                 {/* Listening - user speaking */}
@@ -636,13 +637,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
                       <div className="h-3 w-1 bg-soft-purple rounded-full animate-pulse" style={{ animationDelay: '400ms' }} />
                     </div>
                     <span className="text-sm text-soft-purple">{t('chat.isabellaSpeaking') || 'Isabella speaking...'}</span>
-                  </>
-                )}
-                {/* Waiting - ready for user input */}
-                {conversationPhase === 'waiting' && (
-                  <>
-                    <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-sm text-green-400">{t('chat.yourTurn') || 'Your turn...'}</span>
                   </>
                 )}
               </div>

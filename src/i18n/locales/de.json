@@ -57,6 +57,7 @@
     "thinking": "Isabella denkt nach...",
     "transcribing": "Transkribiere deine Stimme...",
     "listening": "Höre zu...",
-    "yourTurn": "Du bist dran..."
+    "yourTurn": "Du bist dran...",
+    "isabellaSpeaking": "Isabella spricht..."
   }
 }

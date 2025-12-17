@@ -40,6 +40,7 @@ interface FullWellnessGeniUIProps {
   showOnlyPromoter?: boolean;
   onAIResponse?: (text: string) => void;
   onReady?: () => void;
+  isAISpeaking?: boolean; // D-ID speaking state
 }
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
@@ -48,7 +49,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   allowedPersonas = ['isabella-navia'],
   showOnlyPromoter = true,
   onAIResponse,
-  onReady
+  onReady,
+  isAISpeaking = false
 }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -73,15 +75,21 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     conversationPhase,
     start: startListening,
     stop: stopListening,
+    setAISpeaking,
     error: speechError
   } = useWebSpeechSTT({
     onAutoSend: (text) => {
-      console.log('[WebSpeechSTT] 📤 Auto-sending message:', text);
+      console.log('[FullWellnessGeniUI] 📤 Auto-sending:', text);
       sendMessage(text);
     },
-    silenceTimeout: 1000, // 1 second pause = turn complete
-    continuous: true // keep mic active for natural conversation
+    silenceTimeout: 1200 // 1.2 seconds pause = turn complete
   });
+
+  // Sync AI speaking state with speech recognition
+  useEffect(() => {
+    console.log('[FullWellnessGeniUI] 🔊 AI speaking changed:', isAISpeaking);
+    setAISpeaking(isAISpeaking);
+  }, [isAISpeaking, setAISpeaking]);
 
   useEffect(() => {
     const chatContainer = messagesEndRef.current?.parentElement;
@@ -585,17 +593,19 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         ))}
         
         {/* Real-time voice input indicator with phase awareness */}
-        {(isListening || conversationPhase === 'processing' || conversationPhase === 'waiting') && (
+        {(isListening || conversationPhase !== 'idle') && (
           <div className="flex justify-start">
             <div className={`rounded-xl p-3 mr-4 border transition-all duration-300 ${
               conversationPhase === 'processing' 
                 ? 'bg-champagne-gold/20 border-champagne-gold/30' 
-                : conversationPhase === 'waiting'
+                : conversationPhase === 'ai_speaking'
                 ? 'bg-soft-purple/20 border-soft-purple/30'
+                : conversationPhase === 'waiting'
+                ? 'bg-green-500/20 border-green-500/30'
                 : 'bg-red-500/20 border-red-500/30'
             }`}>
               <div className="flex items-center gap-2">
-                {/* Animated indicator based on phase */}
+                {/* Listening - user speaking */}
                 {conversationPhase === 'listening' && (
                   <>
                     <div className="flex gap-1">
@@ -608,16 +618,31 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
                     </span>
                   </>
                 )}
+                {/* Processing - sending to AI */}
                 {conversationPhase === 'processing' && (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-champagne-gold" />
                     <span className="text-sm text-champagne-gold">{t('chat.thinking') || 'Thinking...'}</span>
                   </>
                 )}
+                {/* AI Speaking - Isabella is talking */}
+                {conversationPhase === 'ai_speaking' && (
+                  <>
+                    <div className="flex gap-0.5">
+                      <div className="h-3 w-1 bg-soft-purple rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
+                      <div className="h-4 w-1 bg-soft-purple rounded-full animate-pulse" style={{ animationDelay: '100ms' }} />
+                      <div className="h-2 w-1 bg-soft-purple rounded-full animate-pulse" style={{ animationDelay: '200ms' }} />
+                      <div className="h-4 w-1 bg-soft-purple rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                      <div className="h-3 w-1 bg-soft-purple rounded-full animate-pulse" style={{ animationDelay: '400ms' }} />
+                    </div>
+                    <span className="text-sm text-soft-purple">{t('chat.isabellaSpeaking') || 'Isabella speaking...'}</span>
+                  </>
+                )}
+                {/* Waiting - ready for user input */}
                 {conversationPhase === 'waiting' && (
                   <>
-                    <div className="h-3 w-3 bg-soft-purple rounded-full animate-pulse" />
-                    <span className="text-sm text-soft-purple">{t('chat.yourTurn') || 'Your turn...'}</span>
+                    <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse" />
+                    <span className="text-sm text-green-400">{t('chat.yourTurn') || 'Your turn...'}</span>
                   </>
                 )}
               </div>

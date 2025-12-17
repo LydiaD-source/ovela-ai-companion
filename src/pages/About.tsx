@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { Separator } from '@/components/ui/separator';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
 
 const About = () => {
+  const { t } = useTranslation();
   useCanonicalLink('/about');
   return (
     <div className="min-h-screen">
@@ -16,10 +18,10 @@ const About = () => {
             {/* Left: Text */}
             <div className="order-2 lg:order-1">
               <h1 className="font-playfair text-5xl lg:text-6xl mb-6" style={{ color: '#D4AF37' }}>
-                Where Interactive Modeling Began
+                {t('aboutPage.heroTitle')}
               </h1>
               <h3 className="font-playfair text-2xl lg:text-3xl leading-relaxed" style={{ color: '#FFFFFF', fontWeight: 300 }}>
-                Ovela is redefining modeling through AI — but the journey began with a vision to connect people in a more human way.
+                {t('aboutPage.heroDescription')}
               </h3>
             </div>
 
@@ -55,14 +57,14 @@ const About = () => {
             {/* Left: Text */}
             <div>
               <h2 className="font-playfair text-4xl lg:text-5xl mb-8" style={{ color: '#0A0A23' }}>
-                The Birth of Ovela
+                {t('aboutPage.birthTitle')}
               </h2>
               <p className="text-lg leading-relaxed" style={{ 
                 fontFamily: 'Inter, sans-serif',
                 color: '#2a2a2a',
                 fontWeight: 300
               }}>
-                Ovela was founded on the belief that models should do more than represent — they should interact. By blending luxury fashion aesthetics with advanced AI, Ovela created Isabella, the world's first interactive model ambassador. Our goal has always been to humanize technology and empower brands to tell their stories in a way that feels alive, engaging, and unforgettable.
+                {t('aboutPage.birthDescription')}
               </p>
             </div>
 
@@ -114,14 +116,14 @@ const About = () => {
             {/* Right: Text */}
             <div>
               <h2 className="font-playfair text-4xl lg:text-5xl mb-8" style={{ color: '#D4AF37' }}>
-                From WellnessGeni to Ovela
+                {t('aboutPage.wellnessGeniTitle')}
               </h2>
               <p className="text-lg leading-relaxed mb-8" style={{ 
                 fontFamily: 'Inter, sans-serif',
                 color: '#FFFFFF',
                 fontWeight: 300
               }}>
-                Before Ovela, there was WellnessGeni — the interactive app where Isabella first appeared as a wellness coach, motivator, and companion. She encouraged people to train, stay positive, and feel supported in their daily lives. It was here that we saw the true potential of an AI model who could connect deeply with people, not just represent products.
+                {t('aboutPage.wellnessGeniDescription')}
               </p>
               
               {/* Quote */}
@@ -129,7 +131,7 @@ const About = () => {
                 color: '#D4AF37',
                 borderColor: '#D4AF37'
               }}>
-                "Isabella started as a guide for wellness and encouragement — and became the world's first interactive AI model ambassador."
+                {t('aboutPage.wellnessGeniQuote')}
               </blockquote>
             </div>
           </div>
@@ -149,14 +151,14 @@ const About = () => {
         <div className="container mx-auto px-6 lg:px-20">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-playfair text-4xl lg:text-5xl mb-8" style={{ color: '#0A0A23' }}>
-              Shaping Tomorrow
+              {t('aboutPage.futureTitle')}
             </h2>
             <p className="text-lg leading-relaxed" style={{ 
               fontFamily: 'Inter, sans-serif',
               color: '#2a2a2a',
               fontWeight: 300
             }}>
-              Today, Ovela carries the spirit of WellnessGeni into every project. From personal companionship to brand storytelling, Isabella is leading a new era of interactive modeling and marketing. With Ovela, the future isn't just about watching — it's about engaging.
+              {t('aboutPage.futureDescription')}
             </p>
           </div>
         </div>

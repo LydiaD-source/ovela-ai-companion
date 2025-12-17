@@ -62,9 +62,12 @@ export const useWebSpeechSTT = ({
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hasSentRef = useRef(false);
   const hasSpokenRef = useRef(false);
-  const conversationActiveRef = useRef(false);
+  
+  // KEY STATE: Track if user started a conversation session
+  const sessionActiveRef = useRef(false);
   const aiSpeakingRef = useRef(false);
-  const isRecognitionRunningRef = useRef(false);
+  // Track if we should resume after AI finishes (set when AI starts while session active)
+  const shouldResumeAfterAIRef = useRef(false);
   
   const interimRef = useRef('');
   const finalRef = useRef('');
@@ -120,41 +123,39 @@ export const useWebSpeechSTT = ({
     }
   }, [resetTranscripts]);
 
-  // Force start recognition with retry
-  const forceStartRecognition = useCallback(() => {
-    if (!recognitionRef.current || !conversationActiveRef.current) return;
+  // Start recognition with retries
+  const startRecognition = useCallback(() => {
+    if (!recognitionRef.current) return;
     
-    console.log('[STT] 🔄 Force starting recognition...');
+    console.log('[STT] 🎤 Starting recognition...');
     
-    // First stop any existing
-    try {
-      recognitionRef.current.abort();
-    } catch (e) {}
-    
-    isRecognitionRunningRef.current = false;
-    
-    // Wait a bit then start fresh
-    setTimeout(() => {
-      if (!conversationActiveRef.current || aiSpeakingRef.current) {
-        console.log('[STT] ❌ Skipping start - conversation inactive or AI speaking');
+    const tryStart = (attempt: number) => {
+      if (!sessionActiveRef.current || aiSpeakingRef.current) {
+        console.log('[STT] ❌ Cancelled - session:', sessionActiveRef.current, 'aiSpeaking:', aiSpeakingRef.current);
         return;
       }
       
       try {
         recognitionRef.current?.start();
-        console.log('[STT] ✅ Recognition started');
+        console.log('[STT] ✅ Recognition started (attempt', attempt, ')');
       } catch (e: any) {
-        console.log('[STT] ⚠️ Start error:', e.message);
-        // Retry once more
-        setTimeout(() => {
-          try {
-            recognitionRef.current?.start();
-          } catch (e2) {
-            console.error('[STT] ❌ Final start failed');
-          }
-        }, 200);
+        if (e.message?.includes('already started')) {
+          console.log('[STT] Already running');
+          return;
+        }
+        console.log('[STT] Start failed, attempt', attempt);
+        if (attempt < 3) {
+          setTimeout(() => tryStart(attempt + 1), 150);
+        }
       }
-    }, 100);
+    };
+    
+    // Abort any existing first
+    try {
+      recognitionRef.current.abort();
+    } catch (e) {}
+    
+    setTimeout(() => tryStart(1), 100);
   }, []);
 
   useEffect(() => {
@@ -166,57 +167,48 @@ export const useWebSpeechSTT = ({
     recognition.lang = lang;
 
     recognition.onstart = () => {
-      console.log('[STT] 🎙️ Recognition STARTED - ready for input');
-      isRecognitionRunningRef.current = true;
+      console.log('[STT] 🎙️ STARTED - ready for input');
       setIsListening(true);
-      if (!aiSpeakingRef.current) {
+      if (!aiSpeakingRef.current && sessionActiveRef.current) {
         setConversationPhase('listening');
       }
       setError(null);
     };
 
     recognition.onend = () => {
-      console.log('[STT] 🛑 Recognition ENDED');
-      isRecognitionRunningRef.current = false;
+      console.log('[STT] 🛑 ENDED - session:', sessionActiveRef.current, 'aiSpeaking:', aiSpeakingRef.current);
+      setIsListening(false);
       
-      // Auto-restart if conversation is active and AI not speaking
-      if (conversationActiveRef.current && !aiSpeakingRef.current) {
-        console.log('[STT] 🔄 Auto-restarting (conversation active)...');
+      // Auto-restart if session is active and AI not speaking
+      if (sessionActiveRef.current && !aiSpeakingRef.current) {
+        console.log('[STT] 🔄 Auto-restart...');
         setTimeout(() => {
-          if (conversationActiveRef.current && !aiSpeakingRef.current) {
+          if (sessionActiveRef.current && !aiSpeakingRef.current) {
             try {
               recognition.start();
             } catch (e) {
-              console.log('[STT] Restart error, will retry');
               setTimeout(() => {
                 try { recognition.start(); } catch (e2) {}
               }, 200);
             }
           }
         }, 50);
-      } else {
-        setIsListening(false);
-        if (!conversationActiveRef.current) {
-          setConversationPhase('idle');
-        }
+      } else if (!sessionActiveRef.current) {
+        setConversationPhase('idle');
       }
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.log('[STT] ⚠️ Error:', event.error);
-      
-      // Ignore these common errors
       if (event.error === 'aborted' || event.error === 'no-speech') {
         return;
       }
-      
+      console.log('[STT] ⚠️ Error:', event.error);
       setError(event.error);
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       // IGNORE input while AI is speaking
       if (aiSpeakingRef.current) {
-        console.log('[STT] 🔇 Ignoring (AI speaking)');
         return;
       }
 
@@ -269,7 +261,7 @@ export const useWebSpeechSTT = ({
 
     return () => {
       clearSilenceTimer();
-      conversationActiveRef.current = false;
+      sessionActiveRef.current = false;
       try { recognition.abort(); } catch (e) {}
     };
   }, [SpeechRecognitionAPI, lang, silenceTimeout, clearSilenceTimer, autoSendMessage]);
@@ -280,22 +272,21 @@ export const useWebSpeechSTT = ({
       return;
     }
 
-    console.log('[STT] ▶️ USER START');
+    console.log('[STT] ▶️ USER START - beginning session');
     
     resetTranscripts();
     setError(null);
-    conversationActiveRef.current = true;
+    sessionActiveRef.current = true;
     aiSpeakingRef.current = false;
+    shouldResumeAfterAIRef.current = false;
     setConversationPhase('listening');
 
-    forceStartRecognition();
-  }, [isSupported, resetTranscripts, forceStartRecognition]);
+    startRecognition();
+  }, [isSupported, resetTranscripts, startRecognition]);
 
   const stop = useCallback(() => {
-    console.log('[STT] ⏹️ USER STOP');
+    console.log('[STT] ⏹️ USER STOP - ending session');
     clearSilenceTimer();
-    conversationActiveRef.current = false;
-    aiSpeakingRef.current = false;
     
     // Send any pending text
     const text = (finalRef.current + ' ' + interimRef.current).trim();
@@ -304,45 +295,66 @@ export const useWebSpeechSTT = ({
       onAutoSendRef.current(text);
     }
     
+    // End session AFTER sending
+    sessionActiveRef.current = false;
+    aiSpeakingRef.current = false;
+    shouldResumeAfterAIRef.current = false;
+    
     try { recognitionRef.current?.abort(); } catch (e) {}
     
     resetTranscripts();
     setConversationPhase('idle');
     setIsListening(false);
-    isRecognitionRunningRef.current = false;
   }, [clearSilenceTimer, resetTranscripts]);
 
   const setAISpeaking = useCallback((speaking: boolean) => {
-    console.log('[STT] 🔊 AI speaking:', speaking, '| conversation active:', conversationActiveRef.current);
-    
-    const wasAISpeaking = aiSpeakingRef.current;
-    aiSpeakingRef.current = speaking;
+    console.log('[STT] 🔊 AI speaking:', speaking, '| session:', sessionActiveRef.current);
     
     if (speaking) {
-      // AI started speaking - pause listening
+      // AI started speaking
+      aiSpeakingRef.current = true;
+      
+      // Mark that we should resume when AI finishes (if session was active)
+      if (sessionActiveRef.current) {
+        shouldResumeAfterAIRef.current = true;
+        console.log('[STT] 📌 Will resume after AI finishes');
+      }
+      
       clearSilenceTimer();
       setConversationPhase('ai_speaking');
       
-      // Clear any partial transcripts (might have picked up AI voice)
+      // Clear any partial transcripts
       resetTranscripts();
       
-    } else if (wasAISpeaking && conversationActiveRef.current) {
-      // AI finished speaking - resume listening IMMEDIATELY
-      console.log('[STT] ▶️ AI DONE - resuming mic NOW');
+      // Stop recognition while AI speaks
+      try { recognitionRef.current?.abort(); } catch (e) {}
       
-      // Small delay to let audio fully stop, then restart recognition
-      setTimeout(() => {
-        if (!conversationActiveRef.current) return;
+    } else {
+      // AI finished speaking
+      aiSpeakingRef.current = false;
+      
+      // Resume if we were in an active session when AI started
+      if (shouldResumeAfterAIRef.current) {
+        console.log('[STT] ▶️ AI DONE - resuming listening');
+        shouldResumeAfterAIRef.current = false;
         
-        resetTranscripts();
-        setConversationPhase('listening');
-        
-        // Force restart recognition to ensure it's in a good state
-        forceStartRecognition();
-        
-      }, 200); // 200ms delay after AI finishes
+        // Small delay to let audio fully stop
+        setTimeout(() => {
+          if (!sessionActiveRef.current) {
+            console.log('[STT] ❌ Session ended while AI was speaking');
+            return;
+          }
+          
+          resetTranscripts();
+          setConversationPhase('listening');
+          startRecognition();
+          
+        }, 150);
+      } else {
+        console.log('[STT] No resume needed (no active session when AI started)');
+      }
     }
-  }, [clearSilenceTimer, resetTranscripts, forceStartRecognition]);
+  }, [clearSilenceTimer, resetTranscripts, startRecognition]);
 
   return {
     isListening,

@@ -118,6 +118,15 @@ export const useDIDAvatarStream = ({
   const flushIceCandidates = useCallback(async () => {
     if (!sdpExchangedRef.current) return;
     
+    // CRITICAL: Verify refs are valid before sending
+    const currentStreamId = streamIdRef.current;
+    const currentSessionId = sessionIdRef.current;
+    
+    if (!currentStreamId || !currentSessionId) {
+      console.warn('⚠️ flushIceCandidates: stream_id or session_id is null, skipping');
+      return;
+    }
+    
     const candidates = [...pendingIceCandidates.current];
     pendingIceCandidates.current = [];
     
@@ -129,8 +138,8 @@ export const useDIDAvatarStream = ({
           body: {
             action: 'sendIceCandidate',
             data: {
-              stream_id: streamIdRef.current,
-              session_id: sessionIdRef.current,
+              stream_id: currentStreamId,
+              session_id: currentSessionId,
               candidate: candidate.candidate,
               sdpMid: candidate.sdpMid,
               sdpMLineIndex: candidate.sdpMLineIndex,
@@ -148,8 +157,8 @@ export const useDIDAvatarStream = ({
         body: {
           action: 'sendIceCandidate',
           data: {
-            stream_id: streamIdRef.current,
-            session_id: sessionIdRef.current,
+            stream_id: currentStreamId,
+            session_id: currentSessionId,
             candidate: null,
             sdpMid: null,
             sdpMLineIndex: null,
@@ -164,19 +173,29 @@ export const useDIDAvatarStream = ({
 
   // Start animation with retry logic
   const sendStartAnimation = useCallback(async (text: string): Promise<boolean> => {
+    // CRITICAL: Verify refs are valid before sending
+    const currentStreamId = streamIdRef.current;
+    const currentSessionId = sessionIdRef.current;
+    
+    if (!currentStreamId || !currentSessionId) {
+      console.error('❌ sendStartAnimation: stream_id or session_id is null');
+      return false;
+    }
+    
     setIsSpeaking(true);
     lastSpeechTimeRef.current = Date.now();
     
     for (let attempt = 1; attempt <= MAX_ANIMATION_RETRIES; attempt++) {
       console.log(`🎤 startAnimation attempt ${attempt}/${MAX_ANIMATION_RETRIES}...`);
+      console.log(`📡 Using stream_id: ${currentStreamId}, session_id: ${currentSessionId?.substring(0, 30)}...`);
       
       try {
         const res = await supabase.functions.invoke('did-streaming', {
           body: {
             action: 'startAnimation',
             data: {
-              stream_id: streamIdRef.current,
-              session_id: sessionIdRef.current,
+              stream_id: currentStreamId,
+              session_id: currentSessionId,
               text,
             },
           },
@@ -238,8 +257,9 @@ export const useDIDAvatarStream = ({
     }
     
     // If not speaking and queue is empty, send immediately
+    // CRITICAL: Verify all refs are valid before sending
     if (!isSpeaking && speechQueueRef.current.length === 0 && 
-        streamIdRef.current && sdpExchangedRef.current) {
+        streamIdRef.current && sessionIdRef.current && sdpExchangedRef.current) {
       sendStartAnimation(text);
     } else {
       // Otherwise queue it (but clear any existing queue to only keep latest)

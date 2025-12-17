@@ -2,59 +2,62 @@ import React from 'react';
 import { Sparkles, Globe, Mic, Palette, BarChart3, Video, Monitor } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
   useCanonicalLink('/pricing');
+  const { t } = useTranslation();
+
   const packages = [
     {
-      title: 'Product Promotion',
-      description: 'Isabella becomes the face of your luxury products through stunning photography and cinematic video content that captures attention and drives desire.',
-      price: 'From €1,500/month',
+      title: t('pricing.packages.productPromotion.title'),
+      description: t('pricing.packages.productPromotion.description'),
+      price: t('pricing.packages.productPromotion.price'),
       thumbnail: '/images/pricing-product-promotion.jpg',
       icon: Sparkles
     },
     {
-      title: 'Social Media Feature',
-      description: 'Amplify your brand presence with Isabella\'s authentic voice. From Instagram stories to TikTok trends, she creates engaging content that resonates.',
-      price: 'From €250/post',
+      title: t('pricing.packages.socialMedia.title'),
+      description: t('pricing.packages.socialMedia.description'),
+      price: t('pricing.packages.socialMedia.price'),
       thumbnail: '/images/pricing-social-media.jpg',
       icon: Globe
     },
     {
-      title: 'Event Presence',
-      description: 'Bring Isabella to your virtual events, product launches, and brand activations. An interactive AI presence that engages and inspires your audience.',
-      price: 'From €2,000/event',
+      title: t('pricing.packages.eventPresence.title'),
+      description: t('pricing.packages.eventPresence.description'),
+      price: t('pricing.packages.eventPresence.price'),
       thumbnail: '/images/pricing-event-presence.jpg',
       icon: Video
     },
     {
-      title: 'Custom Ambassador Campaign',
-      description: 'A bespoke partnership tailored to your brand vision. Isabella adapts to your aesthetic, values, and messaging for a truly unique collaboration.',
-      price: 'Custom Pricing',
+      title: t('pricing.packages.customAmbassador.title'),
+      description: t('pricing.packages.customAmbassador.description'),
+      price: t('pricing.packages.customAmbassador.price'),
       thumbnail: '/images/pricing-custom-ambassador.jpg',
       icon: Palette
     },
     {
-      title: 'Website Integration',
-      description: 'Transform your digital presence with an interactive Isabella embedded on your site. Custom-designed to enhance user experience and brand storytelling.',
-      price: '€2,000 setup + €500/month',
+      title: t('pricing.packages.websiteIntegration.title'),
+      description: t('pricing.packages.websiteIntegration.description'),
+      price: t('pricing.packages.websiteIntegration.price'),
       thumbnail: '/images/pricing-website-integration.jpg',
       icon: Monitor
     },
     {
-      title: 'Ambassador Video',
-      description: 'A polished 60-second video featuring Isabella as your brand spokesperson. Perfect for campaigns, advertisements, and social media announcements.',
-      price: 'From €750',
+      title: t('pricing.packages.ambassadorVideo.title'),
+      description: t('pricing.packages.ambassadorVideo.description'),
+      price: t('pricing.packages.ambassadorVideo.price'),
       thumbnail: '/images/pricing-ambassador-video.jpg',
       icon: Video
     }
   ];
 
   const addons = [
-    { icon: Palette, name: 'Custom Outfit Styling', price: '€2,000' },
-    { icon: Mic, name: 'Exclusive Voice Lines', price: '€500 per style' },
-    { icon: Globe, name: 'Multi-Language Interaction', price: '€1,200 per language' },
-    { icon: BarChart3, name: '3D Animation Packages', price: 'From €3,000' }
+    { icon: Palette, name: t('pricing.addons.customOutfit'), price: '€2,000' },
+    { icon: Mic, name: t('pricing.addons.voiceLines'), price: '€500' },
+    { icon: Globe, name: t('pricing.addons.multiLanguage'), price: '€1,200' },
+    { icon: BarChart3, name: t('pricing.addons.animation3d'), price: '€3,000' }
   ];
 
   return (
@@ -71,7 +74,7 @@ const Pricing = () => {
               letterSpacing: '-0.02em'
             }}
           >
-            Work With Isabella — The Future of Interactive Modeling
+            {t('pricing.title')}
           </h1>
           <p 
             className="text-lg md:text-xl leading-relaxed"
@@ -81,7 +84,7 @@ const Pricing = () => {
               fontWeight: '300'
             }}
           >
-            Partner with the world's first AI model ambassador for luxury campaigns that captivate and inspire.
+            {t('pricing.subtitle')}
           </p>
         </div>
         
@@ -183,7 +186,7 @@ const Pricing = () => {
                         cursor: 'pointer'
                       }}
                     >
-                      Request Isabella
+                      {t('pricing.requestButton')}
                     </button>
                   </a>
                 </div>
@@ -225,7 +228,7 @@ const Pricing = () => {
               fontWeight: '600'
             }}
           >
-            Exclusive Add-Ons
+            {t('pricing.addonsTitle')}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -298,7 +301,7 @@ const Pricing = () => {
               fontWeight: '700'
             }}
           >
-            Partner with Isabella, the world's first AI Model Ambassador
+            {t('pricing.ctaTitle')}
           </h2>
           
           <a href="/?chat=open">
@@ -317,7 +320,7 @@ const Pricing = () => {
                 boxShadow: '0 8px 24px rgba(10, 10, 35, 0.4)'
               }}
             >
-              Contact Ovela
+              {t('pricing.ctaButton')}
             </button>
           </a>
         </div>

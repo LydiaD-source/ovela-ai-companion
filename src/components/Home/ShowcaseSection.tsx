@@ -2,35 +2,37 @@ import React, { useState } from 'react';
 import { InteractiveMarketingGallery } from './InteractiveMarketingGallery';
 import { FashionForwardGallery } from './FashionForwardGallery';
 import { MultiBrandGallery } from './MultiBrandGallery';
-
-const showcaseItems = [
-  {
-    mediaType: 'video',
-    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/202509242206_1_nnxmtz.mp4',
-    title: 'Fashion Forward',
-    description: 'High-end editorial campaigns that capture attention and drive engagement',
-    layout: 'media-left'
-  },
-  {
-    mediaType: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758192666/FTlux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_stand_3_7_jod0un.jpg',
-    title: 'Interactive Marketing',
-    description: 'Isabella transforms traditional campaigns into conversations. Luxury brands can now engage audiences directly through interactive experiences.',
-    layout: 'media-right'
-  },
-  {
-    mediaType: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg',
-    title: 'Multi-Brand Excellence',
-    description: 'Seamless representation across diverse industries and audiences',
-    layout: 'media-left'
-  }
-];
+import { useTranslation } from 'react-i18next';
 
 export const ShowcaseSection = () => {
   const [isInteractiveGalleryOpen, setIsInteractiveGalleryOpen] = useState(false);
   const [isFashionGalleryOpen, setIsFashionGalleryOpen] = useState(false);
   const [isMultiBrandGalleryOpen, setIsMultiBrandGalleryOpen] = useState(false);
+  const { t } = useTranslation();
+
+  const showcaseItems = [
+    {
+      mediaType: 'video',
+      src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/202509242206_1_nnxmtz.mp4',
+      titleKey: 'showcase.fashionForward.title',
+      descriptionKey: 'showcase.fashionForward.description',
+      layout: 'media-left'
+    },
+    {
+      mediaType: 'image',
+      src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758192666/FTlux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_stand_3_7_jod0un.jpg',
+      titleKey: 'showcase.interactiveMarketing.title',
+      descriptionKey: 'showcase.interactiveMarketing.description',
+      layout: 'media-right'
+    },
+    {
+      mediaType: 'image',
+      src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg',
+      titleKey: 'showcase.multiBrand.title',
+      descriptionKey: 'showcase.multiBrand.description',
+      layout: 'media-left'
+    }
+  ];
 
   return (
     <section className="w-full bg-black">
@@ -60,7 +62,7 @@ export const ShowcaseSection = () => {
               <div className="relative w-full h-full">
                 <img
                   src={item.src}
-                  alt={item.title}
+                  alt={t(item.titleKey)}
                   className="w-full h-full object-cover object-center"
                   style={{ 
                     maxWidth: '1120px',
@@ -86,7 +88,7 @@ export const ShowcaseSection = () => {
                   color: '#E8CFA9'
                 }}
               >
-                {item.title}
+                {t(item.titleKey)}
               </h3>
               <p
                 className="text-base md:text-lg mb-6 leading-relaxed"
@@ -95,9 +97,9 @@ export const ShowcaseSection = () => {
                   color: '#F5F5F5'
                 }}
               >
-                {item.description}
+                {t(item.descriptionKey)}
               </p>
-              {item.title === 'Interactive Marketing' ? (
+              {item.titleKey === 'showcase.interactiveMarketing.title' ? (
                 <button
                   onClick={() => setIsInteractiveGalleryOpen(true)}
                   className="inline-block transition-all duration-300 hover:underline"
@@ -111,9 +113,9 @@ export const ShowcaseSection = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  See Portfolio →
+                  {t('showcase.seePortfolio')} →
                 </button>
-              ) : item.title === 'Fashion Forward' ? (
+              ) : item.titleKey === 'showcase.fashionForward.title' ? (
                 <button
                   onClick={() => setIsFashionGalleryOpen(true)}
                   className="inline-block transition-all duration-300 hover:underline"
@@ -127,9 +129,9 @@ export const ShowcaseSection = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  See Portfolio →
+                  {t('showcase.seePortfolio')} →
                 </button>
-              ) : item.title === 'Multi-Brand Excellence' ? (
+              ) : item.titleKey === 'showcase.multiBrand.title' ? (
                 <button
                   onClick={() => setIsMultiBrandGalleryOpen(true)}
                   className="inline-block transition-all duration-300 hover:underline"
@@ -143,7 +145,7 @@ export const ShowcaseSection = () => {
                     cursor: 'pointer'
                   }}
                 >
-                  See Portfolio →
+                  {t('showcase.seePortfolio')} →
                 </button>
               ) : (
                 <a
@@ -155,7 +157,7 @@ export const ShowcaseSection = () => {
                     fontSize: '16px'
                   }}
                 >
-                  See Full Portfolio →
+                  {t('showcase.seeFullPortfolio')} →
                 </a>
               )}
             </div>

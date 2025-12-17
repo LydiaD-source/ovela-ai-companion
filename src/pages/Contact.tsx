@@ -2,9 +2,12 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useTranslation } from 'react-i18next';
 
 const Contact = () => {
   useCanonicalLink('/contact');
+  const { t } = useTranslation();
+
   const handleStartChat = () => {
     window.location.href = '/?chat=open';
   };
@@ -43,15 +46,14 @@ const Contact = () => {
             className="font-playfair text-4xl md:text-6xl lg:text-7xl mb-6"
             style={{ color: '#D4AF37' }}
           >
-            Contact Ovela Interactive
+            {t('contact.title')}
           </h1>
           
           <p 
             className="text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed"
             style={{ color: '#FFFFFF', fontWeight: 300 }}
           >
-            We'd love to hear from you. Whether you're interested in creative collaborations, 
-            modeling partnerships, or have questions about our projects, our team is here to help.
+            {t('contact.subtitle')}
           </p>
         </div>
       </section>
@@ -63,7 +65,7 @@ const Contact = () => {
             className="font-playfair text-3xl md:text-4xl text-center mb-12"
             style={{ color: '#D4AF37' }}
           >
-            Direct Contact
+            {t('contact.directContact')}
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8 text-center mb-16">
@@ -78,7 +80,7 @@ const Contact = () => {
                 className="font-semibold text-lg mb-3"
                 style={{ color: '#FFFFFF' }}
               >
-                Email
+                {t('contact.email')}
               </h3>
               <a 
                 href="mailto:support@ovelainteractive.com" 
@@ -100,7 +102,7 @@ const Contact = () => {
                 className="font-semibold text-lg mb-3"
                 style={{ color: '#FFFFFF' }}
               >
-                Studio
+                {t('contact.studio')}
               </h3>
               <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                 AD500 Andorra La Vella
@@ -118,11 +120,10 @@ const Contact = () => {
                 className="font-semibold text-lg mb-3"
                 style={{ color: '#FFFFFF' }}
               >
-                Hours
+                {t('contact.hours')}
               </h3>
               <p style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                Monday–Friday<br />
-                9am–6pm CET
+                {t('contact.hoursValue')}
               </p>
             </div>
           </div>
@@ -139,14 +140,13 @@ const Contact = () => {
               className="font-playfair text-2xl md:text-3xl mb-4"
               style={{ color: '#D4AF37' }}
             >
-              Chat with Isabella
+              {t('contact.chatTitle')}
             </h3>
             <p 
               className="mb-6 max-w-xl mx-auto"
               style={{ color: 'rgba(255, 255, 255, 0.7)' }}
             >
-              Prefer a quick chat? You can speak directly with Isabella, our virtual assistant, 
-              who can answer basic questions and connect you with the right team member.
+              {t('contact.chatDescription')}
             </p>
             <Button
               onClick={handleStartChat}
@@ -158,7 +158,7 @@ const Contact = () => {
                 fontWeight: 600
               }}
             >
-              Start Conversation with Isabella
+              {t('contact.chatButton')}
             </Button>
           </div>
         </div>
@@ -167,7 +167,7 @@ const Contact = () => {
       {/* Footer */}
       <footer className="w-full py-12 px-4 border-t" style={{ borderColor: 'rgba(212, 175, 55, 0.2)' }}>
         <div className="max-w-6xl mx-auto text-center text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-          <p>Ovela Interactive © 2025 — Modeling & Marketing Powered by AI</p>
+          <p>{t('contact.footerText')}</p>
         </div>
       </footer>
     </div>

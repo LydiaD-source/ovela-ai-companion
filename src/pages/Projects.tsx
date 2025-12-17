@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useTranslation } from 'react-i18next';
 
 const Projects = () => {
   useCanonicalLink('/projects');
+  const { t } = useTranslation();
+
   const [mutedVideos, setMutedVideos] = useState<{ [key: number]: boolean }>({
     1: true,
     2: true,
@@ -18,37 +21,38 @@ const Projects = () => {
       [projectId]: !prev[projectId]
     }));
   };
+
   const projects = [
     {
       id: 1,
-      name: 'Lux Def Tec',
-      description: 'A showcase of elegance and innovation, where Isabella brings products to life through immersive presence. This project reflects Ovela\'s vision of blending AI with artistry.',
+      nameKey: 'projects.items.luxDefTec.name',
+      descriptionKey: 'projects.items.luxDefTec.description',
       imagePlaceholder: 'Isabella for Lux Def Tec'
     },
     {
       id: 2,
-      name: 'Robocare AI',
-      description: 'Providing care and understanding to those in need of companionship 24/7',
+      nameKey: 'projects.items.robocareAI.name',
+      descriptionKey: 'projects.items.robocareAI.description',
       imagePlaceholder: 'Isabella for Robocare AI'
     },
     {
       id: 3,
-      name: 'Ambassador',
-      description: 'A campaign designed for impact. Isabella steps into the role of ambassador, translating brand values into relatable, memorable experiences.',
+      nameKey: 'projects.items.ambassador.name',
+      descriptionKey: 'projects.items.ambassador.description',
       imagePlaceholder: 'Isabella Ambassador'
     },
     {
       id: 4,
-      name: 'WellnessGeni — Where Isabella Began',
-      description: 'Before Ovela, there was WellnessGeni — an interactive app where Isabella first appeared as a wellness coach, motivator, and companion. She inspired people to train, stay positive, and feel supported in their daily lives. This was the project that revealed her true potential — the moment an AI model first became a trusted ambassador.',
+      nameKey: 'projects.items.wellnessGeni.name',
+      descriptionKey: 'projects.items.wellnessGeni.description',
       imagePlaceholder: 'Isabella at WellnessGeni'
     }
   ];
 
   const upcomingProjects = [
-    { name: 'Lingerie Shoot 2025', image: 'Upcoming lingerie campaign' },
-    { name: 'Luxury Calendar 2025', image: 'Luxury calendar preview' },
-    { name: 'High Fashion Runway Demo', image: 'Runway demonstration' }
+    { nameKey: 'projects.upcoming.lingerie' },
+    { nameKey: 'projects.upcoming.calendar' },
+    { nameKey: 'projects.upcoming.runway' }
   ];
 
   return (
@@ -69,7 +73,7 @@ const Projects = () => {
             color: '#D4AF37'
           }}
         >
-          Isabella's Projects
+          {t('projects.title')}
         </h2>
         <h4 
           className="max-w-3xl mx-auto"
@@ -81,7 +85,7 @@ const Projects = () => {
             lineHeight: '1.6'
           }}
         >
-          From wellness coaching to luxury fashion — discover Isabella's journey as the world's first AI Model Ambassador.
+          {t('projects.subtitle')}
         </h4>
       </div>
 
@@ -176,7 +180,7 @@ const Projects = () => {
                   color: '#D4AF37'
                 }}
               >
-                {project.name}
+                {t(project.nameKey)}
               </h3>
               <p
                 style={{
@@ -187,7 +191,7 @@ const Projects = () => {
                   lineHeight: '1.7'
                 }}
               >
-                {project.description}
+                {t(project.descriptionKey)}
               </p>
             </div>
           ))}
@@ -211,7 +215,7 @@ const Projects = () => {
               color: '#D4AF37'
             }}
           >
-            Upcoming Collaborations
+            {t('projects.upcomingTitle')}
           </h3>
           <p
             className="text-center mb-12 max-w-2xl mx-auto"
@@ -222,7 +226,7 @@ const Projects = () => {
               color: '#EDEDED'
             }}
           >
-            Isabella's journey continues — from couture shoots to lifestyle campaigns, new chapters are on the horizon.
+            {t('projects.upcomingSubtitle')}
           </p>
 
           <Carousel className="w-full max-w-5xl mx-auto">
@@ -250,7 +254,7 @@ const Projects = () => {
                             color: '#D4AF37'
                           }}
                         >
-                          {project.name}
+                          {t(project.nameKey)}
                         </h4>
                       </div>
                     </div>
@@ -280,7 +284,7 @@ const Projects = () => {
                   boxShadow: '0 4px 20px rgba(212, 175, 55, 0.3)'
                 }}
               >
-                Partner with Isabella →
+                {t('projects.ctaButton')}
               </button>
             </a>
           </div>

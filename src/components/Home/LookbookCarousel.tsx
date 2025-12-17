@@ -1,47 +1,48 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface LookbookItem {
   type: 'image' | 'video';
   src: string;
-  caption: string;
+  captionKey: string;
 }
 
 const lookbookItems: LookbookItem[] = [
   {
     type: 'video',
     src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758907652/Ovela_2_hiufkv.mp4',
-    caption: 'Isabella in Motion'
+    captionKey: 'lookbook.captions.inMotion'
   },
   {
     type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759496778/Flux_Dev_Fullbody_or_closeup_portrait_of_adult_IsabellaV2_hair_0_jbwnwi.jpg',
-    caption: 'Editorial Excellence'
+    captionKey: 'lookbook.captions.editorial'
   },
   {
     type: 'video',
     src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758727075/b8674c11-00a4-42b4-ad39-ebaf103d9f18_1_ffgrvr.mp4',
-    caption: 'Runway Ready'
+    captionKey: 'lookbook.captions.runway'
   },
   {
     type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759495220/1_16_xpxhgm.jpg',
-    caption: 'Brand Partnerships'
+    captionKey: 'lookbook.captions.brandPartnerships'
   },
   {
     type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759495676/Flux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_debou_000_18_ohp5o7.jpg',
-    caption: 'Fashion Forward'
+    captionKey: 'lookbook.captions.fashionForward'
   },
   {
     type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759496281/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_body_clos_1_iitsbk.jpg',
-    caption: 'Timeless Elegance'
+    captionKey: 'lookbook.captions.timelessElegance'
   },
   {
     type: 'video',
     src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4',
-    caption: 'Modern Icon'
+    captionKey: 'lookbook.captions.modernIcon'
   }
 ];
 
@@ -63,6 +64,7 @@ export const LookbookCarousel = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const startX = useRef<number>(0);
   const scrollLeft = useRef<number>(0);
+  const { t } = useTranslation();
 
   const scrollToIndex = (index: number) => {
     if (!scrollContainerRef.current) return;
@@ -278,7 +280,7 @@ export const LookbookCarousel = () => {
                 ) : (
                   <img
                     src={item.src}
-                    alt={item.caption}
+                    alt={t(item.captionKey)}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 )}
@@ -300,7 +302,7 @@ export const LookbookCarousel = () => {
                       color: '#E8CFA9'
                     }}
                   >
-                    {item.caption}
+                    {t(item.captionKey)}
                   </p>
                 </div>
               </div>

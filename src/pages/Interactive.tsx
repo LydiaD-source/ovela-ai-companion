@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { IsabellaAvatarStream } from '@/components/Interactive/IsabellaAvatarStream';
 import { useSEO } from '@/hooks/useSEO';
+import { useStructuredData, isabellaSchema, organizationSchema } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
 
 const Interactive = () => {
@@ -17,6 +18,9 @@ const Interactive = () => {
     title: t('seo.interactive.title', 'Interactive AI Model | Ovela Interactive'),
     description: t('seo.interactive.description', 'Meet Isabella, the world\'s first interactive AI model. Engage with cutting-edge AI technology that brings brands to life through real-time conversations.')
   });
+
+  // Structured data for Isabella AI
+  useStructuredData([isabellaSchema, organizationSchema], 'interactive-structured-data');
 
   return (
     <div className="min-h-screen flex flex-col">

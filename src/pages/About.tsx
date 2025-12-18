@@ -2,11 +2,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { Separator } from '@/components/ui/separator';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
 
 const About = () => {
   const { t } = useTranslation();
-  useCanonicalLink('/about');
+  useSEO({
+    path: '/about',
+    title: t('seo.about.title', 'About Ovela Interactive | AI Modeling Agency'),
+    description: t('seo.about.description', 'Learn about Ovela Interactive and Isabella, the world\'s first AI model ambassador. Discover our journey from WellnessGeni to revolutionizing interactive modeling.')
+  });
   return (
     <div className="min-h-screen">
       {/* Hero Intro Block */}

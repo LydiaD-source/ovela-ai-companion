@@ -8,7 +8,7 @@ import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
 import '@/styles/HeroSection.css';
 
 // Isabella avatar URL - centralized constant
@@ -17,7 +17,13 @@ const ISABELLA_VIDEO_URL = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1
 
 const Home = () => {
   const { t } = useTranslation();
-  useCanonicalLink('/');
+  
+  // SEO with translated meta tags
+  useSEO({
+    path: '/',
+    title: t('seo.home.title', 'Ovela Interactive | Where AI Becomes Your Brand\'s Voice'),
+    description: t('seo.home.description', 'Discover Ovela Interactive — the AI-powered marketing agency behind Isabella, the world\'s first humanlike AI model and companion.')
+  });
   
   const [isChatActive, setIsChatActive] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);

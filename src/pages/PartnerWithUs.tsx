@@ -1,10 +1,17 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
+import { useTranslation } from 'react-i18next';
 
 const PartnerWithUs = () => {
-  useCanonicalLink('/partner');
+  const { t } = useTranslation();
+  useSEO({
+    path: '/partner',
+    title: t('seo.partner.title', 'Partner With Isabella | AI Model Ambassador Collaborations'),
+    description: t('seo.partner.description', 'Collaborate with Ovela and Isabella, the world\'s first interactive AI Model Ambassador. Brand partnerships, licensing, and custom creations for your campaigns.')
+  });
+
   const scrollToChat = () => {
     window.location.href = '/?chat=open';
   };

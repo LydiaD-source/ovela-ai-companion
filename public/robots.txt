@@ -1,8 +1,8 @@
 # Ovela Interactive Robots.txt
-# Last updated: 2025-12-08
+# Last updated: 2025-12-18
 
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://ovelainteractive.com/sitemap.xml
+# Sitemap location (use www consistently)
+Sitemap: https://www.ovelainteractive.com/sitemap.xml

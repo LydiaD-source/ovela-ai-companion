@@ -95,7 +95,7 @@ export const FooterMinimal = () => {
                 <Instagram size={20} />
               </a>
               <a
-                href="https://www.youtube.com/channel/UCNPojwnrF8R_OfsMqzF5T9g"
+                href="https://www.youtube.com/channel/UC0ZabJImCcMx5OLJkLU8iwg"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="transition-all duration-300 hover:scale-110"

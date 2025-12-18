@@ -72,7 +72,7 @@ const Footer = () => {
                 <Instagram size={20} />
               </a>
               <a
-                href="https://www.youtube.com/channel/UCNPojwnrF8R_OfsMqzF5T9g"
+                href="https://www.youtube.com/channel/UC0ZabJImCcMx5OLJkLU8iwg"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors duration-200"

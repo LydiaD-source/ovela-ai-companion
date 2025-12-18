@@ -1,36 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Mail } from 'lucide-react';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
 import { useTranslation } from 'react-i18next';
 
 const Contact = () => {
-  useCanonicalLink('/contact');
   const { t } = useTranslation();
+  
+  // SEO with translated meta tags
+  useSEO({
+    path: '/contact',
+    title: t('seo.contact.title', 'Contact Ovela Interactive | Modeling & Marketing Agency'),
+    description: t('seo.contact.description', 'Get in touch with Ovela Interactive — a creative modeling and marketing agency specializing in AI-enhanced campaigns. Contact our team or chat with Isabella.')
+  });
 
   const handleStartChat = () => {
     window.location.href = '/?chat=open';
   };
-
-  // SEO Metadata
-  useEffect(() => {
-    document.title = 'Contact Ovela Interactive | Modeling & Marketing Agency';
-    
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Get in touch with Ovela Interactive — a creative modeling and marketing agency specializing in AI-enhanced campaigns. Contact our team or chat with Isabella for collaborations and project inquiries.');
-    }
-    
-    const metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (metaKeywords) {
-      metaKeywords.setAttribute('content', 'Ovela Interactive, contact Ovela, modeling agency, marketing collaborations, creative partnerships, AI marketing, brand projects');
-    } else {
-      const keywords = document.createElement('meta');
-      keywords.name = 'keywords';
-      keywords.content = 'Ovela Interactive, contact Ovela, modeling agency, marketing collaborations, creative partnerships, AI marketing, brand projects';
-      document.head.appendChild(keywords);
-    }
-  }, []);
 
   return (
     <div 

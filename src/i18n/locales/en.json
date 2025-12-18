@@ -259,5 +259,39 @@
     "listening": "Listening...",
     "yourTurn": "Your turn...",
     "isabellaSpeaking": "Isabella speaking..."
+  },
+  "seo": {
+    "home": {
+      "title": "Ovela Interactive | Where AI Becomes Your Brand's Voice",
+      "description": "Discover Ovela Interactive — the AI-powered marketing agency behind Isabella, the world's first humanlike AI model and companion."
+    },
+    "about": {
+      "title": "About Ovela Interactive | AI Modeling Agency",
+      "description": "Learn about Ovela Interactive and Isabella, the world's first AI model ambassador. Discover our journey from WellnessGeni to revolutionizing interactive modeling."
+    },
+    "pricing": {
+      "title": "Pricing | Work With Isabella - AI Model Ambassador",
+      "description": "Partner with Isabella, the world's first AI model ambassador. View our pricing for product promotions, social media features, and custom ambassador campaigns."
+    },
+    "contact": {
+      "title": "Contact Ovela Interactive | Modeling & Marketing Agency",
+      "description": "Get in touch with Ovela Interactive — a creative modeling and marketing agency specializing in AI-enhanced campaigns. Contact our team or chat with Isabella."
+    },
+    "projects": {
+      "title": "Isabella's Projects | AI Model Portfolio",
+      "description": "Explore Isabella's project portfolio — from wellness coaching to luxury fashion campaigns. See the world's first AI Model Ambassador in action."
+    },
+    "partner": {
+      "title": "Partner With Isabella | AI Model Ambassador Collaborations",
+      "description": "Collaborate with Ovela and Isabella, the world's first interactive AI Model Ambassador. Brand partnerships, licensing, and custom creations for your campaigns."
+    },
+    "interactive": {
+      "title": "Interactive AI Model | Ovela Interactive",
+      "description": "Meet Isabella, the world's first interactive AI model. Engage with cutting-edge AI technology that brings brands to life through real-time conversations."
+    },
+    "wellnessgeni": {
+      "title": "WellnessGeni | AI Wellness Companion by Ovela",
+      "description": "Discover WellnessGeni, where Isabella first appeared as an AI wellness coach. The app that started it all — personalized wellness guidance powered by AI."
+    }
   }
 }

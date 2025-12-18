@@ -1,14 +1,19 @@
-
 import React from 'react';
 import { ArrowRight, CheckCircle, Heart, Brain, Clock, Users } from 'lucide-react';
 import Section from '@/components/UI/Section';
 import { Button } from '@/components/ui/button';
 import placeholder1 from '@/assets/wellnessgeni-placeholder1.png';
 import placeholder2 from '@/assets/wellnessgeni-placeholder2.png';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
+import { useTranslation } from 'react-i18next';
 
 const WellnessGeni = () => {
-  useCanonicalLink('/wellnessgeni');
+  const { t } = useTranslation();
+  useSEO({
+    path: '/wellnessgeni',
+    title: t('seo.wellnessgeni.title', 'WellnessGeni | AI Wellness Companion by Ovela'),
+    description: t('seo.wellnessgeni.description', 'Discover WellnessGeni, where Isabella first appeared as an AI wellness coach. The app that started it all — personalized wellness guidance powered by AI.')
+  });
   // Direct link to WellnessGeni guest route with Isabella Navia persona for Ovela visitors
   const isabellaGuestUrl = "https://isabela-soul-connect.lovable.app/guest?persona=isabella-navia&source=ovela&ref=ovela&hide_personas=true&marketing_mode=true";
 

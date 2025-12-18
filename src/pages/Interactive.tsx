@@ -1,43 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { IsabellaAvatarStream } from '@/components/Interactive/IsabellaAvatarStream';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
+import { useTranslation } from 'react-i18next';
 
 const Interactive = () => {
-  useCanonicalLink('/interactive');
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [showAvatar, setShowAvatar] = useState(false);
 
-  useEffect(() => {
-    // SEO: Set page title and meta description
-    document.title = 'Interactive AI Model | Ovela Interactive';
-    
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Meet Isabella, the world\'s first interactive AI model. Engage with cutting-edge AI technology that brings brands to life through real-time conversations and dynamic content.');
-    }
-
-    // Add Open Graph meta tags
-    const updateOrCreateMeta = (property: string, content: string) => {
-      let meta = document.querySelector(`meta[property="${property}"]`);
-      if (meta) {
-        meta.setAttribute('content', content);
-      } else {
-        meta = document.createElement('meta');
-        meta.setAttribute('property', property);
-        meta.setAttribute('content', content);
-        document.head.appendChild(meta);
-      }
-    };
-
-    updateOrCreateMeta('og:title', 'Interactive AI Model | Ovela Interactive');
-    updateOrCreateMeta('og:description', 'Meet Isabella, the world\'s first interactive AI model. Engage with cutting-edge AI technology that brings brands to life.');
-    updateOrCreateMeta('og:url', 'https://ovelainteractive.com/interactive');
-    updateOrCreateMeta('og:type', 'website');
-    updateOrCreateMeta('og:image', 'https://ovelainteractive.com/images/isabella-hero-native.png');
-  }, []);
+  // SEO with translated meta tags
+  useSEO({
+    path: '/interactive',
+    title: t('seo.interactive.title', 'Interactive AI Model | Ovela Interactive'),
+    description: t('seo.interactive.description', 'Meet Isabella, the world\'s first interactive AI model. Engage with cutting-edge AI technology that brings brands to life through real-time conversations.')
+  });
 
   return (
     <div className="min-h-screen flex flex-col">

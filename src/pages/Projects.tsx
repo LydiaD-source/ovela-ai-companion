@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { useCanonicalLink } from '@/hooks/useCanonicalLink';
+import { useSEO } from '@/hooks/useSEO';
 import { useTranslation } from 'react-i18next';
 
 const Projects = () => {
-  useCanonicalLink('/projects');
   const { t } = useTranslation();
+  useSEO({
+    path: '/projects',
+    title: t('seo.projects.title', 'Isabella\'s Projects | AI Model Portfolio'),
+    description: t('seo.projects.description', 'Explore Isabella\'s project portfolio — from wellness coaching to luxury fashion campaigns. See the world\'s first AI Model Ambassador in action.')
+  });
 
   const [mutedVideos, setMutedVideos] = useState<{ [key: number]: boolean }>({
     1: true,

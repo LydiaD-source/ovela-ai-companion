@@ -2,6 +2,89 @@ import { useEffect } from 'react';
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 
+// Product Schema for pricing offerings
+export const createProductSchema = (product: {
+  name: string;
+  description: string;
+  price: string;
+  image?: string;
+  sku?: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": product.name,
+  "description": product.description,
+  "image": product.image || `${BASE_URL}/favicon.png`,
+  "sku": product.sku || product.name.toLowerCase().replace(/\s+/g, '-'),
+  "brand": {
+    "@type": "Brand",
+    "name": "Ovela Interactive"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": `${BASE_URL}/pricing`,
+    "priceCurrency": "EUR",
+    "price": product.price.replace(/[^0-9]/g, '') || "0",
+    "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "Ovela Interactive"
+    }
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "Ovela Interactive",
+    "url": BASE_URL
+  }
+});
+
+// Pre-defined Product schemas for pricing page
+export const pricingProductSchemas = [
+  createProductSchema({
+    name: "Product Promotion Package",
+    description: "Isabella showcases your product in a personalized video or post.",
+    price: "3500",
+    image: `${BASE_URL}/images/pricing-product-promotion.jpg`,
+    sku: "product-promotion"
+  }),
+  createProductSchema({
+    name: "Social Media Feature",
+    description: "Strategic brand feature across Isabella's social channels.",
+    price: "5000",
+    image: `${BASE_URL}/images/pricing-social-media.jpg`,
+    sku: "social-media-feature"
+  }),
+  createProductSchema({
+    name: "Event Presence",
+    description: "Isabella as your virtual or in-venue brand ambassador for events.",
+    price: "8000",
+    image: `${BASE_URL}/images/pricing-event-presence.jpg`,
+    sku: "event-presence"
+  }),
+  createProductSchema({
+    name: "Custom AI Ambassador",
+    description: "Full custom AI ambassador tailored to your brand identity.",
+    price: "15000",
+    image: `${BASE_URL}/images/pricing-custom-ambassador.jpg`,
+    sku: "custom-ambassador"
+  }),
+  createProductSchema({
+    name: "Website Integration",
+    description: "Embed Isabella directly on your website for 24/7 customer engagement.",
+    price: "6000",
+    image: `${BASE_URL}/images/pricing-website-integration.jpg`,
+    sku: "website-integration"
+  }),
+  createProductSchema({
+    name: "Ambassador Video Package",
+    description: "Professional AI-generated video content featuring Isabella for your brand.",
+    price: "4000",
+    image: `${BASE_URL}/images/pricing-ambassador-video.jpg`,
+    sku: "ambassador-video"
+  })
+];
+
 // Organization Schema for Ovela Interactive
 export const organizationSchema = {
   "@context": "https://schema.org",

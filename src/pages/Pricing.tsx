@@ -2,6 +2,7 @@ import React from 'react';
 import { Sparkles, Globe, Mic, Palette, BarChart3, Video, Monitor } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { useSEO } from '@/hooks/useSEO';
+import { useStructuredData, serviceSchema, organizationSchema } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
@@ -11,6 +12,9 @@ const Pricing = () => {
     title: t('seo.pricing.title', 'Pricing | Work With Isabella - AI Model Ambassador'),
     description: t('seo.pricing.description', 'Partner with Isabella, the world\'s first AI model ambassador. View our pricing for product promotions, social media features, and custom ambassador campaigns.')
   });
+
+  // Structured data for services
+  useStructuredData([serviceSchema, organizationSchema], 'pricing-structured-data');
 
   const packages = [
     {

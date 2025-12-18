@@ -9,6 +9,7 @@ import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';
 import { useSEO } from '@/hooks/useSEO';
+import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, faqSchema, isabellaSchema } from '@/hooks/useStructuredData';
 import '@/styles/HeroSection.css';
 
 // Isabella avatar URL - centralized constant
@@ -24,6 +25,9 @@ const Home = () => {
     title: t('seo.home.title', 'Ovela Interactive | Where AI Becomes Your Brand\'s Voice'),
     description: t('seo.home.description', 'Discover Ovela Interactive — the AI-powered marketing agency behind Isabella, the world\'s first humanlike AI model and companion.')
   });
+
+  // Structured data for rich search results
+  useStructuredData([organizationSchema, websiteSchema, serviceSchema, faqSchema, isabellaSchema], 'home-structured-data');
   
   const [isChatActive, setIsChatActive] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);

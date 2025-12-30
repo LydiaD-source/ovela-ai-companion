@@ -2361,55 +2361,7 @@ export type Database = {
               updated: boolean
             }[]
           }
-        | {
-            Args: { uid: string; user_email: string }
-            Returns: {
-              adult_mode_enabled: boolean | null
-              avatar: string | null
-              avatar_talking_photo_id: string | null
-              consent_date: string | null
-              created_at: string
-              default_mode: string | null
-              effective_tier: string | null
-              email: string | null
-              first_time_in_settings: boolean
-              full_name: string
-              id: string
-              invited_premium_expires_at: string | null
-              invited_promo_access: boolean | null
-              is_first_login: boolean
-              main_persona_name: string | null
-              memory_consent_ip: unknown
-              memory_deletion_date: string | null
-              memory_enabled: boolean | null
-              notifications_frequency: string | null
-              onboarding_complete: boolean | null
-              original_tier_before_invite: string | null
-              persona_behavior: string | null
-              persona_behaviors: Json | null
-              preferred_language: string | null
-              professional_account: boolean | null
-              promo_access: boolean
-              role: string | null
-              subscription_active: boolean | null
-              subscription_tier: string | null
-              timezone: string | null
-              tutorial_shown: boolean | null
-              updated_at: string | null
-              user_id: string
-              username: string | null
-              voice: string | null
-              voice_enabled: boolean | null
-              voice_id: string | null
-              voice_style: string | null
-            }
-            SetofOptions: {
-              from: "*"
-              to: "profiles"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
+        | { Args: { uid: string; user_email: string }; Returns: Json }
       ensure_user_profile_and_subscription: {
         Args: {
           p_invite_code?: string
@@ -2518,7 +2470,7 @@ export type Database = {
               p_subscription_tier?: string
               p_user_id: string
             }
-            Returns: undefined
+            Returns: Json
           }
       onboard_user: {
         Args: { _email: string; _full_name?: string; _user_id: string }

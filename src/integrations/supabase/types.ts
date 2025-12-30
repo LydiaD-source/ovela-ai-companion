@@ -2499,14 +2499,8 @@ export type Database = {
         | { Args: { _email: string; _user_id: string }; Returns: Json }
         | { Args: { p_email: string; p_invite_code: string }; Returns: Json }
         | {
-            Args: { p_email: string; p_invite_token: string; p_user_id: string }
-            Returns: {
-              created: boolean
-              message: string
-              profile_id: string
-              success: boolean
-              updated: boolean
-            }[]
+            Args: { p_email: string; p_invite_code: string; p_user_id: string }
+            Returns: Json
           }
         | {
             Args: {

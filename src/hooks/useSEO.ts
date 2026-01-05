@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// Primary domain - use www consistently for Google Search Console
-const BASE_URL = 'https://www.ovelainteractive.com';
+// Primary domain - use non-www as canonical (with 301 redirects from www)
+const BASE_URL = 'https://ovelainteractive.com';
 
 // Supported languages for hreflang
 const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'pt'] as const;

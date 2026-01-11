@@ -78,6 +78,11 @@ const NotFound = () => {
       '/home': '/',
       '/index': '/',
       '/main': '/',
+      
+      // Removed/legacy pages - redirect to home
+      '/locale-tools': '/',
+      '/tools': '/',
+      '/services': '/',
     };
 
     if (redirectMap[path]) {

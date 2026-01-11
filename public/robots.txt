@@ -1,8 +1,13 @@
 # Ovela Interactive Robots.txt
-# Last updated: 2026-01-05
+# Last updated: 2026-01-11
 
 User-agent: *
 Allow: /
 
-# Sitemap location (canonical non-www domain)
+# Disallow non-existent pages
+Disallow: /locale-tools
+Disallow: /tools
+Disallow: /services
+
+# Sitemap location (canonical HTTPS non-www domain)
 Sitemap: https://ovelainteractive.com/sitemap.xml

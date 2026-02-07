@@ -37,7 +37,7 @@ const Projects = () => {
       id: 2,
       nameKey: 'projects.items.robocareAI.name',
       descriptionKey: 'projects.items.robocareAI.description',
-      imagePlaceholder: 'Isabella for Robocare AI'
+      imagePlaceholder: 'Isabella for Digital Home Care Assistant'
     },
     {
       id: 3,

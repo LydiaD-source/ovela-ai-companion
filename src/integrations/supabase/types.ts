@@ -418,6 +418,373 @@ export type Database = {
         }
         Relationships: []
       }
+      client_bookings: {
+        Row: {
+          booking_id: string
+          client_id: string
+          created_at: string
+          email: string
+          end_time: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          notes: string | null
+          product_id: string
+          source: string | null
+          start_time: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          booking_id: string
+          client_id: string
+          created_at?: string
+          email: string
+          end_time?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          product_id: string
+          source?: string | null
+          start_time: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string
+          client_id?: string
+          created_at?: string
+          email?: string
+          end_time?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          product_id?: string
+          source?: string | null
+          start_time?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_bookings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_bookings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "client_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_products: {
+        Row: {
+          active: boolean
+          base_price: number | null
+          benefits: Json | null
+          bookable: boolean | null
+          booking_url: string | null
+          category: string
+          client_id: string
+          contraindications: string | null
+          created_at: string
+          cross_sell_products: Json | null
+          currency: string | null
+          description: string | null
+          display_order: number | null
+          faqs: Json | null
+          id: string
+          metadata: Json | null
+          name: string
+          price_display: string | null
+          product_images: Json | null
+          promo_text: string | null
+          requires_consultation: boolean | null
+          short_description: string | null
+          status: string | null
+          stripe_price_id: string | null
+          taxable: boolean | null
+          thumbnail_url: string | null
+          updated_at: string
+          upsell_products: Json | null
+          usage_instructions: string | null
+          video_url: string | null
+          visible_on_website: boolean | null
+          who_is_it_for: string | null
+        }
+        Insert: {
+          active?: boolean
+          base_price?: number | null
+          benefits?: Json | null
+          bookable?: boolean | null
+          booking_url?: string | null
+          category?: string
+          client_id: string
+          contraindications?: string | null
+          created_at?: string
+          cross_sell_products?: Json | null
+          currency?: string | null
+          description?: string | null
+          display_order?: number | null
+          faqs?: Json | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          price_display?: string | null
+          product_images?: Json | null
+          promo_text?: string | null
+          requires_consultation?: boolean | null
+          short_description?: string | null
+          status?: string | null
+          stripe_price_id?: string | null
+          taxable?: boolean | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          upsell_products?: Json | null
+          usage_instructions?: string | null
+          video_url?: string | null
+          visible_on_website?: boolean | null
+          who_is_it_for?: string | null
+        }
+        Update: {
+          active?: boolean
+          base_price?: number | null
+          benefits?: Json | null
+          bookable?: boolean | null
+          booking_url?: string | null
+          category?: string
+          client_id?: string
+          contraindications?: string | null
+          created_at?: string
+          cross_sell_products?: Json | null
+          currency?: string | null
+          description?: string | null
+          display_order?: number | null
+          faqs?: Json | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          price_display?: string | null
+          product_images?: Json | null
+          promo_text?: string | null
+          requires_consultation?: boolean | null
+          short_description?: string | null
+          status?: string | null
+          stripe_price_id?: string | null
+          taxable?: boolean | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          upsell_products?: Json | null
+          usage_instructions?: string | null
+          video_url?: string | null
+          visible_on_website?: boolean | null
+          who_is_it_for?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_products_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_promotions: {
+        Row: {
+          active: boolean | null
+          applies_to: string
+          auto_expire: boolean | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          discount_type: string
+          discount_value: number
+          id: string
+          metadata: Json | null
+          priority_level: number | null
+          promo_id: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+          valid_from: string
+          valid_until: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          applies_to: string
+          auto_expire?: boolean | null
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_type: string
+          discount_value: number
+          id?: string
+          metadata?: Json | null
+          priority_level?: number | null
+          promo_id: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          applies_to?: string
+          auto_expire?: boolean | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          metadata?: Json | null
+          priority_level?: number | null
+          promo_id?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          valid_from?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_promotions_applies_to_fkey"
+            columns: ["applies_to"]
+            isOneToOne: false
+            referencedRelation: "client_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_promotions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_solutions: {
+        Row: {
+          behavior_overrides: Json | null
+          benefits: Json | null
+          candidate_profile: Json | null
+          client_id: string
+          contraindications: string | null
+          core_outcome: string | null
+          created_at: string
+          cross_references: Json | null
+          description_full: string | null
+          description_short: string | null
+          display_order: number | null
+          emotional_framing: string | null
+          id: string
+          is_active: boolean
+          name: string
+          objective: string | null
+          opening_prompt: string | null
+          price_range: string | null
+          program_structure_details: string | null
+          session_duration_minutes: number | null
+          sessions_typical_range: string | null
+          specific_features: Json | null
+          structured_faqs: Json | null
+          symptom_indicators: Json | null
+          thumbnail_url: string | null
+          triage_questions: Json | null
+          unique_differentiators: string | null
+          updated_at: string
+          upgrade_path: string | null
+          usage_instructions: string | null
+          who_is_it_for: string | null
+        }
+        Insert: {
+          behavior_overrides?: Json | null
+          benefits?: Json | null
+          candidate_profile?: Json | null
+          client_id: string
+          contraindications?: string | null
+          core_outcome?: string | null
+          created_at?: string
+          cross_references?: Json | null
+          description_full?: string | null
+          description_short?: string | null
+          display_order?: number | null
+          emotional_framing?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          objective?: string | null
+          opening_prompt?: string | null
+          price_range?: string | null
+          program_structure_details?: string | null
+          session_duration_minutes?: number | null
+          sessions_typical_range?: string | null
+          specific_features?: Json | null
+          structured_faqs?: Json | null
+          symptom_indicators?: Json | null
+          thumbnail_url?: string | null
+          triage_questions?: Json | null
+          unique_differentiators?: string | null
+          updated_at?: string
+          upgrade_path?: string | null
+          usage_instructions?: string | null
+          who_is_it_for?: string | null
+        }
+        Update: {
+          behavior_overrides?: Json | null
+          benefits?: Json | null
+          candidate_profile?: Json | null
+          client_id?: string
+          contraindications?: string | null
+          core_outcome?: string | null
+          created_at?: string
+          cross_references?: Json | null
+          description_full?: string | null
+          description_short?: string | null
+          display_order?: number | null
+          emotional_framing?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          objective?: string | null
+          opening_prompt?: string | null
+          price_range?: string | null
+          program_structure_details?: string | null
+          session_duration_minutes?: number | null
+          sessions_typical_range?: string | null
+          specific_features?: Json | null
+          structured_faqs?: Json | null
+          symptom_indicators?: Json | null
+          thumbnail_url?: string | null
+          triage_questions?: Json | null
+          unique_differentiators?: string | null
+          updated_at?: string
+          upgrade_path?: string | null
+          usage_instructions?: string | null
+          who_is_it_for?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_solutions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           contact_info: Json
@@ -445,8 +812,53 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_inquiries: {
+        Row: {
+          client_id: string
+          created_at: string
+          email: string | null
+          id: string
+          inquiry_text: string
+          inquiry_timestamp: string
+          product_or_service_id: string
+          session_id: string | null
+          source: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          inquiry_text: string
+          inquiry_timestamp?: string
+          product_or_service_id: string
+          session_id?: string | null
+          source?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          inquiry_text?: string
+          inquiry_timestamp?: string
+          product_or_service_id?: string
+          session_id?: string | null
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_inquiries_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_leads: {
         Row: {
+          client_id: string | null
           created_at: string
           email: string
           id: string
@@ -457,6 +869,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          client_id?: string | null
           created_at?: string
           email: string
           id?: string
@@ -467,6 +880,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          client_id?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -476,7 +890,15 @@ export type Database = {
           source?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "crm_leads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       custom_persona_access_log: {
         Row: {

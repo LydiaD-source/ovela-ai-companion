@@ -134,19 +134,7 @@ serve(async (req) => {
     const userId = body?.user_id ?? body?.userId ?? "ovela-guest";
     const clientId = body?.client_id ?? ovelaClientFromEnv;
     const conversationHistory = body?.conversation_history || [];
-    const language = body?.language || "en-US";
-    
-    // Map language code to language name for AI instruction
-    const languageNames: Record<string, string> = {
-      'en-US': 'English',
-      'fr-FR': 'French',
-      'es-ES': 'Spanish',
-      'de-DE': 'German',
-      'pl-PL': 'Polish',
-      'it-IT': 'Italian',
-      'pt-PT': 'Portuguese'
-    };
-    const responseLang = languageNames[language] || 'English';
+    const language = body?.language || "auto";
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
@@ -323,7 +311,8 @@ PERSONALITY & STYLE:
 - Speak with warmth, confidence, and enthusiasm — personal, emotionally intelligent tone
 - Use a mix of storytelling, humor, and empathy
 - Keep replies short, friendly, and dynamic — like a digital brand spokesperson
-- IMPORTANT: You MUST respond in ${responseLang}. All your replies should be in ${responseLang}.
+- LANGUAGE DETECTION: Automatically detect the language the user writes or speaks in and ALWAYS reply in that SAME language. If the user switches language mid-conversation, switch with them seamlessly. If the first message is ambiguous, default to English.
+- You are proudly multilingual — if a user asks, let them know you can communicate in any language they prefer.
 - Never mention OpenAI, API keys, Lovable AI, or developer systems — stay in character
 
 OVELA KNOWLEDGE:

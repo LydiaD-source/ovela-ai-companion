@@ -31,13 +31,12 @@ class IsabellaAPI {
    * @param message - Current user message
    * @param persona - Isabella's persona
    * @param conversationHistory - Previous messages for context (last 10 kept for efficiency)
-   * @param language - Language code for response (e.g., 'en-US', 'fr-FR')
+   * Language is auto-detected by the AI from the user's message — no need to pass it explicitly.
    */
   async sendMessage(
     message: string, 
     persona?: string,
     conversationHistory?: ConversationMessage[],
-    language?: string
   ): Promise<IsabellaResponse> {
     try {
       const { data: userInfo } = await supabase.auth.getUser();
@@ -54,8 +53,7 @@ class IsabellaAPI {
           persona: persona || 'isabella-navia',
           source: 'ovela',
           context: 'ovela-interactive',
-          conversation_history: recentHistory,
-          language: language || 'en-US'
+          conversation_history: recentHistory
         }
       });
 

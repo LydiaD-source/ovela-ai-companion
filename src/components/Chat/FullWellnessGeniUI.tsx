@@ -308,7 +308,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
           content: m.text
         }));
-        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history, selectedLanguage);
+        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
         assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       }
 

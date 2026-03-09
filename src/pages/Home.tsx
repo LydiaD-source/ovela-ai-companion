@@ -111,7 +111,11 @@ const Home = () => {
       avatarUrl: ISABELLA_AVATAR_URL,
       text,
     }).catch(err => {
-      console.error('[Home] ❌ Speak error:', err);
+      console.error('[Home] ❌ D-ID speak failed, falling back to TTS:', err);
+      // Fallback to ElevenLabs TTS when D-ID is unavailable
+      textToSpeechService.speakText(text).catch(ttsErr => {
+        console.error('[Home] ❌ TTS fallback also failed:', ttsErr);
+      });
     });
   }, []);
 

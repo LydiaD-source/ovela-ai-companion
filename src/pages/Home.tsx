@@ -62,20 +62,20 @@ const Home = () => {
     };
   }, []);
 
-  // Control canvas visibility based on speaking state
+  // Control canvas visibility based on streaming speaking state only
   useEffect(() => {
     const canvas = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
     if (!canvas) return;
-    
-    canvas.style.opacity = isSpeaking ? '1' : '0';
-    if (isSpeaking) canvas.style.display = 'block';
-    
-    // Ensure audio plays when speaking
-    if (isSpeaking && videoRef.current) {
+
+    canvas.style.opacity = isStreamSpeaking ? '1' : '0';
+    if (isStreamSpeaking) canvas.style.display = 'block';
+
+    // Ensure audio plays when streaming is speaking
+    if (isStreamSpeaking && videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.volume = 1.0;
     }
-  }, [isSpeaking]);
+  }, [isStreamSpeaking]);
 
   // Subscribe to StreamingService state changes
   useEffect(() => {
@@ -83,15 +83,19 @@ const Home = () => {
       console.log('[Home] 🔗 Connection:', connected);
       if (connected) setIsLoading(false);
     });
-    
+
     const unsubSpeaking = StreamingService.onSpeakingChange((speaking) => {
       console.log('[Home] 🎤 Speaking:', speaking);
-      setIsSpeaking(speaking);
+      setIsStreamSpeaking(speaking);
     });
-    
+
+    textToSpeechService.setOnSpeakingChange(setIsTTSSpeaking);
+
     return () => {
       unsubConnection();
       unsubSpeaking();
+      textToSpeechService.setOnSpeakingChange(() => {});
+      setIsTTSSpeaking(false);
     };
   }, []);
 

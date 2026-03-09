@@ -72,12 +72,13 @@ const isAllowedOrigin = (origin: string): boolean => {
 
 // Log startup config (once per cold start)
 console.log('[did-streaming] v4 PRODUCTION READY:', {
-  DID_API_KEY_SET: !!DID_API_KEY,
-  DID_API_KEY_LENGTH: DID_API_KEY?.length || 0,
+  DID_API_KEY_SET: !!DID_API_KEY_RAW,
+  DID_API_KEY_LENGTH: DID_API_KEY_RAW?.length || 0,
   DID_KEY_SOURCE,
+  DID_AUTH_MODE,
   ELEVEN_KEY_SET: !!ELEVENLABS_API_KEY,
   ELEVEN_KEY_LENGTH: ELEVENLABS_API_KEY?.length || 0,
-  version: '2026-03-09-HARDENED-CORS-KEY',
+  version: '2026-03-09-STABLE-STREAM-AUTH',
 });
 
 // Generate unique request ID for tracing

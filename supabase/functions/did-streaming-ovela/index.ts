@@ -62,8 +62,7 @@ const isAllowedOrigin = (origin: string): boolean => {
       isLocal ||
       hostname.endsWith('.lovable.app') ||
       hostname.endsWith('.lovableproject.com') ||
-      hostname.endsWith('.ovelainteractive.com') ||
-      hostname.endsWith('.wellnessgeni.com')
+      hostname.endsWith('.ovelainteractive.com')
     );
   } catch {
     return false;

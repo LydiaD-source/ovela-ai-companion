@@ -193,7 +193,7 @@ const Home = () => {
             {/* Left Side - Isabella (Anchor) */}
             <div 
               className="isabella-container"
-              style={{ zIndex: isSpeaking ? 200 : 1 }}
+              style={{ zIndex: isStreamSpeaking ? 200 : 1 }}
             >
               {/* Enhanced Isabella Backlight (Soft Golden Glow) - Positioned in container */}
               <div className="isabella-backlight"></div>
@@ -211,7 +211,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isSpeaking ? 0 : 1,
+                    opacity: isStreamSpeaking ? 0 : 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />
@@ -239,59 +239,14 @@ const Home = () => {
                 )}
               </div>
             </div>
-
-            {/* Center-Right Area - Tagline & Text */}
-            <div className="hero-text-container">
-              {/* Content Wrapper - Fades out when chat is active */}
-              <div className={`hero-content-fade ${isChatActive ? 'hidden' : ''}`}>
-                {/* Headline - Luxury Serif */}
-                <h1 className="hero-headline">
-                  {t('hero.title')}{' '}
-                  <span className="hero-gradient-text">
-                    {t('hero.titleHighlight')}
-                  </span>
-                </h1>
-                
-                {/* Subheadline - Elegant Sans-Serif */}
-                <p className="hero-subheadline">
-                  <span className="hero-highlight-name">
-                    {t('hero.subtitle')}
-                  </span>
-                  {' '}{t('hero.description')}
-                </p>
-                
-                {/* CTA Section */}
-                <div className="hero-cta-section">
-                  {/* Primary CTA Button */}
-                  <button 
-                    onClick={activateChat}
-                    className="hero-btn-primary"
-                  >
-                    {t('hero.cta')}
-                  </button>
-                  
-                  {/* Secondary CTA - Text Link */}
-                  <a 
-                    href="#lookbook"
-                    className="hero-link-secondary"
-                  >
-                    {t('hero.explore')}
-                  </a>
-                </div>
-              </div>
-
-              {/* Chat Box Overlay - Glassmorphism */}
-              <div className={`hero-chat-overlay ${isChatActive ? 'active' : ''}`}>
-                <div className="hero-chat-box">
-                  {/* Chat Component - Full Height */}
-                  <div className="w-full h-full pt-2">
+...
                     <FullWellnessGeniUI 
                       isGuestMode={true}
                       defaultPersona="isabella-navia"
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
                       onAIResponse={handleAIResponse}
-                      isAISpeaking={isSpeaking}
+                      isAISpeaking={isAISpeaking}
                     />
                   </div>
                   

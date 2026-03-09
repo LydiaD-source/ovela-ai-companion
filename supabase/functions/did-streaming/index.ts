@@ -53,20 +53,27 @@ const generateRequestId = () => Math.random().toString(16).slice(2, 10);
 serve(async (req) => {
   const requestId = generateRequestId();
   const origin = req.headers.get('origin') || '';
-  const isAllowed = ALLOWED_ORIGINS.some(o => origin.startsWith(o)) || origin === '';
-  
+  const isAllowed = isAllowedOrigin(origin);
+
   console.log(`[${requestId}] Request from origin: ${origin} Allowed: ${isAllowed}`);
 
   // Dynamic CORS headers based on origin
   const corsHeaders = {
-    'Access-Control-Allow-Origin': isAllowed ? origin || '*' : ALLOWED_ORIGINS[0],
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Origin': isAllowed ? origin || '*' : 'https://www.ovelainteractive.com',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Max-Age': '86400',
   };
 
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  if (!isAllowed) {
+    return new Response(JSON.stringify({ success: false, error: 'Origin not allowed' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   try {

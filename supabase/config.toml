@@ -27,5 +27,5 @@ verify_jwt = false
 [functions.openai-realtime-token]
 verify_jwt = false
 
-[functions.did-streaming]
+[functions.did-streaming-ovela]
 verify_jwt = false

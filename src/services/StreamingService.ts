@@ -3,7 +3,7 @@
  * Optimized WebRTC streaming with robust speech detection
  */
 
-const BACKEND_FN = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/did-streaming';
+const BACKEND_FN = 'https://vrpgowcocbztclxfzssu.supabase.co/functions/v1/did-streaming-ovela';
 
 type ConnectionCallback = (connected: boolean) => void;
 type SpeakingCallback = (speaking: boolean) => void;

@@ -113,10 +113,24 @@ class PersistentStreamManager {
     const estimate = Math.max(wordBased, charBased) * 1.15;
     return Math.min(estimate, MAX_SPEECH_MS);
   }
+
+  private isStreamReusable(avatarUrl: string): boolean {
+    if (!this.streamId || !this.sessionId || this.avatarUrl !== avatarUrl || !this.pc) {
+      return false;
+    }
+
+    const state = this.pc.iceConnectionState;
+    return state === 'new' || state === 'checking' || state === 'connected' || state === 'completed';
+  }
+
+  private isAuthError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.includes('HTTP 401') || message.includes('HTTP 403');
+  }
   
   async initOnce(avatarUrl: string): Promise<void> {
-    // Reuse existing stream
-    if (this.streamId && this.sessionId && this.avatarUrl === avatarUrl) {
+    // Reuse existing stream only if the current WebRTC state is still healthy
+    if (this.isStreamReusable(avatarUrl)) {
       return;
     }
     

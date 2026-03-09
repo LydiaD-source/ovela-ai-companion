@@ -1,3 +1,4 @@
+// Home page - Ovela Interactive
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';

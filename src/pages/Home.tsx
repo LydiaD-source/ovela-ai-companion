@@ -239,7 +239,52 @@ const Home = () => {
                 )}
               </div>
             </div>
-...
+
+            {/* Center-Right Area - Tagline & Text */}
+            <div className="hero-text-container">
+              {/* Content Wrapper - Fades out when chat is active */}
+              <div className={`hero-content-fade ${isChatActive ? 'hidden' : ''}`}>
+                {/* Headline - Luxury Serif */}
+                <h1 className="hero-headline">
+                  {t('hero.title')}{' '}
+                  <span className="hero-gradient-text">
+                    {t('hero.titleHighlight')}
+                  </span>
+                </h1>
+                
+                {/* Subheadline - Elegant Sans-Serif */}
+                <p className="hero-subheadline">
+                  <span className="hero-highlight-name">
+                    {t('hero.subtitle')}
+                  </span>
+                  {' '}{t('hero.description')}
+                </p>
+                
+                {/* CTA Section */}
+                <div className="hero-cta-section">
+                  {/* Primary CTA Button */}
+                  <button 
+                    onClick={activateChat}
+                    className="hero-btn-primary"
+                  >
+                    {t('hero.cta')}
+                  </button>
+                  
+                  {/* Secondary CTA - Text Link */}
+                  <a 
+                    href="#lookbook"
+                    className="hero-link-secondary"
+                  >
+                    {t('hero.explore')}
+                  </a>
+                </div>
+              </div>
+
+              {/* Chat Box Overlay - Glassmorphism */}
+              <div className={`hero-chat-overlay ${isChatActive ? 'active' : ''}`}>
+                <div className="hero-chat-box">
+                  {/* Chat Component - Full Height */}
+                  <div className="w-full h-full pt-2">
                     <FullWellnessGeniUI 
                       isGuestMode={true}
                       defaultPersona="isabella-navia"

@@ -319,20 +319,41 @@ class PersistentStreamManager {
   }
   
   async speak(text: string, voiceId?: string): Promise<void> {
-    if (!this.streamId || !this.sessionId) {
-      if (this.avatarUrl) {
-        await this.initOnce(this.avatarUrl);
-      } else {
-        throw new Error('No active stream');
-      }
+    const currentAvatarUrl = this.avatarUrl;
+    if (!currentAvatarUrl) {
+      throw new Error('No active stream');
     }
-    
-    const resp = await this.callBackend('startAnimation', {
+
+    // Self-heal stale/disconnected streams before speaking
+    if (!this.isStreamReusable(currentAvatarUrl)) {
+      this.disconnect();
+      await this.initOnce(currentAvatarUrl);
+    }
+
+    const payload = {
       stream_id: this.streamId,
       session_id: this.sessionId,
       message: text,
       voiceId: voiceId || 'EXAVITQu4vr4xnSDxMaL'
-    });
+    };
+
+    let resp: any;
+    try {
+      resp = await this.callBackend('startAnimation', payload);
+    } catch (error) {
+      // Retry once for transient stream/session failures, but never for auth failures
+      if (this.isAuthError(error) || this.isStreamReusable(currentAvatarUrl)) {
+        throw error;
+      }
+
+      this.disconnect();
+      await this.initOnce(currentAvatarUrl);
+      resp = await this.callBackend('startAnimation', {
+        ...payload,
+        stream_id: this.streamId,
+        session_id: this.sessionId,
+      });
+    }
     
     if (!(resp.ok === true || resp.success === true)) {
       throw new Error(resp.error?.message || 'Animation failed');

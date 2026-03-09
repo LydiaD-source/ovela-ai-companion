@@ -123,11 +123,11 @@ serve(async (req) => {
       dataKeys: data ? Object.keys(data) : []
     });
     
-    if (!DID_API_KEY) {
-      throw new Error('DID_API_KEY is not configured');
+    if (!DID_AUTH_HEADER) {
+      throw new Error('DID_API_KEY or D_ID_API_KEY is not configured');
     }
 
-    const authHeader = `Basic ${btoa(`${DID_API_KEY}:`)}`;
+    const authHeader = DID_AUTH_HEADER;
     console.log(`[${requestId}] Action: ${action}`);
 
     switch (action) {

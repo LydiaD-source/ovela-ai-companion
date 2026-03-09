@@ -31,8 +31,10 @@ const Home = () => {
   useStructuredData([organizationSchema, websiteSchema, serviceSchema, faqSchema, isabellaSchema], 'home-structured-data');
   
   const [isChatActive, setIsChatActive] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isStreamSpeaking, setIsStreamSpeaking] = useState(false);
+  const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const isAISpeaking = isStreamSpeaking || isTTSSpeaking;
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);

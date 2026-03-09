@@ -7,26 +7,44 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const DID_API_BASE = 'https://api.d-id.com';
 
-// Allowed origins for CORS (production domains)
-const ALLOWED_ORIGINS = [
-  'https://www.wellnessgeni.com',
-  'https://wellnessgeni.com',
-  'https://ovelainteractive.com',
-  'https://www.ovelainteractive.com',
-  'http://localhost:5173',
-  'http://localhost:8080',
-];
-
-const DID_API_KEY = Deno.env.get('DID_API_KEY');
+const DID_API_KEY_RAW = Deno.env.get('DID_API_KEY') ?? Deno.env.get('D_ID_API_KEY') ?? '';
+const DID_API_KEY = DID_API_KEY_RAW.replace(/^Basic\s+/i, '').trim();
+const DID_KEY_SOURCE = Deno.env.get('DID_API_KEY')
+  ? 'DID_API_KEY'
+  : Deno.env.get('D_ID_API_KEY')
+    ? 'D_ID_API_KEY'
+    : 'missing';
 const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+
+const isAllowedOrigin = (origin: string): boolean => {
+  if (!origin) return true;
+
+  try {
+    const { hostname, protocol } = new URL(origin);
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+
+    if (!isLocal && protocol !== 'https:') return false;
+
+    return (
+      isLocal ||
+      hostname.endsWith('.lovable.app') ||
+      hostname.endsWith('.lovableproject.com') ||
+      hostname.endsWith('.ovelainteractive.com') ||
+      hostname.endsWith('.wellnessgeni.com')
+    );
+  } catch {
+    return false;
+  }
+};
 
 // Log startup config (once per cold start)
 console.log('[did-streaming] v4 PRODUCTION READY:', {
   DID_API_KEY_SET: !!DID_API_KEY,
   DID_API_KEY_LENGTH: DID_API_KEY?.length || 0,
+  DID_KEY_SOURCE,
   ELEVEN_KEY_SET: !!ELEVENLABS_API_KEY,
   ELEVEN_KEY_LENGTH: ELEVENLABS_API_KEY?.length || 0,
-  version: '2025-12-08-PRODUCTION-V4',
+  version: '2026-03-09-HARDENED-CORS-KEY',
 });
 
 // Generate unique request ID for tracing

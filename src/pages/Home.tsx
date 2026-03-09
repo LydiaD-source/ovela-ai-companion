@@ -31,8 +31,10 @@ const Home = () => {
   useStructuredData([organizationSchema, websiteSchema, serviceSchema, faqSchema, isabellaSchema], 'home-structured-data');
   
   const [isChatActive, setIsChatActive] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isStreamSpeaking, setIsStreamSpeaking] = useState(false);
+  const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const isAISpeaking = isStreamSpeaking || isTTSSpeaking;
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);
@@ -60,20 +62,20 @@ const Home = () => {
     };
   }, []);
 
-  // Control canvas visibility based on speaking state
+  // Control canvas visibility based on streaming speaking state only
   useEffect(() => {
     const canvas = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
     if (!canvas) return;
-    
-    canvas.style.opacity = isSpeaking ? '1' : '0';
-    if (isSpeaking) canvas.style.display = 'block';
-    
-    // Ensure audio plays when speaking
-    if (isSpeaking && videoRef.current) {
+
+    canvas.style.opacity = isStreamSpeaking ? '1' : '0';
+    if (isStreamSpeaking) canvas.style.display = 'block';
+
+    // Ensure audio plays when streaming is speaking
+    if (isStreamSpeaking && videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.volume = 1.0;
     }
-  }, [isSpeaking]);
+  }, [isStreamSpeaking]);
 
   // Subscribe to StreamingService state changes
   useEffect(() => {
@@ -81,15 +83,19 @@ const Home = () => {
       console.log('[Home] 🔗 Connection:', connected);
       if (connected) setIsLoading(false);
     });
-    
+
     const unsubSpeaking = StreamingService.onSpeakingChange((speaking) => {
       console.log('[Home] 🎤 Speaking:', speaking);
-      setIsSpeaking(speaking);
+      setIsStreamSpeaking(speaking);
     });
-    
+
+    textToSpeechService.setOnSpeakingChange(setIsTTSSpeaking);
+
     return () => {
       unsubConnection();
       unsubSpeaking();
+      textToSpeechService.setOnSpeakingChange(() => {});
+      setIsTTSSpeaking(false);
     };
   }, []);
 
@@ -187,7 +193,7 @@ const Home = () => {
             {/* Left Side - Isabella (Anchor) */}
             <div 
               className="isabella-container"
-              style={{ zIndex: isSpeaking ? 200 : 1 }}
+              style={{ zIndex: isStreamSpeaking ? 200 : 1 }}
             >
               {/* Enhanced Isabella Backlight (Soft Golden Glow) - Positioned in container */}
               <div className="isabella-backlight"></div>
@@ -205,7 +211,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isSpeaking ? 0 : 1,
+                    opacity: isStreamSpeaking ? 0 : 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />
@@ -285,7 +291,7 @@ const Home = () => {
                       allowedPersonas={['isabella-navia']}
                       showOnlyPromoter={true}
                       onAIResponse={handleAIResponse}
-                      isAISpeaking={isSpeaking}
+                      isAISpeaking={isAISpeaking}
                     />
                   </div>
                   

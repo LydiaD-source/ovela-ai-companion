@@ -7,13 +7,46 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const DID_API_BASE = 'https://api.d-id.com';
 
-const DID_API_KEY_RAW = Deno.env.get('DID_API_KEY') ?? Deno.env.get('D_ID_API_KEY') ?? '';
-const DID_API_KEY = DID_API_KEY_RAW.replace(/^Basic\s+/i, '').trim();
+const DID_API_KEY_RAW = (Deno.env.get('DID_API_KEY') ?? Deno.env.get('D_ID_API_KEY') ?? '').trim();
 const DID_KEY_SOURCE = Deno.env.get('DID_API_KEY')
   ? 'DID_API_KEY'
   : Deno.env.get('D_ID_API_KEY')
     ? 'D_ID_API_KEY'
     : 'missing';
+
+const isLikelyBase64 = (value: string): boolean =>
+  /^[A-Za-z0-9+/=]+$/.test(value) && value.length % 4 === 0;
+
+const buildDidAuthHeader = (rawKey: string): string => {
+  if (!rawKey) return '';
+
+  if (/^Basic\s+/i.test(rawKey)) {
+    return rawKey;
+  }
+
+  if (isLikelyBase64(rawKey)) {
+    try {
+      const decoded = atob(rawKey);
+      if (decoded.includes(':')) {
+        return `Basic ${rawKey}`;
+      }
+    } catch {
+      // Fall through to raw-key encoding
+    }
+  }
+
+  return `Basic ${btoa(`${rawKey}:`)}`;
+};
+
+const DID_AUTH_HEADER = buildDidAuthHeader(DID_API_KEY_RAW);
+const DID_AUTH_MODE = /^Basic\s+/i.test(DID_API_KEY_RAW)
+  ? 'prefixed-basic'
+  : isLikelyBase64(DID_API_KEY_RAW)
+    ? 'base64-token'
+    : DID_API_KEY_RAW
+      ? 'raw-token'
+      : 'missing';
+
 const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
 
 const isAllowedOrigin = (origin: string): boolean => {
@@ -39,12 +72,13 @@ const isAllowedOrigin = (origin: string): boolean => {
 
 // Log startup config (once per cold start)
 console.log('[did-streaming] v4 PRODUCTION READY:', {
-  DID_API_KEY_SET: !!DID_API_KEY,
-  DID_API_KEY_LENGTH: DID_API_KEY?.length || 0,
+  DID_API_KEY_SET: !!DID_API_KEY_RAW,
+  DID_API_KEY_LENGTH: DID_API_KEY_RAW?.length || 0,
   DID_KEY_SOURCE,
+  DID_AUTH_MODE,
   ELEVEN_KEY_SET: !!ELEVENLABS_API_KEY,
   ELEVEN_KEY_LENGTH: ELEVENLABS_API_KEY?.length || 0,
-  version: '2026-03-09-HARDENED-CORS-KEY',
+  version: '2026-03-09-STABLE-STREAM-AUTH',
 });
 
 // Generate unique request ID for tracing
@@ -89,11 +123,11 @@ serve(async (req) => {
       dataKeys: data ? Object.keys(data) : []
     });
     
-    if (!DID_API_KEY) {
-      throw new Error('DID_API_KEY is not configured');
+    if (!DID_AUTH_HEADER) {
+      throw new Error('DID_API_KEY or D_ID_API_KEY is not configured');
     }
 
-    const authHeader = `Basic ${btoa(`${DID_API_KEY}:`)}`;
+    const authHeader = DID_AUTH_HEADER;
     console.log(`[${requestId}] Action: ${action}`);
 
     switch (action) {

@@ -6,6 +6,7 @@ import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
 import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
+import { SEOBreaker } from '@/components/Home/SEOBreaker';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';
@@ -323,10 +324,12 @@ const Home = () => {
           </div>
         </section>
 
+        {/* SEO Breaker between Hero and Portfolio */}
+        <SEOBreaker />
+
         {/* Magazine-Style Sections Below Hero */}
         <LookbookCarousel />
         <AboutSection />
-        <HowItWorksSection />
         <ShowcaseSection />
         <CTASection onChatClick={activateChat} />
         <FooterMinimal />

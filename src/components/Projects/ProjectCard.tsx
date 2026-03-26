@@ -61,7 +61,7 @@ const ProjectCard = ({ title, description, videoSrc, liveUrl, linkLabel = 'View 
           {title}
         </h3>
         <p
-          className="text-sm font-light leading-relaxed mb-5"
+          className="text-sm font-light leading-relaxed mb-5 min-h-[5rem]"
           style={{ color: 'hsl(var(--soft-white) / 0.8)' }}
         >
           {description}

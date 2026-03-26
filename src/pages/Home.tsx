@@ -6,8 +6,6 @@ import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { SEOBreaker } from '@/components/Home/SEOBreaker';
-import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
-import { SEOBreaker } from '@/components/Home/SEOBreaker';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';

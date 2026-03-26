@@ -184,7 +184,7 @@ const About = () => {
       >
         <MessageCircle className="w-5 h-5" />
         Ask Isabella
-      </Link>
+      </a>
     </div>
   );
 };

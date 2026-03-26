@@ -255,14 +255,21 @@ const Home = () => {
                 
                 {/* Subheadline - Elegant Sans-Serif */}
                 <p className="hero-subheadline">
-                  <span className="hero-highlight-name">
-                    {t('hero.subtitle')}
-                  </span>
-                  {' '}{t('hero.description')}
+                  {t('hero.description')}
+                </p>
+
+                {/* Support Line - SEO rich */}
+                <p className="hero-support-line">
+                  {t('hero.supportLine')}
                 </p>
                 
                 {/* CTA Section */}
                 <div className="hero-cta-section">
+                  {/* Floating friction-remover */}
+                  <span className="hero-floating-line">
+                    {t('hero.floatingLine')}
+                  </span>
+
                   {/* Primary CTA Button */}
                   <button 
                     onClick={activateChat}
@@ -271,9 +278,11 @@ const Home = () => {
                     {t('hero.cta')}
                   </button>
                   
-                  {/* Secondary CTA - Text Link */}
+                  {/* Secondary CTA - Links to live project */}
                   <a 
-                    href="#lookbook"
+                    href="https://wellnespirit.com/en"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="hero-link-secondary"
                   >
                     {t('hero.explore')}

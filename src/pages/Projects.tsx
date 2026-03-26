@@ -51,9 +51,67 @@ const Projects = () => {
   const { t } = useTranslation();
   useSEO({
     path: '/projects',
-    title: t('seo.projects.title', "Isabella's Projects | AI Model Portfolio"),
-    description: t('seo.projects.description', "Explore Isabella's project portfolio — from wellness coaching to luxury fashion campaigns."),
+    title: 'AI Interactive Host Projects | Ovela Interactive Portfolio',
+    description: 'Explore real AI implementations by Ovela Interactive — from WellnesSpirit\'s interactive wellness host to WellnessGeni companion and Lux Def Tec defense solutions. See live projects powered by Isabella AI.',
   });
+
+  // JSON-LD structured data for portfolio/projects
+  React.useEffect(() => {
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'AI Interactive Host Projects',
+      description: 'Portfolio of live AI interactive host implementations by Ovela Interactive, featuring Isabella AI across wellness, defense, real estate and home care industries.',
+      url: 'https://ovelainteractive.com/projects',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Ovela Interactive',
+        url: 'https://ovelainteractive.com',
+      },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'WellnesSpirit Institute – Interactive AI Host',
+            url: 'https://wellnespirit.com/en',
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Lux Def Tec – AI Product Advisor',
+            url: 'https://luxdeftec.eu/',
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: 'WellnessGeni – AI Companion',
+            url: 'https://www.wellnessgeni.com/',
+          },
+          {
+            '@type': 'ListItem',
+            position: 4,
+            name: 'Ambassador – AI Real Estate Host',
+            url: 'https://zonahabitable.com/ca/',
+          },
+        ],
+      },
+    };
+
+    let script = document.querySelector('script[data-jsonld="projects"]') as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.setAttribute('data-jsonld', 'projects');
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(jsonLd);
+
+    return () => {
+      script?.remove();
+    };
+  }, []);
 
   return (
     <div

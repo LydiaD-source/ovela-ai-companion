@@ -35,7 +35,7 @@ const ProjectCard = ({ title, description, videoSrc, liveUrl, linkLabel = 'View 
           loop
           muted={muted}
           playsInline
-          loading="lazy"
+          preload="metadata"
           onClick={() => setMuted(!muted)}
         />
         <button

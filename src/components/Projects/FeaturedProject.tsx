@@ -7,6 +7,7 @@ import { ExternalLink, Play, MessageSquare, Cpu, Users, Globe, Video, UserCheck 
 
 const FeaturedProject = () => {
   const { t } = useTranslation();
+  const [howOpen, setHowOpen] = useState(false);
 
   return (
     <section className="py-16 md:py-24 px-6">

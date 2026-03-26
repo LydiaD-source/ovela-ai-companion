@@ -5,7 +5,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { useTranslation } from 'react-i18next';
 import FeaturedProject from '@/components/Projects/FeaturedProject';
 import ProjectCard from '@/components/Projects/ProjectCard';
-import HowItWorksSection from '@/components/Projects/HowItWorksSection';
+
 
 const projects = [
   {
@@ -81,8 +81,6 @@ const Projects = () => {
       {/* Featured Project */}
       <FeaturedProject />
 
-      {/* How It Works */}
-      <HowItWorksSection />
 
       {/* Projects Grid */}
       <section className="px-6 pb-20">

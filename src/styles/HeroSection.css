@@ -198,12 +198,34 @@
   font-weight: 500;
 }
 
+/* Support Line - SEO rich smaller text */
+.hero-support-line {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 600px;
+  color: #A0A0A0;
+}
+
+/* Floating friction-remover line */
+.hero-floating-line {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #D4AF37;
+  opacity: 0.85;
+}
+
 /* CTA Section */
 .hero-cta-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* Primary CTA Button */

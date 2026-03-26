@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
-import { HowItWorksSection } from '@/components/Home/HowItWorksSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
+import { SEOBreaker } from '@/components/Home/SEOBreaker';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';
@@ -255,14 +255,21 @@ const Home = () => {
                 
                 {/* Subheadline - Elegant Sans-Serif */}
                 <p className="hero-subheadline">
-                  <span className="hero-highlight-name">
-                    {t('hero.subtitle')}
-                  </span>
-                  {' '}{t('hero.description')}
+                  {t('hero.description')}
+                </p>
+
+                {/* Support Line - SEO rich */}
+                <p className="hero-support-line">
+                  {t('hero.supportLine')}
                 </p>
                 
                 {/* CTA Section */}
                 <div className="hero-cta-section">
+                  {/* Floating friction-remover */}
+                  <span className="hero-floating-line">
+                    {t('hero.floatingLine')}
+                  </span>
+
                   {/* Primary CTA Button */}
                   <button 
                     onClick={activateChat}
@@ -271,9 +278,11 @@ const Home = () => {
                     {t('hero.cta')}
                   </button>
                   
-                  {/* Secondary CTA - Text Link */}
+                  {/* Secondary CTA - Links to live project */}
                   <a 
-                    href="#lookbook"
+                    href="https://wellnespirit.com/en"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="hero-link-secondary"
                   >
                     {t('hero.explore')}
@@ -314,10 +323,12 @@ const Home = () => {
           </div>
         </section>
 
+        {/* SEO Breaker between Hero and Portfolio */}
+        <SEOBreaker />
+
         {/* Magazine-Style Sections Below Hero */}
         <LookbookCarousel />
         <AboutSection />
-        <HowItWorksSection />
         <ShowcaseSection />
         <CTASection onChatClick={activateChat} />
         <FooterMinimal />

@@ -8,13 +8,15 @@
     "partner": "Partner With Us"
   },
   "hero": {
-    "title": "The Future of Modeling is",
-    "titleHighlight": "Interactive",
-    "subtitle": "Isabella ✨",
-    "description": "— Ovela's first AI model ambassador. Ask about Ovela, book a project, or design your own AI-powered ambassador.",
-    "cta": "Start Chatting with Isabella",
-    "explore": "↓ Explore Isabella's Portfolio ↓",
-    "connecting": "Connecting..."
+    "title": "Turn Your Website Into a 24/7",
+    "titleHighlight": "Sales Agent",
+    "subtitle": "",
+    "description": "Interactive AI hosts that engage visitors, answer questions, and convert leads — instantly.",
+    "supportLine": "Used by clinics, real estate agencies, and brands to automate communication, showcase products, and generate revenue around the clock.",
+    "cta": "Ask Isabella How This Works",
+    "explore": "See Real Projects in Action ↓",
+    "connecting": "Connecting...",
+    "floatingLine": "No team. No delays. Live in minutes."
   },
   "about": {
     "title": "Redefining Modeling Through AI",

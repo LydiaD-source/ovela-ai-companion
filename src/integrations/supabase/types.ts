@@ -1567,6 +1567,51 @@ export type Database = {
         }
         Relationships: []
       }
+      media_requests: {
+        Row: {
+          admin_notes: string | null
+          category_requested: string | null
+          context_mode: string | null
+          created_at: string
+          id: string
+          request_description: string
+          request_type: string
+          status: string
+          updated_at: string
+          user_email: string | null
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category_requested?: string | null
+          context_mode?: string | null
+          created_at?: string
+          id?: string
+          request_description: string
+          request_type?: string
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category_requested?: string | null
+          context_mode?: string | null
+          created_at?: string
+          id?: string
+          request_description?: string
+          request_type?: string
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       memory_consent_audit: {
         Row: {
           action: string
@@ -2061,6 +2106,66 @@ export type Database = {
         }
         Relationships: []
       }
+      relationship_state: {
+        Row: {
+          attraction: number
+          closeness: number
+          created_at: string
+          emotional_depth: number
+          engagement_level: number
+          id: string
+          interaction_count: number
+          interaction_style: string
+          last_interaction_timestamp: string | null
+          mood_last_detected: string
+          playfulness: number
+          relationship_stage: string
+          trust: number
+          updated_at: string
+          user_affection: number
+          user_dominance: number
+          user_id: string
+        }
+        Insert: {
+          attraction?: number
+          closeness?: number
+          created_at?: string
+          emotional_depth?: number
+          engagement_level?: number
+          id?: string
+          interaction_count?: number
+          interaction_style?: string
+          last_interaction_timestamp?: string | null
+          mood_last_detected?: string
+          playfulness?: number
+          relationship_stage?: string
+          trust?: number
+          updated_at?: string
+          user_affection?: number
+          user_dominance?: number
+          user_id: string
+        }
+        Update: {
+          attraction?: number
+          closeness?: number
+          created_at?: string
+          emotional_depth?: number
+          engagement_level?: number
+          id?: string
+          interaction_count?: number
+          interaction_style?: string
+          last_interaction_timestamp?: string | null
+          mood_last_detected?: string
+          playfulness?: number
+          relationship_stage?: string
+          trust?: number
+          updated_at?: string
+          user_affection?: number
+          user_dominance?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       security_audit_log: {
         Row: {
           action: string
@@ -2489,6 +2594,111 @@ export type Database = {
           last_reply?: string | null
           last_updated?: string | null
           memory_enabled?: boolean | null
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
+      user_events: {
+        Row: {
+          admin_notes: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          context_mode: string | null
+          created_at: string
+          description: string | null
+          event_name: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          opted_in: boolean
+          status: string
+          updated_at: string
+          user_email: string | null
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          context_mode?: string | null
+          created_at?: string
+          description?: string | null
+          event_name: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          opted_in?: boolean
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          context_mode?: string | null
+          created_at?: string
+          description?: string | null
+          event_name?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          opted_in?: boolean
+          status?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          context_mode: string | null
+          created_at: string
+          id: string
+          message: string
+          processed: boolean
+          sentiment: string | null
+          source: string
+          updated_at: string
+          user_email: string | null
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          context_mode?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          processed?: boolean
+          sentiment?: string | null
+          source?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          context_mode?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          processed?: boolean
+          sentiment?: string | null
+          source?: string
+          updated_at?: string
+          user_email?: string | null
           user_id?: string
           user_name?: string | null
         }

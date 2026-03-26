@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Play } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { ExternalLink, Play, MessageSquare, Cpu, Users, Globe, Video, UserCheck } from 'lucide-react';
 
 const FeaturedProject = () => {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ const FeaturedProject = () => {
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ fontFamily: 'Playfair Display, serif', color: 'hsl(var(--champagne-gold))' }}
           >
-            WellnessSpirit Institute
+            WellnesSpirit Institute
           </h2>
           <p className="text-lg md:text-xl font-light max-w-3xl mx-auto leading-relaxed"
             style={{ color: 'hsl(var(--soft-white))' }}
@@ -94,13 +95,49 @@ const FeaturedProject = () => {
               color: 'hsl(var(--champagne-gold))',
               background: 'transparent',
             }}
-            onClick={() => {
-              document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onClick={() => setHowOpen(true)}
           >
             How It Works
           </Button>
         </div>
+
+        <Dialog open={howOpen} onOpenChange={setHowOpen}>
+          <DialogContent
+            className="max-w-lg border-none"
+            style={{
+              background: 'hsl(var(--deep-navy))',
+              border: '1px solid hsl(var(--champagne-gold) / 0.3)',
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle
+                className="text-xl font-bold"
+                style={{ fontFamily: 'Playfair Display, serif', color: 'hsl(var(--champagne-gold))' }}
+              >
+                How It Works
+              </DialogTitle>
+              <DialogDescription className="sr-only">How Isabella works as an AI host</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              {[
+                { icon: MessageSquare, text: '24/7 AI client interaction' },
+                { icon: Cpu, text: 'Real-time service explanation' },
+                { icon: UserCheck, text: 'Automated booking flow' },
+                { icon: Globe, text: 'Multi-language communication' },
+                { icon: Video, text: 'Real-time avatar animation' },
+                { icon: Users, text: 'Consistent human look & presence' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <item.icon className="w-5 h-5 shrink-0" style={{ color: 'hsl(var(--champagne-gold))' }} />
+                  <span className="text-sm" style={{ color: 'hsl(var(--soft-white))' }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs mt-4 leading-relaxed" style={{ color: 'hsl(var(--soft-white) / 0.6)' }}>
+              Isabella engages visitors instantly — answering questions, explaining services, and converting browsers into booked clients around the clock.
+            </p>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );

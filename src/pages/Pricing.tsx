@@ -280,11 +280,11 @@ const Pricing = () => {
       {/* Floating Ask Isabella */}
       <a
         href="/?chat=open"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-105"
+        className="isabella-floating-btn flex items-center gap-2 px-5 py-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-105"
         style={{ background: '#D4AF37', color: '#0A0A23', fontFamily: 'Inter, sans-serif', fontWeight: '600', fontSize: '14px' }}
       >
         <MessageCircle className="w-5 h-5" />
-        Ask Isabella
+        <span className="btn-label">Ask Isabella</span>
       </a>
 
       <FooterMinimal />

@@ -153,7 +153,7 @@ const Contact = () => {
         style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)', color: '#0A0A23', fontWeight: 600 }}
       >
         <MessageCircle size={20} />
-        Ask Isabella
+        <span className="btn-label">Ask Isabella</span>
       </button>
     </div>
   );

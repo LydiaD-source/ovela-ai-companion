@@ -284,7 +284,7 @@ const PartnerWithUs = () => {
         }}
       >
         <MessageCircle className="w-4 h-4" />
-        Ask Isabella
+        <span className="btn-label">Ask Isabella</span>
       </button>
     </div>
   );

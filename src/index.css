@@ -311,6 +311,27 @@
   }
 }
 
+/* Floating Isabella button - mobile safe */
+.isabella-floating-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9998;
+}
+
+@media (max-width: 768px) {
+  .isabella-floating-btn {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    right: 16px;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .isabella-floating-btn .btn-label {
+    display: none;
+  }
+}
+
 /* Raw hero image rendering to avoid any smoothing/compression */
 .hero-image-raw {
   image-rendering: -webkit-optimize-contrast !important;

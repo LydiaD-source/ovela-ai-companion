@@ -30,7 +30,7 @@ async function sendAdminNotification(lead: LeadPayload, leadId: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Isabella <onboarding@resend.dev>',
+        from: 'Isabella Navia <isabella.navia@ovelainteractive.com>',
         to: ['support@ovelainteractive.com'],
         subject: `🔔 New ${lead.inquiry_type} Lead — ${lead.name}`,
         html: `

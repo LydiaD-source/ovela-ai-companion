@@ -273,7 +273,7 @@ const PartnerWithUs = () => {
       {/* Floating Ask Isabella */}
       <button
         onClick={openChat}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-none"
+        className="isabella-floating-btn flex items-center gap-2 px-5 py-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-none"
         style={{
           background: 'linear-gradient(135deg, #D4AF37, #F7E7CE)',
           color: '#000',

@@ -183,7 +183,7 @@ const About = () => {
         }}
       >
         <MessageCircle className="w-5 h-5" />
-        Ask Isabella
+        <span className="btn-label">Ask Isabella</span>
       </a>
     </div>
   );

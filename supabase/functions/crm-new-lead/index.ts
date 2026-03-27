@@ -30,7 +30,7 @@ async function sendAdminNotification(lead: LeadPayload, leadId: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Isabella <onboarding@resend.dev>',
+        from: 'Isabella Navia <isabella.navia@ovelainteractive.com>',
         to: ['support@ovelainteractive.com'],
         subject: `🔔 New ${lead.inquiry_type} Lead — ${lead.name}`,
         html: `
@@ -85,27 +85,33 @@ async function sendUserConfirmation(lead: LeadPayload) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Isabella from Ovela <onboarding@resend.dev>',
+        from: 'Isabella Navia <isabella.navia@ovelainteractive.com>',
         to: [lead.email],
-        subject: `Thank you, ${lead.name} — We received your message`,
+        subject: `Thank you for reaching out, ${lead.name} — Isabella Navia, Ovela Interactive`,
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #0A0A23, #1a1a3e); padding: 30px; border-radius: 12px; color: white; text-align: center;">
-              <h1 style="color: #D4AF37; margin: 0 0 10px; font-size: 24px;">Thank You, ${lead.name}!</h1>
-              <p style="color: #ccc; margin: 0;">Your message has been received</p>
+          <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; padding: 0; background: #ffffff;">
+            <div style="background: linear-gradient(135deg, #0A0A23, #1a1a3e); padding: 40px 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: #D4AF37; margin: 0 0 8px; font-size: 26px; font-family: 'Georgia', serif; letter-spacing: 0.5px;">Ovela Interactive</h1>
+              <p style="color: #aaa; margin: 0; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;">AI-Powered Digital Experiences</p>
             </div>
-            <div style="padding: 25px 0; line-height: 1.7;">
-              <p>Hi ${lead.name},</p>
-              <p>I'm Isabella, your AI ambassador at Ovela Interactive. I've received your inquiry and our team will review it shortly.</p>
-              <p>In the meantime, feel free to chat with me directly on our website — I can answer questions about our services, pricing, and how we can help your business.</p>
+            <div style="padding: 35px 30px; line-height: 1.8; color: #333;">
+              <p style="font-size: 16px; margin: 0 0 20px;">Dear ${lead.name},</p>
+              <p style="font-size: 15px; margin: 0 0 15px;">Thank you for reaching out to us. I'm Isabella Navia, your AI ambassador at Ovela Interactive, and I've received your inquiry regarding <strong>${lead.inquiry_type}</strong>.</p>
+              <p style="font-size: 15px; margin: 0 0 15px;">Our team has been notified and will review your message promptly. You can expect a personal response within <strong>24 hours</strong> during business days (Mon–Fri, 9am–6pm CET).</p>
+              <p style="font-size: 15px; margin: 0 0 25px;">In the meantime, I'm available on our website to answer any questions about our services, pricing, or how we can help your business grow with AI-powered solutions.</p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://www.ovelainteractive.com/?chat=open" style="display: inline-block; background: #D4AF37; color: #0A0A23; padding: 14px 35px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">Chat with Isabella Now</a>
+                <a href="https://www.ovelainteractive.com/?chat=open" style="display: inline-block; background: linear-gradient(135deg, #D4AF37, #C5A028); color: #0A0A23; padding: 14px 40px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">Chat with Isabella Now</a>
               </div>
-              <p style="color: #888; font-size: 13px;">We typically respond within 24 hours during business days (Mon–Fri, 9am–6pm CET).</p>
+              <div style="margin-top: 35px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p style="font-size: 15px; margin: 0 0 5px;">Warm regards,</p>
+                <p style="font-size: 16px; margin: 0 0 3px; font-weight: bold; color: #0A0A23;">Isabella Navia</p>
+                <p style="font-size: 13px; margin: 0 0 3px; color: #888;">AI Ambassador · Ovela Interactive</p>
+                <p style="font-size: 13px; margin: 0; color: #888;">Andorra La Vella</p>
+              </div>
             </div>
-            <div style="border-top: 1px solid #eee; padding-top: 15px; text-align: center; color: #888; font-size: 12px;">
-              <p>Ovela Interactive · Andorra La Vella</p>
-              <p><a href="https://www.ovelainteractive.com" style="color: #D4AF37;">www.ovelainteractive.com</a></p>
+            <div style="background: #f8f8f8; padding: 20px 30px; border-radius: 0 0 12px 12px; text-align: center; border-top: 1px solid #eee;">
+              <p style="margin: 0 0 5px; font-size: 12px; color: #999;"><a href="https://www.ovelainteractive.com" style="color: #D4AF37; text-decoration: none;">www.ovelainteractive.com</a></p>
+              <p style="margin: 0; font-size: 11px; color: #bbb;">© ${new Date().getFullYear()} Ovela Interactive. All rights reserved.</p>
             </div>
           </div>
         `,

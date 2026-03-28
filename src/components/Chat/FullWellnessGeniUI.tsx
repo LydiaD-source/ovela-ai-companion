@@ -531,34 +531,34 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       </div>
 
       {/* Input */}
-      <div className="flex-shrink-0 p-4 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
+      <div className="flex-shrink-0 px-4 pt-2 pb-3 border-t border-soft-white/10 bg-soft-white/5 backdrop-blur">
         {emailInputMode && (
-          <p className="text-xs text-champagne-gold mb-2">⌨️ Please type your email address below</p>
+          <p className="mb-1 pl-1 text-xs text-champagne-gold">Please type your email address below</p>
         )}
         {!emailInputMode && !isListening && messages.length === 0 && (
-          <p className="text-xs text-soft-white/50 mb-2 text-left pl-1">🎤 Click the microphone to speak, or type below</p>
+          <p className="mb-1 pl-1 text-left text-xs text-soft-white/50">Click the microphone to speak, or type below</p>
         )}
-        <form onSubmit={handleSubmit} className="grid w-full grid-cols-[minmax(0,1fr)_3rem] items-center gap-3">
-          <div className="min-w-0">
+        <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end">
+          <div className="relative w-full min-w-0">
             <Input
               type={emailInputMode ? "email" : "text"}
               value={isListening && !emailInputMode ? (finalTranscript + ' ' + interimTranscript).trim() : inputText}
               onChange={(e) => (!isListening || emailInputMode) && setInputText(e.target.value)}
               placeholder={emailInputMode ? "your@email.com" : (isListening ? (t('chat.listening') || 'Listening...') : t('chat.placeholder'))}
-              className={`h-12 w-full bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold ${emailInputMode ? 'ring-2 ring-champagne-gold/50' : ''}`}
+              className={`h-12 w-full pr-14 bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold ${emailInputMode ? 'ring-2 ring-champagne-gold/50' : ''}`}
               disabled={isLoading || (isListening && !emailInputMode)}
               autoFocus={emailInputMode}
             />
+            <button
+              type="submit"
+              aria-label="Send message"
+              title="Send message"
+              disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()}
+              className="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-champagne-gold text-charcoal shadow-lg transition-colors hover:bg-champagne-gold/90 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Send className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            type="submit"
-            aria-label="Send message"
-            title="Send message"
-            disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-champagne-gold text-charcoal shadow-lg transition-colors hover:bg-champagne-gold/90 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <Send className="h-5 w-5" />
-          </button>
         </form>
       </div>
     </div>

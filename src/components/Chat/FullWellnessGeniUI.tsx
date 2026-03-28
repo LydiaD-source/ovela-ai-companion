@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
-import { crmAPI } from '@/lib/crmAPI';
+
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 
 interface Message {
@@ -16,13 +16,6 @@ interface Message {
   timestamp: Date;
 }
 
-interface LeadDraft {
-  name?: string;
-  email?: string;
-  message?: string;
-  inferred?: { name: boolean; email: boolean; message: boolean };
-  confirmed?: { name: boolean; email: boolean; message: boolean };
-}
 
 interface FullWellnessGeniUIProps {
   isGuestMode?: boolean;

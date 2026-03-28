@@ -365,6 +365,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       toast({ title: "Voice Not Supported", description: "Use Chrome or Edge for voice input.", variant: "destructive" });
       return;
     }
+    // Push-to-talk: click to start, click again to stop & send
     isListening ? stopListening() : startListening();
   };
 
@@ -446,7 +447,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             onClick={toggleMic}
             disabled={isLoading}
             className={`p-2 rounded-full transition-colors ${isListening ? 'bg-red-500/80 hover:bg-red-500 animate-pulse' : 'bg-soft-white/10 hover:bg-soft-white/20'}`}
-            title={isListening ? 'Stop' : 'Start voice'}
+            title={isListening ? 'Stop & Send' : 'Push to Talk'}
           >
             {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-soft-white" />}
           </button>

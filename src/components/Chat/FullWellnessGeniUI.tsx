@@ -72,7 +72,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   // Ref to hold latest sendMessage to avoid stale closures
   const sendMessageRef = useRef<(text: string) => void>(() => {});
 
-  // Web Speech STT with auto-send
+  // Web Speech STT - Push-to-Talk (no auto-send on silence)
   const {
     isListening,
     isSupported: isWebSpeechSupported,
@@ -88,7 +88,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       sendMessageRef.current(text);
     }, []),
     lang: selectedLanguage,
-    silenceTimeout: 600
   });
 
   // Sync AI speaking state

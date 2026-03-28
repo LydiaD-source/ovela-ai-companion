@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
-import { crmAPI } from '@/lib/crmAPI';
+
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 
 interface Message {
@@ -16,13 +16,6 @@ interface Message {
   timestamp: Date;
 }
 
-interface LeadDraft {
-  name?: string;
-  email?: string;
-  message?: string;
-  inferred?: { name: boolean; email: boolean; message: boolean };
-  confirmed?: { name: boolean; email: boolean; message: boolean };
-}
 
 interface FullWellnessGeniUIProps {
   isGuestMode?: boolean;
@@ -46,8 +39,7 @@ const LANGUAGES = [
   { code: 'pt-PT', label: 'Português', flag: '🇵🇹' },
 ];
 
-const EMAIL_ASK_PATTERNS = /(email address|your email|best email|what('s| is) your email)/i;
-const CONTACT_INTENT_PATTERNS = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect|talk to|speak with)/i;
+// Lead capture is handled entirely by the AI backend via tool calls — no frontend patterns needed
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   defaultPersona = 'isabella-navia',
@@ -61,9 +53,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
-  const [leadSubmitted, setLeadSubmitted] = useState(false);
-  const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
@@ -124,94 +113,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
   }, [showLanguageMenu]);
 
-  // Validation helpers
-  const isValidEmail = (email: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
-  const isValidName = (name: string) => /^[A-Za-zÀ-ÿ\s'-]+$/.test(name.trim()) && name.trim().length >= 2;
-
-  // Extract contact details from user message
-  const extractContactDetails = useCallback((text: string, draft: LeadDraft): Partial<LeadDraft> => {
-    const extracted: Partial<LeadDraft> = {
-      inferred: draft.inferred || { name: false, email: false, message: false },
-      confirmed: draft.confirmed || { name: false, email: false, message: false }
-    };
-    
-    // Email
-    if (!draft.email) {
-      const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
-      if (emails?.length) {
-        extracted.email = emails[0].toLowerCase().trim();
-        extracted.inferred!.email = true;
-      }
-    }
-    
-    // Name
-    if (!draft.name) {
-      const namePatterns = [
-        /(?:my name is|i am|i'm|this is|call me|name:\s*)\s+([A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)?)/i,
-        /^([A-ZÀ-Ý][a-zà-ÿ]+)\s/,
-        /^([A-Za-zÀ-ÿ]+)\s+[A-Za-z0-9._%+-]+@/i
-      ];
-      
-      for (const pattern of namePatterns) {
-        const match = text.match(pattern);
-        if (match?.[1]) {
-          const name = match[1].trim();
-          extracted.name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-          extracted.inferred!.name = true;
-          break;
-        }
-      }
-
-      // Single token fallback
-      if (!extracted.name && /^[A-Za-zÀ-ÿ]+$/.test(text.trim())) {
-        const name = text.trim();
-        extracted.name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-        extracted.inferred!.name = true;
-      }
-    }
-    
-    // Message
-    if (!draft.message) {
-      let msg = text;
-      if (extracted.email) msg = msg.replace(extracted.email, '');
-      if (extracted.name) msg = msg.replace(new RegExp(extracted.name, 'gi'), '');
-      msg = msg.replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is|call me|about|regarding|message:?|email:?|name:?)[,\s]*/gi, '').trim();
-      
-      if (msg.length >= 5) {
-        extracted.message = msg;
-        extracted.inferred!.message = true;
-      }
-    }
-    
-    return extracted;
-  }, []);
-
-  // Submit lead to CRM
-  const submitLeadToCRM = useCallback(async (draft: LeadDraft) => {
-    if (!draft.name || !draft.email || !draft.message || leadSubmitted) return false;
-    
-    try {
-      const messageLower = draft.message.toLowerCase();
-      let inquiryType: 'modeling' | 'collaboration' | 'brand' | 'general' = 'general';
-      if (messageLower.includes('partner') || messageLower.includes('collab')) inquiryType = 'collaboration';
-      else if (messageLower.includes('brand') || messageLower.includes('promo')) inquiryType = 'brand';
-      else if (messageLower.includes('model') || messageLower.includes('shoot')) inquiryType = 'modeling';
-      
-      const result = await crmAPI.submitLead({
-        name: draft.name,
-        email: draft.email,
-        inquiry_type: inquiryType,
-        message: draft.message,
-        source: 'ovela-isabella-chat'
-      });
-      
-      return result.success;
-    } catch {
-      return false;
-    }
-  }, [leadSubmitted]);
-
-  // Send message
+  // Send message — all lead capture is handled by the AI backend via tool calls
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return;
 
@@ -226,95 +128,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setInputText('');
     setIsLoading(true);
 
-    // Detect contact intent — only start lead collection if not already submitted
-    const hasIntent = CONTACT_INTENT_PATTERNS.test(text);
-    if (!isCollectingLead && !leadSubmitted && hasIntent) {
-      setIsCollectingLead(true);
-    }
-
-    // Extract contact details
-    let updatedDraft = { ...leadDraft };
-    if ((isCollectingLead || hasIntent) && !leadSubmitted) {
-      const extracted = extractContactDetails(text, leadDraft);
-      updatedDraft = { 
-        ...leadDraft, 
-        ...extracted,
-        inferred: { ...(leadDraft.inferred || { name: false, email: false, message: false }), ...(extracted.inferred || {}) },
-        confirmed: { ...(leadDraft.confirmed || { name: false, email: false, message: false }), ...(extracted.confirmed || {}) }
-      };
-      setLeadDraft(updatedDraft);
-    }
-
     try {
-      let assistantText = "";
-
-      // Lead collection flow — only when actively collecting and not yet submitted
-      if (isCollectingLead && !leadSubmitted) {
-        const { name, email, message, confirmed } = updatedDraft;
-
-        // Validate name
-        if (name && !confirmed?.name) {
-          if (!isValidName(name)) {
-            setLeadDraft(prev => ({ ...prev, name: undefined, inferred: { ...prev.inferred, name: false } }));
-            assistantText = "Hmm, I didn't quite catch that — could you please retype your name?";
-          } else {
-            setLeadDraft(prev => ({ ...prev, confirmed: { ...prev.confirmed, name: true } }));
-            updatedDraft.confirmed!.name = true;
-            if (!email) assistantText = `Perfect, thanks ${name}! What's your email address?`;
-          }
-        }
-
-        // Validate email
-        if (email && !confirmed?.email && confirmed?.name) {
-          if (!isValidEmail(email)) {
-            setLeadDraft(prev => ({ ...prev, email: undefined, inferred: { ...prev.inferred, email: false } }));
-            assistantText = "That doesn't look like a full email — could you double-check it?";
-          } else {
-            setLeadDraft(prev => ({ ...prev, confirmed: { ...prev.confirmed, email: true } }));
-            updatedDraft.confirmed!.email = true;
-            if (!message) assistantText = `Got it, ${name}. What would you like our team to help you with?`;
-          }
-        }
-
-        // Confirm message
-        if (message && !confirmed?.message && confirmed?.name && confirmed?.email) {
-          setLeadDraft(prev => ({ ...prev, confirmed: { ...prev.confirmed, message: true } }));
-          updatedDraft.confirmed!.message = true;
-        }
-
-        // Submit when complete
-        if (name && email && message && confirmed?.name && confirmed?.email) {
-          setLeadSubmitted(true);
-          const submitted = await submitLeadToCRM(updatedDraft);
-          
-          if (submitted) {
-            assistantText = `Thank you, ${name}! I've sent your details to our team. They'll reach out shortly. Feel free to ask me anything about our services!`;
-            // Reset lead collection so conversation continues normally
-            setIsCollectingLead(false);
-            setLeadDraft({});
-            toast({ title: "Lead Submitted", description: "Your contact information has been sent." });
-          } else {
-            setLeadSubmitted(false);
-            assistantText = "It seems there was a small hiccup. Let's try that again.";
-          }
-        }
-
-        // Ask for missing field
-        if (!assistantText) {
-          if (!name) assistantText = "May I have your first name?";
-          else if (!email) assistantText = "What's your email address?";
-          else if (!message) assistantText = "What would you like our team to help you with?";
-        }
-      } else {
-        // Normal conversation (including after lead was already submitted)
-        // Pass full history for context so Isabella knows the conversation
-        const history = messages.map(m => ({
-          role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
-          content: m.text
-        }));
-        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
-        assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
-      }
+      // Pass full conversation history so Isabella has context
+      const history = messages.map(m => ({
+        role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
+        content: m.text
+      }));
+      const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
+      const assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -324,12 +145,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-
-      // Switch to typing mode for email
-      if (EMAIL_ASK_PATTERNS.test(assistantText)) {
-        setEmailInputMode(true);
-        stopListening();
-      }
 
       // Trigger D-ID or TTS
       if (onAIResponse && assistantText) {
@@ -343,7 +158,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [leadDraft, isCollectingLead, leadSubmitted, defaultPersona, onAIResponse, isMuted, extractContactDetails, submitLeadToCRM, stopListening, selectedLanguage, messages]);
+  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages]);
 
   // Keep sendMessageRef updated with latest sendMessage
   useEffect(() => {
@@ -358,9 +173,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const handleReset = () => {
     setMessages([]);
-    setLeadDraft({ inferred: { name: false, email: false, message: false }, confirmed: { name: false, email: false, message: false } });
-    setLeadSubmitted(false);
-    setIsCollectingLead(false);
     toast({ title: "Chat Reset", description: "Conversation cleared." });
   };
 

@@ -46,8 +46,7 @@ const LANGUAGES = [
   { code: 'pt-PT', label: 'Português', flag: '🇵🇹' },
 ];
 
-const EMAIL_ASK_PATTERNS = /(email address|your email|best email|what('s| is) your email)/i;
-const CONTACT_INTENT_PATTERNS = /(contact|get in touch|reach out|email|collaborate|work with|partnership|project|demo|inquiry|pricing|team|connect|talk to|speak with)/i;
+// Lead capture is handled entirely by the AI backend via tool calls — no frontend patterns needed
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   defaultPersona = 'isabella-navia',
@@ -61,9 +60,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [leadDraft, setLeadDraft] = useState<LeadDraft>({});
-  const [leadSubmitted, setLeadSubmitted] = useState(false);
-  const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
@@ -124,92 +120,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
   }, [showLanguageMenu]);
 
-  // Validation helpers
-  const isValidEmail = (email: string) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
-  const isValidName = (name: string) => /^[A-Za-zÀ-ÿ\s'-]+$/.test(name.trim()) && name.trim().length >= 2;
-
-  // Extract contact details from user message
-  const extractContactDetails = useCallback((text: string, draft: LeadDraft): Partial<LeadDraft> => {
-    const extracted: Partial<LeadDraft> = {
-      inferred: draft.inferred || { name: false, email: false, message: false },
-      confirmed: draft.confirmed || { name: false, email: false, message: false }
-    };
-    
-    // Email
-    if (!draft.email) {
-      const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
-      if (emails?.length) {
-        extracted.email = emails[0].toLowerCase().trim();
-        extracted.inferred!.email = true;
-      }
-    }
-    
-    // Name
-    if (!draft.name) {
-      const namePatterns = [
-        /(?:my name is|i am|i'm|this is|call me|name:\s*)\s+([A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)?)/i,
-        /^([A-ZÀ-Ý][a-zà-ÿ]+)\s/,
-        /^([A-Za-zÀ-ÿ]+)\s+[A-Za-z0-9._%+-]+@/i
-      ];
-      
-      for (const pattern of namePatterns) {
-        const match = text.match(pattern);
-        if (match?.[1]) {
-          const name = match[1].trim();
-          extracted.name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-          extracted.inferred!.name = true;
-          break;
-        }
-      }
-
-      // Single token fallback
-      if (!extracted.name && /^[A-Za-zÀ-ÿ]+$/.test(text.trim())) {
-        const name = text.trim();
-        extracted.name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-        extracted.inferred!.name = true;
-      }
-    }
-    
-    // Message
-    if (!draft.message) {
-      let msg = text;
-      if (extracted.email) msg = msg.replace(extracted.email, '');
-      if (extracted.name) msg = msg.replace(new RegExp(extracted.name, 'gi'), '');
-      msg = msg.replace(/^(?:hi|hello|hey|my name is|i'm|i am|this is|call me|about|regarding|message:?|email:?|name:?)[,\s]*/gi, '').trim();
-      
-      if (msg.length >= 5) {
-        extracted.message = msg;
-        extracted.inferred!.message = true;
-      }
-    }
-    
-    return extracted;
-  }, []);
-
-  // Submit lead to CRM
-  const submitLeadToCRM = useCallback(async (draft: LeadDraft) => {
-    if (!draft.name || !draft.email || !draft.message || leadSubmitted) return false;
-    
-    try {
-      const messageLower = draft.message.toLowerCase();
-      let inquiryType: 'modeling' | 'collaboration' | 'brand' | 'general' = 'general';
-      if (messageLower.includes('partner') || messageLower.includes('collab')) inquiryType = 'collaboration';
-      else if (messageLower.includes('brand') || messageLower.includes('promo')) inquiryType = 'brand';
-      else if (messageLower.includes('model') || messageLower.includes('shoot')) inquiryType = 'modeling';
-      
-      const result = await crmAPI.submitLead({
-        name: draft.name,
-        email: draft.email,
-        inquiry_type: inquiryType,
-        message: draft.message,
-        source: 'ovela-isabella-chat'
-      });
-      
-      return result.success;
-    } catch {
-      return false;
-    }
-  }, [leadSubmitted]);
+  // Lead capture is handled by the AI backend via tool calls — no frontend logic needed
 
   // Send message
   const sendMessage = useCallback(async (text: string) => {

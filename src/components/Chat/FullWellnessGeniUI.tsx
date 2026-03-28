@@ -35,6 +35,7 @@ interface FullWellnessGeniUIProps {
 }
 
 const LANGUAGES = [
+  { code: '', label: 'Auto-Detect', flag: '🌍' },
   { code: 'en-US', label: 'English', flag: '🇬🇧' },
   { code: 'fr-FR', label: 'Français', flag: '🇫🇷' },
   { code: 'es-ES', label: 'Español', flag: '🇪🇸' },
@@ -62,7 +63,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -71,7 +72,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   // Ref to hold latest sendMessage to avoid stale closures
   const sendMessageRef = useRef<(text: string) => void>(() => {});
 
-  // Web Speech STT with auto-send
+  // Web Speech STT - Push-to-Talk (no auto-send on silence)
   const {
     isListening,
     isSupported: isWebSpeechSupported,
@@ -87,7 +88,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       sendMessageRef.current(text);
     }, []),
     lang: selectedLanguage,
-    silenceTimeout: 600
   });
 
   // Sync AI speaking state
@@ -365,6 +365,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       toast({ title: "Voice Not Supported", description: "Use Chrome or Edge for voice input.", variant: "destructive" });
       return;
     }
+    // Push-to-talk: click to start, click again to stop & send
     isListening ? stopListening() : startListening();
   };
 
@@ -446,7 +447,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             onClick={toggleMic}
             disabled={isLoading}
             className={`p-2 rounded-full transition-colors ${isListening ? 'bg-red-500/80 hover:bg-red-500 animate-pulse' : 'bg-soft-white/10 hover:bg-soft-white/20'}`}
-            title={isListening ? 'Stop' : 'Start voice'}
+            title={isListening ? 'Stop & Send' : 'Push to Talk'}
           >
             {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-soft-white" />}
           </button>

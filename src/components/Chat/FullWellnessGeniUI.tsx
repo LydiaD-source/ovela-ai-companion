@@ -180,9 +180,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const handleReset = () => {
     setMessages([]);
-    setLeadDraft({ inferred: { name: false, email: false, message: false }, confirmed: { name: false, email: false, message: false } });
-    setLeadSubmitted(false);
-    setIsCollectingLead(false);
     toast({ title: "Chat Reset", description: "Conversation cleared." });
   };
 

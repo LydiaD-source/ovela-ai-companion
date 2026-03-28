@@ -28,8 +28,8 @@ serve(async (req) => {
 
     console.log('Generating speech for text:', { textLength: text.length, voice: voice || 'Isabella' });
 
-    // Use Isabella voice (t0IcnDolatli2xhqgLgn) as default
-    const voiceId = voice || 't0IcnDolatli2xhqgLgn';
+    // Use Isabella voice Sarah (EXAVITQu4vr4xnSDxMaL) as default — consistent across all languages
+    const voiceId = voice || 'EXAVITQu4vr4xnSDxMaL';
 
     // Generate speech from text using ElevenLabs
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {

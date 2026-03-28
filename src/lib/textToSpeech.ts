@@ -41,7 +41,7 @@ export class TextToSpeechService {
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: text.trim(),
-          voice: voice || 't0IcnDolatli2xhqgLgn'
+          voice: voice || 'EXAVITQu4vr4xnSDxMaL'
         }
       });
 

@@ -538,24 +538,26 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {!emailInputMode && !isListening && messages.length === 0 && (
           <p className="text-xs text-soft-white/50 mb-2 text-left pl-1">🎤 Click the microphone to speak, or type below</p>
         )}
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <div className="flex-1 min-w-0">
+        <form onSubmit={handleSubmit} className="grid w-full grid-cols-[minmax(0,1fr)_3rem] items-center gap-3">
+          <div className="min-w-0">
             <Input
               type={emailInputMode ? "email" : "text"}
               value={isListening && !emailInputMode ? (finalTranscript + ' ' + interimTranscript).trim() : inputText}
               onChange={(e) => (!isListening || emailInputMode) && setInputText(e.target.value)}
               placeholder={emailInputMode ? "your@email.com" : (isListening ? (t('chat.listening') || 'Listening...') : t('chat.placeholder'))}
-              className={`w-full bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold ${emailInputMode ? 'ring-2 ring-champagne-gold/50' : ''}`}
+              className={`h-12 w-full bg-soft-white/10 border-soft-white/20 text-soft-white placeholder:text-soft-white/50 focus:border-champagne-gold focus:ring-champagne-gold ${emailInputMode ? 'ring-2 ring-champagne-gold/50' : ''}`}
               disabled={isLoading || (isListening && !emailInputMode)}
               autoFocus={emailInputMode}
             />
           </div>
-          <button 
-            type="submit" 
-            disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()} 
-            className="shrink-0 w-10 h-10 rounded-full bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          <button
+            type="submit"
+            aria-label="Send message"
+            title="Send message"
+            disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-champagne-gold text-charcoal shadow-lg transition-colors hover:bg-champagne-gold/90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <Send className="w-4 h-4" />
+            <Send className="h-5 w-5" />
           </button>
         </form>
       </div>

@@ -35,6 +35,7 @@ interface FullWellnessGeniUIProps {
 }
 
 const LANGUAGES = [
+  { code: '', label: 'Auto-Detect', flag: '🌍' },
   { code: 'en-US', label: 'English', flag: '🇬🇧' },
   { code: 'fr-FR', label: 'Français', flag: '🇫🇷' },
   { code: 'es-ES', label: 'Español', flag: '🇪🇸' },
@@ -62,7 +63,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [isCollectingLead, setIsCollectingLead] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);

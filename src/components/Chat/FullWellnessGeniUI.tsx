@@ -523,7 +523,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {emailInputMode && (
           <p className="text-xs text-champagne-gold mb-2">⌨️ Please type your email address below</p>
         )}
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        {!emailInputMode && !isListening && messages.length === 0 && (
+          <p className="text-xs text-soft-white/50 mb-2 text-center">🎤 Click the microphone to speak, or type below</p>
+        )}
+        <form onSubmit={handleSubmit} className="flex gap-2 items-center">
           <Input
             type={emailInputMode ? "email" : "text"}
             value={isListening && !emailInputMode ? (finalTranscript + ' ' + interimTranscript).trim() : inputText}
@@ -533,7 +536,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             disabled={isLoading || (isListening && !emailInputMode)}
             autoFocus={emailInputMode}
           />
-          <Button type="submit" disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()} className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal">
+          <Button 
+            type="submit" 
+            disabled={isLoading || (isListening && !emailInputMode) || !inputText.trim()} 
+            size="icon"
+            className="bg-champagne-gold/80 hover:bg-champagne-gold text-charcoal min-w-[40px] h-[40px] shrink-0"
+          >
             <Send className="w-4 h-4" />
           </Button>
         </form>

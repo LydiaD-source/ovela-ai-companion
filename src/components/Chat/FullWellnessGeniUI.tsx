@@ -453,6 +453,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           >
             {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-soft-white" />}
           </button>
+          
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full bg-soft-white/10 hover:bg-red-500/30 transition-colors"
+              title="Close chat"
+            >
+              <X className="w-4 h-4 text-soft-white" />
+            </button>
+          )}
         </div>
       </div>
 

@@ -461,8 +461,8 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
                 console.error('❌ Async CRM submission error:', err);
               });
 
-              // Override message with success confirmation
-              finalMessage = "Perfect — I've shared your details with my team. They'll reach out shortly to plan your collaboration.";
+              // Do NOT override finalMessage — let the AI's natural response flow through
+              // The AI already confirms submission in its response
               crmSubmitted = true;
             } catch (parseError) {
               console.error('❌ Error parsing tool call arguments:', parseError);

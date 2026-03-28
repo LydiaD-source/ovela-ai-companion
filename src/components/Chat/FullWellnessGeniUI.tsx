@@ -226,15 +226,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setInputText('');
     setIsLoading(true);
 
-    // Detect contact intent
+    // Detect contact intent — only start lead collection if not already submitted
     const hasIntent = CONTACT_INTENT_PATTERNS.test(text);
-    if (!isCollectingLead && hasIntent) {
+    if (!isCollectingLead && !leadSubmitted && hasIntent) {
       setIsCollectingLead(true);
     }
 
     // Extract contact details
     let updatedDraft = { ...leadDraft };
-    if (isCollectingLead || hasIntent) {
+    if ((isCollectingLead || hasIntent) && !leadSubmitted) {
       const extracted = extractContactDetails(text, leadDraft);
       updatedDraft = { 
         ...leadDraft, 
@@ -248,8 +248,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     try {
       let assistantText = "";
 
-      // Lead collection flow
-      if ((isCollectingLead || hasIntent) && !leadSubmitted) {
+      // Lead collection flow — only when actively collecting and not yet submitted
+      if (isCollectingLead && !leadSubmitted) {
         const { name, email, message, confirmed } = updatedDraft;
 
         // Validate name
@@ -288,7 +288,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           const submitted = await submitLeadToCRM(updatedDraft);
           
           if (submitted) {
-            assistantText = `Thank you, ${name}! I've sent your details to our team. They'll reach out shortly.`;
+            assistantText = `Thank you, ${name}! I've sent your details to our team. They'll reach out shortly. Feel free to ask me anything about our services!`;
+            // Reset lead collection so conversation continues normally
             setIsCollectingLead(false);
             setLeadDraft({});
             toast({ title: "Lead Submitted", description: "Your contact information has been sent." });
@@ -305,7 +306,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           else if (!message) assistantText = "What would you like our team to help you with?";
         }
       } else {
-        // Normal conversation - pass full history for context
+        // Normal conversation (including after lead was already submitted)
+        // Pass full history for context so Isabella knows the conversation
         const history = messages.map(m => ({
           role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
           content: m.text

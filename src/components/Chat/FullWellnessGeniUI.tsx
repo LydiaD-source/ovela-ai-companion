@@ -120,9 +120,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     }
   }, [showLanguageMenu]);
 
-  // Lead capture is handled by the AI backend via tool calls — no frontend logic needed
-
-  // Send message
+  // Send message — all lead capture is handled by the AI backend via tool calls
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return;
 
@@ -137,95 +135,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     setInputText('');
     setIsLoading(true);
 
-    // Detect contact intent — only start lead collection if not already submitted
-    const hasIntent = CONTACT_INTENT_PATTERNS.test(text);
-    if (!isCollectingLead && !leadSubmitted && hasIntent) {
-      setIsCollectingLead(true);
-    }
-
-    // Extract contact details
-    let updatedDraft = { ...leadDraft };
-    if ((isCollectingLead || hasIntent) && !leadSubmitted) {
-      const extracted = extractContactDetails(text, leadDraft);
-      updatedDraft = { 
-        ...leadDraft, 
-        ...extracted,
-        inferred: { ...(leadDraft.inferred || { name: false, email: false, message: false }), ...(extracted.inferred || {}) },
-        confirmed: { ...(leadDraft.confirmed || { name: false, email: false, message: false }), ...(extracted.confirmed || {}) }
-      };
-      setLeadDraft(updatedDraft);
-    }
-
     try {
-      let assistantText = "";
-
-      // Lead collection flow — only when actively collecting and not yet submitted
-      if (isCollectingLead && !leadSubmitted) {
-        const { name, email, message, confirmed } = updatedDraft;
-
-        // Validate name
-        if (name && !confirmed?.name) {
-          if (!isValidName(name)) {
-            setLeadDraft(prev => ({ ...prev, name: undefined, inferred: { ...prev.inferred, name: false } }));
-            assistantText = "Hmm, I didn't quite catch that — could you please retype your name?";
-          } else {
-            setLeadDraft(prev => ({ ...prev, confirmed: { ...prev.confirmed, name: true } }));
-            updatedDraft.confirmed!.name = true;
-            if (!email) assistantText = `Perfect, thanks ${name}! What's your email address?`;
-          }
-        }
-
-        // Validate email
-        if (email && !confirmed?.email && confirmed?.name) {
-          if (!isValidEmail(email)) {
-            setLeadDraft(prev => ({ ...prev, email: undefined, inferred: { ...prev.inferred, email: false } }));
-            assistantText = "That doesn't look like a full email — could you double-check it?";
-          } else {
-            setLeadDraft(prev => ({ ...prev, confirmed: { ...prev.confirmed, email: true } }));
-            updatedDraft.confirmed!.email = true;
-            if (!message) assistantText = `Got it, ${name}. What would you like our team to help you with?`;
-          }
-        }
-
-        // Confirm message
-        if (message && !confirmed?.message && confirmed?.name && confirmed?.email) {
-          setLeadDraft(prev => ({ ...prev, confirmed: { ...prev.confirmed, message: true } }));
-          updatedDraft.confirmed!.message = true;
-        }
-
-        // Submit when complete
-        if (name && email && message && confirmed?.name && confirmed?.email) {
-          setLeadSubmitted(true);
-          const submitted = await submitLeadToCRM(updatedDraft);
-          
-          if (submitted) {
-            assistantText = `Thank you, ${name}! I've sent your details to our team. They'll reach out shortly. Feel free to ask me anything about our services!`;
-            // Reset lead collection so conversation continues normally
-            setIsCollectingLead(false);
-            setLeadDraft({});
-            toast({ title: "Lead Submitted", description: "Your contact information has been sent." });
-          } else {
-            setLeadSubmitted(false);
-            assistantText = "It seems there was a small hiccup. Let's try that again.";
-          }
-        }
-
-        // Ask for missing field
-        if (!assistantText) {
-          if (!name) assistantText = "May I have your first name?";
-          else if (!email) assistantText = "What's your email address?";
-          else if (!message) assistantText = "What would you like our team to help you with?";
-        }
-      } else {
-        // Normal conversation (including after lead was already submitted)
-        // Pass full history for context so Isabella knows the conversation
-        const history = messages.map(m => ({
-          role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
-          content: m.text
-        }));
-        const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
-        assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
-      }
+      // Pass full conversation history so Isabella has context
+      const history = messages.map(m => ({
+        role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
+        content: m.text
+      }));
+      const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
+      const assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -235,12 +152,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-
-      // Switch to typing mode for email
-      if (EMAIL_ASK_PATTERNS.test(assistantText)) {
-        setEmailInputMode(true);
-        stopListening();
-      }
 
       // Trigger D-ID or TTS
       if (onAIResponse && assistantText) {
@@ -254,7 +165,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [leadDraft, isCollectingLead, leadSubmitted, defaultPersona, onAIResponse, isMuted, extractContactDetails, submitLeadToCRM, stopListening, selectedLanguage, messages]);
+  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages]);
 
   // Keep sendMessageRef updated with latest sendMessage
   useEffect(() => {

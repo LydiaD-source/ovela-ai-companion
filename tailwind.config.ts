@@ -57,6 +57,7 @@ export default {
 				'electric-blue': 'hsl(var(--electric-blue))',
 				'neon-purple': 'hsl(var(--neon-purple))',
 				'soft-white': 'hsl(var(--soft-white))',
+				'champagne-gold': 'hsl(var(--champagne-gold))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

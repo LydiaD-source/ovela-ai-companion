@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe, Check } from 'lucide-react';
+import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
@@ -32,6 +32,7 @@ interface FullWellnessGeniUIProps {
   onAIResponse?: (text: string) => void;
   onReady?: () => void;
   isAISpeaking?: boolean;
+  onClose?: () => void;
 }
 
 const LANGUAGES = [
@@ -52,7 +53,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   defaultPersona = 'isabella-navia',
   onAIResponse,
   onReady,
-  isAISpeaking = false
+  isAISpeaking = false,
+  onClose
 }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -451,6 +453,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           >
             {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-soft-white" />}
           </button>
+          
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full bg-soft-white/10 hover:bg-red-500/30 transition-colors"
+              title="Close chat"
+            >
+              <X className="w-4 h-4 text-soft-white" />
+            </button>
+          )}
         </div>
       </div>
 

@@ -14,6 +14,8 @@ interface Message {
   text: string;
   sender: 'user' | 'assistant';
   timestamp: Date;
+  videoCategory?: string;
+  videoCount?: number;
 }
 
 

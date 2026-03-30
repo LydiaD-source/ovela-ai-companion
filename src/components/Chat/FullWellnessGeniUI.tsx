@@ -146,7 +146,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         id: (Date.now() + 1).toString(),
         text: assistantText,
         sender: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        videoCategory: isa.videoSuggestion?.category,
+        videoCount: isa.videoSuggestion?.count || 3,
       };
 
       setMessages(prev => [...prev, assistantMessage]);

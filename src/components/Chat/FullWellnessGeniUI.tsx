@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
+import VideoCard from '@/components/Chat/VideoCard';
+import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 

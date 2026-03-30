@@ -443,19 +443,21 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
       const aiBody = await aiRes.json();
       console.log("Lovable AI response body:", JSON.stringify(aiBody).substring(0, 200));
       
-      // Check if AI wants to extract contact details via tool call
+      // Check if AI wants to use tools
       const toolCalls = aiBody?.choices?.[0]?.message?.tool_calls;
       let finalMessage = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
       let crmSubmitted = false;
+      let videoSuggestion: { category: string; count: number } | null = null;
 
       if (toolCalls && toolCalls.length > 0) {
+        const toolResults: any[] = [];
+
         for (const toolCall of toolCalls) {
           if (toolCall.function?.name === 'extract_contact_details') {
             try {
               const contactDetails = JSON.parse(toolCall.function.arguments);
               console.log('📋 Contact details extracted by Isabella:', contactDetails);
               
-              // Submit to CRM asynchronously (don't block the response)
               submitLeadToCRM({
                 name: contactDetails.name,
                 email: contactDetails.email,
@@ -469,23 +471,30 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
               });
 
               crmSubmitted = true;
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: true, message: "Lead submitted successfully" }) });
             } catch (parseError) {
               console.error('❌ Error parsing tool call arguments:', parseError);
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
+            }
+          } else if (toolCall.function?.name === 'suggest_videos') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments);
+              videoSuggestion = { category: args.category || 'studio_intro', count: Math.min(args.count || 3, 3) };
+              console.log('🎬 Video suggestion requested:', videoSuggestion);
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: true, message: `Showing ${videoSuggestion.count} videos from ${videoSuggestion.category}` }) });
+            } catch (parseError) {
+              console.error('❌ Error parsing suggest_videos arguments:', parseError);
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
             }
           }
         }
 
-        // When AI returns tool_calls without content, make a follow-up call to get the response
-        if (!finalMessage && crmSubmitted) {
+        // Follow-up call to get natural text response after tool calls
+        if (!finalMessage) {
           try {
-            // Add tool results and ask for natural response
             const followUpMessages = [...aiMessages, aiBody.choices[0].message];
-            for (const tc of toolCalls) {
-              followUpMessages.push({
-                role: "tool",
-                tool_call_id: tc.id,
-                content: JSON.stringify({ success: true, message: "Lead submitted successfully" })
-              });
+            for (const tr of toolResults) {
+              followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
             }
 
             const followUpRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -510,14 +519,17 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
             console.error("⚠️ Follow-up call failed:", followUpErr);
           }
 
-          // Final fallback if still empty
           if (!finalMessage) {
-            finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
+            if (crmSubmitted) {
+              finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
+            } else if (videoSuggestion) {
+              finalMessage = "Here are some examples of my recent work — take a look!";
+            }
           }
         }
       }
       
-      console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50) });
+      console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50), hasVideos: !!videoSuggestion });
       console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
       
       if (!finalMessage) {

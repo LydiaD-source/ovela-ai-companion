@@ -188,13 +188,26 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     toast({ title: "Chat Reset", description: "Conversation cleared." });
   };
 
-  const toggleMic = () => {
+    const toggleMic = () => {
     if (!isWebSpeechSupported) {
       toast({ title: "Voice Not Supported", description: "Use Chrome or Edge for voice input.", variant: "destructive" });
       return;
     }
-    // Push-to-talk: click to start, click again to stop & send
-    isListening ? stopListening() : startListening();
+    if (isListening) {
+      // Stop listening — transcript goes to input, user will tap Send on the pill
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+    const handleVoiceSend = () => {
+    // Send whatever is in the input (populated by STT)
+    const text = (finalTranscript + ' ' + interimTranscript).trim() || inputText.trim();
+    if (text) {
+      setInputText(text);
+      sendMessage(text);
+    }
   };
 
   return (
@@ -271,14 +284,28 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             {isMuted ? <VolumeX className="w-4 h-4 text-soft-white" /> : <Volume2 className="w-4 h-4 text-soft-white" />}
           </button>
           
-          <button
-            onClick={toggleMic}
-            disabled={isLoading}
-            className={`p-2 rounded-full transition-colors ${isListening ? 'bg-red-500/80 hover:bg-red-500 animate-pulse' : 'bg-soft-white/10 hover:bg-soft-white/20'}`}
-            title={isListening ? 'Stop & Send' : 'Push to Talk'}
-          >
-            {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-soft-white" />}
-          </button>
+          {/* Speak / Send toggle pill button */}
+          {isListening ? (
+            <button
+              onClick={() => { stopListening(); setTimeout(() => handleVoiceSend(), 200); }}
+              disabled={isLoading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-champagne-gold text-charcoal font-medium text-xs transition-all hover:bg-champagne-gold/90 shadow-lg"
+              title="Send voice message"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Send</span>
+            </button>
+          ) : (
+            <button
+              onClick={toggleMic}
+              disabled={isLoading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-soft-white/10 hover:bg-soft-white/20 text-soft-white text-xs transition-colors"
+              title="Click to speak"
+            >
+              <Mic className="w-3.5 h-3.5" />
+              <span>Speak</span>
+            </button>
+          )}
           
           {onClose && (
             <button
@@ -376,7 +403,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Tap the gold arrow to send your message</p>
         )}
         {!emailInputMode && !isListening && !inputText && messages.length === 0 && (
-          <p className="mb-1 pl-1 text-left text-xs text-soft-white/50">Click the microphone to speak, or type below</p>
+          <p className="mb-1 pl-1 text-left text-xs text-soft-white/50">Click "Speak" above or type below</p>
+        )}
+        {!emailInputMode && isListening && (
+          <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Speak now — tap "Send" when ready</p>
         )}
         <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end">
           <div className="relative w-full min-w-0">

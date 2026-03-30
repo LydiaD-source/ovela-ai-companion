@@ -459,12 +459,51 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
                 console.error('❌ Async CRM submission error:', err);
               });
 
-              // Do NOT override finalMessage — let the AI's natural response flow through
-              // The AI already confirms submission in its response
               crmSubmitted = true;
             } catch (parseError) {
               console.error('❌ Error parsing tool call arguments:', parseError);
             }
+          }
+        }
+
+        // When AI returns tool_calls without content, make a follow-up call to get the response
+        if (!finalMessage && crmSubmitted) {
+          try {
+            // Add tool results and ask for natural response
+            const followUpMessages = [...aiMessages, aiBody.choices[0].message];
+            for (const tc of toolCalls) {
+              followUpMessages.push({
+                role: "tool",
+                tool_call_id: tc.id,
+                content: JSON.stringify({ success: true, message: "Lead submitted successfully" })
+              });
+            }
+
+            const followUpRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${lovableKey}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                model: "google/gemini-2.5-flash",
+                messages: followUpMessages,
+                stream: false
+              })
+            });
+
+            if (followUpRes.ok) {
+              const followUpBody = await followUpRes.json();
+              finalMessage = followUpBody?.choices?.[0]?.message?.content || "";
+              console.log("📋 Follow-up response after tool call:", finalMessage.substring(0, 80));
+            }
+          } catch (followUpErr) {
+            console.error("⚠️ Follow-up call failed:", followUpErr);
+          }
+
+          // Final fallback if still empty
+          if (!finalMessage) {
+            finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
           }
         }
       }

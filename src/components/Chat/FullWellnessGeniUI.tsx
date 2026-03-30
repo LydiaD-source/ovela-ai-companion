@@ -190,7 +190,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages]);
+  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory]);
 
   // Keep sendMessageRef updated with latest sendMessage
   useEffect(() => {

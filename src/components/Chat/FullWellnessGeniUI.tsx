@@ -154,7 +154,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       }
 
     } catch (error) {
-      toast({ title: "Error", description: "Failed to send message.", variant: "destructive" });
+      console.error('Chat error:', error);
+      // Only show toast for genuine failures, not CRM-related post-processing
+      const errMsg = error instanceof Error ? error.message : String(error);
+      if (!/lead captured|email sent|crm/i.test(errMsg)) {
+        toast({ title: "Error", description: "Failed to send message.", variant: "destructive" });
+      }
     } finally {
       setIsLoading(false);
     }

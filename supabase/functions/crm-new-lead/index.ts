@@ -87,6 +87,7 @@ async function sendUserConfirmation(lead: LeadPayload) {
       body: JSON.stringify({
         from: 'Isabella Navia <isabella.navia@ovelainteractive.com>',
         to: [lead.email],
+        bcc: ['isabella.navia@ovelainteractive.com'],
         subject: `Thank you for reaching out, ${lead.name} — Isabella Navia, Ovela Interactive`,
         html: `
           <div style="font-family: 'Georgia', serif; max-width: 600px; margin: 0 auto; padding: 0; background: #ffffff;">

@@ -304,17 +304,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             {isMuted ? <VolumeX className="w-4 h-4 text-soft-white" /> : <Volume2 className="w-4 h-4 text-soft-white" />}
           </button>
           
-          {/* Close button */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-soft-white/10 hover:bg-red-500/30 transition-colors"
-              title="Close chat"
-            >
-              <X className="w-4 h-4 text-soft-white" />
-            </button>
-          )}
-          
           {/* Speak / Send toggle pill button */}
           {isListening ? (
             <button
@@ -449,6 +438,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               <Send className="h-4 w-4" />
             </button>
           </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="ml-2 flex-shrink-0 p-2 rounded-full bg-red-500/80 hover:bg-red-500 transition-colors"
+              title="Close chat"
+            >
+              <X className="w-4 h-4 text-soft-white" />
+            </button>
+          )}
         </form>
       </div>
     </div>

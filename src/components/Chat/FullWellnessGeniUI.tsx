@@ -63,7 +63,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   // Ref to hold latest sendMessage to avoid stale closures
   const sendMessageRef = useRef<(text: string) => void>(() => {});
 
-  // Web Speech STT - Push-to-Talk (no auto-send on silence)
+  // Web Speech STT - fills input on stop so user clicks Send
   const {
     isListening,
     isSupported: isWebSpeechSupported,
@@ -76,7 +76,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     error: speechError
   } = useWebSpeechSTT({
     onAutoSend: useCallback((text: string) => {
-      sendMessageRef.current(text);
+      // Instead of auto-sending, populate input so user hits Send
+      setInputText(text);
     }, []),
     lang: selectedLanguage,
   });
@@ -354,7 +355,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {emailInputMode && (
           <p className="mb-1 pl-1 text-xs text-champagne-gold">Please type your email address below</p>
         )}
-        {!emailInputMode && !isListening && messages.length === 0 && (
+        {!emailInputMode && !isListening && inputText && !messages.length && (
+          <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Tap the gold arrow to send your message</p>
+        )}
+        {!emailInputMode && !isListening && !inputText && messages.length === 0 && (
           <p className="mb-1 pl-1 text-left text-xs text-soft-white/50">Click the microphone to speak, or type below</p>
         )}
         <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end">

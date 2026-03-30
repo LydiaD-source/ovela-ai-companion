@@ -1,7 +1,22 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "ovelainteractive.com" }],
+      "destination": "https://www.ovelainteractive.com/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/about", "destination": "/index.html" },
+    { "source": "/partner", "destination": "/index.html" },
+    { "source": "/pricing", "destination": "/index.html" },
+    { "source": "/projects", "destination": "/index.html" },
+    { "source": "/contact", "destination": "/index.html" },
+    { "source": "/interactive", "destination": "/index.html" },
+    { "source": "/wellnessgeni", "destination": "/index.html" },
+    {
+      "source": "/((?!api|favicon\\.ico|favicon\\.png|robots\\.txt|sitemap\\.xml|images|BingSiteAuth\\.xml|_redirects).*)",
       "destination": "/index.html"
     }
   ]

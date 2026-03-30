@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI } from '@/lib/isabellaAPI';
+import VideoCard from '@/components/Chat/VideoCard';
+import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 
@@ -14,6 +16,8 @@ interface Message {
   text: string;
   sender: 'user' | 'assistant';
   timestamp: Date;
+  videoCategory?: string;
+  videoCount?: number;
 }
 
 
@@ -142,7 +146,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         id: (Date.now() + 1).toString(),
         text: assistantText,
         sender: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        videoCategory: isa.videoSuggestion?.category,
+        videoCount: isa.videoSuggestion?.count || 3,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -292,6 +298,17 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] rounded-xl p-3 ${message.sender === 'user' ? 'bg-soft-white/20 text-soft-white ml-4' : 'bg-soft-white/10 text-soft-white mr-4'}`}>
               <p className="text-sm">{message.text}</p>
+              {/* Video cards when Isabella suggests portfolio videos */}
+              {message.videoCategory && (
+                <div className="mt-3 flex flex-col gap-2">
+                  {(getVideosByCategory(message.videoCategory).length > 0
+                    ? getVideosByCategory(message.videoCategory)
+                    : getFallbackVideos()
+                  ).slice(0, message.videoCount || 3).map(video => (
+                    <VideoCard key={video.id} video={video} />
+                  ))}
+                </div>
+              )}
               <p className="text-xs opacity-70 mt-1">{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
             </div>
           </div>

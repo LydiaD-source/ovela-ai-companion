@@ -328,6 +328,13 @@ LEAD CAPTURE (natural flow — not a rigid script):
 - If user asks about services/options BEFORE giving contact info, answer their questions first — don't push for contact details prematurely
 - NEVER ask for contact info twice. If already submitted, move on.
 
+VIDEO PORTFOLIO (use suggest_videos tool):
+- When user shows interest in examples, projects, campaigns, content, asks "what do you do", "show me", "have you worked with brands" — OFFER to show videos first, don't just call the tool
+- Say something like "I can show you a few examples — would you like to see brand campaigns, wellness solutions, real estate, or a mix?"
+- Categories: interactive_marketing (brand/fashion/luxury campaigns), wellness_spa (wellness/spa/health), real_estate (property/architecture), ai_ambassador (AI host/digital human), studio_intro (general overview)
+- After showing videos, guide toward conversion: "Would you like something similar for your brand?"
+- Show max 2-3 videos per suggestion
+
 ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
 
       aiMessages.push({ role: "system", content: isabellaSystemPrompt });
@@ -355,7 +362,7 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
         });
       }
 
-      // Define CRM tool for intelligent natural language contact extraction
+      // Define tools: CRM contact extraction + Video Intelligence Layer
       const tools = [
         {
           type: "function",
@@ -365,25 +372,34 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
             parameters: {
               type: "object",
               properties: {
-                name: { 
-                  type: "string", 
-                  description: "User's full name extracted from natural language - works with 'Robert', 'I'm Robert', 'My name is Robert', 'Robert here', etc." 
-                },
-                email: { 
-                  type: "string", 
-                  description: "User's email address extracted from any format - 'email@domain.com', 'Email: email@domain.com', 'my email is email@domain.com', etc." 
-                },
-                inquiry_type: { 
-                  type: "string", 
-                  enum: ["modeling", "collaboration", "brand", "demo", "general"],
-                  description: "Type inferred from conversation context: 'collaboration' for partnerships/working together, 'modeling' for model applications, 'brand' for brand deals/sponsorships, 'demo' for product demos, 'general' for other inquiries" 
-                },
-                message: { 
-                  type: "string", 
-                  description: "User's message, interest summary, or what they want to discuss - extracted from their conversational input about their goals/needs" 
-                }
+                name: { type: "string", description: "User's full name" },
+                email: { type: "string", description: "User's email address" },
+                inquiry_type: { type: "string", enum: ["modeling", "collaboration", "brand", "demo", "general"], description: "Type inferred from conversation" },
+                message: { type: "string", description: "User's interest summary" }
               },
               required: ["name", "email", "inquiry_type", "message"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "suggest_videos",
+            description: "Suggest portfolio videos when user shows interest in examples, campaigns, projects, content, or asks 'what do you do', 'show me', 'have you worked with brands', etc. Call this to display relevant video examples in the chat. Always ASK PERMISSION before calling — e.g. 'I can show you a few examples — would you like to see something specific, or a quick mix of my recent work?' Only call AFTER user confirms they want to see videos.",
+            parameters: {
+              type: "object",
+              properties: {
+                category: {
+                  type: "string",
+                  enum: ["interactive_marketing", "wellness_spa", "real_estate", "ai_ambassador", "studio_intro"],
+                  description: "Category to show: 'interactive_marketing' for brand campaigns/luxury/fashion/content, 'wellness_spa' for wellness/spa/health/lifestyle, 'real_estate' for property/architecture, 'ai_ambassador' for AI host/digital human/Isabella capabilities, 'studio_intro' for general portfolio/overview or when unclear"
+                },
+                count: {
+                  type: "number",
+                  description: "Number of videos to show (2-3 recommended, max 3)"
+                }
+              },
+              required: ["category"]
             }
           }
         }
@@ -434,19 +450,21 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
       const aiBody = await aiRes.json();
       console.log("Lovable AI response body:", JSON.stringify(aiBody).substring(0, 200));
       
-      // Check if AI wants to extract contact details via tool call
+      // Check if AI wants to use tools
       const toolCalls = aiBody?.choices?.[0]?.message?.tool_calls;
       let finalMessage = aiBody?.choices?.[0]?.message?.content || extractAssistantText(aiBody) || "";
       let crmSubmitted = false;
+      let videoSuggestion: { category: string; count: number } | null = null;
 
       if (toolCalls && toolCalls.length > 0) {
+        const toolResults: any[] = [];
+
         for (const toolCall of toolCalls) {
           if (toolCall.function?.name === 'extract_contact_details') {
             try {
               const contactDetails = JSON.parse(toolCall.function.arguments);
               console.log('📋 Contact details extracted by Isabella:', contactDetails);
               
-              // Submit to CRM asynchronously (don't block the response)
               submitLeadToCRM({
                 name: contactDetails.name,
                 email: contactDetails.email,
@@ -460,23 +478,30 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
               });
 
               crmSubmitted = true;
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: true, message: "Lead submitted successfully" }) });
             } catch (parseError) {
               console.error('❌ Error parsing tool call arguments:', parseError);
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
+            }
+          } else if (toolCall.function?.name === 'suggest_videos') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments);
+              videoSuggestion = { category: args.category || 'studio_intro', count: Math.min(args.count || 3, 3) };
+              console.log('🎬 Video suggestion requested:', videoSuggestion);
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: true, message: `Showing ${videoSuggestion.count} videos from ${videoSuggestion.category}` }) });
+            } catch (parseError) {
+              console.error('❌ Error parsing suggest_videos arguments:', parseError);
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
             }
           }
         }
 
-        // When AI returns tool_calls without content, make a follow-up call to get the response
-        if (!finalMessage && crmSubmitted) {
+        // Follow-up call to get natural text response after tool calls
+        if (!finalMessage) {
           try {
-            // Add tool results and ask for natural response
             const followUpMessages = [...aiMessages, aiBody.choices[0].message];
-            for (const tc of toolCalls) {
-              followUpMessages.push({
-                role: "tool",
-                tool_call_id: tc.id,
-                content: JSON.stringify({ success: true, message: "Lead submitted successfully" })
-              });
+            for (const tr of toolResults) {
+              followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
             }
 
             const followUpRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -501,14 +526,17 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
             console.error("⚠️ Follow-up call failed:", followUpErr);
           }
 
-          // Final fallback if still empty
           if (!finalMessage) {
-            finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
+            if (crmSubmitted) {
+              finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
+            } else if (videoSuggestion) {
+              finalMessage = "Here are some examples of my recent work — take a look!";
+            }
           }
         }
       }
       
-      console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50) });
+      console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50), hasVideos: !!videoSuggestion });
       console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
       
       if (!finalMessage) {
@@ -522,7 +550,10 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
       return new Response(JSON.stringify({ 
         success: true, 
         message: finalMessage, 
-        data: { crm_submitted: crmSubmitted } 
+        data: { 
+          crm_submitted: crmSubmitted,
+          ...(videoSuggestion ? { video_suggestion: videoSuggestion } : {})
+        } 
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });

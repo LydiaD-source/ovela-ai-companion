@@ -9,5 +9,5 @@ Disallow: /locale-tools
 Disallow: /tools
 Disallow: /services
 
-# Sitemap location (canonical HTTPS non-www domain)
-Sitemap: https://ovelainteractive.com/sitemap.xml
+# Sitemap location (canonical www domain)
+Sitemap: https://www.ovelainteractive.com/sitemap.xml

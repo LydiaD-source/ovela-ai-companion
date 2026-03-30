@@ -403,7 +403,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Tap the gold arrow to send your message</p>
         )}
         {!emailInputMode && !isListening && !inputText && messages.length === 0 && (
-          <p className="mb-1 pl-1 text-left text-xs text-soft-white/50">Click the microphone to speak, or type below</p>
+          <p className="mb-1 pl-1 text-left text-xs text-soft-white/50">Click "Speak" above or type below</p>
+        )}
+        {!emailInputMode && isListening && (
+          <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Speak now — tap "Send" when ready</p>
         )}
         <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end">
           <div className="relative w-full min-w-0">

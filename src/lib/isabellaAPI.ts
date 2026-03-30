@@ -18,6 +18,7 @@ export interface IsabellaResponse {
   audioUrl?: string;
   videoUrl?: string;
   emotion?: string;
+  videoSuggestion?: { category: string; count: number };
 }
 
 export interface ConversationMessage {
@@ -69,7 +70,8 @@ class IsabellaAPI {
         message: data.message || '',
         audioUrl: data.audioUrl,
         videoUrl: data.videoUrl,
-        emotion: data.emotion
+        emotion: data.emotion,
+        videoSuggestion: data.data?.video_suggestion || undefined,
       };
     } catch (error) {
       console.error('Error sending message to Isabella:', error);

@@ -328,6 +328,13 @@ LEAD CAPTURE (natural flow — not a rigid script):
 - If user asks about services/options BEFORE giving contact info, answer their questions first — don't push for contact details prematurely
 - NEVER ask for contact info twice. If already submitted, move on.
 
+VIDEO PORTFOLIO (use suggest_videos tool):
+- When user shows interest in examples, projects, campaigns, content, asks "what do you do", "show me", "have you worked with brands" — OFFER to show videos first, don't just call the tool
+- Say something like "I can show you a few examples — would you like to see brand campaigns, wellness solutions, real estate, or a mix?"
+- Categories: interactive_marketing (brand/fashion/luxury campaigns), wellness_spa (wellness/spa/health), real_estate (property/architecture), ai_ambassador (AI host/digital human), studio_intro (general overview)
+- After showing videos, guide toward conversion: "Would you like something similar for your brand?"
+- Show max 2-3 videos per suggestion
+
 ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
 
       aiMessages.push({ role: "system", content: isabellaSystemPrompt });

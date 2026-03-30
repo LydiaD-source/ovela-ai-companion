@@ -18,6 +18,7 @@ interface Message {
   timestamp: Date;
   videoCategory?: string;
   videoCount?: number;
+  selectedVideoIds?: string[];
 }
 
 
@@ -60,6 +61,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [emailInputMode, setEmailInputMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>({});
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
@@ -142,13 +144,31 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const isa = await isabellaAPI.sendMessage(text, defaultPersona, history);
       const assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
 
+      // Pick unseen clips for this category
+      let selectedVideoIds: string[] | undefined;
+      const cat = isa.videoSuggestion?.category;
+      const count = isa.videoSuggestion?.count || 2;
+      if (cat) {
+        const allVids = getVideosByCategory(cat).length > 0 ? getVideosByCategory(cat) : getFallbackVideos();
+        const seen = new Set(shownByCategory[cat] || []);
+        const pool = allVids.filter(v => !seen.has(v.id));
+        const source = pool.length > 0 ? pool : allVids; // reset if exhausted
+        const picked = [...source].sort(() => Math.random() - 0.5).slice(0, count);
+        selectedVideoIds = picked.map(v => v.id);
+        setShownByCategory(prev => ({
+          ...prev,
+          [cat]: [...(prev[cat] || []), ...selectedVideoIds!]
+        }));
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: assistantText,
         sender: 'assistant',
         timestamp: new Date(),
-        videoCategory: isa.videoSuggestion?.category,
-        videoCount: isa.videoSuggestion?.count || 3,
+        videoCategory: cat,
+        videoCount: count,
+        selectedVideoIds,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -284,6 +304,17 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             {isMuted ? <VolumeX className="w-4 h-4 text-soft-white" /> : <Volume2 className="w-4 h-4 text-soft-white" />}
           </button>
           
+          {/* Close button */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full bg-soft-white/10 hover:bg-red-500/30 transition-colors"
+              title="Close chat"
+            >
+              <X className="w-4 h-4 text-soft-white" />
+            </button>
+          )}
+          
           {/* Speak / Send toggle pill button */}
           {isListening ? (
             <button
@@ -306,16 +337,6 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               <span>Speak</span>
             </button>
           )}
-          
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-soft-white/10 hover:bg-red-500/30 transition-colors"
-              title="Close chat"
-            >
-              <X className="w-4 h-4 text-soft-white" />
-            </button>
-          )}
         </div>
       </div>
 
@@ -325,15 +346,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] rounded-xl p-3 ${message.sender === 'user' ? 'bg-soft-white/20 text-soft-white ml-4' : 'bg-soft-white/10 text-soft-white mr-4'}`}>
               <p className="text-sm">{message.text}</p>
-              {/* Video cards when Isabella suggests portfolio videos */}
-              {message.videoCategory && (
+              {/* Video cards — show pre-selected clips to avoid repeats */}
+              {message.selectedVideoIds && message.selectedVideoIds.length > 0 && (
                 <div className="mt-3 flex flex-col gap-2">
-                  {(getVideosByCategory(message.videoCategory).length > 0
-                    ? getVideosByCategory(message.videoCategory)
-                    : getFallbackVideos()
-                  ).slice(0, message.videoCount || 3).map(video => (
-                    <VideoCard key={video.id} video={video} />
-                  ))}
+                  {message.selectedVideoIds.map(vid => {
+                    const allVids = [...VIDEO_CATEGORIES.flatMap(c => c.videos)];
+                    const video = allVids.find(v => v.id === vid);
+                    return video ? <VideoCard key={video.id} video={video} /> : null;
+                  })}
                 </div>
               )}
               <p className="text-xs opacity-70 mt-1">{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>

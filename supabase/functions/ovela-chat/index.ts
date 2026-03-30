@@ -355,7 +355,7 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
         });
       }
 
-      // Define CRM tool for intelligent natural language contact extraction
+      // Define tools: CRM contact extraction + Video Intelligence Layer
       const tools = [
         {
           type: "function",
@@ -365,25 +365,34 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
             parameters: {
               type: "object",
               properties: {
-                name: { 
-                  type: "string", 
-                  description: "User's full name extracted from natural language - works with 'Robert', 'I'm Robert', 'My name is Robert', 'Robert here', etc." 
-                },
-                email: { 
-                  type: "string", 
-                  description: "User's email address extracted from any format - 'email@domain.com', 'Email: email@domain.com', 'my email is email@domain.com', etc." 
-                },
-                inquiry_type: { 
-                  type: "string", 
-                  enum: ["modeling", "collaboration", "brand", "demo", "general"],
-                  description: "Type inferred from conversation context: 'collaboration' for partnerships/working together, 'modeling' for model applications, 'brand' for brand deals/sponsorships, 'demo' for product demos, 'general' for other inquiries" 
-                },
-                message: { 
-                  type: "string", 
-                  description: "User's message, interest summary, or what they want to discuss - extracted from their conversational input about their goals/needs" 
-                }
+                name: { type: "string", description: "User's full name" },
+                email: { type: "string", description: "User's email address" },
+                inquiry_type: { type: "string", enum: ["modeling", "collaboration", "brand", "demo", "general"], description: "Type inferred from conversation" },
+                message: { type: "string", description: "User's interest summary" }
               },
               required: ["name", "email", "inquiry_type", "message"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "suggest_videos",
+            description: "Suggest portfolio videos when user shows interest in examples, campaigns, projects, content, or asks 'what do you do', 'show me', 'have you worked with brands', etc. Call this to display relevant video examples in the chat. Always ASK PERMISSION before calling — e.g. 'I can show you a few examples — would you like to see something specific, or a quick mix of my recent work?' Only call AFTER user confirms they want to see videos.",
+            parameters: {
+              type: "object",
+              properties: {
+                category: {
+                  type: "string",
+                  enum: ["interactive_marketing", "wellness_spa", "real_estate", "ai_ambassador", "studio_intro"],
+                  description: "Category to show: 'interactive_marketing' for brand campaigns/luxury/fashion/content, 'wellness_spa' for wellness/spa/health/lifestyle, 'real_estate' for property/architecture, 'ai_ambassador' for AI host/digital human/Isabella capabilities, 'studio_intro' for general portfolio/overview or when unclear"
+                },
+                count: {
+                  type: "number",
+                  description: "Number of videos to show (2-3 recommended, max 3)"
+                }
+              },
+              required: ["category"]
             }
           }
         }

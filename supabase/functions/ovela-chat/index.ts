@@ -543,7 +543,10 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
       return new Response(JSON.stringify({ 
         success: true, 
         message: finalMessage, 
-        data: { crm_submitted: crmSubmitted } 
+        data: { 
+          crm_submitted: crmSubmitted,
+          ...(videoSuggestion ? { video_suggestion: videoSuggestion } : {})
+        } 
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });

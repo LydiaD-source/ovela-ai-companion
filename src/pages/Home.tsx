@@ -11,7 +11,7 @@ import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { useSEO } from '@/hooks/useSEO';
-import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, faqSchema, isabellaSchema } from '@/hooks/useStructuredData';
+import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, faqSchema } from '@/hooks/useStructuredData';
 import '@/styles/HeroSection.css';
 
 // Isabella avatar URL - centralized constant

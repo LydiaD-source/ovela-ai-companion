@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { IsabellaAvatarStream } from '@/components/Interactive/IsabellaAvatarStream';
 import { useSEO } from '@/hooks/useSEO';
-import { useStructuredData, isabellaSchema, organizationSchema } from '@/hooks/useStructuredData';
+import { useStructuredData, organizationSchema, serviceSchema, createWebPageSchema } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
 
 const Interactive = () => {

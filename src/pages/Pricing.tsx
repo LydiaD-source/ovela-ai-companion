@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Globe, Mic, Palette, BarChart3, Video, Monitor, MessageCircle, ArrowRight, Zap, Clock, TrendingUp } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { useSEO } from '@/hooks/useSEO';
-import { useStructuredData, serviceSchema, organizationSchema, pricingProductSchemas } from '@/hooks/useStructuredData';
+import { useStructuredData, serviceSchema, organizationSchema, pricingServiceSchemas, createWebPageSchema } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 

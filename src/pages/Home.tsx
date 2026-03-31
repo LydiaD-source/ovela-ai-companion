@@ -172,7 +172,7 @@ const Home = () => {
               "name": "Ovela Interactive",
               "logo": {
                 "@type": "ImageObject",
-                "url": "/favicon.ico"
+                "url": "https://www.ovelainteractive.com/favicon.png"
               }
             }
           })

@@ -14,7 +14,12 @@ const Pricing = () => {
     description: 'Deploy Isabella as your AI model, brand ambassador, or interactive host. Simple pricing for campaigns, website integration, and custom AI ambassadors.'
   });
 
-  useStructuredData([serviceSchema, organizationSchema, ...pricingProductSchemas], 'pricing-structured-data');
+  useStructuredData([
+    organizationSchema,
+    serviceSchema,
+    createWebPageSchema({ name: 'Pricing', description: 'Service pricing and packages for AI brand ambassador solutions.', path: '/pricing' }),
+    ...pricingServiceSchemas
+  ], 'pricing-structured-data');
 
   const packages = [
     {

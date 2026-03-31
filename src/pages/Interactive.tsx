@@ -20,7 +20,7 @@ const Interactive = () => {
   });
 
   // Structured data for Isabella AI
-  useStructuredData([isabellaSchema, organizationSchema], 'interactive-structured-data');
+  useStructuredData([organizationSchema, serviceSchema, createWebPageSchema({ name: 'Interactive AI Experience', description: 'Meet Isabella — the interactive AI brand ambassador by Ovela Interactive.', path: '/interactive' })], 'interactive-structured-data');
 
   return (
     <div className="min-h-screen flex flex-col">

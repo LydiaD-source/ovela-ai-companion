@@ -73,9 +73,9 @@ let guideCache: { text: string; at: number; clientId: string } | null = null;
 async function submitLeadToCRM(leadData: any) {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_PUBLISHABLE_KEY');
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
-    console.log('📋 Submitting lead to CRM:', { email: leadData.email, inquiry_type: leadData.inquiry_type });
+    console.log('📋 Submitting lead to CRM:', { email: leadData.email, inquiry_type: leadData.inquiry_type, hasApiKey: !!supabaseKey });
     
     const response = await fetch(`${supabaseUrl}/functions/v1/crm-new-lead`, {
       method: 'POST',

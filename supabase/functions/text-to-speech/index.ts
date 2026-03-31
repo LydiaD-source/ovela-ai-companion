@@ -43,8 +43,8 @@ serve(async (req) => {
         text: text,
         model_id: 'eleven_multilingual_v2',
         voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.5,
+          stability: 0.75,
+          similarity_boost: 0.80,
           style: 0.0,
           use_speaker_boost: true
         }

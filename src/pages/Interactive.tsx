@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { IsabellaAvatarStream } from '@/components/Interactive/IsabellaAvatarStream';
 import { useSEO } from '@/hooks/useSEO';
-import { useStructuredData, isabellaSchema, organizationSchema } from '@/hooks/useStructuredData';
+import { useStructuredData, organizationSchema, serviceSchema, createWebPageSchema } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
 
 const Interactive = () => {
@@ -20,7 +20,7 @@ const Interactive = () => {
   });
 
   // Structured data for Isabella AI
-  useStructuredData([isabellaSchema, organizationSchema], 'interactive-structured-data');
+  useStructuredData([organizationSchema, serviceSchema, createWebPageSchema({ name: 'Interactive AI Experience', description: 'Meet Isabella — the interactive AI brand ambassador by Ovela Interactive.', path: '/interactive' })], 'interactive-structured-data');
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Globe, Mic, Palette, BarChart3, Video, Monitor, MessageCircle, ArrowRight, Zap, Clock, TrendingUp } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { useSEO } from '@/hooks/useSEO';
-import { useStructuredData, serviceSchema, organizationSchema, pricingProductSchemas } from '@/hooks/useStructuredData';
+import { useStructuredData, serviceSchema, organizationSchema, pricingServiceSchemas, createWebPageSchema } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 
@@ -14,7 +14,12 @@ const Pricing = () => {
     description: 'Deploy Isabella as your AI model, brand ambassador, or interactive host. Simple pricing for campaigns, website integration, and custom AI ambassadors.'
   });
 
-  useStructuredData([serviceSchema, organizationSchema, ...pricingProductSchemas], 'pricing-structured-data');
+  useStructuredData([
+    organizationSchema,
+    serviceSchema,
+    createWebPageSchema({ name: 'Pricing', description: 'Service pricing and packages for AI brand ambassador solutions.', path: '/pricing' }),
+    ...pricingServiceSchemas
+  ], 'pricing-structured-data');
 
   const packages = [
     {

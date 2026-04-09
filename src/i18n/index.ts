@@ -7,13 +7,15 @@ import es from './locales/es.json';
 import fr from './locales/fr.json';
 import de from './locales/de.json';
 import pt from './locales/pt.json';
+import ca from './locales/ca.json';
 
 const resources = {
   en: { translation: en },
   es: { translation: es },
   fr: { translation: fr },
   de: { translation: de },
-  pt: { translation: pt }
+  pt: { translation: pt },
+  ca: { translation: ca }
 };
 
 i18n

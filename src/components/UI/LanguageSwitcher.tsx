@@ -9,6 +9,7 @@ import { Globe } from 'lucide-react';
 
 const languages = [
   { code: 'en', name: 'English', flag: 'EN' },
+  { code: 'ca', name: 'Català', flag: '🏳️' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },

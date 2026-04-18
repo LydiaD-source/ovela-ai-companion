@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { trackIsabellaClick } from '@/lib/analytics';
 
 interface CTASectionProps {
   onChatClick: () => void;
@@ -38,6 +39,7 @@ export const CTASection: React.FC<CTASectionProps> = ({ onChatClick }) => {
         <div className="flex justify-center items-center">
           <button
             onClick={() => {
+              trackIsabellaClick('cta_section');
               window.scrollTo({ top: 0, behavior: 'smooth' });
               setTimeout(() => onChatClick(), 800);
             }}

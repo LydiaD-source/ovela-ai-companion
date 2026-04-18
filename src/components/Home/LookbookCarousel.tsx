@@ -240,6 +240,8 @@ export const LookbookCarousel = () => {
                       muted={mutedStates[index]}
                       loop
                       playsInline
+                      preload={isActive ? 'auto' : 'metadata'}
+                      poster={(item as any).poster}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       onMouseEnter={() => handleVideoMouseEnter(index)}
                       onMouseLeave={() => handleVideoMouseLeave(index)}

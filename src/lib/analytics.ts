@@ -9,8 +9,8 @@ declare global {
   }
 }
 
-// 🔁 Replace with your real Measurement ID once GA4 property is created
-export const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+// GA4 Measurement ID for Ovela Interactive
+export const GA_MEASUREMENT_ID = 'G-W1DLW2R7D7';
 const CONSENT_KEY = 'ovela_cookie_consent';
 
 type Consent = 'granted' | 'denied' | null;
@@ -63,7 +63,7 @@ export const initConsentMode = () => {
 
 export const loadGA4 = () => {
   if (typeof window === 'undefined' || window.__GA4_LOADED__) return;
-  if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
+  if (!GA_MEASUREMENT_ID) {
     console.info('[Analytics] GA4 Measurement ID not set — skipping load.');
     return;
   }

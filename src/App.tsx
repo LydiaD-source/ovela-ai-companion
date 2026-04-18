@@ -16,6 +16,7 @@ import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import Interactive from "./pages/Interactive";
 import NotFound from "./pages/NotFound";
+import CookieConsentBanner from "@/components/UI/CookieConsentBanner";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => {
               </Routes>
             </main>
           </div>
+          <CookieConsentBanner />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

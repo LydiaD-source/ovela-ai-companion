@@ -64,6 +64,38 @@ export const serviceSchema = {
   }
 };
 
+// ProfessionalService Schema — positions Ovela as an AI marketing agency (not e-commerce)
+export const professionalServiceSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Ovela Interactive",
+  "url": BASE_URL,
+  "image": `${BASE_URL}/images/isabella-hero-native.png`,
+  "logo": `${BASE_URL}/favicon.png`,
+  "description": "AI-powered marketing agency specializing in interactive AI brand ambassadors, conversational AI, and 24/7 lead-generation experiences. All projects are scoped and delivered through direct consultation — no online checkout.",
+  "priceRange": "$$",
+  "areaServed": "Worldwide",
+  "serviceType": [
+    "AI Brand Ambassador Development",
+    "Interactive Marketing",
+    "Conversational AI Integration",
+    "Lead Generation Automation"
+  ],
+  "knowsAbout": [
+    "AI Brand Ambassadors",
+    "Interactive Marketing",
+    "Digital Avatars",
+    "Conversational AI",
+    "Brand Engagement"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "url": `${BASE_URL}/contact`,
+    "availableLanguage": ["English", "Spanish", "French", "German", "Portuguese", "Catalan"]
+  }
+};
+
 // Service schemas for pricing page (replaces Product schemas)
 export const pricingServiceSchemas = [
   {

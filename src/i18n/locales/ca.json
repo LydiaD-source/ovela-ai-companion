@@ -296,5 +296,12 @@
       "title": "WellnessGeni | Companya de benestar amb IA per Ovela",
       "description": "Descobreix WellnessGeni, on Isabella va aparèixer per primera vegada com a coach de benestar amb IA."
     }
+  },
+  "cookies": {
+    "title": "Preferències de galetes",
+    "message": "Utilitzem galetes per analitzar el trànsit i millorar la teva experiència. L'analítica només es carrega amb el teu consentiment.",
+    "accept": "Acceptar-ho tot",
+    "decline": "Rebutjar",
+    "learnMore": "Més informació"
   }
 }

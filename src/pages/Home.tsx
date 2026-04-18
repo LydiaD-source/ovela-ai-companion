@@ -11,7 +11,7 @@ import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { StreamingService } from '@/services/StreamingService';
 import { textToSpeechService } from '@/lib/textToSpeech';
 import { useSEO } from '@/hooks/useSEO';
-import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, faqSchema } from '@/hooks/useStructuredData';
+import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, professionalServiceSchema, faqSchema } from '@/hooks/useStructuredData';
 import '@/styles/HeroSection.css';
 
 // Isabella avatar URL - centralized constant
@@ -29,7 +29,7 @@ const Home = () => {
   });
 
   // Structured data for rich search results
-  useStructuredData([organizationSchema, websiteSchema, serviceSchema, faqSchema], 'home-structured-data');
+  useStructuredData([organizationSchema, websiteSchema, serviceSchema, professionalServiceSchema, faqSchema], 'home-structured-data');
   
   const [isChatActive, setIsChatActive] = useState(false);
   const [isStreamSpeaking, setIsStreamSpeaking] = useState(false);

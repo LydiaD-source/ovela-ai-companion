@@ -1227,6 +1227,51 @@ export type Database = {
           },
         ]
       }
+      custom_voice_requests: {
+        Row: {
+          admin_notes: string | null
+          consent_given_at: string | null
+          created_at: string
+          elevenlabs_voice_id: string | null
+          id: string
+          request_type: string
+          sample_consent_given: boolean | null
+          status: string
+          updated_at: string
+          user_id: string
+          voice_description: string
+          voice_name: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          consent_given_at?: string | null
+          created_at?: string
+          elevenlabs_voice_id?: string | null
+          id?: string
+          request_type?: string
+          sample_consent_given?: boolean | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          voice_description: string
+          voice_name?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          consent_given_at?: string | null
+          created_at?: string
+          elevenlabs_voice_id?: string | null
+          id?: string
+          request_type?: string
+          sample_consent_given?: boolean | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          voice_description?: string
+          voice_name?: string | null
+        }
+        Relationships: []
+      }
       debug_env: {
         Row: {
           created_at: string | null

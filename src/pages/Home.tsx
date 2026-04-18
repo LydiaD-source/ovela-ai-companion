@@ -29,7 +29,7 @@ const Home = () => {
   });
 
   // Structured data for rich search results
-  useStructuredData([organizationSchema, websiteSchema, serviceSchema, faqSchema], 'home-structured-data');
+  useStructuredData([organizationSchema, websiteSchema, serviceSchema, professionalServiceSchema, faqSchema], 'home-structured-data');
   
   const [isChatActive, setIsChatActive] = useState(false);
   const [isStreamSpeaking, setIsStreamSpeaking] = useState(false);

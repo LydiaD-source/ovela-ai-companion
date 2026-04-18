@@ -63,7 +63,7 @@ export const initConsentMode = () => {
 
 export const loadGA4 = () => {
   if (typeof window === 'undefined' || window.__GA4_LOADED__) return;
-  if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'G-XXXXXXXXXX') {
+  if (!GA_MEASUREMENT_ID) {
     console.info('[Analytics] GA4 Measurement ID not set — skipping load.');
     return;
   }

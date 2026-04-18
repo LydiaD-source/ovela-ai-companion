@@ -259,5 +259,12 @@
     "listening": "Escuchando...",
     "yourTurn": "Tu turno...",
     "isabellaSpeaking": "Isabella está hablando..."
+  },
+  "cookies": {
+    "title": "Preferencias de cookies",
+    "message": "Usamos cookies para analizar el tráfico y mejorar tu experiencia. La analítica se carga solo con tu consentimiento.",
+    "accept": "Aceptar todo",
+    "decline": "Rechazar",
+    "learnMore": "Más información"
   }
 }

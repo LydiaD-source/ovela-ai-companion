@@ -296,5 +296,12 @@
       "title": "WellnessGeni | AI Wellness Companion by Ovela",
       "description": "Discover WellnessGeni, where Isabella first appeared as an AI wellness coach. The app that started it all — personalized wellness guidance powered by AI."
     }
+  },
+  "cookies": {
+    "title": "Cookie preferences",
+    "message": "We use cookies to analyze traffic and improve your experience. Analytics are loaded only with your consent.",
+    "accept": "Accept all",
+    "decline": "Decline",
+    "learnMore": "Learn more"
   }
 }

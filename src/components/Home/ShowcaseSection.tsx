@@ -57,7 +57,7 @@ export const ShowcaseSection = () => {
                 loop
                 playsInline
                 preload="metadata"
-                poster={item.poster}
+                poster={(item as any).poster}
                 className="w-full h-full object-cover"
               />
             ) : (

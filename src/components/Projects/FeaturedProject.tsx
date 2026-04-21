@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { ExternalLink, Play, MessageSquare, Cpu, Users, Globe, Video, UserCheck } from 'lucide-react';
+import { ExternalLink, Play, MessageSquare, Cpu, Users, Globe, Video, UserCheck, Volume2, VolumeX } from 'lucide-react';
 
 const FeaturedProject = () => {
   const { t } = useTranslation();
   const [howOpen, setHowOpen] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   return (
     <section className="py-16 md:py-24 px-6">
@@ -33,7 +35,7 @@ const FeaturedProject = () => {
           </p>
         </div>
 
-        {/* Video Player Placeholder */}
+        {/* Video Player */}
         <div
           className="relative rounded-2xl overflow-hidden mx-auto mb-8"
           style={{
@@ -43,22 +45,29 @@ const FeaturedProject = () => {
             boxShadow: '0 0 40px hsl(var(--champagne-gold) / 0.15)',
           }}
         >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer transition-transform hover:scale-110"
-                style={{
-                  background: 'hsl(var(--champagne-gold) / 0.2)',
-                  border: '2px solid hsl(var(--champagne-gold) / 0.5)',
-                }}
-              >
-                <Play className="w-8 h-8 ml-1" style={{ color: 'hsl(var(--champagne-gold))' }} />
-              </div>
-              <p className="text-sm" style={{ color: 'hsl(var(--champagne-gold) / 0.7)' }}>
-                Video Coming Soon
-              </p>
-            </div>
-          </div>
+          <video
+            ref={videoRef}
+            src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1776763867/AI_website_host_5_m1l7ip.mp4"
+            className="w-full h-full object-cover"
+            autoPlay
+            loop
+            muted={muted}
+            playsInline
+            preload="metadata"
+            onClick={() => setMuted(!muted)}
+          />
+          <button
+            onClick={() => setMuted(!muted)}
+            className="absolute bottom-3 right-3 p-2 rounded-full backdrop-blur-sm transition-opacity opacity-70 hover:opacity-100"
+            style={{ background: 'hsl(0 0% 0% / 0.5)' }}
+            aria-label={muted ? 'Unmute' : 'Mute'}
+          >
+            {muted ? (
+              <VolumeX className="w-4 h-4" style={{ color: 'hsl(var(--soft-white))' }} />
+            ) : (
+              <Volume2 className="w-4 h-4" style={{ color: 'hsl(var(--champagne-gold))' }} />
+            )}
+          </button>
         </div>
 
         {/* Description */}

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 const BASE_URL = 'https://www.ovelainteractive.com';
 
 // Supported languages for hreflang
-const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'pt'] as const;
+const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;
 
 interface SEOConfig {
   path: string;
@@ -62,6 +62,7 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
       fr: 'fr_FR',
       de: 'de_DE',
       pt: 'pt_BR',
+      ca: 'ca_ES',
     };
     if (ogLocale) {
       ogLocale.content = localeMap[currentLang] || 'en_US';

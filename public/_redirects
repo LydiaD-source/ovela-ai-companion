@@ -1,7 +1,6 @@
-# Canonical domain redirect (non-www → www)
-https://ovelainteractive.com/* https://www.ovelainteractive.com/:splat 301
-http://ovelainteractive.com/* https://www.ovelainteractive.com/:splat 301
-http://www.ovelainteractive.com/* https://www.ovelainteractive.com/:splat 301
+# Note: This file is for Netlify-style hosts. Vercel uses vercel.json (which already
+# handles the apex → www and http → https redirects). Kept here only as a fallback
+# for non-Vercel deployments.
 
 # SPA fallback — serve index.html for all routes not matching a static file
-/* /index.html 200
+/*    /index.html   200

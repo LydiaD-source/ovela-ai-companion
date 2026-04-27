@@ -26,7 +26,7 @@ const lookbookItems: LookbookItem[] = [
   },
   {
     type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759495220/1_16_xpxhgm.jpg',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/lucid-origin_artistic_portrait_photography_of_ultra_realistic_portrait_of_a_handsome_masculin-0_1_xelofp.jpg',
     captionKey: 'lookbook.captions.brandPartnerships'
   },
   {
@@ -40,8 +40,8 @@ const lookbookItems: LookbookItem[] = [
     captionKey: 'lookbook.captions.timelessElegance'
   },
   {
-    type: 'video',
-    src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4',
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/gemini-2.5-flash-image_artistic_portrait_photography_of_ultra_realistic_full_body_shot_head_to_toe_visi-0_1_znwtoq.jpg',
     captionKey: 'lookbook.captions.modernIcon'
   }
 ];

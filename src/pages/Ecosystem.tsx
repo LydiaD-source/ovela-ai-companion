@@ -110,7 +110,23 @@ const Ecosystem: React.FC = () => {
         </div>
       </section>
 
+      {/* Built Through Ovela Interactive */}
+      <BuiltThroughOvela t={t} />
+
       {/* Partners */}
+      <section className="px-6 pb-24">
+        <div className="max-w-5xl mx-auto text-center mb-14">
+          <p className="text-[#D4AF37] tracking-[0.4em] text-xs uppercase mb-4">
+            {t('ecosystem.partnersSection.eyebrow', 'Partner Network')}
+          </p>
+          <h2 className="font-serif text-3xl md:text-5xl mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
+            {t('ecosystem.partnersSection.title', 'Brands Built & Connected Through Ovela')}
+          </h2>
+          <p className="text-white/60 max-w-2xl mx-auto">
+            {t('ecosystem.partnersSection.description', 'Each partner gains ecosystem exposure, intelligent cross-promotion, and preferred access to premium digital infrastructure.')}
+          </p>
+        </div>
+      </section>
       <section className="px-6 pb-24">
         <div className="max-w-7xl mx-auto space-y-10">
           {partners.map((p) => (

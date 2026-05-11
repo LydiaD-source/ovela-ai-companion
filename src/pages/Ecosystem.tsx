@@ -67,7 +67,7 @@ const Ecosystem: React.FC = () => {
     },
     {
       key: 'superior',
-      name: 'Superior Immobiliaris',
+      name: 'Immobiliària Superior',
       tagline: t('ecosystem.partners.superior.tagline', 'Andorran Real Estate, since 1974'),
       positioning: t('ecosystem.partners.superior.positioning', 'Five decades curating the most coveted properties in Andorra — now interactively presented.'),
       benefits: [

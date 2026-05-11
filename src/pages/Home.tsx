@@ -35,6 +35,7 @@ const Home = () => {
   const [isStreamSpeaking, setIsStreamSpeaking] = useState(false);
   const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [initialChatMessage, setInitialChatMessage] = useState<string | undefined>(undefined);
   const isAISpeaking = isStreamSpeaking || isTTSSpeaking;
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -100,10 +101,21 @@ const Home = () => {
     };
   }, []);
 
-  // Handle URL param to auto-open chat
+  // Handle URL params: open chat & optionally pre-seed a partner context message
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('chat') === 'open') {
+    const partner = params.get('partner');
+    const partnerMessages: Record<string, string> = {
+      wellnespirit: "I'd like to learn more about WellneSpirit and how to access the Ovela Network benefits with them.",
+      luxdeftec: "I'm interested in LuxDefTec — please tell me about Ovela Network access and next steps.",
+      superior: "I'd like to explore Superior Immobiliaris properties through the Ovela Network.",
+      general: "I'd like to learn more about the Ovela Network and how partnership works.",
+    };
+    if (partner && partnerMessages[partner]) {
+      setInitialChatMessage(partnerMessages[partner]);
+      setIsChatActive(true);
+      window.history.replaceState({}, '', '/');
+    } else if (params.get('chat') === 'open') {
       setIsChatActive(true);
       window.history.replaceState({}, '', '/');
     }
@@ -287,6 +299,15 @@ const Home = () => {
                   >
                     {t('hero.explore')}
                   </a>
+
+                  {/* Tertiary CTA - Ovela Network */}
+                  <a
+                    href="/ecosystem"
+                    className="hero-link-secondary"
+                    style={{ fontSize: 13, opacity: 0.85, letterSpacing: '0.15em', textTransform: 'uppercase' }}
+                  >
+                    {t('hero.network', 'Explore the Ovela Network →')}
+                  </a>
                 </div>
               </div>
 
@@ -303,6 +324,7 @@ const Home = () => {
                       onAIResponse={handleAIResponse}
                       isAISpeaking={isAISpeaking}
                       onClose={() => setIsChatActive(false)}
+                      initialMessage={initialChatMessage}
                     />
                   </div>
                 </div>

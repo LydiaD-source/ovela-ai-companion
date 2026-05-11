@@ -79,6 +79,39 @@
         "4": "Accés a integració d'IA interactiva i automatització",
         "5": "Mitjans premium, llocs web i infraestructura de màrqueting"
       }
+    },
+    "partnersSection": {
+      "eyebrow": "Xarxa de Partners",
+      "title": "Mira el que Ovela Permet",
+      "description": "Els partners d'Ovela es beneficien de l'exposició a l'ecosistema, la promoció creuada intel·ligent i l'accés preferent a infraestructura digital premium."
+    },
+    "finalNote": "Marques i institucions seleccionades estan convidades a unir-se a l'ecosistema.",
+    "built": {
+      "eyebrow": "Construït a través d'Ovela Interactive",
+      "title": "La Infraestructura Darrere de la Xarxa",
+      "description": "Cada marca dins la xarxa està dissenyada, presentada i connectada a través d'Ovela Interactive.",
+      "items": {
+        "websites": {
+          "title": "Llocs Web Interactius",
+          "desc": "Plataformes interactives personalitzades dissenyades per comunicar-se com haurien de fer les empreses modernes."
+        },
+        "ai": {
+          "title": "Membres d'Equip d'IA",
+          "desc": "Representants d'IA personalitzats entrenats en el teu negoci, serveis, productes i fluxos de treball."
+        },
+        "media": {
+          "title": "Producció de Mitjans Cinemàtics",
+          "desc": "Narrativa visual premium, visuals de producte, presentacions interactives i campanyes promocionals."
+        },
+        "automation": {
+          "title": "Automatització Intel·ligent",
+          "desc": "Sistemes integrats de reserves, comunicació CRM, incorporació, suport i gestió de contactes."
+        },
+        "network": {
+          "title": "Avantatges de l'Ecosistema de Partners",
+          "desc": "Termes de producció preferents per a partners, promoció a l'ecosistema, col·laboració estratègica i posicionament d'accés seleccionat."
+        }
+      }
     }
   },
   "about": {

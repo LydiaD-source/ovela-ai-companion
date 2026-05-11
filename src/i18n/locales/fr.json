@@ -14,7 +14,8 @@
     "description": "— La première ambassadrice IA d'Ovela. Posez des questions sur Ovela, réservez un projet ou créez votre propre ambassadeur IA.",
     "cta": "Discuter avec Isabella",
     "explore": "↓ Découvrez le Portfolio d'Isabella ↓",
-    "connecting": "Connexion..."
+    "connecting": "Connexion...",
+    "network": "Réseau de Partenaires"
   },
   "about": {
     "title": "Redéfinir le Mannequinat par l'IA",
@@ -266,5 +267,100 @@
     "accept": "Tout accepter",
     "decline": "Refuser",
     "learnMore": "En savoir plus"
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Réseau Ovela — Un Écosystème Curé de Marques Interactives",
+      "description": "Un écosystème connecté de marques premium propulsé par Ovela Interactive : bien-être, technologie de défense, immobilier et plus."
+    },
+    "hero": {
+      "eyebrow": "Réseau Ovela",
+      "title": "Un Écosystème Curé de Marques Interactives",
+      "description": "Ovela collabore avec des maisons sélectionnées dans le bien-être, la défense et l'immobilier — et offre des avantages privés aux clients introduits au sein du réseau."
+    },
+    "categories": {
+      "wellness": "Bien-être et Longévité",
+      "defense": "Technologie de Défense",
+      "realestate": "Immobilier"
+    },
+    "partners": {
+      "wellnespirit": {
+        "tagline": "Le Luxe du 3e Millénaire",
+        "positioning": "Rejuvenation du corps, de l'esprit, de l'âme et des cellules — conçue pour l'élite consciente.",
+        "b1": "Accès exclusif au réseau pour les protocoles de rajeunissement phares",
+        "b2": "Invitations privées à des retraites et événements pour membres",
+        "b3": "Présentations concierge gérées par Isabella"
+      },
+      "luxdeftec": {
+        "tagline": "Technologie de Défense de Précision",
+        "positioning": "Systèmes de défense de grade souverain et technologies à double usage pour partenaires et institutions sélectionnés.",
+        "b1": "Accès validé au brief corporatif de l'écosystème",
+        "b2": "Dialogue prioritaire sur les programmes de technologie à double usage",
+        "b3": "Présentations de réseau sous NDA"
+      },
+      "superior": {
+        "tagline": "Immobilier d'Andorre, depuis 1974",
+        "positioning": "Cinq décennies à sélectionner les propriétés les plus convoitées d'Andorre — maintenant présentées de manière interactive.",
+        "b1": "Dossiers de propriétés hors marché pour les membres du réseau",
+        "b2": "Visites immobilières interactives animées par Isabella",
+        "b3": "Concierge de relocalisation et de résidence"
+      }
+    },
+    "partnerCard": {
+      "requestAccess": "Demandez l'Accès au Réseau",
+      "viaIsabella": "Qualifié par Isabella"
+    },
+    "cta": {
+      "title": "Devenez Partenaire du Réseau Ovela",
+      "description": "Les marques, maisons et institutions qui partagent notre standard de présence interactive et d'accès sélectionné sont invitées à postuler.",
+      "button": "Parlez à Isabella"
+    },
+    "helpsPartners": {
+      "eyebrow": "Croissance des Partenaires",
+      "title": "Comment Ovela Aide ses Partenaires à Croître",
+      "description": "Ovela Interactive a été créé pour aider les marques sélectionnées à moderniser leur présence numérique, automatiser la communication et accéder à une infrastructure marketing premium sans la complexité et le coût typiquement associés à la production et au développement à grande échelle.",
+      "subdescription": "À travers l'écosystème, les partenaires accèdent à des conditions de production préférentielles, des opportunités de collaboration stratégique, une promotion croisée intelligente et des solutions personnalisées adaptées à leurs besoins opérationnels.",
+      "subdescription2": "Que ce soit pour lancer un site web interactif, intégrer un membre d'équipe IA, produire des médias cinématographiques ou automatiser la communication client, Ovela travaille directement avec chaque partenaire pour créer des systèmes évolutifs conçus pour la croissance à long terme et le positionnement premium.",
+      "items": {
+        "1": "Tarifs de production préférentiels pour les partenaires",
+        "2": "Solutions personnalisées adaptées à l'échelle opérationnelle",
+        "3": "Promotion croisée au sein du réseau de l'écosystème",
+        "4": "Accès à l'intégration IA interactive et à l'automatisation",
+        "5": "Médias premium, sites web et infrastructure marketing"
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "Réseau de Partenaires",
+      "title": "Regardez ce qu'Ovela Permet",
+      "description": "Les partenaires d'Ovela bénéficient de l'exposition à l'écosystème, de la promotion croisée intelligente et de l'accès privilégié à une infrastructure numérique premium."
+    },
+    "finalNote": "Les marques et institutions sélectionnées sont invitées à rejoindre l'écosystème.",
+    "built": {
+      "eyebrow": "Construit via Ovela Interactive",
+      "title": "L'Infrastructure Derrière le Réseau",
+      "description": "Chaque marque au sein du réseau est conçue, présentée et connectée via Ovela Interactive.",
+      "items": {
+        "websites": {
+          "title": "Sites Web Interactifs",
+          "desc": "Plateformes interactives personnalisées conçues pour communiquer comme les entreprises modernes devraient le faire."
+        },
+        "ai": {
+          "title": "Membres d'Équipe IA",
+          "desc": "Représentants IA personnalisés entraînés sur votre entreprise, services, produits et flux de travail."
+        },
+        "media": {
+          "title": "Production de Médias Cinématographiques",
+          "desc": "Narration visuelle premium, visuels de produit, présentations interactives et campagnes promotionnelles."
+        },
+        "automation": {
+          "title": "Automatisation Intelligente",
+          "desc": "Systèmes intégrés de réservation, communication CRM, intégration, support et gestion de leads."
+        },
+        "network": {
+          "title": "Avantages de l'Écosystème Partenaire",
+          "desc": "Conditions de production préférentielles pour les partenaires, promotion dans l'écosystème, collaboration stratégique et positionnement à accès sélectionné."
+        }
+      }
+    }
   }
 }

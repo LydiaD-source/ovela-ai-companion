@@ -14,7 +14,8 @@
     "description": "— A primeira embaixadora modelo IA da Ovela. Pergunte sobre a Ovela, reserve um projeto ou crie seu próprio embaixador movido por IA.",
     "cta": "Converse com Isabella",
     "explore": "↓ Explore o Portfólio de Isabella ↓",
-    "connecting": "Conectando..."
+    "connecting": "Conectando...",
+    "network": "Rede de Parceiros"
   },
   "about": {
     "title": "Redefinindo a Modelagem com IA",
@@ -266,5 +267,100 @@
     "accept": "Aceitar tudo",
     "decline": "Recusar",
     "learnMore": "Saber mais"
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Rede Ovela — Um Ecossistema Curado de Marcas Interativas",
+      "description": "Um ecossistema conectado de marcas premium impulsionado pela Ovela Interactive: bem-estar, tecnologia de defesa, imobiliário e mais."
+    },
+    "hero": {
+      "eyebrow": "Rede Ovela",
+      "title": "Um Ecossistema Curado de Marcas Interativas",
+      "description": "A Ovela colabora com casas selecionadas de bem-estar, defesa e imobiliário — e oferece benefícios privados a clientes introduzidos dentro da rede."
+    },
+    "categories": {
+      "wellness": "Bem-estar e Longevidade",
+      "defense": "Tecnologia de Defesa",
+      "realestate": "Imobiliário"
+    },
+    "partners": {
+      "wellnespirit": {
+        "tagline": "O Luxo do 3º Milênio",
+        "positioning": "Rejuvenescimento de corpo, mente, alma e células — projetado para a elite consciente.",
+        "b1": "Acesso exclusivo da rede aos protocolos de rejuvenescimento carro-chefe",
+        "b2": "Convites privados para retiros e eventos para membros",
+        "b3": "Apresentações concierge gerenciadas por Isabella"
+      },
+      "luxdeftec": {
+        "tagline": "Tecnologia de Defesa de Precisão",
+        "positioning": "Sistemas de defesa de grau soberano e tecnologias de duplo uso para parceiros e instituições selecionados.",
+        "b1": "Acesso validado ao brief corporativo do ecossistema",
+        "b2": "Diálogo prioritário sobre programas de tecnologia de duplo uso",
+        "b3": "Apresentações de rede sob NDA"
+      },
+      "superior": {
+        "tagline": "Imobiliário de Andorra, desde 1974",
+        "positioning": "Cinco décadas selecionando as propriedades mais cobiçadas de Andorra — agora apresentadas de forma interativa.",
+        "b1": "Dossiês de propriedades fora de mercado para membros da rede",
+        "b2": "Visitas interativas de propriedades com Isabella",
+        "b3": "Concierge de realocação e residência"
+      }
+    },
+    "partnerCard": {
+      "requestAccess": "Solicitar Acesso à Rede",
+      "viaIsabella": "Qualificado por Isabella"
+    },
+    "cta": {
+      "title": "Torne-se um Parceiro da Rede Ovela",
+      "description": "Marcas, casas e instituições que compartilham nosso padrão de presença interativa e acesso selecionado estão convidadas a se candidatar.",
+      "button": "Fale com Isabella"
+    },
+    "helpsPartners": {
+      "eyebrow": "Crescimento dos Parceiros",
+      "title": "Como a Ovela Ajuda seus Parceiros a Crescer",
+      "description": "A Ovela Interactive foi criada para ajudar marcas selecionadas a modernizar sua presença digital, automatizar a comunicação e acessar infraestrutura de marketing premium sem a complexidade e o custo tipicamente associados à produção e ao desenvolvimento em grande escala.",
+      "subdescription": "Através do ecossistema, os parceiros têm acesso a termos de produção preferenciais, oportunidades de colaboração estratégica, promoção cruzada inteligente e soluções personalizadas adaptadas às suas necessidades operacionais.",
+      "subdescription2": "Seja lançando um website interativo, integrando um membro de equipe de IA, produzindo mídia cinematográfica ou automatizando a comunicação com clientes, a Ovela trabalha diretamente com cada parceiro para criar sistemas escaláveis projetados para crescimento de longo prazo e posicionamento premium.",
+      "items": {
+        "1": "Preços de produção preferenciais para parceiros",
+        "2": "Soluções personalizadas adaptadas à escala operacional",
+        "3": "Promoção cruzada dentro da rede do ecossistema",
+        "4": "Acesso à integração de IA interativa e automação",
+        "5": "Mídia premium, websites e infraestrutura de marketing"
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "Rede de Parceiros",
+      "title": "Veja o que a Ovela Permite",
+      "description": "Os parceiros da Ovela se beneficiam da exposição ao ecossistema, promoção cruzada inteligente e acesso preferencial a infraestrutura digital premium."
+    },
+    "finalNote": "Marcas e instituições selecionadas são convidadas a integrar o ecossistema.",
+    "built": {
+      "eyebrow": "Construído pela Ovela Interactive",
+      "title": "A Infraestutura Por Trás da Rede",
+      "description": "Cada marca dentro da rede é projetada, apresentada e conectada pela Ovela Interactive.",
+      "items": {
+        "websites": {
+          "title": "Websites Interativos",
+          "desc": "Plataformas interativas personalizadas projetadas para comunicar da forma como as empresas modernas deveriam."
+        },
+        "ai": {
+          "title": "Membros da Equipe de IA",
+          "desc": "Representantes de IA personalizados treinados no seu negócio, serviços, produtos e fluxos de trabalho."
+        },
+        "media": {
+          "title": "Produção de Mídia Cinematográfica",
+          "desc": "Narrativa visual premium, visuais de produto, apresentações interativas e campanhas promocionais."
+        },
+        "automation": {
+          "title": "Automação Inteligente",
+          "desc": "Sistemas integrados de reservas, comunicação CRM, integração, suporte e gestão de leads."
+        },
+        "network": {
+          "title": "Vantagens do Ecossistema de Parceiros",
+          "desc": "Termos de produção preferenciais para parceiros, promoção no ecossistema, colaboração estratégica e posicionamento de acesso selecionado."
+        }
+      }
+    }
   }
 }

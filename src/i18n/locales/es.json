@@ -14,7 +14,8 @@
     "description": "— La primera embajadora de modelo IA de Ovela. Pregunta sobre Ovela, reserva un proyecto o diseña tu propio embajador impulsado por IA.",
     "cta": "Chatea con Isabella",
     "explore": "↓ Explora el Portafolio de Isabella ↓",
-    "connecting": "Conectando..."
+    "connecting": "Conectando...",
+    "network": "Red de Partners"
   },
   "about": {
     "title": "Redefiniendo el Modelaje con IA",
@@ -266,5 +267,100 @@
     "accept": "Aceptar todo",
     "decline": "Rechazar",
     "learnMore": "Más información"
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Red Ovela — Un Ecosistema Curado de Marcas Interactivas",
+      "description": "Un ecosistema conectado de marcas premium impulsado por Ovela Interactive: bienestar, tecnología de defensa, inmobiliario y más."
+    },
+    "hero": {
+      "eyebrow": "Red Ovela",
+      "title": "Un Ecosistema Curado de Marcas Interactivas",
+      "description": "Ovela colabora con casas seleccionadas de bienestar, defensa e inmobiliario — y ofrece beneficios privados a clientes introducidos dentro de la red."
+    },
+    "categories": {
+      "wellness": "Bienestar y Longevidad",
+      "defense": "Tecnología de Defensa",
+      "realestate": "Bienes Raíces"
+    },
+    "partners": {
+      "wellnespirit": {
+        "tagline": "El Lujo del 3er Milenio",
+        "positioning": "Rejuvenecimiento de cuerpo, mente, alma y células — diseñado para la élite consciente.",
+        "b1": "Acceso exclusivo de red a protocolos de rejuvenecimiento insignia",
+        "b2": "Invitaciones privadas a retiros y eventos para miembros",
+        "b3": "Presentaciones concierge gestionadas por Isabella"
+      },
+      "luxdeftec": {
+        "tagline": "Tecnología de Defensa de Precisión",
+        "positioning": "Sistemas de defensa de grado soberano y tecnologías de doble uso para socios e instituciones seleccionados.",
+        "b1": "Acceso validado al brief corporativo del ecosistema",
+        "b2": "Diálogo prioritario sobre programas de tecnología de doble uso",
+        "b3": "Presentaciones de red bajo NDA"
+      },
+      "superior": {
+        "tagline": "Bienes Raíces de Andorra, desde 1974",
+        "positioning": "Cinco décadas curando las propiedades más codiciadas de Andorra — ahora presentadas de forma interactiva.",
+        "b1": "Dossiers de propiedades fuera de mercado para miembros de la red",
+        "b2": "Visitas interactivas de propiedades con Isabella",
+        "b3": "Concierge de reubicación y residencia"
+      }
+    },
+    "partnerCard": {
+      "requestAccess": "Solicita Acceso a la Red",
+      "viaIsabella": "Cualificado por Isabella"
+    },
+    "cta": {
+      "title": "Conviértete en Socio de la Red Ovela",
+      "description": "Marcas, casas e instituciones que comparten nuestro estándar de presencia interactiva y acceso seleccionado están invitadas a aplicar.",
+      "button": "Habla con Isabella"
+    },
+    "helpsPartners": {
+      "eyebrow": "Crecimiento de los Partners",
+      "title": "Cómo Ovela Ayuda a sus Partners a Crecer",
+      "description": "Ovela Interactive fue creado para ayudar a marcas seleccionadas a modernizar su presencia digital, automatizar la comunicación y acceder a infraestructura de marketing premium sin la complejidad y el costo típicamente asociados a la producción y el desarrollo a gran escala.",
+      "subdescription": "A través del ecosistema, los partners acceden a términos de producción preferentes, oportunidades de colaboración estratégica, promoción cruzada inteligente y soluciones personalizadas adaptadas a sus necesidades operativas.",
+      "subdescription2": "Ya sea lanzando un sitio web interactivo, integrando un miembro de equipo de IA, produciendo medios cinematográficos o automatizando la comunicación con clientes, Ovela trabaja directamente con cada partner para crear sistemas escalables diseñados para el crecimiento a largo plazo y el posicionamiento premium.",
+      "items": {
+        "1": "Precios de producción preferentes para partners",
+        "2": "Soluciones personalizadas adaptadas a la escala operativa",
+        "3": "Promoción cruzada dentro de la red del ecosistema",
+        "4": "Acceso a integración de IA interactiva y automatización",
+        "5": "Medios premium, sitios web e infraestructura de marketing"
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "Red de Partners",
+      "title": "Mira lo que Ovela Permite",
+      "description": "Los partners de Ovela se benefician de la exposición en el ecosistema, la promoción cruzada inteligente y el acceso preferente a infraestructura digital premium."
+    },
+    "finalNote": "Marcas e instituciones seleccionadas están invitadas a unirse al ecosistema.",
+    "built": {
+      "eyebrow": "Construido a través de Ovela Interactive",
+      "title": "La Infraestructura Detrás de la Red",
+      "description": "Cada marca dentro de la red está diseñada, presentada y conectada a través de Ovela Interactive.",
+      "items": {
+        "websites": {
+          "title": "Sitios Web Interactivos",
+          "desc": "Plataformas interactivas personalizadas diseñadas para comunicarse como deberían hacerlo las empresas modernas."
+        },
+        "ai": {
+          "title": "Miembros del Equipo de IA",
+          "desc": "Representantes de IA personalizados entrenados en tu negocio, servicios, productos y flujos de trabajo."
+        },
+        "media": {
+          "title": "Producción de Medios Cinematográficos",
+          "desc": "Narrativa visual premium, visuales de producto, presentaciones interactivas y campañas promocionales."
+        },
+        "automation": {
+          "title": "Automatización Inteligente",
+          "desc": "Sistemas integrados de reservas, comunicación CRM, incorporación, soporte y gestión de leads."
+        },
+        "network": {
+          "title": "Ventajas del Ecosistema de Partners",
+          "desc": "Términos de producción preferentes para partners, promoción en el ecosistema, colaboración estratégica y posicionamiento de acceso seleccionado."
+        }
+      }
+    }
   }
 }

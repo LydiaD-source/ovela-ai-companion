@@ -79,6 +79,39 @@
         "4": "Access to interactive AI integration & automation",
         "5": "Premium media, websites & marketing infrastructure"
       }
+    },
+    "partnersSection": {
+      "eyebrow": "Partner Network",
+      "title": "Look at What Ovela Enables",
+      "description": "Ovela partners benefit from ecosystem exposure, intelligent cross-promotion, and preferred access to premium digital infrastructure."
+    },
+    "finalNote": "Selected brands and institutions are invited to join the ecosystem.",
+    "built": {
+      "eyebrow": "Built Through Ovela Interactive",
+      "title": "The Infrastructure Behind the Network",
+      "description": "Every brand inside the network is engineered, presented and connected through Ovela Interactive.",
+      "items": {
+        "websites": {
+          "title": "Interactive Websites",
+          "desc": "Custom interactive platforms designed to communicate the way modern businesses should."
+        },
+        "ai": {
+          "title": "AI Team Members",
+          "desc": "Custom AI representatives trained on your business, services, products and workflows."
+        },
+        "media": {
+          "title": "Cinematic Media Production",
+          "desc": "Premium visual storytelling, product visuals, interactive presentations and promotional campaigns."
+        },
+        "automation": {
+          "title": "Intelligent Automation",
+          "desc": "Integrated booking, CRM communication, onboarding, support and lead handling systems."
+        },
+        "network": {
+          "title": "Partner Ecosystem Advantages",
+          "desc": "Preferred partner production terms, ecosystem promotion, strategic collaboration and selected-access positioning."
+        }
+      }
     }
   },
   "about": {

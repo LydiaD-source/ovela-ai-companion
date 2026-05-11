@@ -292,15 +292,24 @@ const Home = () => {
                     {t('hero.floatingLine')}
                   </span>
 
-                  {/* Primary CTA Button */}
-                  <button 
-                    onClick={activateChat}
-                    className="hero-btn-primary"
-                  >
-                    {t('hero.cta')}
-                  </button>
+                  {/* Primary CTAs row */}
+                  <div className="hero-btn-row">
+                    <button 
+                      onClick={activateChat}
+                      className="hero-btn-primary"
+                    >
+                      {t('hero.cta')}
+                    </button>
+
+                    <a
+                      href="/ecosystem"
+                      className="hero-btn-secondary"
+                    >
+                      {t('hero.network', 'Partner Network')}
+                    </a>
+                  </div>
                   
-                  {/* Secondary CTA - Links to live project */}
+                  {/* Tertiary CTA - Links to live project */}
                   <a 
                     href="https://wellnespirit.com/en"
                     target="_blank"
@@ -308,15 +317,6 @@ const Home = () => {
                     className="hero-link-secondary"
                   >
                     {t('hero.explore')}
-                  </a>
-
-                  {/* Tertiary CTA - Ovela Network */}
-                  <a
-                    href="/ecosystem"
-                    className="hero-link-secondary"
-                    style={{ fontSize: 13, opacity: 0.85, letterSpacing: '0.15em', textTransform: 'uppercase' }}
-                  >
-                    {t('hero.network', 'Explore the Ovela Network →')}
                   </a>
                 </div>
               </div>

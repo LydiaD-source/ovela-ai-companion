@@ -94,8 +94,16 @@ class PersistentStreamManager {
     if (this.isSpeaking === speaking) return;
     
     this.isSpeaking = speaking;
+    // Reset first-frame tracker on each speaking cycle so we can re-sync image fade
+    if (speaking) {
+      this.firstFrameDispatched = false;
+    } else {
+      try { window.dispatchEvent(new CustomEvent('avatar-speech-end')); } catch {}
+    }
     this.speakingCallbacks.forEach(cb => cb(speaking));
   }
+  
+  private firstFrameDispatched = false;
   
   /**
    * Estimate speech duration based on text length and word count

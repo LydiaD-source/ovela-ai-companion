@@ -31,6 +31,7 @@ interface FullWellnessGeniUIProps {
   onReady?: () => void;
   isAISpeaking?: boolean;
   onClose?: () => void;
+  initialMessage?: string;
 }
 
 const LANGUAGES = [
@@ -51,7 +52,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   onAIResponse,
   onReady,
   isAISpeaking = false,
-  onClose
+  onClose,
+  initialMessage,
 }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -196,6 +198,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   useEffect(() => {
     sendMessageRef.current = sendMessage;
   }, [sendMessage]);
+
+  // Auto-send an initial message once (used for partner-context preload)
+  const initialSentRef = useRef(false);
+  useEffect(() => {
+    if (initialMessage && !initialSentRef.current) {
+      initialSentRef.current = true;
+      // small delay so UI mounts cleanly
+      setTimeout(() => sendMessageRef.current?.(initialMessage), 250);
+    }
+  }, [initialMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

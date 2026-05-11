@@ -105,7 +105,7 @@ const Ecosystem: React.FC = () => {
             {t('ecosystem.hero.title', 'A Curated Ecosystem of Interactive Brands')}
           </h1>
           <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
-            {t('ecosystem.hero.description', 'Ovela partners with selected houses across wellness, defense, and real estate — and extends private benefits to clients introduced inside the network.')}
+            {t('ecosystem.hero.description', 'Selected brands powered by Ovela Interactive — interactive websites, AI team members, cinematic media and intelligent automation, connected through one curated ecosystem.')}
           </p>
         </div>
       </section>
@@ -120,14 +120,12 @@ const Ecosystem: React.FC = () => {
             {t('ecosystem.partnersSection.eyebrow', 'Partner Network')}
           </p>
           <h2 className="font-serif text-3xl md:text-5xl mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
-            {t('ecosystem.partnersSection.title', 'Brands Built & Connected Through Ovela')}
+            {t('ecosystem.partnersSection.title', 'Look at What Ovela Enables')}
           </h2>
           <p className="text-white/60 max-w-2xl mx-auto">
-            {t('ecosystem.partnersSection.description', 'Each partner gains ecosystem exposure, intelligent cross-promotion, and preferred access to premium digital infrastructure.')}
+            {t('ecosystem.partnersSection.description', 'Ovela partners benefit from ecosystem exposure, intelligent cross-promotion, and preferred access to premium digital infrastructure.')}
           </p>
         </div>
-      </section>
-      <section className="px-6 pb-24">
         <div className="max-w-7xl mx-auto space-y-10">
           {partners.map((p) => (
             <PartnerCard key={p.key} partner={p} onRequest={() => handleRequestAccess(p)} t={t} />
@@ -136,7 +134,7 @@ const Ecosystem: React.FC = () => {
       </section>
 
       {/* General CTA */}
-      <section className="px-6 pb-32">
+      <section className="px-6 pb-16">
         <div className="max-w-3xl mx-auto text-center border border-[#D4AF37]/20 rounded-2xl p-10 bg-gradient-to-b from-white/[0.02] to-transparent">
           <h2 className="font-serif text-3xl mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             {t('ecosystem.cta.title', 'Become an Ovela Network Partner')}
@@ -151,6 +149,13 @@ const Ecosystem: React.FC = () => {
             {t('ecosystem.cta.button', 'Speak with Isabella')}
           </button>
         </div>
+      </section>
+
+      {/* Final whisper */}
+      <section className="px-6 pb-32">
+        <p className="max-w-3xl mx-auto text-center text-white/40 text-sm tracking-[0.25em] uppercase">
+          {t('ecosystem.finalNote', 'Selected brands and institutions are invited to join the ecosystem.')}
+        </p>
       </section>
 
       <FooterMinimal />

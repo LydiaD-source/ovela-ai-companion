@@ -280,4 +280,74 @@ const CinematicVisual: React.FC<{ partner: Partner }> = ({ partner }) => {
   );
 };
 
+// ---------- Built Through Ovela Interactive ----------
+
+const BuiltThroughOvela: React.FC<{ t: ReturnType<typeof useTranslation>['t'] }> = ({ t }) => {
+  const capabilities = [
+    {
+      title: t('ecosystem.built.items.websites.title', 'Interactive Websites'),
+      desc: t('ecosystem.built.items.websites.desc', 'Custom interactive platforms designed to communicate the way modern businesses should.'),
+    },
+    {
+      title: t('ecosystem.built.items.ai.title', 'AI Team Members'),
+      desc: t('ecosystem.built.items.ai.desc', 'Custom AI representatives trained on your business, services, products and workflows.'),
+    },
+    {
+      title: t('ecosystem.built.items.media.title', 'Cinematic Media Production'),
+      desc: t('ecosystem.built.items.media.desc', 'Premium visual storytelling, product visuals, interactive presentations and promotional campaigns.'),
+    },
+    {
+      title: t('ecosystem.built.items.automation.title', 'Intelligent Automation'),
+      desc: t('ecosystem.built.items.automation.desc', 'Integrated booking, CRM communication, onboarding, support and lead handling systems.'),
+    },
+    {
+      title: t('ecosystem.built.items.network.title', 'Partner Ecosystem Advantages'),
+      desc: t('ecosystem.built.items.network.desc', 'Preferred partner production terms, ecosystem promotion, strategic collaboration and selected-access positioning.'),
+    },
+  ];
+
+  return (
+    <section className="px-6 pb-24 pt-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-14">
+          <p className="text-[#D4AF37] tracking-[0.4em] text-xs uppercase mb-4">
+            {t('ecosystem.built.eyebrow', 'Built Through Ovela Interactive')}
+          </p>
+          <h2 className="font-serif text-3xl md:text-5xl mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
+            {t('ecosystem.built.title', 'The Infrastructure Behind the Network')}
+          </h2>
+          <p className="text-white/60 max-w-2xl mx-auto">
+            {t('ecosystem.built.description', 'Every brand inside the network is engineered, presented and connected through Ovela Interactive.')}
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {capabilities.map((c, i) => (
+            <div
+              key={i}
+              className="group grid grid-cols-[auto_1fr] md:grid-cols-[80px_1fr_auto] gap-6 items-center p-6 md:p-8 rounded-xl border border-white/5 bg-gradient-to-r from-white/[0.02] to-transparent hover:border-[#D4AF37]/30 hover:from-[#D4AF37]/[0.04] transition-all duration-500"
+            >
+              <div className="font-serif text-2xl md:text-3xl text-[#D4AF37]/60 group-hover:text-[#D4AF37] transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <div>
+                <h3 className="font-serif text-xl md:text-2xl mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  {c.title}
+                </h3>
+                <p className="text-white/60 leading-relaxed text-sm md:text-base">
+                  {c.desc}
+                </p>
+              </div>
+              <div className="hidden md:block text-[#D4AF37]/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all">
+                ✦
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export default Ecosystem;
+

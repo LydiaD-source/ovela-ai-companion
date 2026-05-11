@@ -283,6 +283,52 @@ const CinematicVisual: React.FC<{ partner: Partner }> = ({ partner }) => {
   );
 };
 
+// ---------- How Ovela Helps Its Partners Grow ----------
+
+const HowOvelaHelpsPartners: React.FC<{ t: ReturnType<typeof useTranslation>['t'] }> = ({ t }) => {
+  const items = [
+    t('ecosystem.helpsPartners.items.1', 'Preferred partner production pricing'),
+    t('ecosystem.helpsPartners.items.2', 'Custom solutions adapted to operational scale'),
+    t('ecosystem.helpsPartners.items.3', 'Cross-promotion inside the ecosystem network'),
+    t('ecosystem.helpsPartners.items.4', 'Access to interactive AI integration & automation'),
+    t('ecosystem.helpsPartners.items.5', 'Premium media, websites & marketing infrastructure'),
+  ];
+
+  return (
+    <section className="px-6 pb-24">
+      <div className="max-w-5xl mx-auto text-center mb-14">
+        <p className="text-[#D4AF37] tracking-[0.4em] text-xs uppercase mb-4">
+          {t('ecosystem.helpsPartners.eyebrow', 'Partner Growth')}
+        </p>
+        <h2 className="font-serif text-3xl md:text-5xl mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
+          {t('ecosystem.helpsPartners.title', 'How Ovela Helps Its Partners Grow')}
+        </h2>
+        <p className="text-white/60 max-w-3xl mx-auto leading-relaxed mb-6">
+          {t('ecosystem.helpsPartners.description', 'Ovela Interactive was created to help selected brands modernize their digital presence, automate communication, and access premium marketing infrastructure without the complexity and cost typically associated with large-scale production and development.')}
+        </p>
+        <p className="text-white/50 max-w-3xl mx-auto leading-relaxed mb-6">
+          {t('ecosystem.helpsPartners.subdescription', 'Through the ecosystem, partners gain access to preferred production terms, strategic collaboration opportunities, intelligent cross-promotion, and custom-built solutions adapted to their operational needs.')}
+        </p>
+        <p className="text-white/50 max-w-3xl mx-auto leading-relaxed mb-14">
+          {t('ecosystem.helpsPartners.subdescription2', 'Whether launching an interactive website, integrating an AI team member, producing cinematic media, or automating client communication, Ovela works directly with each partner to create scalable systems designed for long-term growth and premium positioning.')}
+        </p>
+      </div>
+
+      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
+        {items.map((item, i) => (
+          <div
+            key={i}
+            className="flex items-start gap-4 p-5 rounded-xl border border-white/5 bg-gradient-to-r from-white/[0.02] to-transparent hover:border-[#D4AF37]/20 transition-all duration-500"
+          >
+            <span className="text-[#D4AF37] mt-0.5 shrink-0">&#10022;</span>
+            <span className="text-white/80 text-sm leading-relaxed">{item}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 // ---------- Built Through Ovela Interactive ----------
 
 const BuiltThroughOvela: React.FC<{ t: ReturnType<typeof useTranslation>['t'] }> = ({ t }) => {

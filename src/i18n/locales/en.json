@@ -65,6 +65,20 @@
       "title": "Become an Ovela Network Partner",
       "description": "Brands, houses and institutions who share our standard for interactive presence and selected access are invited to apply.",
       "button": "Speak with Isabella"
+    },
+    "helpsPartners": {
+      "eyebrow": "Partner Growth",
+      "title": "How Ovela Helps Its Partners Grow",
+      "description": "Ovela Interactive was created to help selected brands modernize their digital presence, automate communication, and access premium marketing infrastructure without the complexity and cost typically associated with large-scale production and development.",
+      "subdescription": "Through the ecosystem, partners gain access to preferred production terms, strategic collaboration opportunities, intelligent cross-promotion, and custom-built solutions adapted to their operational needs.",
+      "subdescription2": "Whether launching an interactive website, integrating an AI team member, producing cinematic media, or automating client communication, Ovela works directly with each partner to create scalable systems designed for long-term growth and premium positioning.",
+      "items": {
+        "1": "Preferred partner production pricing",
+        "2": "Custom solutions adapted to operational scale",
+        "3": "Cross-promotion inside the ecosystem network",
+        "4": "Access to interactive AI integration & automation",
+        "5": "Premium media, websites & marketing infrastructure"
+      }
     }
   },
   "about": {

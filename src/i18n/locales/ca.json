@@ -65,6 +65,20 @@
       "title": "Esdevé Soci de la Xarxa Ovela",
       "description": "Marques, cases i institucions que comparteixen el nostre estàndard de presència interactiva i accés seleccionat estan convidades a aplicar.",
       "button": "Parla amb Isabella"
+    },
+    "helpsPartners": {
+      "eyebrow": "Creixement dels Partners",
+      "title": "Com Ovela Ajuda els seus Partners a Créixer",
+      "description": "Ovela Interactive va ser creat per ajudar marques seleccionades a modernitzar la seva presència digital, automatitzar la comunicació i accedir a infraestructura de màrqueting premium sense la complexitat i el cost típicament associats a la producció i el desenvolupament a gran escala.",
+      "subdescription": "A través de l'ecosistema, els partners accedeixen a termes de producció preferents, oportunitats de col·laboració estratègica, promoció creuada intel·ligent i solucions personalitzades adaptades a les seves necessitats operatives.",
+      "subdescription2": "Tant si llancen un lloc web interactiu, integren un membre d'equip d'IA, produeixen mitjans cinemàtics o automatitzen la comunicació amb clients, Ovela treballa directament amb cada partner per crear sistemes escalables dissenyats per al creixement a llarg termini i el posicionament premium.",
+      "items": {
+        "1": "Preus de producció preferents per a partners",
+        "2": "Solucions personalitzades adaptades a l'escala operativa",
+        "3": "Promoció creuada dins de la xarxa de l'ecosistema",
+        "4": "Accés a integració d'IA interactiva i automatització",
+        "5": "Mitjans premium, llocs web i infraestructura de màrqueting"
+      }
     }
   },
   "about": {

@@ -110,6 +110,9 @@ const Ecosystem: React.FC = () => {
         </div>
       </section>
 
+      {/* How Ovela Helps Its Partners Grow */}
+      <HowOvelaHelpsPartners t={t} />
+
       {/* Built Through Ovela Interactive */}
       <BuiltThroughOvela t={t} />
 

@@ -36,7 +36,10 @@ const Home = () => {
   const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialChatMessage, setInitialChatMessage] = useState<string | undefined>(undefined);
+  const [hasLipSyncFrame, setHasLipSyncFrame] = useState(false);
   const isAISpeaking = isStreamSpeaking || isTTSSpeaking;
+  // Avatar is "visually" speaking only when the canvas has a fresh lip-sync frame
+  const isAvatarVisible = isStreamSpeaking && hasLipSyncFrame;
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);

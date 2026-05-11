@@ -168,6 +168,11 @@ const Home = () => {
       });
   }, []);
 
+  // Keep ref in sync so the URL-param effect (mounted before activateChat) can call it
+  useEffect(() => {
+    activateChatRef.current = activateChat;
+  }, [activateChat]);
+
   return (
     <>
       {/* SEO Schema for Isabella's Video */}

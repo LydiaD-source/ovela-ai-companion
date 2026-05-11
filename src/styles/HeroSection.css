@@ -228,6 +228,40 @@
   gap: 12px;
 }
 
+.hero-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.hero-btn-secondary {
+  width: 280px;
+  height: 54px;
+  border-radius: 12px;
+  background: transparent;
+  border: 1.5px solid #D4AF37;
+  color: #D4AF37;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.hero-btn-secondary:hover {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(247, 231, 206, 0.15) 100%);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25), 0 0 40px rgba(212, 175, 55, 0.15);
+  transform: translateY(-3px);
+  color: #F7E7CE;
+}
+
 /* Primary CTA Button */
 .hero-btn-primary {
   width: 280px;

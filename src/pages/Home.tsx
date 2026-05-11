@@ -68,20 +68,32 @@ const Home = () => {
     };
   }, []);
 
-  // Control canvas visibility based on streaming speaking state only
+  // Control canvas visibility based on real lip-sync frame availability
   useEffect(() => {
     const canvas = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
     if (!canvas) return;
 
-    canvas.style.opacity = isStreamSpeaking ? '1' : '0';
-    if (isStreamSpeaking) canvas.style.display = 'block';
+    canvas.style.opacity = isAvatarVisible ? '1' : '0';
+    if (isAvatarVisible) canvas.style.display = 'block';
 
     // Ensure audio plays when streaming is speaking
     if (isStreamSpeaking && videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.volume = 1.0;
     }
-  }, [isStreamSpeaking]);
+  }, [isAvatarVisible, isStreamSpeaking]);
+
+  // Listen for canvas first-frame and speech-end events from StreamingService
+  useEffect(() => {
+    const onFrame = () => setHasLipSyncFrame(true);
+    const onEnd = () => setHasLipSyncFrame(false);
+    window.addEventListener('avatar-frame-ready', onFrame);
+    window.addEventListener('avatar-speech-end', onEnd);
+    return () => {
+      window.removeEventListener('avatar-frame-ready', onFrame);
+      window.removeEventListener('avatar-speech-end', onEnd);
+    };
+  }, []);
 
   // Subscribe to StreamingService state changes
   useEffect(() => {

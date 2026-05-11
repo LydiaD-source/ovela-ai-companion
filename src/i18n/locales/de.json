@@ -14,7 +14,8 @@
     "description": "— Ovelas erste KI-Modelbotschafterin. Fragen Sie nach Ovela, buchen Sie ein Projekt oder gestalten Sie Ihren eigenen KI-gestützten Botschafter.",
     "cta": "Mit Isabella chatten",
     "explore": "↓ Isabellas Portfolio entdecken ↓",
-    "connecting": "Verbinde..."
+    "connecting": "Verbinde...",
+    "network": "Partnernetzwerk"
   },
   "about": {
     "title": "Modeln durch KI neu definiert",
@@ -266,5 +267,100 @@
     "accept": "Alle akzeptieren",
     "decline": "Ablehnen",
     "learnMore": "Mehr erfahren"
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Ovela Netzwerk — Ein Kuratiertes Ökosystem Interaktiver Marken",
+      "description": "Ein vernetztes Ökosystem von Premium-Marken, angetrieben von Ovela Interactive: Wellness, Verteidigungstechnologie, Immobilien und mehr."
+    },
+    "hero": {
+      "eyebrow": "Ovela Netzwerk",
+      "title": "Ein Kuratiertes Ökosystem Interaktiver Marken",
+      "description": "Ovela kooperiert mit ausgewählten Häusern in den Bereichen Wellness, Verteidigung und Immobilien — und bietet privaten Vorteile für im Netzwerk vorgestellte Kunden."
+    },
+    "categories": {
+      "wellness": "Wellness & Langlebigkeit",
+      "defense": "Verteidigungstechnologie",
+      "realestate": "Immobilien"
+    },
+    "partners": {
+      "wellnespirit": {
+        "tagline": "Luxus des 3. Jahrtausends",
+        "positioning": "Körperliche, geistige, seelische und zelluläre Verjüngung — entwickelt für die bewusste Elite.",
+        "b1": "Netzwerk-exklusiver Zugang zu Flaggschiff-Verjüngungsprotokollen",
+        "b2": "Private Einladungen zu Retreats und Mitgliederveranstaltungen",
+        "b3": "Concierge-Einladungen, verwaltet von Isabella"
+      },
+      "luxdeftec": {
+        "tagline": "Präzise Verteidigungstechnologie",
+        "positioning": "Souveräne Verteidigungssysteme und Dual-Use-Technologien für ausgewählte Partner und Institutionen.",
+        "b1": "Geprüfter Zugang zum Unternehmens-Ökosystem-Briefing",
+        "b2": "Priorisierter Dialog über Dual-Use-Technologieprogramme",
+        "b3": "Netzwerk-Einladungen unter NDA"
+      },
+      "superior": {
+        "tagline": "Andorranische Immobilien, seit 1974",
+        "positioning": "Fünf Jahrzehnte lang die begehrtesten Immobilien in Andorra kuratiert — jetzt interaktiv präsentiert.",
+        "b1": "Off-Market-Immobiliendossiers für Netzwerkmitglieder",
+        "b2": "Interaktive Immobilienführungen mit Isabella",
+        "b3": "Concierge-Umzugs- & Residenzunterstützung"
+      }
+    },
+    "partnerCard": {
+      "requestAccess": "Netzwerkzugang Beantragen",
+      "viaIsabella": "Qualifiziert durch Isabella"
+    },
+    "cta": {
+      "title": "Werden Sie Ovela-Netzwerkpartner",
+      "description": "Marken, Häuser und Institutionen, die unseren Standard für interaktive Präsenz und selektiven Zugang teilen, sind eingeladen, sich zu bewerben.",
+      "button": "Sprechen Sie mit Isabella"
+    },
+    "helpsPartners": {
+      "eyebrow": "Partnerwachstum",
+      "title": "Wie Ovela seinen Partnern beim Wachstum Hilft",
+      "description": "Ovela Interactive wurde geschaffen, um ausgewählten Marken zu helfen, ihre digitale Präsenz zu modernisieren, die Kommunikation zu automatisieren und Zugang zu Premium-Marketinginfrastruktur zu erhalten — ohne die Komplexität und Kosten, die typischerweise mit Großproduktion und -entwicklung verbunden sind.",
+      "subdescription": "Durch das Ökosystem erhalten Partner Zugang zu bevorzugten Produktionsbedingungen, strategischen Kooperationsmöglichkeiten, intelligenter Cross-Promotion und maßgeschneiderten Lösungen, die an ihre operativen Bedürfnisse angepasst sind.",
+      "subdescription2": "Ob es um den Start einer interaktiven Website, die Integration eines KI-Teammitglieds, die Produktion kinematischer Medien oder die Automatisierung der Kundenkommunikation geht — Ovela arbeitet direkt mit jedem Partner zusammen, um skalierbare Systeme zu schaffen, die für langfristiges Wachstum und Premium-Positionierung konzipiert sind.",
+      "items": {
+        "1": "Bevorzugte Produktionspreise für Partner",
+        "2": "Maßgeschneiderte Lösungen, die an den operativen Maßstab angepasst sind",
+        "3": "Cross-Promotion innerhalb des Ökosystem-Netzwerks",
+        "4": "Zugang zu interaktiver KI-Integration & Automatisierung",
+        "5": "Premium-Medien, Websites & Marketinginfrastruktur"
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "Partnernetzwerk",
+      "title": "Sehen Sie, was Ovela Ermöglicht",
+      "description": "Ovela-Partner profitieren von Ökosystem-Exposition, intelligenter Cross-Promotion und bevorzugtem Zugang zu Premium-Digitalinfrastruktur."
+    },
+    "finalNote": "Ausgewählte Marken und Institutionen sind eingeladen, dem Ökosystem beizutreten.",
+    "built": {
+      "eyebrow": "Gebaut durch Ovela Interactive",
+      "title": "Die Infrastruktur Hinter dem Netzwerk",
+      "description": "Jede Marke im Netzwerk wird durch Ovela Interactive entwickelt, präsentiert und vernetzt.",
+      "items": {
+        "websites": {
+          "title": "Interaktive Websites",
+          "desc": "Benutzerdefinierte interaktive Plattformen, die so kommunizieren, wie moderne Unternehmen es sollten."
+        },
+        "ai": {
+          "title": "KI-Teammitglieder",
+          "desc": "Maßgeschneiderte KI-Vertreter, die auf Ihr Unternehmen, Ihre Dienstleistungen, Produkte und Workflows trainiert werden."
+        },
+        "media": {
+          "title": "Kinomatische Medienproduktion",
+          "desc": "Premium visuelles Storytelling, Produktvisuals, interaktive Präsentationen und Werbekampagnen."
+        },
+        "automation": {
+          "title": "Intelligente Automatisierung",
+          "desc": "Integrierte Buchungs-, CRM-Kommunikations-, Onboarding-, Support- und Lead-Management-Systeme."
+        },
+        "network": {
+          "title": "Partner-Ökosystem-Vorteile",
+          "desc": "Bevorzugte Produktionskonditionen für Partner, Ökosystem-Promotion, strategische Zusammenarbeit und Positionierung mit selektivem Zugang."
+        }
+      }
+    }
   }
 }

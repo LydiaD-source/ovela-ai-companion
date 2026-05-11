@@ -105,21 +105,25 @@ const Home = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const partner = params.get('partner');
-    const partnerMessages: Record<string, string> = {
-      wellnespirit: "I'd like to learn more about WellneSpirit and how to access the Ovela Network benefits with them.",
-      luxdeftec: "I'm interested in LuxDefTec — please tell me about Ovela Network access and next steps.",
-      superior: "I'd like to explore Superior Immobiliaris properties through the Ovela Network.",
-      general: "I'd like to learn more about the Ovela Network and how partnership works.",
+    const partnerLabels: Record<string, string> = {
+      wellnespirit: 'WellneSpirit',
+      luxdeftec: 'LuxDefTec',
+      superior: 'Superior Immobiliaris',
+      general: 'the Ovela Network',
     };
-    if (partner && partnerMessages[partner]) {
-      setInitialChatMessage(partnerMessages[partner]);
-      setIsChatActive(true);
+    if (partner && partnerLabels[partner]) {
+      const label = partnerLabels[partner];
+      // Direct registration intent — instructs Isabella to skip pitch and start collecting info
+      const msg = `I'd like to register for Ovela Network membership${partner === 'general' ? '' : ` for ${label} access`}. Please acknowledge my interest, confirm my details will be sent to the Ovela team, and go straight into collecting my information (full name, email, company, country, and a short note on what I'm looking for). Skip the presentation — I'll ask if I want to know more.`;
+      setInitialChatMessage(msg);
+      activateChatRef.current?.();
       window.history.replaceState({}, '', '/');
     } else if (params.get('chat') === 'open') {
-      setIsChatActive(true);
+      activateChatRef.current?.();
       window.history.replaceState({}, '', '/');
     }
   }, []);
+
 
   // Stable callback for AI responses - triggers D-ID animation
   const handleAIResponse = useCallback((text: string) => {

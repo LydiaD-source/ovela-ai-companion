@@ -249,7 +249,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isStreamSpeaking ? 0 : 1,
+                    opacity: isAvatarVisible ? 0 : 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />

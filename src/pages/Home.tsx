@@ -36,10 +36,14 @@ const Home = () => {
   const [isTTSSpeaking, setIsTTSSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [initialChatMessage, setInitialChatMessage] = useState<string | undefined>(undefined);
+  const [hasLipSyncFrame, setHasLipSyncFrame] = useState(false);
   const isAISpeaking = isStreamSpeaking || isTTSSpeaking;
+  // Avatar is "visually" speaking only when the canvas has a fresh lip-sync frame
+  const isAvatarVisible = isStreamSpeaking && hasLipSyncFrame;
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);
+  const activateChatRef = useRef<(() => void) | null>(null);
 
   // Register video element globally for StreamingService
   useEffect(() => {
@@ -64,20 +68,32 @@ const Home = () => {
     };
   }, []);
 
-  // Control canvas visibility based on streaming speaking state only
+  // Control canvas visibility based on real lip-sync frame availability
   useEffect(() => {
     const canvas = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
     if (!canvas) return;
 
-    canvas.style.opacity = isStreamSpeaking ? '1' : '0';
-    if (isStreamSpeaking) canvas.style.display = 'block';
+    canvas.style.opacity = isAvatarVisible ? '1' : '0';
+    if (isAvatarVisible) canvas.style.display = 'block';
 
     // Ensure audio plays when streaming is speaking
     if (isStreamSpeaking && videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.volume = 1.0;
     }
-  }, [isStreamSpeaking]);
+  }, [isAvatarVisible, isStreamSpeaking]);
+
+  // Listen for canvas first-frame and speech-end events from StreamingService
+  useEffect(() => {
+    const onFrame = () => setHasLipSyncFrame(true);
+    const onEnd = () => setHasLipSyncFrame(false);
+    window.addEventListener('avatar-frame-ready', onFrame);
+    window.addEventListener('avatar-speech-end', onEnd);
+    return () => {
+      window.removeEventListener('avatar-frame-ready', onFrame);
+      window.removeEventListener('avatar-speech-end', onEnd);
+    };
+  }, []);
 
   // Subscribe to StreamingService state changes
   useEffect(() => {
@@ -105,21 +121,25 @@ const Home = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const partner = params.get('partner');
-    const partnerMessages: Record<string, string> = {
-      wellnespirit: "I'd like to learn more about WellneSpirit and how to access the Ovela Network benefits with them.",
-      luxdeftec: "I'm interested in LuxDefTec — please tell me about Ovela Network access and next steps.",
-      superior: "I'd like to explore Superior Immobiliaris properties through the Ovela Network.",
-      general: "I'd like to learn more about the Ovela Network and how partnership works.",
+    const partnerLabels: Record<string, string> = {
+      wellnespirit: 'WellneSpirit',
+      luxdeftec: 'LuxDefTec',
+      superior: 'Superior Immobiliaris',
+      general: 'the Ovela Network',
     };
-    if (partner && partnerMessages[partner]) {
-      setInitialChatMessage(partnerMessages[partner]);
-      setIsChatActive(true);
+    if (partner && partnerLabels[partner]) {
+      const label = partnerLabels[partner];
+      // Direct registration intent — instructs Isabella to skip pitch and start collecting info
+      const msg = `I'd like to register for Ovela Network membership${partner === 'general' ? '' : ` for ${label} access`}. Please acknowledge my interest, confirm my details will be sent to the Ovela team, and go straight into collecting my information (full name, email, company, country, and a short note on what I'm looking for). Skip the presentation — I'll ask if I want to know more.`;
+      setInitialChatMessage(msg);
+      activateChatRef.current?.();
       window.history.replaceState({}, '', '/');
     } else if (params.get('chat') === 'open') {
-      setIsChatActive(true);
+      activateChatRef.current?.();
       window.history.replaceState({}, '', '/');
     }
   }, []);
+
 
   // Stable callback for AI responses - triggers D-ID animation
   const handleAIResponse = useCallback((text: string) => {
@@ -162,6 +182,11 @@ const Home = () => {
         setIsLoading(false);
       });
   }, []);
+
+  // Keep ref in sync so the URL-param effect (mounted before activateChat) can call it
+  useEffect(() => {
+    activateChatRef.current = activateChat;
+  }, [activateChat]);
 
   return (
     <>
@@ -224,7 +249,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isStreamSpeaking ? 0 : 1,
+                    opacity: isAvatarVisible ? 0 : 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />
@@ -282,15 +307,24 @@ const Home = () => {
                     {t('hero.floatingLine')}
                   </span>
 
-                  {/* Primary CTA Button */}
-                  <button 
-                    onClick={activateChat}
-                    className="hero-btn-primary"
-                  >
-                    {t('hero.cta')}
-                  </button>
+                  {/* Primary CTAs row */}
+                  <div className="hero-btn-row">
+                    <button 
+                      onClick={activateChat}
+                      className="hero-btn-primary"
+                    >
+                      {t('hero.cta')}
+                    </button>
+
+                    <a
+                      href="/ecosystem"
+                      className="hero-btn-secondary"
+                    >
+                      {t('hero.network', 'Partner Network')}
+                    </a>
+                  </div>
                   
-                  {/* Secondary CTA - Links to live project */}
+                  {/* Tertiary CTA - Links to live project */}
                   <a 
                     href="https://wellnespirit.com/en"
                     target="_blank"
@@ -298,15 +332,6 @@ const Home = () => {
                     className="hero-link-secondary"
                   >
                     {t('hero.explore')}
-                  </a>
-
-                  {/* Tertiary CTA - Ovela Network */}
-                  <a
-                    href="/ecosystem"
-                    className="hero-link-secondary"
-                    style={{ fontSize: 13, opacity: 0.85, letterSpacing: '0.15em', textTransform: 'uppercase' }}
-                  >
-                    {t('hero.network', 'Explore the Ovela Network →')}
                   </a>
                 </div>
               </div>

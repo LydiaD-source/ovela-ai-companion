@@ -94,8 +94,16 @@ class PersistentStreamManager {
     if (this.isSpeaking === speaking) return;
     
     this.isSpeaking = speaking;
+    // Reset first-frame tracker on each speaking cycle so we can re-sync image fade
+    if (speaking) {
+      this.firstFrameDispatched = false;
+    } else {
+      try { window.dispatchEvent(new CustomEvent('avatar-speech-end')); } catch {}
+    }
     this.speakingCallbacks.forEach(cb => cb(speaking));
   }
+  
+  private firstFrameDispatched = false;
   
   /**
    * Estimate speech duration based on text length and word count
@@ -309,6 +317,14 @@ class PersistentStreamManager {
       }
       
       ctx.putImageData(imageData, 0, 0);
+
+      // Notify Home once per speech cycle that the avatar canvas has a real frame.
+      // This lets the UI fade out the still image in lock-step with lip movement,
+      // preventing the "voice without lip-sync" gap caused by audio leading video.
+      if (!this.firstFrameDispatched && this.isSpeaking) {
+        this.firstFrameDispatched = true;
+        try { window.dispatchEvent(new CustomEvent('avatar-frame-ready')); } catch {}
+      }
     };
     
     this.hiddenVideo.oncanplay = () => {

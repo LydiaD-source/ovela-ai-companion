@@ -147,7 +147,7 @@ const Ecosystem: React.FC = () => {
 interface PartnerCardProps {
   partner: Partner;
   onRequest: () => void;
-  t: (key: string, fallback?: string) => string;
+  t: ReturnType<typeof useTranslation>['t'];
 }
 
 const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onRequest, t }) => {

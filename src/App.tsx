@@ -15,6 +15,7 @@ import PartnerWithUs from "./pages/PartnerWithUs";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import Interactive from "./pages/Interactive";
+import Ecosystem from "./pages/Ecosystem";
 import NotFound from "./pages/NotFound";
 import CookieConsentBanner from "@/components/UI/CookieConsentBanner";
 
@@ -34,6 +35,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/interactive" element={<Interactive />} />
+                <Route path="/ecosystem" element={<Ecosystem />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/wellnessgeni" element={<WellnessGeni />} />

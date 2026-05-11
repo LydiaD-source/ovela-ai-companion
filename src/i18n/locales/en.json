@@ -16,7 +16,56 @@
     "cta": "Ask Isabella How This Works",
     "explore": "See Real Projects in Action ↓",
     "connecting": "Connecting...",
-    "floatingLine": "No staff overload. No missed clients. Live in minutes."
+    "floatingLine": "No staff overload. No missed clients. Live in minutes.",
+    "network": "Explore the Ovela Network →"
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Ovela Network — A Curated Ecosystem of Interactive Brands",
+      "description": "A connected ecosystem of premium brands powered by Ovela Interactive: wellness, defense technology, real estate and beyond."
+    },
+    "hero": {
+      "eyebrow": "Ovela Network",
+      "title": "A Curated Ecosystem of Interactive Brands",
+      "description": "Ovela partners with selected houses across wellness, defense, and real estate — and extends private benefits to clients introduced inside the network."
+    },
+    "categories": {
+      "wellness": "Wellness & Longevity",
+      "defense": "Defense Technology",
+      "realestate": "Real Estate"
+    },
+    "partners": {
+      "wellnespirit": {
+        "tagline": "Luxury of the 3rd Millennium",
+        "positioning": "Body, mind, soul and cell rejuvenation — engineered for the conscious elite.",
+        "b1": "Network-only access to flagship rejuvenation protocols",
+        "b2": "Private invitations to retreats and member events",
+        "b3": "Concierge introductions handled by Isabella"
+      },
+      "luxdeftec": {
+        "tagline": "Precision Defense Technology",
+        "positioning": "Sovereign-grade defense systems and dual-use technologies for selected partners and institutions.",
+        "b1": "Vetted access to the corporate ecosystem brief",
+        "b2": "Priority dialogue on dual-use technology programs",
+        "b3": "Network introductions under NDA"
+      },
+      "superior": {
+        "tagline": "Andorran Real Estate, since 1974",
+        "positioning": "Five decades curating the most coveted properties in Andorra — now interactively presented.",
+        "b1": "Off-market property dossiers for network members",
+        "b2": "Interactive property tours hosted by Isabella",
+        "b3": "Concierge relocation & residency support"
+      }
+    },
+    "partnerCard": {
+      "requestAccess": "Request Network Access",
+      "viaIsabella": "Qualified via Isabella"
+    },
+    "cta": {
+      "title": "Become an Ovela Network Partner",
+      "description": "Brands, houses and institutions who share our standard for interactive presence and selected access are invited to apply.",
+      "button": "Speak with Isabella"
+    }
   },
   "about": {
     "title": "Redefining Modeling Through AI",

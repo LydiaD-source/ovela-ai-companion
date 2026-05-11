@@ -16,7 +16,56 @@
     "cta": "Pregunta a l'Isabella com funciona",
     "explore": "Veure projectes reals en acció ↓",
     "connecting": "Connectant...",
-    "floatingLine": "Sense sobrecàrrega de personal. Sense clients perduts. Operatiu en minuts."
+    "floatingLine": "Sense sobrecàrrega de personal. Sense clients perduts. Operatiu en minuts.",
+    "network": "Descobreix la Xarxa Ovela →"
+  },
+  "ecosystem": {
+    "seo": {
+      "title": "Xarxa Ovela — Un Ecosistema Curat de Marques Interactives",
+      "description": "Un ecosistema connectat de marques premium impulsat per Ovela Interactive: benestar, tecnologia de defensa, immobiliari i més."
+    },
+    "hero": {
+      "eyebrow": "Xarxa Ovela",
+      "title": "Un Ecosistema Curat de Marques Interactives",
+      "description": "Ovela col·labora amb cases seleccionades de benestar, defensa i immobiliari — i ofereix beneficis privats als clients introduïts dins la xarxa."
+    },
+    "categories": {
+      "wellness": "Benestar i Longevitat",
+      "defense": "Tecnologia de Defensa",
+      "realestate": "Immobiliari"
+    },
+    "partners": {
+      "wellnespirit": {
+        "tagline": "El Luxe del 3r Mil·lenni",
+        "positioning": "Rejoveniment de cos, ment, ànima i cèl·lules — dissenyat per a l'elit conscient.",
+        "b1": "Accés exclusiu de xarxa a protocols de rejoveniment estrella",
+        "b2": "Invitacions privades a retirs i esdeveniments per a membres",
+        "b3": "Presentacions concierge gestionades per Isabella"
+      },
+      "luxdeftec": {
+        "tagline": "Tecnologia de Defensa de Precisió",
+        "positioning": "Sistemes de defensa de grau sobirà i tecnologies de doble ús per a socis i institucions seleccionats.",
+        "b1": "Accés validat al brief corporatiu de l'ecosistema",
+        "b2": "Diàleg prioritari sobre programes de tecnologia de doble ús",
+        "b3": "Presentacions de xarxa sota NDA"
+      },
+      "superior": {
+        "tagline": "Immobiliari d'Andorra, des de 1974",
+        "positioning": "Cinc dècades curant les propietats més cobejades d'Andorra — ara presentades de forma interactiva.",
+        "b1": "Dossiers de propietats fora de mercat per a membres",
+        "b2": "Visites interactives de propietats amb Isabella",
+        "b3": "Concierge de relocalització i residència"
+      }
+    },
+    "partnerCard": {
+      "requestAccess": "Sol·licita Accés a la Xarxa",
+      "viaIsabella": "Qualificat per Isabella"
+    },
+    "cta": {
+      "title": "Esdevé Soci de la Xarxa Ovela",
+      "description": "Marques, cases i institucions que comparteixen el nostre estàndard de presència interactiva i accés seleccionat estan convidades a aplicar.",
+      "button": "Parla amb Isabella"
+    }
   },
   "about": {
     "title": "Redefinint el modelatge a través de la IA",

@@ -41,8 +41,8 @@ const lookbookItems: LookbookItem[] = [
   },
   {
     type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1778758834/flux-dev_Mirella_posing_in_a_high-end_photography_studio_elegant_silk_dress_soft_shadows_-1_qohs10.jpg',
-    captionKey: 'lookbook.captions.silkElegance'
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1779109383/mirella_dreaming_wrqd6e.png',
+    captionKey: 'lookbook.captions.etherealDream'
   }
 ];
 

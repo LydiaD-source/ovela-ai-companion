@@ -21,6 +21,22 @@
     "title": "Modeln durch KI neu definiert",
     "description": "Isabella ist mehr als ein Model — sie ist eine interaktive KI-Botschafterin, die sich an Ihre Marke anpasst, Ihr Publikum in Echtzeit anspricht und über unendliche Kampagnen ohne Einschränkungen skaliert."
   },
+  "digitalTeam": {
+    "eyebrow": "Ovela Digital Team",
+    "title": "Lernen Sie das Ovela Digital Team kennen",
+    "notChatbots": "Keine Chatbots.",
+    "notInfluencers": "Keine Influencer.",
+    "description": "Interaktive KI-Teammitglieder, ausgebildet, um echte Unternehmen zu repräsentieren.",
+    "bullets": [
+      "Mehrsprachige Kommunikation",
+      "Interaktion in Echtzeit",
+      "Buchung & Support",
+      "Produktpräsentation",
+      "Lead-Generierung"
+    ],
+    "ctaBuild": "Erstellen Sie Ihr Team",
+    "ctaTalk": "Sprich mit Isabella"
+  },
   "aboutPage": {
     "heroTitle": "Wo Interaktives Modeln Begann",
     "heroDescription": "Ovela definiert das Modeln durch KI neu — aber die Reise begann mit einer Vision, Menschen auf menschlichere Weise zu verbinden.",

@@ -118,6 +118,22 @@
     "title": "Redefining Modeling Through AI",
     "description": "Isabella is more than a model — she's an interactive AI ambassador who adapts to your brand, engages your audience in real-time, and scales across infinite campaigns without limitations."
   },
+  "digitalTeam": {
+    "eyebrow": "Ovela Digital Team",
+    "title": "Meet the Ovela Digital Team",
+    "notChatbots": "Not chatbots.",
+    "notInfluencers": "Not influencers.",
+    "description": "Interactive AI team members trained to represent real businesses.",
+    "bullets": [
+      "Multilingual communication",
+      "Real-time interaction",
+      "Booking & support",
+      "Product presentation",
+      "Lead generation"
+    ],
+    "ctaBuild": "Build Your Team",
+    "ctaTalk": "Talk With Isabella"
+  },
   "aboutPage": {
     "heroTitle": "Where Interactive Modeling Began",
     "heroDescription": "Ovela is redefining the modeling industry through AI, bringing human connection back to digital experiences. Our journey started with a simple vision: models should do more than pose — they should interact.",

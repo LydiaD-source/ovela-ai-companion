@@ -364,7 +364,7 @@ const Home = () => {
 
         {/* Magazine-Style Sections Below Hero */}
         <LookbookCarousel />
-        <AboutSection />
+        <AboutSection onChatClick={activateChat} />
         <ShowcaseSection />
         <CTASection onChatClick={activateChat} />
         <FooterMinimal />

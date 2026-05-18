@@ -1,50 +1,109 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const AboutSection = () => {
+interface AboutSectionProps {
+  onChatClick?: () => void;
+}
+
+export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
   const { t } = useTranslation();
-  
+
+  const bullets = t('digitalTeam.bullets', { returnObjects: true }) as string[];
+
   return (
-    <section className="w-full h-screen flex flex-col md:flex-row">
-      {/* Left: Image */}
-      <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden">
-        <img
-          src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759499223/Flux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_elega_3_asxnlz.jpg"
-          alt="Isabella Navia - AI Model"
-          className="w-full h-full object-cover object-center"
-          style={{ 
-            objectPosition: 'center 20%'
-          }}
+    <section className="w-full min-h-screen flex flex-col md:flex-row">
+      {/* Left: Video */}
+      <div className="w-full md:w-1/2 h-[50vh] md:h-auto md:min-h-screen relative overflow-hidden bg-black">
+        <video
+          src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1779111799/Digital_team_by_Ovela_qcorjh.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Right: Text */}
       <div
-        className="w-full md:w-1/2 h-1/2 md:h-full flex items-center justify-center px-8 md:px-20"
+        className="w-full md:w-1/2 flex items-center justify-center px-8 md:px-20 py-16 md:py-24"
         style={{
           background: 'linear-gradient(180deg, #0D0D1A 0%, #000000 100%)'
         }}
       >
         <div className="max-w-xl">
+          <p
+            className="text-xs md:text-sm tracking-[0.3em] uppercase mb-4"
+            style={{ fontFamily: 'Inter, sans-serif', color: '#E8CFA9', opacity: 0.85 }}
+          >
+            {t('digitalTeam.eyebrow')}
+          </p>
           <h2
             className="font-playfair text-3xl md:text-4xl mb-6"
-            style={{
-              fontFamily: 'Playfair Display, serif',
-              color: '#E8CFA9'
-            }}
+            style={{ fontFamily: 'Playfair Display, serif', color: '#E8CFA9' }}
           >
-            {t('about.title')}
+            {t('digitalTeam.title')}
           </h2>
           <p
-            className="text-base md:text-lg leading-relaxed"
-            style={{
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: 300,
-              color: '#F5F5F5'
-            }}
+            className="text-base md:text-lg leading-relaxed mb-3"
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 300, color: '#F5F5F5' }}
           >
-            {t('about.description')}
+            {t('digitalTeam.notChatbots')}<br />
+            {t('digitalTeam.notInfluencers')}
           </p>
+          <p
+            className="text-base md:text-lg leading-relaxed mb-6"
+            style={{ fontFamily: 'Inter, sans-serif', fontWeight: 300, color: '#F5F5F5' }}
+          >
+            {t('digitalTeam.description')}
+          </p>
+
+          <ul className="mb-8 space-y-2">
+            {Array.isArray(bullets) && bullets.map((b, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-3 text-sm md:text-base"
+                style={{ fontFamily: 'Inter, sans-serif', color: '#F5F5F5', fontWeight: 300 }}
+              >
+                <span style={{ color: '#E8CFA9' }}>✦</span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a
+              href="/ecosystem"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 hover:opacity-90"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                background: 'linear-gradient(135deg, #E8CFA9 0%, #C9A84C 100%)',
+                color: '#0D0D1A',
+                fontSize: '14px',
+                letterSpacing: '0.05em',
+                fontWeight: 500,
+              }}
+            >
+              → {t('digitalTeam.ctaBuild')}
+            </a>
+            <button
+              onClick={onChatClick}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 hover:bg-white/5"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                border: '1px solid #E8CFA9',
+                color: '#E8CFA9',
+                fontSize: '14px',
+                letterSpacing: '0.05em',
+                fontWeight: 500,
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
+            >
+              → {t('digitalTeam.ctaTalk')}
+            </button>
+          </div>
         </div>
       </div>
     </section>

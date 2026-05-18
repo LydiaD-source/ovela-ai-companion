@@ -21,6 +21,22 @@
     "title": "Redéfinir le Mannequinat par l'IA",
     "description": "Isabella est plus qu'un mannequin — c'est une ambassadrice IA interactive qui s'adapte à votre marque, engage votre audience en temps réel et s'étend sur des campagnes infinies sans limitations."
   },
+  "digitalTeam": {
+    "eyebrow": "Équipe Digitale Ovela",
+    "title": "Rencontrez l'Équipe Digitale Ovela",
+    "notChatbots": "Pas des chatbots.",
+    "notInfluencers": "Pas des influenceurs.",
+    "description": "Des membres d'équipe IA interactifs formés pour représenter de vraies entreprises.",
+    "bullets": [
+      "Communication multilingue",
+      "Interaction en temps réel",
+      "Réservation et support",
+      "Présentation de produits",
+      "Génération de leads"
+    ],
+    "ctaBuild": "Créez Votre Équipe",
+    "ctaTalk": "Parlez avec Isabella"
+  },
   "aboutPage": {
     "heroTitle": "Là Où le Mannequinat Interactif a Commencé",
     "heroDescription": "Ovela redéfinit le mannequinat grâce à l'IA — mais le voyage a commencé avec une vision de connecter les gens de manière plus humaine.",

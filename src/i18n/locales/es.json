@@ -21,6 +21,22 @@
     "title": "Redefiniendo el Modelaje con IA",
     "description": "Isabella es más que una modelo — es una embajadora de IA interactiva que se adapta a tu marca, interactúa con tu audiencia en tiempo real y escala en infinitas campañas sin limitaciones."
   },
+  "digitalTeam": {
+    "eyebrow": "Equipo Digital Ovela",
+    "title": "Conoce al Equipo Digital de Ovela",
+    "notChatbots": "No son chatbots.",
+    "notInfluencers": "No son influencers.",
+    "description": "Miembros de equipo de IA interactivos entrenados para representar negocios reales.",
+    "bullets": [
+      "Comunicación multilingüe",
+      "Interacción en tiempo real",
+      "Reservas y soporte",
+      "Presentación de productos",
+      "Generación de leads"
+    ],
+    "ctaBuild": "Crea Tu Equipo",
+    "ctaTalk": "Habla con Isabella"
+  },
   "aboutPage": {
     "heroTitle": "Donde Comenzó el Modelaje Interactivo",
     "heroDescription": "Ovela está redefiniendo el modelaje a través de la IA — pero el viaje comenzó con una visión de conectar a las personas de una manera más humana.",

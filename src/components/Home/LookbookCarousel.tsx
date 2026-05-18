@@ -31,18 +31,18 @@ const lookbookItems: LookbookItem[] = [
   },
   {
     type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759495676/Flux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_debou_000_18_ohp5o7.jpg',
-    captionKey: 'lookbook.captions.fashionForward'
-  },
-  {
-    type: 'image',
-    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759496281/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_body_clos_1_iitsbk.jpg',
-    captionKey: 'lookbook.captions.timelessElegance'
-  },
-  {
-    type: 'image',
     src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/gemini-2.5-flash-image_artistic_portrait_photography_of_ultra_realistic_full_body_shot_head_to_toe_visi-0_1_znwtoq.jpg',
     captionKey: 'lookbook.captions.modernIcon'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1778871138/Add_beauty_mark_above_lip_202605152023_k8zdc9.jpg',
+    captionKey: 'lookbook.captions.signatureDetail'
+  },
+  {
+    type: 'image',
+    src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1778758834/flux-dev_Mirella_posing_in_a_high-end_photography_studio_elegant_silk_dress_soft_shadows_-1_qohs10.jpg',
+    captionKey: 'lookbook.captions.silkElegance'
   }
 ];
 

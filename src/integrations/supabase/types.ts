@@ -864,6 +864,7 @@ export type Database = {
           id: string
           inquiry_type: string
           message: string
+          metadata: Json | null
           name: string
           source: string
           updated_at: string
@@ -875,6 +876,7 @@ export type Database = {
           id?: string
           inquiry_type: string
           message: string
+          metadata?: Json | null
           name: string
           source?: string
           updated_at?: string
@@ -886,6 +888,7 @@ export type Database = {
           id?: string
           inquiry_type?: string
           message?: string
+          metadata?: Json | null
           name?: string
           source?: string
           updated_at?: string
@@ -1531,6 +1534,86 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      job_postings: {
+        Row: {
+          bonus_criteria: Json
+          bonus_languages: Json
+          client_id: string
+          created_at: string
+          description: string | null
+          disqualifiers: Json
+          employment_type: string
+          id: string
+          language: string
+          location_requirements: string | null
+          mandatory_criteria: Json
+          mandatory_languages: Json
+          metadata: Json
+          min_experience_years: number
+          required_skills: Json
+          scoring_notes: string | null
+          slug: string
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          bonus_criteria?: Json
+          bonus_languages?: Json
+          client_id: string
+          created_at?: string
+          description?: string | null
+          disqualifiers?: Json
+          employment_type?: string
+          id?: string
+          language?: string
+          location_requirements?: string | null
+          mandatory_criteria?: Json
+          mandatory_languages?: Json
+          metadata?: Json
+          min_experience_years?: number
+          required_skills?: Json
+          scoring_notes?: string | null
+          slug: string
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          bonus_criteria?: Json
+          bonus_languages?: Json
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          disqualifiers?: Json
+          employment_type?: string
+          id?: string
+          language?: string
+          location_requirements?: string | null
+          mandatory_criteria?: Json
+          mandatory_languages?: Json
+          metadata?: Json
+          min_experience_years?: number
+          required_skills?: Json
+          scoring_notes?: string | null
+          slug?: string
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_postings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
           },
         ]
       }

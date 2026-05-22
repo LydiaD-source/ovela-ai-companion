@@ -69,8 +69,14 @@
   },
   "showcase": {
     "fashionForward": {
-      "title": "Moda Vanguardista",
-      "description": "Campañas editoriales de alta gama que capturan la atención e impulsan el engagement"
+      "title": "Cada visitante llega con una pregunta",
+      "description": "La mayoría de los sitios web piden a los visitantes que busquen.\nOvela les permite preguntar.\n\nLas preguntas se convierten en conversaciones.\nLas conversaciones se convierten en citas.\nLas citas se convierten en clientes.",
+      "bullets": [
+        "Respuestas instantáneas",
+        "Recorridos guiados",
+        "Comunicación multilingüe",
+        "Calificación antes del contacto"
+      ]
     },
     "interactiveMarketing": {
       "title": "Marketing Interactivo",

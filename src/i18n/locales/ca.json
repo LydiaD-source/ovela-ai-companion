@@ -167,8 +167,14 @@
   },
   "showcase": {
     "fashionForward": {
-      "title": "Moda avançada",
-      "description": "Campanyes editorials d'alta gamma que capturen l'atenció i generen compromís"
+      "title": "Cada visitant arriba amb una pregunta",
+      "description": "La majoria de webs demanen als visitants que cerquin.\nOvela els permet preguntar.\n\nLes preguntes esdevenen converses.\nLes converses esdevenen cites.\nLes cites esdevenen clients.",
+      "bullets": [
+        "Respostes immediates",
+        "Recorreguts guiats",
+        "Comunicació multilingüe",
+        "Qualificació abans del contacte"
+      ]
     },
     "interactiveMarketing": {
       "title": "Màrqueting interactiu",

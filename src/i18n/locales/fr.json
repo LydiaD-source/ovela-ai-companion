@@ -79,15 +79,23 @@
       ]
     },
     "interactiveMarketing": {
-      "title": "Marketing Interactif",
-      "description": "Isabella transforme les campagnes traditionnelles en conversations. Les marques de luxe peuvent désormais engager directement leur public grâce à des expériences interactives."
+      "title": "Des Spécialistes Pour Chaque Industrie",
+      "description": "Chaque représentant Ovela est formé sur une entreprise, une audience et un parcours client spécifiques.\n\nPas une IA générique.\n\nUne expertise conçue avec un but précis."
     },
     "multiBrand": {
-      "title": "Excellence Multi-Marques",
-      "description": "Représentation parfaite dans diverses industries et audiences"
+      "title": "Que Se Passe-t-il Après Le Clic ?",
+      "description": "Le trafic seul ne fait pas grandir une entreprise.\n\nCe qui se passe ensuite, oui.\n\nOvela combine conversation, automatisation et présentation en une expérience fluide.",
+      "bullets": [
+        "Rendez-vous",
+        "Capture de leads",
+        "Suivi",
+        "Accompagnement client"
+      ]
     },
     "seePortfolio": "Voir Portfolio",
-    "seeFullPortfolio": "Voir Portfolio Complet"
+    "seeFullPortfolio": "Voir Portfolio Complet",
+    "seeProjects": "Voir Nos Projets",
+    "seeHowItWorks": "Voir Comment Ça Marche"
   },
   "lookbook": {
     "captions": {
@@ -103,9 +111,9 @@
     }
   },
   "cta": {
-    "title": "Travaillez Avec Isabella",
-    "description": "Associez-vous à la première ambassadrice IA du monde pour votre marque, campagne ou vision.",
-    "button": "Discuter Avec Isabella"
+    "title": "Votre Site Web Devrait Fonctionner Comme Une Équipe",
+    "description": "Pas une brochure.\nPas un chatbot.\n\nUn représentant numérique formé, disponible chaque fois que vos clients arrivent.",
+    "button": "Parler Avec Isabella"
   },
   "pricing": {
     "title": "Travaillez Avec Isabella — L'Avenir du Mannequinat Interactif",

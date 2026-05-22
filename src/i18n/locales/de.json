@@ -69,8 +69,14 @@
   },
   "showcase": {
     "fashionForward": {
-      "title": "Modeavantgarde",
-      "description": "High-End-Editorialkampagnen, die Aufmerksamkeit erregen und Engagement fördern"
+      "title": "Jeder Besucher kommt mit einer Frage",
+      "description": "Die meisten Websites lassen Besucher suchen.\nOvela lässt sie fragen.\n\nFragen werden zu Gesprächen.\nGespräche werden zu Terminen.\nTermine werden zu Kunden.",
+      "bullets": [
+        "Sofortige Antworten",
+        "Geführte Reisen",
+        "Mehrsprachige Kommunikation",
+        "Qualifizierung vor dem Kontakt"
+      ]
     },
     "interactiveMarketing": {
       "title": "Interaktives Marketing",

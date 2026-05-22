@@ -18,8 +18,8 @@ export const ShowcaseSection = () => {
       layout: 'media-left'
     },
     {
-      mediaType: 'image',
-      src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758192666/FTlux_Dev_Use_Character_Element_IsabellaV2Focus_full_body_stand_3_7_jod0un.jpg',
+      mediaType: 'video',
+      src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1779476166/SATURDAY_23_MAY_SHORT_copie_clzzcx.mp4',
       titleKey: 'showcase.interactiveMarketing.title',
       descriptionKey: 'showcase.interactiveMarketing.description',
       layout: 'media-right'

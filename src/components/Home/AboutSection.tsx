@@ -15,13 +15,13 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
       {/* Left: Video */}
       <div className="w-full md:w-1/2 h-[50vh] md:h-auto md:min-h-screen relative overflow-hidden bg-black">
         <video
-          src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1779111799/Digital_team_by_Ovela_qcorjh.mp4"
+          src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1779378255/MONDAY_18_SHORT_copie_p4ynhb.mp4"
           autoPlay
           muted
           loop
           playsInline
           preload="metadata"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
       </div>
 

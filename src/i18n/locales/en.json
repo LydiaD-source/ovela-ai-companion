@@ -167,8 +167,14 @@
   },
   "showcase": {
     "fashionForward": {
-      "title": "Fashion Forward",
-      "description": "High-end editorial campaigns that capture attention and drive engagement"
+      "title": "Every Visitor Arrives With A Question",
+      "description": "Most websites ask visitors to search.\nOvela lets visitors ask.\n\nQuestions become conversations.\nConversations become appointments.\nAppointments become clients.",
+      "bullets": [
+        "Instant answers",
+        "Guided journeys",
+        "Multilingual communication",
+        "Qualification before contact"
+      ]
     },
     "interactiveMarketing": {
       "title": "Interactive Marketing",

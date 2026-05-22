@@ -69,8 +69,14 @@
   },
   "showcase": {
     "fashionForward": {
-      "title": "Mode Avant-Gardiste",
-      "description": "Campagnes éditoriales haut de gamme qui captent l'attention et stimulent l'engagement"
+      "title": "Chaque visiteur arrive avec une question",
+      "description": "La plupart des sites demandent aux visiteurs de chercher.\nOvela leur permet de demander.\n\nLes questions deviennent des conversations.\nLes conversations deviennent des rendez-vous.\nLes rendez-vous deviennent des clients.",
+      "bullets": [
+        "Réponses instantanées",
+        "Parcours guidés",
+        "Communication multilingue",
+        "Qualification avant le contact"
+      ]
     },
     "interactiveMarketing": {
       "title": "Marketing Interactif",

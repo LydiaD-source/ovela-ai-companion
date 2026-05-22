@@ -18,6 +18,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
         <VideoWithSound
           src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1779378255/MONDAY_18_SHORT_copie_p4ynhb.mp4"
           className="w-full h-full object-contain"
+          fit="contain"
         />
       </div>
 
@@ -69,8 +70,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
           </ul>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href="/ecosystem"
+            <button
+              onClick={onChatClick}
               className="inline-flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 hover:opacity-90"
               style={{
                 fontFamily: 'Inter, sans-serif',
@@ -79,25 +80,11 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
                 fontSize: '14px',
                 letterSpacing: '0.05em',
                 fontWeight: 500,
-              }}
-            >
-              → {t('digitalTeam.ctaBuild')}
-            </a>
-            <button
-              onClick={onChatClick}
-              className="inline-flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 hover:bg-white/5"
-              style={{
-                fontFamily: 'Inter, sans-serif',
-                border: '1px solid #E8CFA9',
-                color: '#E8CFA9',
-                fontSize: '14px',
-                letterSpacing: '0.05em',
-                fontWeight: 500,
-                background: 'transparent',
+                border: 'none',
                 cursor: 'pointer',
               }}
             >
-              → {t('digitalTeam.ctaTalk')}
+              → {t('digitalTeam.ctaBuild')}
             </button>
           </div>
         </div>

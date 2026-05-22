@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 
 interface VideoWithSoundProps {
@@ -11,8 +11,22 @@ interface VideoWithSoundProps {
 
 export const VideoWithSound: React.FC<VideoWithSoundProps> = ({ src, className, poster, fit = 'cover' }) => {
   const ref = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [muted, setMuted] = useState(true);
   const [aspect, setAspect] = useState<number | null>(null);
+  const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    if (fit !== 'contain') return;
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setBox({ w: el.clientWidth, h: el.clientHeight });
+    });
+    ro.observe(el);
+    setBox({ w: el.clientWidth, h: el.clientHeight });
+    return () => ro.disconnect();
+  }, [fit]);
 
   const toggle = () => {
     const v = ref.current;
@@ -62,12 +76,21 @@ export const VideoWithSound: React.FC<VideoWithSoundProps> = ({ src, className, 
   );
 
   if (fit === 'contain') {
+    let innerW = '100%';
+    let innerH = '100%';
+    if (aspect && box && box.w > 0 && box.h > 0) {
+      const containerAspect = box.w / box.h;
+      if (aspect > containerAspect) {
+        innerW = `${box.w}px`;
+        innerH = `${box.w / aspect}px`;
+      } else {
+        innerH = `${box.h}px`;
+        innerW = `${box.h * aspect}px`;
+      }
+    }
     return (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div
-          className="relative max-w-full max-h-full"
-          style={aspect ? { aspectRatio: String(aspect), width: '100%', height: 'auto', maxHeight: '100%' } : { width: '100%', height: '100%' }}
-        >
+      <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
+        <div className="relative" style={{ width: innerW, height: innerH }}>
           {videoEl}
           {button}
         </div>

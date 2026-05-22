@@ -101,23 +101,7 @@ export const ShowcaseSection = () => {
                   ))}
                 </ul>
               )}
-              {item.titleKey === 'showcase.fashionForward.title' ? (
-                <button
-                  onClick={() => setIsFashionGalleryOpen(true)}
-                  className="inline-block transition-all duration-300 hover:underline"
-                  style={{
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#E8CFA9',
-                    fontSize: '16px',
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    cursor: 'pointer'
-                  }}
-                >
-                  {t('showcase.seePortfolio')} →
-                </button>
-              ) : item.titleKey === 'showcase.interactiveMarketing.title' ? (
+              {item.titleKey === 'showcase.interactiveMarketing.title' ? (
                 <Link
                   to="/projects"
                   className="inline-block transition-all duration-300 hover:underline"

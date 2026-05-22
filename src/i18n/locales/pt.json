@@ -79,15 +79,23 @@
       ]
     },
     "interactiveMarketing": {
-      "title": "Marketing Interativo",
-      "description": "Isabella transforma campanhas tradicionais em conversas. Marcas de luxo agora podem engajar audiências diretamente através de experiências interativas."
+      "title": "Especialistas Para Cada Indústria",
+      "description": "Cada representante Ovela é treinado em um negócio, público e jornada de cliente específicos.\n\nNão é IA genérica.\n\nExperiência criada com propósito."
     },
     "multiBrand": {
-      "title": "Excelência Multi-Marca",
-      "description": "Representação perfeita em diversas indústrias e públicos"
+      "title": "O Que Acontece Depois Que Alguém Clica?",
+      "description": "Tráfego por si só não faz um negócio crescer.\n\nO que acontece a seguir, sim.\n\nA Ovela combina conversa, automação e apresentação em uma experiência perfeita.",
+      "bullets": [
+        "Agendamentos",
+        "Captação de leads",
+        "Acompanhamento",
+        "Orientação ao cliente"
+      ]
     },
     "seePortfolio": "Ver Portfólio",
-    "seeFullPortfolio": "Ver Portfólio Completo"
+    "seeFullPortfolio": "Ver Portfólio Completo",
+    "seeProjects": "Ver Nossos Projetos",
+    "seeHowItWorks": "Ver Como Funciona"
   },
   "lookbook": {
     "captions": {
@@ -103,9 +111,9 @@
     }
   },
   "cta": {
-    "title": "Trabalhe Com Isabella",
-    "description": "Seja parceiro da primeira embaixadora modelo IA do mundo para sua marca, campanha ou visão.",
-    "button": "Converse Com Isabella"
+    "title": "Seu Site Deveria Funcionar Como Uma Equipe",
+    "description": "Não um folheto.\nNão um chatbot.\n\nUm representante digital treinado, disponível sempre que seus clientes chegarem.",
+    "button": "Fale Com Isabella"
   },
   "pricing": {
     "title": "Trabalhe Com Isabella — O Futuro da Modelagem Interativa",

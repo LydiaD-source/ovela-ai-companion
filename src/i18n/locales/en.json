@@ -177,15 +177,23 @@
       ]
     },
     "interactiveMarketing": {
-      "title": "Interactive Marketing",
-      "description": "Isabella transforms traditional campaigns into conversations. Luxury brands can now engage audiences directly through interactive experiences."
+      "title": "Specialists For Every Industry",
+      "description": "Each Ovela representative is trained on a specific business, audience and customer journey.\n\nNot generic AI.\n\nPurpose-built expertise."
     },
     "multiBrand": {
-      "title": "Multi-Brand Excellence",
-      "description": "Seamless representation across diverse industries and audiences"
+      "title": "What Happens After Someone Clicks?",
+      "description": "Traffic alone doesn't grow a business.\n\nWhat happens next does.\n\nOvela combines conversation, automation and presentation into one seamless experience.",
+      "bullets": [
+        "Appointments",
+        "Lead capture",
+        "Follow-up",
+        "Customer guidance"
+      ]
     },
     "seePortfolio": "See Portfolio",
-    "seeFullPortfolio": "See Full Portfolio"
+    "seeFullPortfolio": "See Full Portfolio",
+    "seeProjects": "See Our Projects",
+    "seeHowItWorks": "See How It Works"
   },
   "lookbook": {
     "captions": {
@@ -201,9 +209,9 @@
     }
   },
   "cta": {
-    "title": "Work With Isabella",
-    "description": "Partner with the world's first AI model ambassador for your brand, campaign, or vision.",
-    "button": "Chat With Isabella"
+    "title": "Your Website Should Work Like A Team",
+    "description": "Not a brochure.\nNot a chatbot.\n\nA trained digital representative available whenever your clients arrive.",
+    "button": "Talk With Isabella"
   },
   "pricing": {
     "title": "Work With Isabella — The Future of Interactive Modeling",

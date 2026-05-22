@@ -177,15 +177,23 @@
       ]
     },
     "interactiveMarketing": {
-      "title": "Màrqueting interactiu",
-      "description": "Isabella transforma les campanyes tradicionals en converses. Les marques de luxe poden connectar directament amb el públic a través d'experiències interactives."
+      "title": "Especialistes Per a Cada Indústria",
+      "description": "Cada representant d'Ovela està entrenat en un negoci, una audiència i un recorregut de client específics.\n\nNo és IA genèrica.\n\nExperiència dissenyada amb propòsit."
     },
     "multiBrand": {
-      "title": "Excel·lència multimarca",
-      "description": "Representació fluida en diverses indústries i audiències"
+      "title": "Què Passa Després Que Algú Fa Clic?",
+      "description": "El trànsit per si sol no fa créixer un negoci.\n\nEl que passa després sí.\n\nOvela combina conversa, automatització i presentació en una experiència perfecta.",
+      "bullets": [
+        "Cites",
+        "Captació de leads",
+        "Seguiment",
+        "Guia al client"
+      ]
     },
     "seePortfolio": "Veure portfoli",
-    "seeFullPortfolio": "Veure portfoli complet"
+    "seeFullPortfolio": "Veure portfoli complet",
+    "seeProjects": "Veure els Nostres Projectes",
+    "seeHowItWorks": "Veure Com Funciona"
   },
   "lookbook": {
     "captions": {
@@ -201,9 +209,9 @@
     }
   },
   "cta": {
-    "title": "Treballa amb Isabella",
-    "description": "Col·labora amb la primera model ambaixadora d'IA del món per a la teva marca, campanya o visió.",
-    "button": "Xateja amb Isabella"
+    "title": "El Teu Lloc Web Hauria de Funcionar Com Un Equip",
+    "description": "No un fullet.\nNo un chatbot.\n\nUn representant digital entrenat disponible sempre que arribin els teus clients.",
+    "button": "Parla Amb Isabella"
   },
   "pricing": {
     "title": "Treballa amb Isabella — El futur del modelatge interactiu",

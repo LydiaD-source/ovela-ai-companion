@@ -79,15 +79,23 @@
       ]
     },
     "interactiveMarketing": {
-      "title": "Interaktives Marketing",
-      "description": "Isabella verwandelt traditionelle Kampagnen in Gespräche. Luxusmarken können ihr Publikum jetzt direkt durch interaktive Erlebnisse ansprechen."
+      "title": "Spezialisten Für Jede Branche",
+      "description": "Jeder Ovela-Vertreter wird auf ein bestimmtes Geschäft, Publikum und eine bestimmte Kundenreise geschult.\n\nKeine generische KI.\n\nZweckgebundene Expertise."
     },
     "multiBrand": {
-      "title": "Multi-Marken-Exzellenz",
-      "description": "Nahtlose Repräsentation über verschiedene Branchen und Zielgruppen"
+      "title": "Was Passiert, Nachdem Jemand Klickt?",
+      "description": "Traffic allein lässt ein Unternehmen nicht wachsen.\n\nWas danach passiert, schon.\n\nOvela vereint Konversation, Automatisierung und Präsentation in einem nahtlosen Erlebnis.",
+      "bullets": [
+        "Termine",
+        "Lead-Erfassung",
+        "Nachverfolgung",
+        "Kundenführung"
+      ]
     },
     "seePortfolio": "Portfolio Ansehen",
-    "seeFullPortfolio": "Vollständiges Portfolio Ansehen"
+    "seeFullPortfolio": "Vollständiges Portfolio Ansehen",
+    "seeProjects": "Unsere Projekte Ansehen",
+    "seeHowItWorks": "So Funktioniert Es"
   },
   "lookbook": {
     "captions": {
@@ -103,9 +111,9 @@
     }
   },
   "cta": {
-    "title": "Arbeiten Sie Mit Isabella",
-    "description": "Werden Sie Partner der weltweit ersten KI-Modelbotschafterin für Ihre Marke, Kampagne oder Vision.",
-    "button": "Mit Isabella Chatten"
+    "title": "Ihre Website Sollte Wie Ein Team Arbeiten",
+    "description": "Keine Broschüre.\nKein Chatbot.\n\nEin geschulter digitaler Vertreter, verfügbar, wann immer Ihre Kunden eintreffen.",
+    "button": "Sprechen Sie Mit Isabella"
   },
   "pricing": {
     "title": "Arbeiten Sie Mit Isabella — Die Zukunft des Interaktiven Modelns",

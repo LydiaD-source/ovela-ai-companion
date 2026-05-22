@@ -13,9 +13,10 @@ export const ShowcaseSection = () => {
   const showcaseItems = [
     {
       mediaType: 'video',
-      src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/202509242206_1_nnxmtz.mp4',
+      src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1779448780/ai_wesbite_assistant_gpkmyn.mp4',
       titleKey: 'showcase.fashionForward.title',
       descriptionKey: 'showcase.fashionForward.description',
+      bulletsKey: 'showcase.fashionForward.bullets',
       layout: 'media-left'
     },
     {

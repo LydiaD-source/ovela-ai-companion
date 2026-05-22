@@ -69,8 +69,14 @@
   },
   "showcase": {
     "fashionForward": {
-      "title": "Moda de Vanguarda",
-      "description": "Campanhas editoriais de alto nível que capturam atenção e impulsionam o engajamento"
+      "title": "Cada visitante chega com uma pergunta",
+      "description": "A maioria dos sites pede aos visitantes para pesquisar.\nA Ovela permite que perguntem.\n\nAs perguntas tornam-se conversas.\nAs conversas tornam-se reuniões.\nAs reuniões tornam-se clientes.",
+      "bullets": [
+        "Respostas imediatas",
+        "Jornadas guiadas",
+        "Comunicação multilíngue",
+        "Qualificação antes do contato"
+      ]
     },
     "interactiveMarketing": {
       "title": "Marketing Interativo",

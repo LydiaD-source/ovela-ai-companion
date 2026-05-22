@@ -18,6 +18,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
         <VideoWithSound
           src="https://res.cloudinary.com/di5gj4nyp/video/upload/v1779378255/MONDAY_18_SHORT_copie_p4ynhb.mp4"
           className="w-full h-full object-contain"
+          fit="contain"
         />
       </div>
 

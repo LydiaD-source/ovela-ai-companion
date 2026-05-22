@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { VideoWithSound } from './VideoWithSound';
 
 interface AboutSectionProps {
   onChatClick?: () => void;

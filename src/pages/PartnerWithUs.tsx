@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MessageCircle, Globe, Zap, Users, Building2, ShoppingBag, Hotel, Stethoscope } from 'lucide-react';
+import { ArrowRight, MessageCircle, Globe, Zap, Users, Building2, ShoppingBag, Hotel, Stethoscope, Briefcase } from 'lucide-react';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
 import { useSEO } from '@/hooks/useSEO';
 import { useTranslation } from 'react-i18next';
@@ -9,8 +9,8 @@ const PartnerWithUs = () => {
   const { t } = useTranslation();
   useSEO({
     path: '/partner',
-    title: 'Partner With Ovela | AI Ambassador for Your Brand',
-    description: 'Deploy Isabella, the world\'s first interactive AI model ambassador, for your brand campaigns, website hosting, and customer engagement. 24/7, multilingual, always on.'
+    title: 'Build Your Interactive AI Team Member | Ovela',
+    description: 'Transform websites, campaigns and customer interactions into real-time conversations powered by custom AI representatives trained for your business.'
   });
 
   const openChat = () => {
@@ -19,36 +19,38 @@ const PartnerWithUs = () => {
 
   const capabilities = [
     {
-      title: 'Brand Campaigns',
-      description: 'Create high-impact campaigns where your audience doesn\'t just watch — they interact.',
-      bullets: ['Social media activations', 'Product storytelling', 'Interactive ads']
+      title: 'Interactive Brand Campaigns',
+      description: 'Create campaigns that don\'t stop at impressions. Allow audiences to explore, interact and engage in real time.',
+      bullets: ['Social activations', 'Product storytelling', 'Interactive advertising', 'Digital ambassadors']
     },
     {
-      title: 'Licensing Isabella',
-      description: 'Deploy Isabella as your digital ambassador:',
-      bullets: ['Website host', 'Campaign face', 'Interactive presenter'],
-      note: 'Available 24/7, globally, without production limits.'
+      title: 'Deploy an AI Team Member',
+      description: 'Choose an existing Ovela representative or create a custom digital team member designed specifically for your brand.',
+      bullets: ['Website host', 'Product specialist', 'Property presenter', 'Client concierge', 'Brand ambassador'],
+      note: 'Available 24/7 in multiple languages.'
     },
     {
-      title: 'Custom AI Ambassadors',
-      description: 'Build your own version of Isabella tailored to your brand:',
-      bullets: ['Custom appearance', 'Brand voice & personality', 'Industry-specific behavior']
+      title: 'Custom Digital Representatives',
+      description: 'Every business is different. We design AI team members aligned with your industry, audience and communication style.',
+      bullets: ['Custom appearance', 'Brand voice', 'Industry expertise', 'Multilingual interaction', 'CRM integration']
     }
   ];
 
   const isabellaCapabilities = [
     'Answer questions',
-    'Guide users',
-    'Recommend products',
+    'Present services',
+    'Recommend solutions',
     'Book appointments',
-    'Capture leads'
+    'Capture leads',
+    'Guide customer journeys'
   ];
 
   const useCases = [
-    { icon: Building2, industry: 'Real Estate', desc: 'Interactive property listings' },
-    { icon: Stethoscope, industry: 'Clinics', desc: 'Consultation + booking assistant' },
-    { icon: ShoppingBag, industry: 'E-commerce', desc: 'Guided product discovery' },
-    { icon: Hotel, industry: 'Hospitality', desc: 'Digital concierge' }
+    { icon: Stethoscope, industry: 'Healthcare', desc: 'Patient guidance & appointment booking' },
+    { icon: Building2, industry: 'Real Estate', desc: 'Interactive property presentation' },
+    { icon: Zap, industry: 'Technology', desc: 'Product education & lead qualification' },
+    { icon: Hotel, industry: 'Hospitality', desc: 'Digital concierge experiences' },
+    { icon: Briefcase, industry: 'Professional Services', desc: 'Client onboarding & information delivery' }
   ];
 
   return (
@@ -63,15 +65,20 @@ const PartnerWithUs = () => {
             className="font-playfair text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
             style={{ color: '#D4AF37' }}
           >
-            Partner With a 24/7 AI Ambassador<br className="hidden md:block" /> for Your Brand
+            Build Your Own Interactive<br className="hidden md:block" /> AI Team Member
           </h1>
           <p
-            className="text-lg sm:text-xl max-w-3xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl max-w-3xl mx-auto mb-6 leading-relaxed"
             style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}
           >
-            Turn campaigns, websites, and customer interactions into real-time conversations powered by{' '}
-            <Link to="/projects" className="underline underline-offset-4" style={{ color: '#D4AF37' }}>Isabella</Link>{' '}
-            — the world's first interactive AI model ambassador.
+            Transform websites, campaigns and customer interactions into real-time conversations powered by custom AI representatives trained for your business.
+          </p>
+          <p
+            className="text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
+            style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37', fontWeight: 400 }}
+          >
+            Healthcare. Real Estate. Technology. Hospitality. Premium Services.<br />
+            <span style={{ color: '#EDEDED' }}>Available 24/7. Multilingual. Always on.</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
@@ -83,16 +90,16 @@ const PartnerWithUs = () => {
                 boxShadow: '0 8px 30px rgba(212,175,55,0.4)'
               }}
             >
-              Start Your Project With Isabella
+              Start Your Project
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <Link
-              to="/contact"
-              className="text-base transition-all duration-300 hover:underline"
+            <button
+              onClick={openChat}
+              className="text-base transition-all duration-300 hover:underline cursor-pointer bg-transparent border-none"
               style={{ color: '#D4AF37', fontFamily: 'Inter, sans-serif' }}
             >
-              Or contact us directly →
-            </Link>
+              Talk With Isabella →
+            </button>
           </div>
         </div>
       </section>
@@ -104,7 +111,7 @@ const PartnerWithUs = () => {
       <section className="py-24">
         <div className="container mx-auto px-6 lg:px-20">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-center mb-16" style={{ color: '#D4AF37' }}>
-            What You Can Build With Isabella
+            What You Can Build Through Ovela
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {capabilities.map((cap, i) => (
@@ -157,8 +164,8 @@ const PartnerWithUs = () => {
               </div>
             ))}
           </div>
-          <p className="text-base italic max-w-xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37' }}>
-            "While traditional campaigns expire, Isabella continues working."
+          <p className="text-base italic max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37' }}>
+            While traditional content waits to be discovered, interactive experiences continue working around the clock.
           </p>
         </div>
       </section>
@@ -171,15 +178,16 @@ const PartnerWithUs = () => {
         <div className="container mx-auto px-6 lg:px-20">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-6" style={{ color: '#D4AF37' }}>
-              Not Just a Model — A Business Tool
+              More Than Content. More Than Chat.
             </h2>
-            <p className="text-lg leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
-              Unlike traditional models,{' '}
-              <Link to="/projects" className="underline underline-offset-4" style={{ color: '#D4AF37' }}>Isabella</Link>{' '}
-              doesn't just appear in your content — she becomes part of your business.
+            <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
+              Traditional websites inform. Interactive team members engage.
             </p>
-            <p className="text-base mb-6" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc' }}>She can:</p>
-            <div className="flex flex-wrap justify-center gap-3 mb-6">
+            <p className="text-base leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc', fontWeight: 300 }}>
+              Ovela representatives become part of your customer journey by helping visitors understand, explore and take action.
+            </p>
+            <p className="text-base mb-6" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc' }}>They can:</p>
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
               {isabellaCapabilities.map((cap, i) => (
                 <span
                   key={i}
@@ -195,8 +203,8 @@ const PartnerWithUs = () => {
                 </span>
               ))}
             </div>
-            <p className="text-sm" style={{ fontFamily: 'Inter, sans-serif', color: '#888' }}>
-              Model → System → Revenue
+            <p className="font-playfair text-lg tracking-wider" style={{ color: '#D4AF37' }}>
+              Presentation → Interaction → Conversion
             </p>
           </div>
         </div>
@@ -209,9 +217,9 @@ const PartnerWithUs = () => {
       <section className="py-24" style={{ background: 'rgba(212,175,55,0.03)' }}>
         <div className="container mx-auto px-6 lg:px-20 text-center">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-12" style={{ color: '#D4AF37' }}>
-            Built for Modern Businesses
+            Built For Real Industries
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-6xl mx-auto">
             {useCases.map((uc, i) => (
               <div
                 key={i}
@@ -224,7 +232,7 @@ const PartnerWithUs = () => {
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.2)'; }}
               >
                 <uc.icon className="w-8 h-8 mx-auto mb-3" style={{ color: '#D4AF37' }} />
-                <h3 className="font-playfair text-lg font-bold mb-1" style={{ color: '#FFFFFF' }}>{uc.industry}</h3>
+                <h3 className="font-playfair text-lg font-bold mb-2" style={{ color: '#FFFFFF' }}>{uc.industry}</h3>
                 <p className="text-sm" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc' }}>{uc.desc}</p>
               </div>
             ))}
@@ -239,10 +247,10 @@ const PartnerWithUs = () => {
       <section className="py-28 text-center">
         <div className="container mx-auto px-6 lg:px-20">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-6" style={{ color: '#D4AF37' }}>
-            Let's Build Your AI Ambassador
+            Let's Build Your Interactive Team Member
           </h2>
           <p className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
-            Tell us what you want to create — Isabella will guide you through the fastest way to bring it to life.
+            Whether you need a digital receptionist, property presenter, product specialist or brand ambassador, Ovela can design an AI representative aligned with your business and audience.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
@@ -254,16 +262,16 @@ const PartnerWithUs = () => {
                 boxShadow: '0 8px 30px rgba(212,175,55,0.4)'
               }}
             >
-              Ask Isabella About Your Project
+              Start Your Project
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <Link
-              to="/contact"
-              className="text-base transition-all duration-300 hover:underline"
+            <button
+              onClick={openChat}
+              className="text-base transition-all duration-300 hover:underline cursor-pointer bg-transparent border-none"
               style={{ color: '#D4AF37', fontFamily: 'Inter, sans-serif' }}
             >
-              Contact us directly →
-            </Link>
+              Talk With Isabella →
+            </button>
           </div>
         </div>
       </section>

@@ -12,7 +12,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onChatClick }) => {
   const bullets = t('digitalTeam.bullets', { returnObjects: true }) as string[];
 
   return (
-    <section className="w-full min-h-screen flex flex-col md:flex-row">
+    <section id="meet-team" className="w-full min-h-screen flex flex-col md:flex-row">
       {/* Left: Video */}
       <div className="w-full md:w-1/2 h-[50vh] md:h-auto md:min-h-screen relative overflow-hidden bg-black">
         <VideoWithSound

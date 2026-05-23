@@ -239,6 +239,12 @@ const Projects = () => {
                 {t('projects.ctaButton')}
               </button>
             </a>
+            <p
+              className="mt-6 max-w-2xl mx-auto text-sm md:text-base font-light leading-relaxed"
+              style={{ color: 'hsl(var(--soft-white) / 0.75)' }}
+            >
+              {t('projects.ctaSubtext')}
+            </p>
           </div>
         </div>
       </div>

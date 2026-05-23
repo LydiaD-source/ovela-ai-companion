@@ -19,24 +19,28 @@ const About = () => {
     {
       icon: Stethoscope,
       name: 'Isabella',
+      image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758802492/1_21_cqlyv4.jpg',
       focus: 'Healthcare • Hospitality • Client Guidance',
       desc: 'Helping visitors explore services, understand options and take action.',
     },
     {
       icon: Cpu,
       name: 'Dario',
+      image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/lucid-origin_artistic_portrait_photography_of_ultra_realistic_portrait_of_a_handsome_masculin-0_1_xelofp.jpg',
       focus: 'Technology • Innovation • Product Presentation',
       desc: 'Explaining complex products and communicating technical solutions with clarity.',
     },
     {
       icon: HomeIcon,
       name: 'Mirella',
+      image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1779109383/mirella_face_d8ix2l.png',
       focus: 'Property • Lifestyle • Premium Experiences',
       desc: 'Presenting properties and helping buyers engage before the first viewing.',
     },
     {
       icon: Sparkles,
       name: 'Future Team Members',
+      image: null as string | null,
       focus: 'Custom-Built For Any Industry',
       desc: 'Ovela representatives can be custom-created for any industry, role or brand.',
     },

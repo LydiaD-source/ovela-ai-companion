@@ -346,34 +346,47 @@
     "chatSubtext": "Connect with Isabella on the home page"
   },
   "projects": {
-    "title": "Isabella's Projects",
-    "subtitle": "From wellness coaching to luxury fashion — discover Isabella's journey as the world's first AI Model Ambassador.",
+    "title": "Interactive Projects. Real Business Results.",
+    "subtitle": "Discover how Ovela transforms websites into interactive business environments through AI team members, cinematic media and intelligent client engagement.",
     "items": {
       "luxDefTec": {
-        "name": "Lux Def Tec",
-        "description": "A showcase of elegance and innovation, where Isabella brings products to life through immersive presence. This project reflects Ovela's vision of blending AI with artistry."
+        "name": "LuxDefTec",
+        "subtitle": "Technology Communication & Product Presentation",
+        "description": "Complex products require clear communication. Ovela combines digital presenters, cinematic visuals and interactive experiences to help technology companies explain, demonstrate and engage."
       },
       "robocareAI": {
-        "name": "Digital Home Care Assistant",
-        "description": "Isabella communicates with elderly and people in need to provide care and emotional support in any language, using animation, entertainment, images and video to help with loneliness."
+        "name": "Digital Care Companion",
+        "subtitle": "Human Connection Through Technology",
+        "description": "Designed to support seniors and individuals requiring additional assistance through multilingual conversation, reminders, entertainment and emotional engagement."
       },
       "ambassador": {
-        "name": "Ambassador",
-        "description": "A campaign designed for impact. Isabella steps into the role of ambassador, translating brand values into relatable, memorable experiences."
+        "name": "Brand Ambassador Experiences",
+        "subtitle": "Digital Presence Beyond Advertising",
+        "description": "Interactive ambassadors combine presentation, communication and engagement to create memorable brand experiences that continue long after a traditional campaign ends."
       },
       "wellnessGeni": {
-        "name": "WellnessGeni — Where Isabella Began",
-        "description": "Isabella as a master communicator — she can be set as a personal companion, trainer, assistant or your friend. She remembers, encourages and speaks any language with chosen behavior."
+        "name": "WellnessGeni",
+        "subtitle": "The Foundation of Interactive Communication",
+        "description": "The project that introduced Isabella as a multilingual digital companion capable of conversation, education, guidance and personalized interaction across multiple roles and industries."
       }
     },
-    "upcomingTitle": "Upcoming Collaborations",
-    "upcomingSubtitle": "Isabella's journey continues — from couture shoots to lifestyle campaigns, new chapters are on the horizon.",
+    "upcomingTitle": "Future Projects",
+    "upcomingSubtitle": "Ovela continues to expand its portfolio across healthcare, technology, real estate, lifestyle and premium service industries.",
     "upcoming": {
-      "lingerie": "Lingerie Shoot 2026",
-      "calendar": "Luxury Calendar 2026",
-      "runway": "High Fashion Runway Demo"
+      "lingerie": "Interactive Hospitality Concierge",
+      "calendar": "Executive Wellness Programs",
+      "runway": "Luxury Property Experiences",
+      "industry": "Industry-Specific AI Team Members"
     },
-    "ctaButton": "Partner with Isabella →"
+    "ctaButton": "Build Your Interactive Team →",
+    "ctaSubtext": "Whether you need a digital receptionist, property presenter, product specialist or client concierge, Ovela designs AI team members aligned with your business and audience.",
+    "featured": {
+      "label": "Live Implementation",
+      "name": "WellneSpirit Institute",
+      "subtitle": "Interactive Patient Experience",
+      "description": "A fully interactive healthcare environment where visitors can explore treatments, receive guidance, ask questions and connect with the clinic through a digital team member trained specifically for patient communication."
+    },
+    "moreTitle": "More Projects"
   },
   "footer": {
     "copyright": "© Ovela Interactive 2025",

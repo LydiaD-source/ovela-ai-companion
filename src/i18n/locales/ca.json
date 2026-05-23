@@ -346,34 +346,47 @@
     "chatSubtext": "Connecta amb Isabella a la pàgina principal"
   },
   "projects": {
-    "title": "Projectes d'Isabella",
-    "subtitle": "Des del coaching de benestar fins a la moda de luxe — descobreix el viatge d'Isabella com la primera model ambaixadora d'IA del món.",
+    "title": "Interactive Projects. Real Business Results.",
+    "subtitle": "Discover how Ovela transforms websites into interactive business environments through AI team members, cinematic media and intelligent client engagement.",
     "items": {
       "luxDefTec": {
-        "name": "Lux Def Tec",
-        "description": "Una mostra d'elegància i innovació, on Isabella dona vida als productes amb una presència immersiva."
+        "name": "LuxDefTec",
+        "subtitle": "Technology Communication & Product Presentation",
+        "description": "Complex products require clear communication. Ovela combines digital presenters, cinematic visuals and interactive experiences to help technology companies explain, demonstrate and engage."
       },
       "robocareAI": {
-        "name": "Assistent digital de cura domiciliària",
-        "description": "Isabella es comunica amb persones grans i necessitades per oferir atenció i suport emocional en qualsevol idioma."
+        "name": "Digital Care Companion",
+        "subtitle": "Human Connection Through Technology",
+        "description": "Designed to support seniors and individuals requiring additional assistance through multilingual conversation, reminders, entertainment and emotional engagement."
       },
       "ambassador": {
-        "name": "Ambaixadora",
-        "description": "Una campanya dissenyada per a l'impacte. Isabella tradueix els valors de marca en experiències memorables."
+        "name": "Brand Ambassador Experiences",
+        "subtitle": "Digital Presence Beyond Advertising",
+        "description": "Interactive ambassadors combine presentation, communication and engagement to create memorable brand experiences that continue long after a traditional campaign ends."
       },
       "wellnessGeni": {
-        "name": "WellnessGeni — On va començar Isabella",
-        "description": "Isabella com a comunicadora mestra — pot ser configurada com a companya personal, entrenadora, assistent o amiga."
+        "name": "WellnessGeni",
+        "subtitle": "The Foundation of Interactive Communication",
+        "description": "The project that introduced Isabella as a multilingual digital companion capable of conversation, education, guidance and personalized interaction across multiple roles and industries."
       }
     },
-    "upcomingTitle": "Properes col·laboracions",
-    "upcomingSubtitle": "El viatge d'Isabella continua — des de sessions de costura fins a campanyes d'estil de vida.",
+    "upcomingTitle": "Future Projects",
+    "upcomingSubtitle": "Ovela continues to expand its portfolio across healthcare, technology, real estate, lifestyle and premium service industries.",
     "upcoming": {
-      "lingerie": "Sessió de llenceria 2026",
-      "calendar": "Calendari de luxe 2026",
-      "runway": "Demo de passarel·la d'alta moda"
+      "lingerie": "Interactive Hospitality Concierge",
+      "calendar": "Executive Wellness Programs",
+      "runway": "Luxury Property Experiences",
+      "industry": "Industry-Specific AI Team Members"
     },
-    "ctaButton": "Col·labora amb Isabella →"
+    "ctaButton": "Build Your Interactive Team →",
+    "ctaSubtext": "Whether you need a digital receptionist, property presenter, product specialist or client concierge, Ovela designs AI team members aligned with your business and audience.",
+    "featured": {
+      "label": "Live Implementation",
+      "name": "WellneSpirit Institute",
+      "subtitle": "Interactive Patient Experience",
+      "description": "A fully interactive healthcare environment where visitors can explore treatments, receive guidance, ask questions and connect with the clinic through a digital team member trained specifically for patient communication."
+    },
+    "moreTitle": "More Projects"
   },
   "footer": {
     "copyright": "© Ovela Interactive 2025",

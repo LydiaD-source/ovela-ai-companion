@@ -248,34 +248,47 @@
     "chatSubtext": "Verbinden Sie sich mit Isabella auf der Startseite"
   },
   "projects": {
-    "title": "Isabellas Projekte",
-    "subtitle": "Von Wellness-Coaching bis Luxusmode — entdecken Sie Isabellas Reise als weltweit erste KI-Model-Botschafterin.",
+    "title": "Interactive Projects. Real Business Results.",
+    "subtitle": "Discover how Ovela transforms websites into interactive business environments through AI team members, cinematic media and intelligent client engagement.",
     "items": {
       "luxDefTec": {
-        "name": "Lux Def Tec",
-        "description": "Eine Präsentation von Eleganz und Innovation, bei der Isabella Produkte durch immersive Präsenz zum Leben erweckt. Dieses Projekt spiegelt Ovelas Vision wider, KI mit Kunstfertigkeit zu verbinden."
+        "name": "LuxDefTec",
+        "subtitle": "Technology Communication & Product Presentation",
+        "description": "Complex products require clear communication. Ovela combines digital presenters, cinematic visuals and interactive experiences to help technology companies explain, demonstrate and engage."
       },
       "robocareAI": {
-        "name": "Robocare AI",
-        "description": "Fürsorge und Verständnis für diejenigen, die 24/7 Gesellschaft brauchen"
+        "name": "Digital Care Companion",
+        "subtitle": "Human Connection Through Technology",
+        "description": "Designed to support seniors and individuals requiring additional assistance through multilingual conversation, reminders, entertainment and emotional engagement."
       },
       "ambassador": {
-        "name": "Botschafter",
-        "description": "Eine Kampagne für Wirkung konzipiert. Isabella übernimmt die Rolle der Botschafterin und übersetzt Markenwerte in einprägsame, nachvollziehbare Erlebnisse."
+        "name": "Brand Ambassador Experiences",
+        "subtitle": "Digital Presence Beyond Advertising",
+        "description": "Interactive ambassadors combine presentation, communication and engagement to create memorable brand experiences that continue long after a traditional campaign ends."
       },
       "wellnessGeni": {
-        "name": "WellnessGeni — Wo Isabella Begann",
-        "description": "Vor Ovela gab es WellnessGeni — eine interaktive App, in der Isabella erstmals als Wellness-Coach, Motivatorin und Begleiterin erschien. Sie inspirierte Menschen zu trainieren, positiv zu bleiben und sich im Alltag unterstützt zu fühlen. Dies war das Projekt, das ihr wahres Potenzial offenbarte — der Moment, als ein KI-Model erstmals zur vertrauenswürdigen Botschafterin wurde."
+        "name": "WellnessGeni",
+        "subtitle": "The Foundation of Interactive Communication",
+        "description": "The project that introduced Isabella as a multilingual digital companion capable of conversation, education, guidance and personalized interaction across multiple roles and industries."
       }
     },
-    "upcomingTitle": "Kommende Kooperationen",
-    "upcomingSubtitle": "Isabellas Reise geht weiter — von Couture-Shootings bis Lifestyle-Kampagnen, neue Kapitel stehen bevor.",
+    "upcomingTitle": "Future Projects",
+    "upcomingSubtitle": "Ovela continues to expand its portfolio across healthcare, technology, real estate, lifestyle and premium service industries.",
     "upcoming": {
-      "lingerie": "Dessous-Shooting 2025",
-      "calendar": "Luxus-Kalender 2025",
-      "runway": "High-Fashion-Laufsteg-Demo"
+      "lingerie": "Interactive Hospitality Concierge",
+      "calendar": "Executive Wellness Programs",
+      "runway": "Luxury Property Experiences",
+      "industry": "Industry-Specific AI Team Members"
     },
-    "ctaButton": "Mit Isabella Zusammenarbeiten →"
+    "ctaButton": "Build Your Interactive Team →",
+    "ctaSubtext": "Whether you need a digital receptionist, property presenter, product specialist or client concierge, Ovela designs AI team members aligned with your business and audience.",
+    "featured": {
+      "label": "Live Implementation",
+      "name": "WellneSpirit Institute",
+      "subtitle": "Interactive Patient Experience",
+      "description": "A fully interactive healthcare environment where visitors can explore treatments, receive guidance, ask questions and connect with the clinic through a digital team member trained specifically for patient communication."
+    },
+    "moreTitle": "More Projects"
   },
   "footer": {
     "copyright": "© Ovela Interactive 2025",

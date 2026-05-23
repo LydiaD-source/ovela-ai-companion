@@ -229,8 +229,23 @@ const About = () => {
                   boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                 }}
               >
-                <div className="mb-4 w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
-                  <m.icon className="w-5 h-5" style={{ color: GOLD }} />
+                <div
+                  className="mb-5 w-full overflow-hidden rounded-xl flex items-center justify-center"
+                  style={{
+                    aspectRatio: '1 / 1',
+                    background: 'rgba(212,175,55,0.08)',
+                    border: '1px solid rgba(212,175,55,0.25)',
+                  }}
+                >
+                  {m.image ? (
+                    <img
+                      src={m.image}
+                      alt={`${m.name} - Ovela AI representative`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <m.icon className="w-10 h-10" style={{ color: GOLD, opacity: 0.6 }} />
+                  )}
                 </div>
                 <h3 className="font-playfair" style={{ fontSize: 24, color: GOLD, fontWeight: 600 }}>{m.name}</h3>
                 <p className="mt-2 mb-4 tracking-wide text-xs uppercase" style={{ fontFamily: 'Inter, sans-serif', color: 'rgba(255,255,255,0.7)', fontWeight: 500, letterSpacing: '0.15em' }}>

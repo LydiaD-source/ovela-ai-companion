@@ -20,18 +20,18 @@ const FeaturedProject = () => {
             className="mb-4 text-xs tracking-[0.2em] uppercase border-[hsl(var(--champagne-gold))] text-[hsl(var(--champagne-gold))] bg-[hsl(var(--champagne-gold)/0.1)]"
             variant="outline"
           >
-            Live Implementation
+            {t('projects.featured.label')}
           </Badge>
           <h2
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ fontFamily: 'Playfair Display, serif', color: 'hsl(var(--champagne-gold))' }}
           >
-            WellnesSpirit Institute
+            {t('projects.featured.name')}
           </h2>
           <p className="text-lg md:text-xl font-light max-w-3xl mx-auto leading-relaxed"
             style={{ color: 'hsl(var(--soft-white))' }}
           >
-            Interactive AI Host
+            {t('projects.featured.subtitle')}
           </p>
         </div>
 
@@ -76,9 +76,7 @@ const FeaturedProject = () => {
             className="text-base md:text-lg font-light leading-relaxed"
             style={{ color: 'hsl(var(--soft-white) / 0.85)' }}
           >
-            Isabella operates as a real-time digital concierge — guiding users, explaining treatments,
-            and converting visitors into booked clients. This project demonstrates how AI replaces
-            static websites with interactive experiences.
+            {t('projects.featured.description')}
           </p>
         </div>
 

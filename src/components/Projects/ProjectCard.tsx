@@ -5,6 +5,7 @@ import { ExternalLink, Volume2, VolumeX } from 'lucide-react';
 
 interface ProjectCardProps {
   title: string;
+  subtitle?: string;
   description: string;
   videoSrc: string;
   liveUrl?: string;
@@ -12,7 +13,7 @@ interface ProjectCardProps {
   comingSoon?: boolean;
 }
 
-const ProjectCard = ({ title, description, videoSrc, liveUrl, linkLabel = 'View Project', comingSoon = false }: ProjectCardProps) => {
+const ProjectCard = ({ title, subtitle, description, videoSrc, liveUrl, linkLabel = 'View Project', comingSoon = false }: ProjectCardProps) => {
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -60,6 +61,14 @@ const ProjectCard = ({ title, description, videoSrc, liveUrl, linkLabel = 'View 
         >
           {title}
         </h3>
+        {subtitle && (
+          <p
+            className="text-sm font-medium mb-2 tracking-wide"
+            style={{ color: 'hsl(var(--champagne-gold) / 0.85)' }}
+          >
+            {subtitle}
+          </p>
+        )}
         <p
           className="text-sm font-light leading-relaxed mb-5 min-h-[5rem]"
           style={{ color: 'hsl(var(--soft-white) / 0.8)' }}

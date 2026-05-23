@@ -11,14 +11,16 @@ const projects = [
   {
     id: 'luxDefTec',
     titleKey: 'projects.items.luxDefTec.name',
+    subtitleKey: 'projects.items.luxDefTec.subtitle',
     descriptionKey: 'projects.items.luxDefTec.description',
     videoSrc: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1760723126/202510171413_obwauh.mp4',
     liveUrl: 'https://luxdeftec.eu/',
-    linkLabel: 'Visit Lux Def Tec',
+    linkLabel: 'Visit LuxDefTec',
   },
   {
     id: 'wellnessGeni',
     titleKey: 'projects.items.wellnessGeni.name',
+    subtitleKey: 'projects.items.wellnessGeni.subtitle',
     descriptionKey: 'projects.items.wellnessGeni.description',
     videoSrc: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1760713364/202510171024_1_jxyq2j.mp4',
     liveUrl: 'https://www.wellnessgeni.com/',
@@ -27,14 +29,16 @@ const projects = [
   {
     id: 'ambassador',
     titleKey: 'projects.items.ambassador.name',
+    subtitleKey: 'projects.items.ambassador.subtitle',
     descriptionKey: 'projects.items.ambassador.description',
     videoSrc: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1765894467/superiorapartment.mp4',
     liveUrl: 'https://zonahabitable.com/ca/',
-    linkLabel: 'View Ambassador Project',
+    linkLabel: 'View Project',
   },
   {
     id: 'robocareAI',
     titleKey: 'projects.items.robocareAI.name',
+    subtitleKey: 'projects.items.robocareAI.subtitle',
     descriptionKey: 'projects.items.robocareAI.description',
     videoSrc: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1760816930/202510181728_fobqjd.mp4',
     comingSoon: true,
@@ -45,6 +49,7 @@ const upcomingItems = [
   { nameKey: 'projects.upcoming.lingerie' },
   { nameKey: 'projects.upcoming.calendar' },
   { nameKey: 'projects.upcoming.runway' },
+  { nameKey: 'projects.upcoming.industry' },
 ];
 
 const Projects = () => {
@@ -147,13 +152,14 @@ const Projects = () => {
             className="text-center text-2xl md:text-3xl font-bold mb-12"
             style={{ fontFamily: 'Playfair Display, serif', color: 'hsl(var(--champagne-gold))' }}
           >
-            More Projects
+            {t('projects.moreTitle')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
             {projects.map((p) => (
               <ProjectCard
                 key={p.id}
                 title={t(p.titleKey)}
+                subtitle={t(p.subtitleKey)}
                 description={t(p.descriptionKey)}
                 videoSrc={p.videoSrc}
                 liveUrl={p.liveUrl}
@@ -233,6 +239,12 @@ const Projects = () => {
                 {t('projects.ctaButton')}
               </button>
             </a>
+            <p
+              className="mt-6 max-w-2xl mx-auto text-sm md:text-base font-light leading-relaxed"
+              style={{ color: 'hsl(var(--soft-white) / 0.75)' }}
+            >
+              {t('projects.ctaSubtext')}
+            </p>
           </div>
         </div>
       </div>

@@ -76,9 +76,7 @@ const FeaturedProject = () => {
             className="text-base md:text-lg font-light leading-relaxed"
             style={{ color: 'hsl(var(--soft-white) / 0.85)' }}
           >
-            Isabella operates as a real-time digital concierge — guiding users, explaining treatments,
-            and converting visitors into booked clients. This project demonstrates how AI replaces
-            static websites with interactive experiences.
+            {t('projects.featured.description')}
           </p>
         </div>
 

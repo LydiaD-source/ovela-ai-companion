@@ -61,6 +61,14 @@ const ProjectCard = ({ title, subtitle, description, videoSrc, liveUrl, linkLabe
         >
           {title}
         </h3>
+        {subtitle && (
+          <p
+            className="text-sm font-medium mb-2 tracking-wide"
+            style={{ color: 'hsl(var(--champagne-gold) / 0.85)' }}
+          >
+            {subtitle}
+          </p>
+        )}
         <p
           className="text-sm font-light leading-relaxed mb-5 min-h-[5rem]"
           style={{ color: 'hsl(var(--soft-white) / 0.8)' }}

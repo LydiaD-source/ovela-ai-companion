@@ -19,24 +19,28 @@ const About = () => {
     {
       icon: Stethoscope,
       name: 'Isabella',
+      image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758802492/1_21_cqlyv4.jpg',
       focus: 'Healthcare • Hospitality • Client Guidance',
       desc: 'Helping visitors explore services, understand options and take action.',
     },
     {
       icon: Cpu,
       name: 'Dario',
+      image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/lucid-origin_artistic_portrait_photography_of_ultra_realistic_portrait_of_a_handsome_masculin-0_1_xelofp.jpg',
       focus: 'Technology • Innovation • Product Presentation',
       desc: 'Explaining complex products and communicating technical solutions with clarity.',
     },
     {
       icon: HomeIcon,
       name: 'Mirella',
+      image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1779109383/mirella_face_d8ix2l.png',
       focus: 'Property • Lifestyle • Premium Experiences',
       desc: 'Presenting properties and helping buyers engage before the first viewing.',
     },
     {
       icon: Sparkles,
       name: 'Future Team Members',
+      image: null as string | null,
       focus: 'Custom-Built For Any Industry',
       desc: 'Ovela representatives can be custom-created for any industry, role or brand.',
     },
@@ -225,8 +229,23 @@ const About = () => {
                   boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                 }}
               >
-                <div className="mb-4 w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
-                  <m.icon className="w-5 h-5" style={{ color: GOLD }} />
+                <div
+                  className="mb-5 w-full overflow-hidden rounded-xl flex items-center justify-center"
+                  style={{
+                    aspectRatio: '1 / 1',
+                    background: 'rgba(212,175,55,0.08)',
+                    border: '1px solid rgba(212,175,55,0.25)',
+                  }}
+                >
+                  {m.image ? (
+                    <img
+                      src={m.image}
+                      alt={`${m.name} - Ovela AI representative`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <m.icon className="w-10 h-10" style={{ color: GOLD, opacity: 0.6 }} />
+                  )}
                 </div>
                 <h3 className="font-playfair" style={{ fontSize: 24, color: GOLD, fontWeight: 600 }}>{m.name}</h3>
                 <p className="mt-2 mb-4 tracking-wide text-xs uppercase" style={{ fontFamily: 'Inter, sans-serif', color: 'rgba(255,255,255,0.7)', fontWeight: 500, letterSpacing: '0.15em' }}>

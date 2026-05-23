@@ -152,13 +152,14 @@ const Projects = () => {
             className="text-center text-2xl md:text-3xl font-bold mb-12"
             style={{ fontFamily: 'Playfair Display, serif', color: 'hsl(var(--champagne-gold))' }}
           >
-            More Projects
+            {t('projects.moreTitle')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
             {projects.map((p) => (
               <ProjectCard
                 key={p.id}
                 title={t(p.titleKey)}
+                subtitle={t(p.subtitleKey)}
                 description={t(p.descriptionKey)}
                 videoSrc={p.videoSrc}
                 liveUrl={p.liveUrl}

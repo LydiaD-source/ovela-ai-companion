@@ -25,8 +25,8 @@ export const ShowcaseSection = () => {
       layout: 'media-right'
     },
     {
-      mediaType: 'image',
-      src: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1759502793/Flux_Dev_Use_Character_Element_IsabellaV2Focus_upper_bodyCloth_0_xhxhvn.jpg',
+      mediaType: 'video',
+      src: 'https://res.cloudinary.com/di5gj4nyp/video/upload/v1779818677/VIDEO_CONCEPT_OVELA_qvhyct.mp4',
       titleKey: 'showcase.multiBrand.title',
       descriptionKey: 'showcase.multiBrand.description',
       bulletsKey: 'showcase.multiBrand.bullets',

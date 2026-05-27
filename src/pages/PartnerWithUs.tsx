@@ -66,19 +66,19 @@ const PartnerWithUs = () => {
             className="font-playfair text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
             style={{ color: '#D4AF37' }}
           >
-            Build Your Own Interactive<br className="hidden md:block" /> AI Team Member
+            Build Your Own AI Digital Employee
           </h1>
           <p
             className="text-lg sm:text-xl max-w-3xl mx-auto mb-6 leading-relaxed"
             style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}
           >
-            Transform websites, campaigns and customer interactions into real-time conversations powered by custom AI representatives trained for your business.
+            Transform websites, customer communication, and lead engagement into real-time business interaction powered by AI representatives trained specifically for your industry.
           </p>
           <p
             className="text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
             style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37', fontWeight: 400 }}
           >
-            Healthcare. Real Estate. Technology. Hospitality. Premium Services.<br />
+            Healthcare • Wellness • Real Estate • Technology • Hospitality • Premium Services<br />
             <span style={{ color: '#EDEDED' }}>Available 24/7. Multilingual. Always on.</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

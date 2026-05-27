@@ -4,6 +4,14 @@ import { ArrowLeft, MessageCircle, Calendar, Eye, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { getVideoBySlug, getRelatedVideos, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
+import { getCategorySEO, buildTopicsSentence } from '@/lib/videoSEOContent';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+
 
 function formatDuration(sec: number): string {
   if (!sec) return '';

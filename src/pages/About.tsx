@@ -215,7 +215,7 @@ const About = () => {
               Meet The Ovela Team
             </h2>
             <p className="text-lg" style={{ fontFamily: 'Inter, sans-serif', color: 'rgba(255,255,255,0.8)', fontWeight: 300 }}>
-              Every Ovela representative is trained for a specific environment, audience and customer journey.
+              Every Ovela AI representative is trained for a specific industry, customer journey, and business communication environment.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">

@@ -18,6 +18,8 @@ import Interactive from "./pages/Interactive";
 import Ecosystem from "./pages/Ecosystem";
 import VideoLibrary from "./pages/VideoLibrary";
 import VideoDetail from "./pages/VideoDetail";
+import VideoCategory from "./pages/VideoCategory";
+
 import Clinics from "./pages/industries/Clinics";
 import RealEstate from "./pages/industries/RealEstate";
 import Wellness from "./pages/industries/Wellness";

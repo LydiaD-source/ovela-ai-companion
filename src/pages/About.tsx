@@ -131,13 +131,13 @@ const About = () => {
                 From Content To Conversation
               </h2>
               <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                Traditional websites provide information. Ovela creates interaction.
+                Traditional websites display information. Ovela creates AI-powered business communication.
               </p>
               <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                We combine AI representatives, cinematic media, intelligent automation and business knowledge to build experiences that help visitors explore, understand and take action.
+                We combine AI representatives, cinematic media, intelligent automation, and industry-specific knowledge to help businesses engage visitors, answer questions, guide decisions, and improve customer interaction online.
               </p>
               <p className="text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                Our goal is simple: make every digital interaction feel more human, more useful and more memorable.
+                Our goal is simple: create digital experiences that feel more human, more useful, and more effective.
               </p>
             </div>
             <div className="flex justify-center lg:justify-end">

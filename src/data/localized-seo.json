@@ -1,0 +1,1727 @@
+{
+  "hubs": {
+    "ai-receptionist": {
+      "es": {
+        "seoTitle": "Recepción Inteligente 24/7: El Futuro de la Atención al Cliente | Ovela Interactive",
+        "seoDescription": "Optimice su clínica, inmobiliaria o negocio con recepcionistas IA multilingües. Atención inmediata 24/7 y gestión de citas sin esperas. ¡Pruébela ahora!",
+        "tagline": "Atención impecable en cada idioma, sin interrupciones y optimizando sus costes operativos.",
+        "heroIntro": "Transforme su recepción en una ventaja competitiva con un empleado digital capaz de gestionar llamadas y consultas en tiempo real. En mercados exigentes como la Costa del Sol o Madrid, no se puede permitir perder un lead por barreras lingüísticas o falta de personal. Nuestra IA saluda, resuelve dudas complejas y agenda citas directamente en su CRM, garantizando una experiencia cálida y profesional para cada cliente, a cualquier hora del día.",
+        "faqs": [
+          {
+            "question": "¿Cómo gestiona la IA a los clientes internacionales en zonas turísticas?",
+            "answer": "Nuestra recepción digital detecta instantáneamente el idioma del interlocutor, ya sea inglés, alemán, francés o ruso, entre otros. Esto es vital para negocios en Barcelona o Marbella, asegurando que cada cliente internacional reciba una atención nativa y fluida sin necesidad de contratar traductores."
+          },
+          {
+            "question": "¿Se puede integrar con plataformas como Doctoralia o mi CRM inmobiliario?",
+            "answer": "Sí, nuestras soluciones se conectan mediante API con los motores de reserva y CRM más comunes del mercado español. Los datos de los pacientes o potenciales compradores se vuelcan automáticamente en su sistema, eliminando tareas administrativas manuales."
+          },
+          {
+            "question": "¿Es capaz de entender el lenguaje natural o funciona con menús numéricos?",
+            "answer": "A diferencia de las centralitas tradicionales desesperantes de 'pulse 1', nuestra IA utiliza procesamiento de lenguaje natural. El cliente habla con total libertad y la IA comprende la intención, respondiendo de forma humana y resolutiva."
+          },
+          {
+            "question": "¿Cuál es el ahorro real frente a una recepción física por turnos?",
+            "answer": "Una recepción 24/7 con personal humano requiere al menos tres turnos y costes sociales elevados. Nuestra IA ofrece la misma disponibilidad por una fracción del coste, permitiendo que su equipo físico se centre en tareas de alto valor y trato presencial."
+          },
+          {
+            "question": "¿Cómo ayuda a reducir el abandono de llamadas en horas punta?",
+            "answer": "La IA tiene capacidad de gestión multicanal simultánea, lo que significa que no hay tiempos de espera ni líneas ocupadas. Cada consulta se atiende al primer tono, evitando que el cliente se vaya a la competencia por falta de respuesta inmediata."
+          },
+          {
+            "question": "¿Cumple con la normativa RGPD para clínicas y despachos en España?",
+            "answer": "Absolutamente. La privacidad es nuestra prioridad y todos los flujos de datos están diseñados para cumplir estrictamente con el Reglamento General de Protección de Datos (RGPD), garantizando que la información sensible de sus pacientes o clientes esté cifrada y segura."
+          },
+          {
+            "question": "¿Puede gestionar incidencias complejas o solo da información básica?",
+            "answer": "Nuestros empleados digitales están entrenados con el conocimiento específico de su negocio. Pueden explicar servicios detallados, resolver dudas sobre procesos de compra o protocolos médicos, y escalar la consulta a un humano solo cuando es estrictamente necesario."
+          },
+          {
+            "question": "¿Cuánto tiempo tarda la implantación en mi empresa?",
+            "answer": "El despliegue es ágil y suele completarse en pocos días. Configuramos la personalidad de su marca, cargamos su base de conocimientos y conectamos las herramientas necesarias para que su recepción inteligente empiece a producir resultados desde el primer minuto."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Réceptionniste IA 24/7 : Votre Accueil Digital | Ovela Interactive",
+        "seoDescription": "Optimisez votre accueil client avec une IA multilingue disponible 24/7. Sécurisée, conforme RGPD et experte en prise de rendez-vous. Boostez votre ROI dès maintenant.",
+        "tagline": "Une excellence opérationnelle sans interruption : l'accueil client réinventé par l'IA haute performance.",
+        "heroIntro": "Transformez votre premier point de contact en un levier de croissance stratégique. Nos réceptionnistes IA agissent comme de véritables collaborateurs digitaux, capables de gérer vos appels et réservations en temps réel, dans une dizaine de langues, avec une courtoisie constante. Intégrée nativement à vos outils métiers et strictement conforme aux normes européennes de protection des données, notre solution élimine les temps d'attente pour offrir à vos clients une expérience premium et personnalisée.",
+        "faqs": [
+          {
+            "question": "L'IA est-elle réellement capable de comprendre les nuances du français ?",
+            "answer": "Oui, nos modèles sont optimisés pour les spécificités linguistiques françaises, incluant le vouvoiement et le registre formel propre aux secteurs du luxe et du médical. Contrairement aux chatbots classiques, l'IA saisit l'intention réelle du client pour fournir une réponse fluide et contextuelle."
+          },
+          {
+            "question": "Comment gérez-vous la confidentialité des données et la conformité RGPD ?",
+            "answer": "La sécurité est notre priorité absolue. Toutes nos solutions sont conçues 'Privacy by Design' avec un hébergement sécurisé des données, garantissant une conformité totale au RGPD pour protéger les informations sensibles de vos clients et votre secret professionnel."
+          },
+          {
+            "question": "Une réceptionniste IA peut-elle s'intégrer à mon calendrier Doctolib ou mon CRM ?",
+            "answer": "Absolument. Nos agents digitaux se connectent via API à vos outils quotidiens comme Doctolib, HubSpot, Salesforce ou Google Calendar. L'IA vérifie vos disponibilités en temps réel, confirme le rendez-vous et met à jour votre base de données instantanément."
+          },
+          {
+            "question": "Quel est le coût comparatif entre une IA et un recrutement en intérim ou interne ?",
+            "answer": "L'implémentation d'une réceptionniste IA réduit vos coûts opérationnels de l'accueil de près de 70 %. Elle élimine les charges sociales et les frais de gestion humaine, tout en offrant une disponibilité 24/7, y compris les jours fériés et durant les congés annuels."
+          },
+          {
+            "question": "Comment l'IA réagit-elle face à une demande complexe qu'elle ne maîtrise pas ?",
+            "answer": "L'IA est programmée pour reconnaître ses limites. En cas de demande complexe ou de situation critique, elle effectue un transfert d'appel automatique vers le collaborateur compétent ou crée un ticket d'urgence prioritaire, assurant une continuité de service sans frustration."
+          },
+          {
+            "question": "Est-il possible de personnaliser la 'voix' et la personnalité de l'agent ?",
+            "answer": "Nous définissons ensemble le 'Tone of Voice' de votre entreprise. Que vous souhaitiez une personnalité chaleureuse pour un institut de bien-être ou un ton extrêmement factuel pour un cabinet d'avocats, l'IA adopte la posture de votre marque."
+          },
+          {
+            "question": "L'accueil est-il disponible uniquement sur site web ou aussi par téléphone ?",
+            "answer": "Nos solutions sont omnicanales. Votre réceptionniste IA peut être déployée simultanément sur votre interface web, vos réseaux sociaux et via un numéro de téléphone dédié pour gérer les flux d'appels entrants de manière centralisée."
+          },
+          {
+            "question": "Quel est le délai de déploiement pour une solution opérationnelle ?",
+            "answer": "Après l'analyse de votre base de connaissances et de vos procédures, une première version peut être déployée en moins de deux semaines. Nous procédons ensuite à une phase d'ajustement pour affiner les interactions selon les retours de vos utilisateurs."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Receptionist: 24/7 Digitale Zentrale | Ovela Interactive",
+        "seoDescription": "Automatisieren Sie Ihren Empfang mit KI. 24/7 Erreichbarkeit, DSGVO-konform und nahtlose CRM-Integration. Jetzt Effizienz steigern und Kosten senken.",
+        "tagline": "Maximale Erreichbarkeit ohne Personalengpässe: Ihr KI-Empfang arbeitet rund um die Uhr produktiv.",
+        "heroIntro": "Ein KI-Receptionist der nächsten Generation agiert als vollwertiger digitaler Mitarbeiter, der Anfragen in Echtzeit qualifiziert, Termine direkt in Ihren Kalender bucht und komplexe Kundenfragen präzise beantwortet. Statt starrer Menüführungen bietet Ovela Interactive eine intelligente Lösung, die sich nahtlos in Ihre bestehende IT-Infrastruktur einfügt. Senken Sie Ihre Betriebskosten signifikant und eliminieren Sie Wartezeiten für Ihre Kunden – in jeder Sprache, zu jeder Tageszeit.",
+        "faqs": [
+          {
+            "question": "Entspricht der KI-Receptionist den deutschen DSGVO-Standards?",
+            "answer": "Ja, der Schutz personenbezogener Daten hat höchste Priorität. Unsere Systeme sind so konzipiert, dass sie datenschutzkonform agieren, wobei Hosting und Datenverarbeitung strikten Sicherheitsrichtlinien unterliegen, um den Anforderungen des deutschen Marktes gerecht zu werden."
+          },
+          {
+            "question": "Wie komplex ist die Integration in bestehende CRM- und Kalendersysteme?",
+            "answer": "Die Implementierung erfolgt über standardisierte Schnittstellen (APIs) zu gängigen Tools wie Salesforce, Hubspot oder Microsoft Outlook. Unser Expertenteam übernimmt die technische Konfiguration, sodass die KI-Lösung innerhalb kürzester Zeit ohne Systembruch einsatzbereit ist."
+          },
+          {
+            "question": "Kann die KI komplexe Fachfragen zu meinen Dienstleistungen beantworten?",
+            "answer": "Absolut. Durch das Training mit Ihren spezifischen Unternehmensdaten und Dokumentationen erlangt die KI tiefgehendes Fachwissen. Sie agiert nicht nach starren Skripten, sondern nutzt kontextuelles Verständnis, um präzise und markengerechte Auskünfte zu geben."
+          },
+          {
+            "question": "Wie hoch ist das tatsächliche Einsparpotenzial gegenüber herkömmlichem Personal?",
+            "answer": "Ein KI-Receptionist verursacht lediglich einen Bruchteil der Kosten einer Vollzeitstelle, da Lohnnebenkosten, Urlaubsansprüche und Krankheitszeiten entfallen. In der Regel amortisiert sich die Investition bereits nach wenigen Monaten durch die gesteigerte Effizienz und die Vermeidung entgangener Leads."
+          },
+          {
+            "question": "Wie geht das System mit Anfragen um, die menschliches Eingreifen erfordern?",
+            "answer": "Für komplexe Sonderfälle gibt es definierte Eskalationspfade. Die KI erkennt die Notwendigkeit einer menschlichen Übergabe und leitet das Gespräch inklusive der bisherigen Gesprächshistorie nahtlos an den zuständigen Mitarbeiter weiter."
+          },
+          {
+            "question": "Unterstützt die KI auch regionale Dialekte oder spezifische Fachterminologie?",
+            "answer": "Unsere KI-Modelle sind auf natürliche Sprachverarbeitung (NLP) optimiert und verstehen verschiedene Nuancen der deutschen Sprache sowie spezifische Branchenbegriffe. Dies gewährleistet eine professionelle Kommunikation auf Augenhöhe mit Ihren Kunden."
+          },
+          {
+            "question": "Ist der KI-Empfang auch außerhalb der Geschäftszeiten aktiv?",
+            "answer": "Ja, das System bietet eine echte 24/7-Verfügbarkeit ohne Leistungsabfall. Anfragen am späten Abend oder an Wochenenden werden sofort bearbeitet, was die Conversion-Rate im Vergleich zu klassischen Anrufbeantwortern drastisch erhöht."
+          },
+          {
+            "question": "Wie transparent ist das Reporting zur Leistung des KI-Mitarbeiters?",
+            "answer": "Sie erhalten Zugriff auf detaillierte Dashboards, die Kennzahlen wie Anrufvolumen, Fallabschlussquoten und Kundenzufriedenheit in Echtzeit abbilden. Diese Daten liefern wertvolle Insights für die weitere Prozessoptimierung Ihres Unternehmens."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Recepcionista IA: Atendimento 24h Multilíngue | Ovela Interactive",
+        "seoDescription": "Transforme seu atendimento com uma recepcionista IA inteligente. Disponível 24/7 em qualquer idioma para agendamentos e leads. Modernize seu negócio hoje.",
+        "tagline": "Sempre online. Em qualquer idioma. Uma fração do custo de uma equipe presencial.",
+        "heroIntro": "A recepcionista IA é um funcionário digital em tempo real que acolhe cada visitante, esclarece dúvidas, agenda reuniões e qualifica leads para sua equipe — sem interrupções. Atuando diretamente no seu site ou sistema de reservas e disponível em dezenas de idiomas, ela elimina gargalos de atendimento sem a necessidade de menus complexos ou scripts rígidos. Proporcione uma experiência premium e personalizada enquanto sua equipe foca no que realmente importa.",
+        "faqs": [
+          {
+            "question": "A IA consegue falar português de Portugal e do Brasil corretamente?",
+            "answer": "Sim, nossos funcionários digitais são treinados para identificar nuances regionais e sotaques, adaptando o vocabulário para garantir uma comunicação natural tanto para clientes em Lisboa quanto em São Paulo. A experiência é fluida e evita termos genéricos que soam artificiais."
+          },
+          {
+            "question": "Como a recepcionista IA lida com agendamentos em clínicas e imobiliárias?",
+            "answer": "A IA integra-se diretamente com o seu calendário (Google, Outlook ou sistemas específicos) para verificar disponibilidade em tempo real. Ela confirma o horário, coleta os dados necessários do cliente e envia o lembrete automaticamente, eliminando o trabalho manual da sua recepção."
+          },
+          {
+            "question": "É muito caro implementar uma recepcionista digital no meu negócio?",
+            "answer": "Pelo contrário, o custo é significativamente menor que manter uma equipe de recepção em turnos de 24 horas. Você paga uma assinatura competitiva que cobre o atendimento ininterrupto, permitindo escalar sua operação sem aumentar o passivo trabalhista ou custos fixos de estrutura."
+          },
+          {
+            "question": "Ela substitui totalmente o atendimento humano?",
+            "answer": "A IA atua como a primeira linha de frente, filtrando dúvidas comuns e agendamentos. Quando surge uma questão complexa ou um lead de alto valor, ela faz o transbordo inteligente para sua equipe humana, garantindo que o seu tempo seja gasto apenas com oportunidades qualificadas."
+          },
+          {
+            "question": "Meus clientes estrangeiros (turistas ou investidores) serão atendidos em quais línguas?",
+            "answer": "Nossa IA é nativa em mais de 50 idiomas, incluindo inglês, francês, espanhol e alemão. Isso é ideal para o setor hoteleiro no Algarve ou o mercado imobiliário de luxo em São Paulo, onde o atendimento imediato no idioma do cliente é o diferencial para fechar negócio."
+          },
+          {
+            "question": "A instalação exige conhecimentos técnicos avançados em TI?",
+            "answer": "Não, o processo de implementação é simplificado e nossa equipe cuida de toda a configuração inicial. A recepcionista IA funciona via código simples no seu site ou integrada via API nas ferramentas que você já utiliza diariamente, sem necessidade de servidores próprios."
+          },
+          {
+            "question": "Como a IA aprende sobre os serviços específicos da minha empresa?",
+            "answer": "Nós alimentamos o cérebro da sua IA com os seus manuais, tabelas de preços e histórico de dúvidas frequentes. Diferente de um chatbot comum, ela utiliza processamento de linguagem natural para entender o contexto e responder com precisão baseada estritamente nas suas informações."
+          },
+          {
+            "question": "A recepcionista IA pode ajudar na conversão de leads vindos do tráfego pago?",
+            "answer": "Com certeza. Ao capturar o interesse do visitante no momento exato em que ele clica no seu anúncio — mesmo de madrugada — a IA impede que o lead esfrie ou procure a concorrência, aumentando drasticamente a taxa de conversão do seu investimento em marketing."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Recepcionista IA: Atenció al Client 24/7 en Català | Ovela Interactive",
+        "seoDescription": "Digitalitza la teva recepció amb IA nativa. Atén cites i consultes en qualsevol idioma les 24h. Optimitza el teu negoci a Catalunya ara amb Ovela.",
+        "tagline": "Sempre actiu. En qualsevol idioma. La teva recepció intel·ligent a una fracció del cost.",
+        "heroIntro": "L'empleat digital d'Ovela és molt més que un xat: és una solució avançada que rep cada visitant, gestiona reserves i filtra oportunitats de negoci les 24 hores del dia. Dissenyat per integrar-se perfectament en clíniques, despatxos i empreses del teixit català, el nostre recepcionista parla l'idioma dels teus clients amb naturalitat, sense menús complexos ni esperes, directament des del teu web o plataforma de reserves.",
+        "faqs": [
+          {
+            "question": "Entén i parla correctament el català la vostra IA?",
+            "answer": "I tant que sí. No fem servir traduccions automàtiques genèriques; la nostra IA està entrenada per mantenir converses fluides, naturals i gramaticalment correctes en català, respectant la variant lingüística i el to professional que el teu negoci requereix."
+          },
+          {
+            "question": "Podeu integrar la IA amb el nostre programari de reserves actual?",
+            "answer": "La nostra tecnologia és totalment compatible amb les eines de gestió més habituals del mercat català, com agendes mèdiques, CRM Immobiliaris o calendaris tipus Calendly. La IA llegeix la teva disponibilitat en temps real i confirma la cita sense intervenció humana."
+          },
+          {
+            "question": "És realment més econòmic que tenir una recepció física 24/7?",
+            "answer": "La reducció de costos és dràstica, ja que elimines les despeses estructurals de torns nocturns o de caps de setmana. Un recepcionista digital d'Ovela treballa sense interrupció per una quota fixa, evitant que perdis cap client potencial quan el teu equip està fora de l'oficina."
+          },
+          {
+            "question": "Com gestiona la IA les consultes més complexes dels clients?",
+            "answer": "El sistema està programat per resoldre les preguntes freqüents i tràmits rutinaris d'immediat. En cas de detectar una situació que requereixi un tracte humà especialitzat, la IA deriva la conversa directament a la persona responsable del teu equip amb un resum de la consulta."
+          },
+          {
+            "question": "És difícil de configurar per a un despatx o clínica a Barcelona?",
+            "answer": "Per a res. A Ovela ens encarreguem de tota la implementació tècnica; només necessitem conèixer el funcionament del teu negoci. En pocs dies, tindràs el sistema actiu al teu web sense necessitat de coneixements de programació per part teva."
+          },
+          {
+            "question": "Pot atendre turistes o clients internacionals en altres idiomes?",
+            "answer": "És ideal per a negocis a zones turístiques o hubs globals. La recepció IA detecta automàticament l'idioma del client —sigui anglès, francès, alemany o castellà— i canvia la comunicació a l'instant per oferir una experiència de client internacional immillorable."
+          },
+          {
+            "question": "Què passa amb la protecció de dades (RGPD) a Catalunya?",
+            "answer": "Complim rigorosament amb tota la normativa europea de protecció de dades. Totes les interaccions i les dades dels teus clients s'emmagatzemen de forma segura i xifrada, garantint la privacitat total exigida per la llei vigent a la UE."
+          },
+          {
+            "question": "La IA pot filtrar les trucades o contactes comercials no desitjats?",
+            "answer": "Sí, el sistema actua com una primera barrera intel·ligent. Identifica si el contacte és un client real amb una necessitat específica o si es tracta de correu brossa, assegurant que el teu equip només rebi leads qualificats i consultes de valor."
+          }
+        ]
+      }
+    },
+    "executive-burnout-recovery": {
+      "es": {
+        "seoTitle": "Burnout Ejecutivo: Fases, Estrés y Recuperación con IA | Ovela Interactive",
+        "seoDescription": "Guía para la recuperación del burnout ejecutivo. Descubra cómo la IA y programas de bienestar optimizan la salud mental de líderes empresariales en España.",
+        "tagline": "Fases del estrés, sistemas de recuperación y la tecnología que protege al activo más valioso: usted.",
+        "heroIntro": "El agotamiento ejecutivo no es repentino; es un desgaste progresivo que la mayoría de los líderes eluden hasta que el cuerpo dice basta. En plazas críticas como Marbella, Barcelona o Madrid, la resiliencia no puede ser azarosa. Este hub detalla la transición del estrés crónico a la recuperación estructurada del programa WellneSpirit, potenciada por los embajadores IA de Ovela Interactive, diseñados para acompañar al paciente internacional en su propio idioma.",
+        "faqs": [
+          {
+            "question": "¿Cuáles son las fases críticas del burnout en directivos españoles?",
+            "answer": "El burnout evoluciona desde la fase de alarma y competitividad excesiva hasta la resistencia y, finalmente, el agotamiento clínico. En el mercado español, muchos ejecutivos ignoran las señales de alerta pensando que es solo 'estrés del sector', pero reconocer estas fases a tiempo es vital para evitar una baja prolongada."
+          },
+          {
+            "question": "¿Cómo ayuda un embajador de IA en el bienestar de clínicas en la Costa del Sol?",
+            "answer": "Nuestros embajadores digitales educan al paciente sobre su tratamiento y gestionan consultas fuera de horario, facilitando una experiencia de lujo y sin fricciones. Esto reduce la carga operativa del personal clínico y garantiza que el cliente internacional reciba atención multilingüe inmediata en entornos como Marbella."
+          },
+          {
+            "question": "¿Por qué el sector inmobiliario de lujo en Madrid sufre tanto estrés?",
+            "answer": "Las transacciones de alto nivel implican una presión constante y disponibilidad 24/7, lo que conduce al agotamiento físico y mental. Implementar sistemas de IA que gestionen las primeras etapas de venta permite a los agentes enfocarse en el cierre, preservando su bienestar y longevidad profesional."
+          },
+          {
+            "question": "¿Qué diferencia a WellneSpirit de otros programas de recuperación?",
+            "answer": "A diferencia de retiros genéricos, WellneSpirit utiliza un enfoque basado en datos y ciencia aplicado al alto rendimiento. Se apoya en la tecnología de Ovela Interactive para ofrecer un seguimiento constante y contenido educativo personalizado que mantiene al ejecutivo comprometido con su salud."
+          },
+          {
+            "question": "¿Es posible recuperar la productividad tras un cuadro de agotamiento severo?",
+            "answer": "Sí, siempre que se aplique una recuperación estructurada que no se limite al descanso, sino que incluya un rediseño del entorno de trabajo. La longevidad es la consecuencia directa de una recuperación bien gestionada, donde la IA asume tareas repetitivas para evitar recaídas."
+          },
+          {
+            "question": "¿Cómo se gestiona el soporte multilingüe en clínicas de bienestar en Barcelona?",
+            "answer": "Barcelona es un hub de turismo médico donde se hablan múltiples lenguas, incluido el catalán, el inglés y el francés. Los empleados digitales de Ovela Interactive se adaptan culturalmente a cada paciente, respondiendo en su lengua nativa con la calidez y profesionalidad que el sector salud requiere."
+          },
+          {
+            "question": "¿Qué señales físicas de burnout suelen ignorar los líderes?",
+            "answer": "El insomnio crónico, la falta de empatía repentina y la fatiga que no desaparece con el fin de semana son las señales que más se omiten. En nuestra cultura empresarial, estas señales suelen ocultarse bajo una fachada de hiperactividad que solo acelera el proceso de colapso."
+          },
+          {
+            "question": "¿Por qué la IA es clave para la salud mental en las empresas de servicios?",
+            "answer": "La tecnología de IA permite delegar la comunicación reactiva, devolviendo a los ejecutivos el control sobre su tiempo y su energía. Al automatizar la atención al cliente con una voz de marca humana y personalizada, se elimina un factor de estrés constante para los equipos directivos."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Burnout des dirigeants : prévention et récupération | Ovela Interactive",
+        "seoDescription": "Maîtrisez les phases du stress exécutif et découvrez notre programme de récupération haute performance. Optimisez votre longévité avec nos solutions IA.",
+        "tagline": "Décoder le stress, structurer la récupération : l'exigence de la performance durable pour dirigeants.",
+        "heroIntro": "Le burnout n'est pas une fatalité foudroyante, mais l'aboutissement d'un processus insidieux structuré en trois phases : alarme, résistance et épuisement. Trop souvent, l'élite managériale ignore ces signaux physiologiques jusqu'à la rupture. Ce hub décrypte les neurosciences du stress et présente la méthode de récupération WellneSpirit, magnifiée par l'accompagnement personnalisé de nos ambassadeurs IA conçus pour garantir une confidentialité absolue et un suivi de haut niveau.",
+        "faqs": [
+          {
+            "question": "Quels sont les premiers signes de l'épuisement professionnel chez un cadre dirigeant ?",
+            "question_fr": "Quels sont les premiers signes de l'épuisement professionnel chez un cadre dirigeant ?",
+            "answer": "Les signaux précurseurs incluent une irritabilité inhabituelle lors des comités de direction, une fatigue cognitive malgré le repos et un cynisme croissant envers les objectifs de l'entreprise. En France, la culture du 'présentéisme' masque souvent ces symptômes sous l'étiquette de l'engagement total, rendant la détection précoce cruciale avant la phase de rupture."
+          },
+          {
+            "question": "Quelles sont les trois phases cliniques du stress exécutif ?",
+            "answer": "Le processus débute par la réaction d'alarme (poussée d'adrénaline constante), suivie de la phase de résistance où le corps puise dans ses réserves de cortisol. La phase finale est l'épuisement total, où le système nerveux ne parvient plus à se réguler, nécessitant une intervention médicale et structurelle immédiate."
+          },
+          {
+            "question": "Comment concilier accompagnement par IA et confidentialité des données (RGPD) ?",
+            "answer": "Chez Ovela Interactive, la protection des données de santé et de vie privée est notre priorité absolue. Nos ambassadeurs IA fonctionnent sur des protocoles sécurisés conformes au RGPD, garantissant que les échanges sur votre état de fatigue ou vos performances restent strictement confidentiels et inaccessibles à des tiers."
+          },
+          {
+            "question": "Pourquoi la récupération structurée est-elle supérieure au simple repos ?",
+            "answer": "Prendre des vacances ne suffit pas à inverser un stress chronique profond. Une récupération structurée intègre des protocoles de neurosciences, de gestion de la charge mentale et de rééquilibrage hormonal, transformant le temps d'arrêt en une véritable stratégie de performance à long terme."
+          },
+          {
+            "question": "Quel est le rôle d'un ambassadeur IA dans le programme WellneSpirit ?",
+            "answer": "L'ambassadeur IA agit comme un partenaire de vigilance disponible 24/7, capable d'identifier les dérives comportementales ou les baisses de réactivité. Il personnalise les contenus éducatifs et les rappels de récupération en fonction de l'agenda et du niveau de stress de l'exécutif, assurant une continuité pédagogique sans friction."
+          },
+          {
+            "question": "Existe-t-il une différence entre fatigue intense et pré-burnout ?",
+            "answer": "La fatigue se dissipe avec le sommeil alors que le pré-burnout est marqué par une incapacité à 'débrancher' mentalement, même en dehors du bureau. Si votre sommeil ne restaure plus vos capacités cognitives et que votre motivation devient mécanique, vous êtes probablement entré dans la phase de résistance."
+          },
+          {
+            "question": "Comment la longévité est-elle liée à la gestion du stress ?",
+            "answer": "La science montre que la longévité des dirigeants dépend directement de leur capacité à réguler l'inflammation systémique causée par le cortisol. Une récupération optimisée protège le système cardiovasculaire et préserve les fonctions exécutives du cerveau, garantissant une carrière prolongée au sommet de ses facultés."
+          },
+          {
+            "question": "Ovela Interactive propose-t-elle des solutions pour les comités de direction (Comex) ?",
+            "answer": "Oui, nous déployons des solutions d'accompagnement digital sur mesure pour les équipes de direction. Nos outils permettent de monitorer la santé organisationnelle globale et de sensibiliser les hauts potentiels aux risques psychosociaux, le tout via des interfaces IA premium d'une grande fluidité."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "Executive Burnout & Prävention: Strategien für Entscheider | Ovela Interactive",
+        "seoDescription": "Erfahren Sie, wie Sie Burnout bei Führungskräften durch strukturierte Erholung und KI-gestützte Prävention stoppen. Jetzt Performance langfristig sichern.",
+        "tagline": "Belastbarkeit sichern: Wissenschaftliche Stressphasen, präzise Regeneration und technologische Unterstützung für das Top-Management.",
+        "heroIntro": "Burnout im Management ist kein plötzliches Ereignis, sondern das Resultat messbarer Phasen – von der Alarmreaktion bis zur klinischen Erschöpfung. Hochleistungsträger neigen dazu, frühe Warnsignale zugunsten der Effizienz zu ignorieren, bis die physische Leistungsgrenze erreicht ist. Dieses Wissens-Hub analysiert die evidenzbasierten Phasen der Erschöpfung und stellt das WellneSpirit-Programm vor, das durch spezialisierte KI-Bots von Ovela Interactive eine lückenlose, diskrete Begleitung im Genesungsprozess sicherstellt.",
+        "faqs": [
+          {
+            "question": "Was sind die ersten messbaren Anzeichen für Executive Burnout?",
+            "answer": "Frühe Indikatoren sind oft eine verringerte kognitive Flexibilität, emotionale Distanzierung und Schlafstörungen trotz Erschöpfung. Im beruflichen Kontext zeigt sich dies meist durch einen Rückzug aus sozialen Interaktionen oder eine sinkende Entscheidungsschnelligkeit bei steigendem Arbeitspensum."
+          },
+          {
+            "question": "Welche Rolle spielt KI bei der Burnout-Prävention für Führungskräfte?",
+            "answer": "KI-Ambassadors agieren als skalierbare Schnittstelle zwischen medizinischem Fachwissen und dem stressigen Alltag. Sie ermöglichen einen anonymen, rund um die Uhr verfügbaren Zugang zu personalisierten Interventionsstrategien und Datenanalysen, ohne wertvolle Zeit für administrative Terminabstimmungen zu beanspruchen."
+          },
+          {
+            "question": "Warum scheitern klassische Wellness-Ansätze bei Hochleistungsträgern?",
+            "answer": "Standardmäßige Entspannungsangebote ignorieren oft den hohen Autonomieanspruch und die Zeitrestriktionen von C-Level-Entscheidern. Effektive Programme müssen messbare ROI-Metriken in Bezug auf die Konzentrationsfähigkeit liefern und sich nahtlos in den digitalen Workflow integrieren lassen."
+          },
+          {
+            "question": "Wie unterscheiden sich die Phasen Alarm, Widerstand und Erschöpfung?",
+            "answer": "In der Alarmphase mobilisiert der Körper Reserven, während die Widerstandsphase durch einen dauerhaft erhöhten Cortisolspiegel gekennzeichnet ist, der die Leistungsfähigkeit künstlich aufrechterhält. Die Erschöpfungsphase tritt ein, wenn diese endokrinen Ressourcen verbraucht sind, was zu einem teils irreparablen Zusammenbruch der Leistungsfähigkeit führt."
+          },
+          {
+            "question": "Ist die Nutzung von KI-basierten Wellness-Lösungen datenschutzkonform (DSGVO)?",
+            "answer": "Ja, die von Ovela Interactive entwickelten Lösungen sind auf die strikten regulatorischen Anforderungen des DACH-Raums ausgelegt. Daten werden verschlüsselt verarbeitet und dienen ausschließlich der individuellen Steuerung des Genesungsprozesses, wobei Anonymität und Diskretion oberste Priorität haben."
+          },
+          {
+            "question": "Welchen messbaren Impact hat ein strukturiertes Recovery-Programm auf die Business-Kontinuität?",
+            "answer": "Ein strukturiertes Programm minimiert das Risiko unvorhersehbarer Langzeitausfälle im Schlüsselmanagement, die immense Kosten verursachen können. Die Stabilisierung der psychischen Gesundheit korreliert direkt mit einer höheren Entscheidungsqualität und einer Reduktion von Fehlentscheidungen unter Druck."
+          },
+          {
+            "question": "Wie erfolgt die Integration von KI-Lösungen in bestehende BGM-Systeme?",
+            "answer": "Die KI-Lösungen werden als spezialisierte Module in das betriebliche Gesundheitsmanagement (BGM) integriert. Sie dienen nicht als Ersatz, sondern als effiziente Ergänzung, die durch Automatisierung und hohe Verfügbarkeit die Implementierungshürden für Führungskräfte senkt."
+          },
+          {
+            "question": "Was versteht man unter 'Longevity is downstream of recovery'?",
+            "answer": "Dieser Ansatz besagt, dass berufliche Langlebigkeit und dauerhafter Erfolg keine Folge von grenzenloser Anstrengung sind, sondern das direkte Resultat einer effizienten Regenerationsfähigkeit. Ohne eine wissenschaftlich fundierte Recovery-Strategie ist das Erhalten der Spitzenleistung über Jahrzehnte hinweg biologisch nicht möglich."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Burnout Executivo e Recuperação: A Ciência da Alta Performance | Ovela Interactive",
+        "seoDescription": "Entenda as fases do esgotamento e recupere sua produtividade com métodos estruturados. Saiba como IA e bem-estar garantem longevidade. Leia mais agora.",
+        "tagline": "As fases do estresse, sistemas de recuperação e a tecnologia que mantém líderes no topo.",
+        "heroIntro": "O burnout raramente é um evento súbito; ele é um processo cumulativo que avança em silêncio — do alarme à exaustão crônica. No dinâmico mercado luso-brasileiro, líderes de alta performance costumam ignorar sinais vitais até que o corpo force uma parada. Este hub desmistifica a ciência do estresse e apresenta o método de recuperação estruturada da WellneSpirit, potencializado pelos embaixadores de IA da Ovela Interactive.",
+        "faqs": [
+          {
+            "question": "Quais são os primeiros sinais de alerta de burnout em executivos?",
+            "answer": "Os sinais iniciais costumam ser a irritabilidade constante, a perda do prazer em conquistas recentes e distúrbios de sono. Frequentemente, o executivo tenta compensar a queda de produtividade aumentando as horas de trabalho, o que acelera o processo de exaustão fisiológica."
+          },
+          {
+            "question": "Como diferenciar o cansaço comum do esgotamento profissional?",
+            "answer": "O cansaço comum é resolvido com um final de semana de repouso, enquanto o burnout é uma falha sistêmica que impede a recuperação mesmo em férias. Se a sensação de 'vazio' e o distanciamento mental das responsabilidades persistem, o quadro exige intervenção estruturada."
+          },
+          {
+            "question": "Qual é o papel da IA da Ovela Interactive em programas de bem-estar?",
+            "answer": "Nossos embaixadores digitais atuam como facilitadores de comunicação 24/7, educando pacientes e clientes sobre protocolos de longevidade. Eles garantem que informações críticas de saúde sejam acessíveis instantaneamente, removendo a fricção logística e permitindo que o executivo foque apenas na sua recuperação."
+          },
+          {
+            "question": "Como funciona o método de recuperação da WellneSpirit?",
+            "answer": "O programa foca na regulação do sistema nervoso através de biomarcadores e mudanças estruturadas no estilo de vida. Ao integrar suporte tecnológico e ciência médica, transformamos a recuperação em um sistema replicável que prioriza a manutenção da alta performance a longo prazo."
+          },
+          {
+            "question": "Por que a longevidade é dependente da capacidade de recuperação?",
+            "answer": "O corpo humano não foi feito para operar sob estresse oxidativo constante sem intervalos de reparo profundo. A longevidade real não é apenas viver mais, mas manter a função cognitiva e física, algo que só ocorre quando os períodos de recuperação são tão rigorosos quanto os de trabalho."
+          },
+          {
+            "question": "Executivos em Portugal e no Brasil enfrentam desafios diferentes de burnout?",
+            "answer": "Embora a biologia seja a mesma, a cultura de 'sempre disponível' varia; no Brasil, o foco é na velocidade de resposta, enquanto em Portugal o mercado imobiliário e financeiro exige alta resiliência internacional. Ambos os mercados demandam soluções de bem-estar que não comprometam a agilidade nos negócios."
+          },
+          {
+            "question": "Como as fases do estresse impactam a tomada de decisão?",
+            "answer": "Na fase de resistência, o córtex pré-frontal começa a perder eficiência, levando a decisões impulsivas ou baseadas em medo. Reconhecer essas fases é crucial para evitar erros estratégicos que podem custar milhões a uma operação corporativa."
+          },
+          {
+            "question": "É possível automatizar o acompanhamento de pacientes em clínicas de bem-estar?",
+            "answer": "Sim, a utilização de assistentes virtuais de IA permite que clínicas de alto padrão ofereçam suporte humanizado e técnico em larga escala. Isso garante que o paciente se sinta acolhido em sua jornada de recuperação de burnout, aumentando as taxas de adesão ao tratamento."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Gestió de l'Esgotament Executiu i Wellness | Ovela Interactive",
+        "seoDescription": "Estratègies de recuperació per a directius a Barcelona. Descobreix com la IA i el mètode WellneSpirit combaten el burnout. Recupera el teu rendiment ara.",
+        "tagline": "Fases de l'estrès, sistemes de recuperació i la tecnologia que manté l'elit empresarial activa.",
+        "heroIntro": "El burnout no apareix de cop; és un procés silenciós que avança per etapes —alarma, resistència i esgotament— que molts directius de casa nòstra ignoren fins que el cos diu prou. Des de Barcelona, hub d'innovació i benestar, oferim una visió científica i estructurada per a la recuperació executiva. Mitjançant el programa WellneSpirit i els ambaixadors d'IA d'Ovela Interactive, transformem la gestió de l'estrès en un actiu de longevitat per a líders d'alt rendiment.",
+        "faqs": [
+          {
+            "question": "Quines són les primeres senyals d'esgotament en directius de Barcelona?",
+            "answer": "Més enllà del cansament, els primers indicis inclouen la irritabilitat en entorns de presa de decisions, la desconnexió emocional amb l'equip i una disminució de la claredat mental. Sovint, el líder català ho confon amb excés de compromís fins que apareixen problemes de son persistents."
+          },
+          {
+            "question": "Com pot un ambaixador d'IA ajudar en la salut d'un executiu?",
+            "answer": "Els ambaixadors d'IA d'Ovela Interactive actuen com a filtres intel·ligents, gestionant la comunicació i reduint la càrrega cognitiva del directiu de manera proactiva. Permeten que el líder es focalitzi en l'estratègia mentre la tecnologia s'encarrega d'interaccions rutinàries i recordatoris de benestar."
+          },
+          {
+            "question": "És realment eficaç el mètode WellneSpirit per a perfils d'alt rendiment?",
+            "answer": "Sí, perquè no proposa una pausa passiva, sinó una recuperació estructurada basada en dades biomètriques i ciència del comportament. Està dissenyat per a persones que no poden permetre's deixar de ser productives, integrant el benestar com una mètrica clau d'èxit."
+          },
+          {
+            "question": "Per què els executius ignoren habitualment la fase de resistència?",
+            "answer": "En la nostra cultura empresarial de 'fer feina', la fase de resistència es veu com un estat de resiliència necessari. El cervell s'adapta al cortisol elevat, creant una falsa sensació de control que amaga el desgast orgànic profund que precedeix al col·lapse."
+          },
+          {
+            "question": "Quin paper juga la longevitat en la carrera d'un professional a Catalunya?",
+            "answer": "La longevitat no és viure més anys, sinó mantenir la capacitat cognitiva i física al màxim nivell durant les dècades de major responsabilitat. Als hubs de negocis moderns, la recuperació activa es considera ara el pilar fonamental per evitar una jubilació anticipada per malaltia."
+          },
+          {
+            "question": "Com s'implementa la IA d'Ovela Interactive en una clínica de benestar?",
+            "answer": "La IA actua com un assistent 24/7 que educa els pacients sobre les seves fases de recuperació i gestiona el seguiment del tractament sense intervenció humana constant. Això assegura que el pacient se senti acompanyat en tot moment, millorant l'adherència al programa de salut."
+          },
+          {
+            "question": "Quina diferència hi ha entre estrès laboral i burnout executiu?",
+            "answer": "L'estrès és una resposta puntual a una demanda alta, mentre que el burnout és un estat crònic d'esgotament que afecta la identitat i la vocació. Mentre s'està en burnout, el descans convencional ja no és suficient per restaurar els nivells d'energia i es requereix intervenció clínica."
+          },
+          {
+            "question": "On puc trobar programes de recuperació executiva amb tecnologia avançada a Barcelona?",
+            "answer": "Barcelona lidera la convergència entre salut i tecnologia; programes com WellneSpirit, recolzats per la infraestructura digital d'Ovela Interactive, ofereixen solucions pioneres. Aquestes solucions s'adapten al ritme d'empreses de disseny i real estate de luxe que busquen excel·lència operativa."
+          }
+        ]
+      }
+    },
+    "ai-property-presenter": {
+      "es": {
+        "seoTitle": "AI Property Presenter: Tu Agente Inmobiliario 24/7 | Ovela Interactive",
+        "seoDescription": "Impulsa tus ventas en Marbella, Barcelona y Madrid. Un presentador de propiedades con IA atiende en cualquier idioma y califica leads en tiempo real. ¡Descúbrelo!",
+        "tagline": "Cada propiedad, cada idioma. Disponibilidad total para el cliente internacional de hoy.",
+        "heroIntro": "Transforme la experiencia de venta de su inmobiliaria con un agente digital de vanguardia que presenta sus listados con alma y precisión técnica. Nuestro AI Property Presenter no solo responde dudas en tiempo real, sino que actúa como el primer filtro experto en mercados clave como la Costa del Sol o Madrid, eliminando las barreras lingüísticas con compradores extranjeros y derivando a su equipo humano únicamente a los inversores con intención de compra real.",
+        "faqs": [
+          {
+            "question": "¿Cómo gestiona la IA las consultas de inversores extranjeros en inglés o alemán?",
+            "answer": "Nuestro sistema detecta el idioma del cliente al instante y responde con fluidez nativa, cubriendo más de 30 lenguas. Esto es vital para captar el interés de inversores en zonas premium como Baleares o la Costa Brava sin necesidad de contratar agentes bilingües adicionales."
+          },
+          {
+            "question": "¿Se integra el agente de IA con mi CRM inmobiliario actual?",
+            "answer": "Sí, el AI Property Presenter se conecta directamente con los CRMs más utilizados en el mercado español. Automatiza la entrada de datos de contacto y guarda el historial de la conversación para que su equipo retome la venta con toda la información necesaria."
+          },
+          {
+            "question": "¿Puede la IA diferenciar entre un curioso y un comprador cualificado?",
+            "answer": "Absolutamente. Mediante preguntas estratégicas sobre presupuesto, plazos y prueba de fondos, la IA califica el perfil del lead. Solo los prospectos con una intención de compra analizada son derivados para una visita física o llamada comercial."
+          },
+          {
+            "question": "¿Qué ocurre si un cliente pregunta por la normativa de la Ley de Vivienda o impuestos?",
+            "answer": "La IA se entrena con su base de conocimientos específica, permitiéndole explicar conceptos como el ITP, el IVA en obra nueva o las particularidades de las licencias turísticas. Ofrece respuestas precisas que generan confianza desde el minuto uno."
+          },
+          {
+            "question": "¿Está disponible para visitas virtuales en fin de semana y festivos?",
+            "answer": "El servicio funciona las 24 horas del día, los 365 días del año. No pierde ninguna oportunidad de captura de lead durante la madrugada o festivos, periodos donde los compradores internacionales suelen realizar sus búsquedas inmobiliarias."
+          },
+          {
+            "question": "¿El tono de la IA es lo suficientemente cercano para el mercado de lujo?",
+            "answer": "Hemos diseñado una voz y registro que combina la profesionalidad del sector 'luxury' con la calidez del trato humano español. La IA mantiene un nivel de etiqueta impecable, ideal para inmobiliarias que gestionan activos de alto valor en Madrid o Sotogrande."
+          },
+          {
+            "question": "¿Cómo muestra la IA las características específicas de una promoción de obra nueva?",
+            "answer": "Puede describir acabados, zonas comunes y eficiencia energética detalladamente. Al estar conectada a su cartera de activos, proporciona datos actualizados sobre disponibilidad y precios de forma dinámica y sin errores."
+          },
+          {
+            "question": "¿Es necesario tener conocimientos técnicos para implementarlo en mi web?",
+            "answer": "Para nada. En Ovela Interactive nos encargamos de la configuración técnica completa y la integración en su ecosistema digital. Usted solo se preocupa de recibir los leads cualificados y cerrar las operaciones."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Agent Immobilier IA : Présentation 24/7 de vos Biens | Ovela Interactive",
+        "seoDescription": "Optimisez vos mandats avec nos agents digitaux multilingues. Qualification de leads, visites virtuelles guidées et conformité RGPD. Contactez-nous.",
+        "tagline": "Chaque annonce. Chaque acquéreur. En toute langue. À toute heure.",
+        "heroIntro": "L'agent immobilier digital d'Ovela Interactive redéfinit l'excellence du service client. Véritable ambassadeur de votre portefeuille, cet outil d'IA conversationnelle accueille chaque prospect instantanément, répondant avec précision aux questions techniques et filtrant les intentions d'achat sérieuses avant de les transmettre à vos équipes. Offrez une expérience premium et multilingue à vos clients internationaux sans les contraintes de fuseaux horaires.",
+        "faqs": [
+          {
+            "question": "Comment l'IA garantit-elle la protection des données personnelles (RGPD) ?",
+            "answer": "Chez Ovela Interactive, la conformité au RGPD est intégrée dès la conception. Toutes les données récoltées lors des échanges sont chiffrées et traitées selon les normes européennes strictes, garantissant la confidentialité absolue de vos prospects et la sécurité juridique de votre agence."
+          },
+          {
+            "question": "L'agent virtuel peut-il répondre aux questions techniques sur le DPE ou l'urbanisme ?",
+            "answer": "Oui, nos agents sont formés sur les spécificités techniques de chaque annonce, incluant le Diagnostic de Performance Énergétique (DPE) et les données du PLU. Ils fournissent des réponses précises et sourcées, renforçant la crédibilité de votre expertise dès le premier contact."
+          },
+          {
+            "question": "Quels sont les deux types de leads que les agences françaises perdent le plus ?",
+            "answer": "Les agences perdent principalement les 'leads de nuit' (demandes hors horaires d'ouverture) et les 'leads internationaux' découragés par la barrière de la langue. L'IA capte ces opportunités en temps réel, évitant ainsi que vos prospects ne contactent la concurrence."
+          },
+          {
+            "question": "L'IA peut-elle gérer des clients pour de l'immobilier de prestige ?",
+            "answer": "Absolument. Nous configurons un registre de langage soutenu et professionnel adapté au secteur du luxe. L'IA agit comme une conciergerie digitale, offrant une réactivité immédiate et un niveau de détail qui répondent aux exigences d'une clientèle haut de gamme."
+          },
+          {
+            "question": "Comment l'agent IA se connecte-t-il à mon logiciel immobilier existant ?",
+            "answer": "Notre solution s'intègre via API à la plupart des outils métiers utilisés en France. Cela permet une synchronisation fluide de vos annonces et une remontée automatique des leads qualifiés directement dans votre CRM habituel."
+          },
+          {
+            "question": "L'agent digital parle-t-il vraiment toutes les langues courantes ?",
+            "answer": "L'IA maîtrise nativement plus de 50 langues, incluant l'anglais, l'allemand, l'italien, mais aussi le mandarin ou le russe. Elle adapte automatiquement sa langue en fonction de l'interlocuteur, assurant une expérience personnalisée sans traducteur humain."
+          },
+          {
+            "question": "Peut-on personnaliser la 'personnalité' de l'ambassadeur digital ?",
+            "answer": "Oui, nous définissons avec vous le ton, le style de communication et les valeurs de votre agence. Que vous souhaitiez un ton dynamique pour des biens neufs ou une approche plus institutionnelle, l'IA devient le prolongement fidèle de votre image de marque."
+          },
+          {
+            "question": "Est-ce que l'IA remplace mes consultants immobiliers ?",
+            "answer": "Non, elle les libère des tâches répétitives et de la pré-qualification chronophage. En filtrant les curieux et en collectant les informations de base, elle permet à vos négociateurs de se concentrer exclusivement sur la négociation et la signature des mandats."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Immobilien-Presenter: Digitale Makler 24/7 | Ovela Interactive",
+        "seoDescription": "Maximieren Sie Ihre Conversion mit KI-Immobilien-Präsentatoren. Automatisierte Qualifizierung, Mehrsprachigkeit & 24/7-Service für Ihren Vertrieb. Jetzt ansehen.",
+        "tagline": "Jedes Objekt. Jeder Interessent. In jeder Sprache. Rund um die Uhr.",
+        "heroIntro": "Ein KI-Immobilien-Präsentator ist Ihr digitaler spezialisierter Makler, der jedes Objekt Ihres Portfolios in Echtzeit präsentiert. Er qualifiziert Leads sofort nach echtem Kaufinteresse und leitet ausschließlich abschlussstarke Interessenten direkt an Ihr Team weiter. Während herkömmliche Anfragen oft Stunden warten, liefert unsere Lösung Fakten, klärt Vorabfragen multilingual und arbeitet absolut DSGVO-konform – ohne Verzögerung oder Rückrufbitte.",
+        "faqs": [
+          {
+            "question": "Wie verbessert ein KI-Immobilien-Präsentator die Konversionsrate?",
+            "answer": "Die KI reagiert ohne Latenzzeit auf Anfragen, was den sogenannten First-Response-Vorteil sichert. Durch die sofortige Beantwortung technischer Fragen und die Vorqualifizierung nach Budget und Absicht landen nur noch echte Kaufinteressenten bei Ihren Maklern, was die Effizienz im Vertrieb massiv steigert."
+          },
+          {
+            "question": "Ist die Lösung DSGVO-konform und datensicher?",
+            "answer": "Ja, bei Ovela Interactive hat Datensicherheit Priorität nach deutschen Standards. Die Verarbeitung von Interessentendaten erfolgt verschlüsselt und wir stellen sicher, dass alle Interaktionen die strengen Anforderungen der DSGVO erfüllen, inklusive notwendiger Einwilligungen."
+          },
+          {
+            "question": "Kann die KI komplexe Fragen zur Bausubstanz oder Finanzierung beantworten?",
+            "answer": "Der KI-Präsentator wird direkt mit Ihren Objektdaten, Gutachten und FAQs trainiert. Er kann detaillierte Auskünfte zu Energieeffizienzklassen, Sanierungsständen oder lokalen Marktgegebenheiten geben und bei Finanzierungsfragen auf Ihre Partner verweisen."
+          },
+          {
+            "question": "Inwiefern profitieren internationale Käufer von diesem Tool?",
+            "answer": "Die KI agiert nativ in über 30 Sprachen, was besonders für den Premium-Immobilienmarkt in Städten wie Berlin oder München entscheidend ist. Sprachbarrieren werden eliminiert, sodass ausländische Investoren Informationen in ihrer Muttersprache erhalten, während die Dokumentation für Sie auf Deutsch erfolgt."
+          },
+          {
+            "question": "Wie wird der KI-Agent in bestehende CRM-Systeme integriert?",
+            "answer": "Über standardisierte Schnittstellen (APIs) lässt sich der KI-Präsentator nahtlos an gängige Makler-Software wie FlowFact, onOffice oder estateSmart anbinden. Leads, Gesprächsprotokolle und Termine werden automatisch synchronisiert, um Medienbrüche zu vermeiden."
+          },
+          {
+            "question": "Ersetzt die KI den menschlichen Immobilienmakler?",
+            "answer": "Nein, die KI fungiert als hocheffizienter Assistent für das Front-End. Sie übernimmt die mühsame Erstqualifizierung und die 24/7-Erreichbarkeit, damit sich Ihre Consultants auf die persönliche Beratung und den eigentlichen Notartermin konzentrieren können."
+          },
+          {
+            "question": "Wie hoch ist der Implementierungsaufwand für ein bestehendes Portfolio?",
+            "answer": "Die Implementierung ist durch automatisierte Daten-Feeds (OpenImmo-Standard) hochgradig skalierbar. Einmal aufgesetzt, erkennt das System neue Listings automatisch und generiert die entsprechenden Dialogbäume ohne manuellen Mehraufwand für Ihr Team."
+          },
+          {
+            "question": "Wird der Nutzer darauf hingewiesen, dass er mit einer KI kommuniziert?",
+            "answer": "Transparenz ist für die Akzeptanz im deutschen Markt essenziell. Wir empfehlen eine klare Kennzeichnung als 'KI-Assistent', was die Hemmschwelle für technische Fragen senkt, da Kunden oft lieber einer KI einfache Fragen stellen, bevor sie ein Verkaufsgespräch führen."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Apresentador de Imóveis com IA: Venda 24h por Dia | Ovela Interactive",
+        "seoDescription": "Transforme seus anúncios com um concierge digital multilíngue. Atenda compradores globais em tempo real e qualifique leads de luxo agora mesmo.",
+        "tagline": "Cada imóvel. Todo comprador. Em qualquer idioma. Disponível em tempo integral.",
+        "heroIntro": "O apresentador de imóveis via IA é o seu agente digital de elite que guia compradores por todo o seu portfólio em tempo real. Ele não apenas descreve o imóvel, mas tira dúvidas complexas, qualifica o real interesse do cliente e encaminha apenas os leads mais promissores para sua equipe de vendas. Seja para um investidor em Lisboa ou um comprador de alto padrão em São Paulo, sua imobiliária passa a falar a língua do cliente, 24 horas por dia.",
+        "faqs": [
+          {
+            "question": "O apresentador de IA consegue explicar detalhes técnicos de financiamento e impostos?",
+            "answer": "Sim, a IA é treinada com as especificidades do mercado local, explicando desde o ITBI no Brasil até as nuances do Golden Visa ou impostos de selo em Portugal. Ela fornece respostas precisas sobre a viabilidade financeira antes mesmo do primeiro contato humano."
+          },
+          {
+            "question": "Como a IA lida com compradores estrangeiros que não falam português?",
+            "answer": "O sistema detecta automaticamente o idioma do usuário e responde com fluência nativa em mais de 30 línguas. Isso é essencial para imobiliárias no Algarve ou em cidades globais, garantindo que o investidor estrangeiro se sinta compreendido e seguro."
+          },
+          {
+            "question": "A ferramenta pode ser integrada ao meu CRM ou site atual?",
+            "answer": "Com certeza. A Ovela Interactive projeta a IA para se conectar diretamente com as listagens do seu site e alimentar o seu CRM com dados detalhados. Assim que um interessado demonstra intenção real, os dados de contato já aparecem no seu funil de vendas."
+          },
+          {
+            "question": "A IA substitui o corretor de imóveis humano?",
+            "answer": "Não, ela atua como um assistente de alto nível que filtra o ruído. A IA cuida do atendimento inicial, respostas de rotina e qualificação de leads, permitindo que seus corretores foquem exclusivamente no fechamento das vendas e no relacionamento consultivo."
+          },
+          {
+            "question": "A voz e o tom da IA podem ser personalizados para a minha imobiliária?",
+            "answer": "Sim, configuramos a personalidade da IA para refletir o branding da sua marca, seja ela mais executiva e técnica ou calorosa e voltada para o lifestyle. O objetivo é manter a consistência na experiência do cliente em todos os pontos de contato."
+          },
+          {
+            "question": "O apresentador de IA consegue agendar visitas presenciais sozinho?",
+            "answer": "Sim, ele pode ser sincronizado com as agendas da sua equipe. Após qualificar o comprador e identificar que ele está pronto para o próximo passo, a IA oferece horários disponíveis e confirma o agendamento de forma autônoma."
+          },
+          {
+            "question": "Como a IA apresenta as áreas de lazer e diferenciais de condomínios de luxo?",
+            "answer": "A IA é alimentada com todos os detalhes do empreendimento, desde acabamentos em mármore até certificações de sustentabilidade e wellness. Ela destaca os benefícios da localização e infraestrutura, vendendo o estilo de vida, não apenas metros quadrados."
+          },
+          {
+            "question": "É possível usar a IA para responder via WhatsApp?",
+            "answer": "Nossas soluções são omnicanal. A IA pode atuar no seu site, em landing pages específicas ou diretamente no WhatsApp, capturando o lead onde ele se sentir mais confortável para iniciar a jornada de compra."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Presentador de propietats amb IA: Vistes 24/7 | Ovela Interactive",
+        "seoDescription": "Maximitzi les seves vendes immobiliàries amb un agent digital 24/7 que parla el català i l'idioma de cada client. Descobri-ho ara amb Ovela Interactive.",
+        "tagline": "Totes les propietats. Tots els compradors. En la seva llengua. A tota hora.",
+        "heroIntro": "Un presentador de propietats amb IA és un agent digital de nova generació que acompanya cada client potencial pel seu portfoli en temps real. Respon dubtes tècnics, filtra l'interès real i deriva només els compradors més qualificats al seu equip comercial. És la solució ideal per al mercat de Barcelona i la costa, actuant com un ambaixador multilingüe que no dorm mai i que garanteix una atenció immediata sense esperes.",
+        "faqs": [
+          {
+            "question": "Què és exactament un presentador de propietats amb IA?",
+            "answer": "És un empleat digital interactiu que actua com la cara visible de la seva immobiliària a la xarxa. A diferència d'un xatbot convencional, aquest avatar pot descriure detalls arquitectònics, mostrar estances i respondre preguntes complexes sobre els actius en temps real."
+          },
+          {
+            "question": "Com gestiona les consultes dels compradors internacionals?",
+            "answer": "El sistema detecta automàticament l'idioma de l'usuari i s'hi comunica de manera nativa. Això és clau per al mercat de luxe a Catalunya, on molts inversors francesos, anglesos o alemanys busquen una atenció fluida i sense barreres lingüístiques."
+          },
+          {
+            "question": "L'agent d'IA pot agendar visites directament?",
+            "answer": "Sí, l'IA està programada per qualificar el client i, si l'interès és ferm, programar una visita al calendari dels seus agents humans. Això elimina l'anada i tornada de correus i trucades per quadrar horaris."
+          },
+          {
+            "question": "Es pot integrar amb el meu programari immobiliari actual?",
+            "answer": "Absolutament. La nostra tecnologia es connecta amb els CRM i els portals immobiliaris més utilitzats al sector. Les dades dels contactes i les preferències dels compradors es bolquen automàticament a la seva base de dades."
+          },
+          {
+            "question": "Per què és millor que un formulari de contacte tradicional?",
+            "answer": "La immediatesa és el factor diferencial: el 70% dels leads es perden per falta de resposta ràpida. L'IA respon al moment, mantenint el comprador compromès i evitant que marxi a la web d'una altra agència competidora."
+          },
+          {
+            "question": "És capaç d'explicar detalls sobre el barri o la zona de la propietat?",
+            "answer": "Sí, el nostre model s'entrena amb dades locals. Pot informar sobre la proximitat a escoles internacionals, serveis a l'Eixample, la connexió amb l'aeroport o les característiques culturals de cada zona de Catalunya."
+          },
+          {
+            "question": "Com afecta la imatge de la meva marca immobiliària?",
+            "answer": "Projecta una imatge de modernitat, eficiència i atenció al detall. En un mercat tan competitiu com el de Barcelona, oferir una experiència digital impecable posiciona la seva agència com un referent tecnològic i de confiança."
+          },
+          {
+            "question": "Substitueix aquest servei als meus agents comercials?",
+            "answer": "No els substitueix, sinó que els potencia. L'IA s'encarrega de les tasques repetitives i del primer filtre, permetent que els seus comercials es concentrin exclusivament a tancar les vendes i en el tracte personalitzat final."
+          }
+        ]
+      }
+    },
+    "ai-patient-communication": {
+      "es": {
+        "seoTitle": "IA para Clínicas: Recepción Inteligente y Multilingüe | Ovela Interactive",
+        "seoDescription": "Optimice su clínica con asistentes IA que atienden citas y dudas 24/7 en cualquier idioma. Mejore la experiencia del paciente y reduzca costes operativos.",
+        "tagline": "Una recepción impecable y multilingüe para su clínica, disponible las 24 horas del día.",
+        "heroIntro": "En el sector sanitario español, la saturación en recepción y las barreras idiomáticas en zonas como la Costa del Sol o Baleares son retos diarios. Nuestras empleadas digitales gestionan el triaje, la reserva de citas y el seguimiento post-consulta de forma humana y cercana. Permita que su equipo médico se centre en lo importante mientras la IA garantiza que ninguna llamada se quede sin respuesta, sin importar el idioma o la hora.",
+        "faqs": [
+          {
+            "question": "¿Cómo gestiona la IA a los pacientes internacionales que no hablan castellano?",
+            "answer": "Nuestros asistentes detectan automáticamente el idioma del interlocutor, ya sea inglés, alemán, francés o ruso, ofreciendo una atención fluida y natural. Esto es vital para clínicas en Madrid, Barcelona o Marbella que buscan fidelizar al turismo de salud y residentes extranjeros."
+          },
+          {
+            "question": "¿Se puede integrar con mi programa de gestión de citas actual?",
+            "answer": "Sí, la IA de Ovela se conecta mediante API con los principales softwares médicos y de calendario. Esto permite que la asistente virtual agende, mueva o cancele citas en tiempo real de forma sincronizada con su recepción física."
+          },
+          {
+            "question": "¿Es capaz de realizar el triaje inicial de un paciente?",
+            "answer": "Totalmente. La IA puede programarse para hacer preguntas de cribado específicas antes de derivar al paciente al especialista adecuado. Esto agiliza la labor del equipo médico y asegura que las urgencias reales sean detectadas de inmediato."
+          },
+          {
+            "question": "¿Cumple este sistema con la normativa de protección de datos (RGPD) en España?",
+            "answer": "La seguridad es nuestra prioridad. Todos nuestros sistemas están diseñados para cumplir estrictamente con el RGPD y la LOPDGDD, garantizando que la información sensible del paciente sea tratada con la máxima confidencialidad y cifrado."
+          },
+          {
+            "question": "¿Qué ocurre si un paciente tiene una duda médica muy compleja?",
+            "answer": "La IA actúa como primer nivel de atención y filtro. Ante consultas clínicas complejas o situaciones críticas, el sistema escala automáticamente la conversación al personal humano de la clínica para asegurar una respuesta experta."
+          },
+          {
+            "question": "¿Es la voz de la IA natural o suena robótica para un paciente mayor?",
+            "answer": "Utilizamos tecnología de voz sintética de última generación con entonación y calidez humana. En el mercado español, esto es crucial para mantener la cercanía y la confianza, especialmente en el sector de la salud y el bienestar."
+          },
+          {
+            "question": "¿Cómo ayuda esto a reducir la tasa de 'no-show' o citas no presentadas?",
+            "answer": "La IA realiza recordatorios automáticos y personalizados a través de llamadas o mensajes. Al permitir que el paciente confirme o reajuste su cita de forma sencilla y en su idioma, se optimiza la agenda y se reducen los huecos vacíos."
+          },
+          {
+            "question": "¿Qué ahorro real supone frente a contratar más personal de recepción?",
+            "answer": "Implementar una empleada digital de Ovela cuesta una fracción de un salario bruto anual y ofrece disponibilidad 24/7 sin bajas ni vacaciones. Es la solución más escalable para clínicas en crecimiento que quieren mejorar el servicio sin disparar sus costes fijos."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "IA pour Cabinet Médical : Accueil Patient Multilingue | Ovela Interactive",
+        "seoDescription": "Optimisez la gestion de vos patients avec une IA de réception 24/7. Sécurité RGPD, triage intelligent et accueil multilingue pour cliniques d'excellence.",
+        "tagline": "L'excellence de l'accueil patient, sans interruption et dans toutes les langues.",
+        "heroIntro": "Face à la saturation des secrétariats médicaux et aux exigences d'une patientèle internationale, la fluidité de l'accueil devient un défi majeur. Nos collaborateurs numériques IA gèrent vos appels et prises de rendez-vous 24h/24, garantissant une prise en charge immédiate et conforme au RGPD. Libérez vos équipes des tâches répétitives tout en offrant un service haut de gamme, capable de dialoguer naturellement avec chaque patient dans sa langue maternelle.",
+        "faqs": [
+          {
+            "question": "L'IA d'Ovela Interactive est-elle conforme au RGPD et à la protection des données de santé ?",
+            "answer": "La sécurité des données est notre priorité absolue pour le marché français. Nos solutions respectent strictement le RGPD, avec un chiffrement de bout en bout et des protocoles assurant la confidentialité totale des échanges médicaux et administratifs."
+          },
+          {
+            "question": "Comment une réceptionniste IA gère-t-elle les urgences médicales en dehors des horaires ?",
+            "answer": "L'IA est programmée avec un protocole de triage précis défini par votre clinique. En cas d'urgence détectée, elle peut rediriger instantanément l'appel vers le service de garde approprié ou fournir les numéros d'urgence vitale (15, 112) sans délai."
+          },
+          {
+            "question": "L'IA peut-elle se synchroniser avec mon logiciel de gestion de cabinet actuel ?",
+            "answer": "Absolument. Nos agents IA s'intègrent via API à la majorité des logiciels de gestion et agendas professionnels. Cela permet une mise à jour en temps réel des créneaux de consultation et un suivi fluide du dossier patient."
+          },
+          {
+            "question": "Quelles sont les langues maîtrisées par votre solution d'accueil patient ?",
+            "answer": "Nos assistants IA sont nativement polyglottes et peuvent basculer instantanément entre le français, l'anglais, l'espagnol, l'arabe ou le chinois. Ils s'adaptent à la langue de l'appelant pour offrir un confort de communication total, crucial pour le tourisme médical."
+          },
+          {
+            "question": "Le ton de l'IA est-il suffisamment professionnel pour une clinique de prestige ?",
+            "answer": "Nous configurons le registre de langue pour qu'il soit parfaitement aligné avec l'image de marque de votre établissement. L'IA utilise un ton courtois, calme et professionnel, garantissant une expérience patient haut de gamme constante."
+          },
+          {
+            "question": "Quel est le coût réel par rapport au recrutement d'un secrétaire supplémentaire ?",
+            "answer": "Une solution IA représente une fraction du coût d'un équivalent temps plein, sans les charges sociales ni les contraintes de gestion administrative. Elle assure une disponibilité 24/7, éliminant ainsi les pertes de revenus liées aux appels manqués."
+          },
+          {
+            "question": "L'IA peut-elle gérer les questions fréquentes sur les tarifs et les dépassements d'honoraires ?",
+            "answer": "Oui, l'IA dispose d'une base de connaissances spécifique à votre structure. Elle peut informer les patients sur les tarifs, les conventions de secteur (Secteur 1 ou 2) et les documents nécessaires avant une consultation."
+          },
+          {
+            "question": "Une formation est-elle nécessaire pour le personnel de la clinique ?",
+            "answer": "Le système est conçu pour être 'clé en main'. Votre équipe n'a qu'à consulter le tableau de bord des interactions pour suivre les rendez-vous pris, rendant la transition technologique simple, rapide et sans friction opérationnelle."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Patientenkommunikation & Digitale Praxisrezeption | Ovela Interactive",
+        "seoDescription": "Optimieren Sie Ihre Praxisabläufe mit KI-Rezeptionisten. Automatisierte Terminierung und Patientenservice rund um die Uhr. Jetzt Effizienz steigern.",
+        "tagline": "Die digitale Praxisrezeption: Rund um die Uhr erreichbar, multilingual und absolut zuverlässig.",
+        "heroIntro": "Deutsche Arztpraxen und Kliniken stehen unter enormem Kostendruck und Personalmangel. Unsere KI-Lösungen für die Patientenkommunikation bewältigen das Anrufaufkommen autonom, entlasten Ihr Fachpersonal und garantieren eine lückenlose Erreichbarkeit – auch nach Feierabend. Durch die direkte Integration in Ihre Praxissoftware automatisieren wir die Terminvergabe und Patientenanfragen in über 30 Sprachen, ohne dass Sie zusätzliches Personal einstellen müssen. Steigern Sie Ihren Durchsatz und die Patientenzufriedenheit durch messbare Prozessoptimierung.",
+        "faqs": [
+          {
+            "question": "Ist die KI-Patientenkommunikation DSGVO-konform?",
+            "answer": "Ja, der Datenschutz steht im deutschen Gesundheitswesen an erster Stelle. Unsere Systeme arbeiten auf europäischen Servern, nutzen Ende-zu-Ende-Verschlüsselung und erfüllen alle Anforderungen der DSGVO sowie spezifische ärztliche Schweigepflichtvorgaben."
+          },
+          {
+            "question": "Kann die KI direkt Termine in mein Praxisverwaltungssystem (PVS) buchen?",
+            "answer": "Absolut. Durch tiefgreifende API-Integrationen synchronisiert die KI freie Termine in Echtzeit mit Systemen wie medatixx, doctolib oder anderen gängigen PVS-Lösungen. Doppelbuchungen werden technisch ausgeschlossen."
+          },
+          {
+            "question": "Wie hoch ist die Fehlerquote bei der multilingualen Erfassung von Symptomen?",
+            "answer": "Unsere KI nutzt spezialisierte medizinische Sprachmodelle, die eine Genauigkeit von über 98 % erreichen. Bei komplexen medizinischen Notfällen erkennt das System die Dringlichkeit sofort und leitet das Gespräch umgehend an qualifiziertes Personal weiter."
+          },
+          {
+            "question": "Erkennt das System den Unterschied zwischen Privat- und Kassenpatienten?",
+            "answer": "Ja, die KI kann im Erstkontakt eine kriterienbasierte Triage durchführen. Sie erkennt den Versicherungsstatus und weist Termine oder Informationen basierend auf den von Ihnen definierten Praxisregeln und Prioritäten zu."
+          },
+          {
+            "question": "Welche Sprachen werden unterstützt und wie natürlich klingen die Stimmen?",
+            "answer": "Die KI kommuniziert fließend in über 30 Sprachen, inklusive regionaler Dialekte. Die Stimmen sind dank modernster Sprachsynthese kaum von menschlichen Mitarbeitern zu unterscheiden, was die Akzeptanz bei älteren Patienten massiv erhöht."
+          },
+          {
+            "question": "Wie schnell amortisiert sich die Investition in einen digitalen Empfang?",
+            "answer": "In der Regel erreichen Kliniken den Break-Even-Point innerhalb von drei bis sechs Monaten. Die Kosten für die KI liegen bei einem Bruchteil eines Bruttogehalts einer medizinischen Fachangestellten, während die Erreichbarkeit auf 100 % steigt."
+          },
+          {
+            "question": "Kann die KI auch Folgetermine oder Rezeptanfragen bearbeiten?",
+            "answer": "Ja, das System ist darauf trainiert, standardisierte Prozesse wie Rezeptbestellungen, Überweisungswünsche oder die Vereinbarung von Kontrollterminen autonom und abschließend zu bearbeiten, was die Telefonleitung für Notfälle freihält."
+          },
+          {
+            "question": "Was passiert bei einem Stromausfall oder technischen Störungen in der Praxis?",
+            "answer": "Da unsere KI-Lösung Cloud-basiert arbeitet, bleibt der digitale Empfang auch bei lokalen Störungen erreichbar. Patienten können weiterhin Nachrichten hinterlassen oder Termine buchen, die synchronisiert werden, sobald Ihre Systeme wieder online sind."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "IA para Atendimento Clínico e Recepção Multilíngue | Ovela Interactive",
+        "seoDescription": "Automatize a triagem e o agendamento da sua clínica com IA. Atendimento 24h, trilíngue e empático para elevar a experiência do paciente. Conheça a Ovela.",
+        "tagline": "Sua clínica sempre disponível: recepção inteligente e multilíngue que acolhe cada paciente individualmente.",
+        "heroIntro": "Clínicas modernas enfrentam o desafio constante de equilibrar a sobrecarga da recepção com a necessidade de um atendimento humanizado e imediato. Uma recepção digital com IA resolve os gargalos de agendamento e triagem, eliminando barreiras linguísticas e garantindo que nenhum paciente fique sem resposta, mesmo fora do horário comercial. É a tecnologia de ponta trabalhando para devolver o foco da sua equipe ao que realmente importa: o cuidado clínico.",
+        "faqs": [
+          {
+            "question": "O atendimento por IA parece muito robótico para uma clínica?",
+            "answer": "Nossas IAs são treinadas com Processamento de Linguagem Natural avançado para manter um tom acolhedor e empático, típico do setor de saúde. Elas não apenas respondem dúvidas, mas conduzem o paciente de forma fluida, garantindo uma primeira impressão profissional e humana."
+          },
+          {
+            "question": "Como a IA lida com pacientes estrangeiros que não falam português?",
+            "answer": "O sistema identifica automaticamente o idioma do paciente e responde com fluência nativa, seja em inglês, francês ou espanhol. Isso é essencial para clínicas em regiões turísticas como o Algarve ou centros cosmopolitas como São Paulo, onde o atendimento bilíngue é um diferencial competitivo."
+          },
+          {
+            "question": "A IA pode realizar agendamentos diretamente no meu software de gestão?",
+            "answer": "Sim, nossas soluções são integráveis via API com os principais sistemas de gestão clínica e calendários do mercado. A IA verifica a disponibilidade em tempo real e confirma a consulta instantaneamente, sem necessidade de intervenção manual da recepção."
+          },
+          {
+            "question": "O custo de implementar IA é viável para clínicas de médio porte?",
+            "answer": "O investimento em um funcionário digital é uma fração do custo de contratação de novos recepcionistas, especialmente considerando encargos e turnos extras. A IA escala a sua operação 24/7 sem aumentar o headcount, gerando um ROI positivo já nos primeiros meses."
+          },
+          {
+            "question": "Como funciona a triagem de urgências através da IA?",
+            "answer": "A IA é configurada para identificar palavras-chave e sintomas de alerta baseados nos protocolos da sua clínica. Caso detecte uma situação de urgência, o sistema pode priorizar o atendimento ou direcionar o paciente imediatamente para o contato de emergência adequado."
+          },
+          {
+            "question": "A IA ajuda a reduzir o índice de faltas (no-show)?",
+            "answer": "Completamente. A IA realiza o acompanhamento proativo, enviando lembretes personalizados e confirmando a presença dias antes da consulta. Caso o paciente precise desmarcar, a IA já oferece um novo horário, mantendo a agenda sempre otimizada."
+          },
+          {
+            "question": "Meus dados e os dos pacientes estarão seguros com a IA?",
+            "answer": "Sim, a Ovela prioriza a segurança de dados, operando em conformidade com a LGPD no Brasil e a GDPR na Europa. Todas as comunicações são criptografadas e o processamento de informações sensíveis segue os mais rigorosos padrões de privacidade médica."
+          },
+          {
+            "question": "É difícil treinar a IA com os procedimentos específicos da minha clínica?",
+            "answer": "Nós cuidamos de toda a implementação personalizada. Você fornece as diretrizes e regras de negócio da sua clínica, e nós configuramos a base de conhecimento para que a IA responda exatamente como um membro da sua equipe faria."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Recepcionista IA per a Clíniques i Salut | Ovela Interactive",
+        "seoDescription": "Digitalitzeu la vostra recepció amb IA multilingüe. Gestió de cites, triatge i atenció al pacient 24/7 en català i més idiomes. Milloreu l'eficiència ara.",
+        "tagline": "Una recepció serena i multilingüe per a la teva clínica les 24 hores.",
+        "heroIntro": "Les clíniques de referència a Barcelona i Catalunya s'enfronten a tres reptes crítics: la saturació del personal, les barreres idiomàtiques amb pacients internacionals i les consultes perdudes fora d'horari. El nostre sistema d'IA per a la comunicació del pacient resol aquests punts de fricció de manera immediata. Gestioneu admissions, reserves i triatges en l'idioma natiu de cada pacient, optimitzant els recursos del vostre centre sense necessitat d'ampliar la plantilla física.",
+        "faqs": [
+          {
+            "question": "Com gestiona la IA les consultes en català i altres idiomes de forma simultània?",
+            "answer": "La nostra IA està programada amb models lingüístics natius que detecten l'idioma del pacient a l'instant. Pot mantenir una conversa fluida en català, castellà, anglès o francès, assegurant que el pacient es senti comprès des de la primera interacció sense necessitat de personal multilingüe a la recepció."
+          },
+          {
+            "question": "És possible integrar l'IA amb el nostre programari de gestió de cites actual?",
+            "answer": "Sí, el sistema està dissenyat per connectar-se mitjançant API amb els principals calendaris i programaris de gestió mèdica. Això permet que la recepció digital reservi, reprogrami o cancel·li cites en temps real, actualitzant la vostra agenda sense intervenció manual."
+          },
+          {
+            "question": "Com garanteix el sistema la privadesa de les dades de salut segons la RGPD?",
+            "answer": "La seguretat és la nostra prioritat absoluta a Ovela Interactive. El nostre sistema d'IA compleix estrictament amb el Reglament General de Protecció de Dades (RGPD), utilitzant xifratge d'extrem a extrem i servidors segurs per protegir tota la informació mèdica i personal dels pacients."
+          },
+          {
+            "question": "Pot la IA fer un triatge bàsic abans de derivar el pacient a un especialista?",
+            "answer": "Absolutament. El sistema pot realitzar una sèrie de preguntes protocol·litzades per avaluar la urgència o el tipus de tractament requerit. Això permet classificar les consultes abans que arribin al personal mèdic, estalviant temps valuós i millorant l'atenció al pacient."
+          },
+          {
+            "question": "Què passa amb les trucades que es reben durant els caps de setmana o festius?",
+            "answer": "La recepció digital mai tanca, operant les 24 hores dels 365 dies de l'any. Els pacients reben respostes immediates i poden agendar visites fins i tot quan la clínica és tancada, evitant així la pèrdua de nous clients cap a la competència."
+          },
+          {
+            "question": "És gaire cara la implementació d'una IA comparat amb contractar més personal?",
+            "answer": "La inversió en una recepcionista digital d'Ovela representa una fracció del cost salarial de l'expansió del personal físic. Elimina costos de seguretat social i formació, oferint un retorn de la inversió ràpid gràcies a l'augment del volum de cites gestionades correctament."
+          },
+          {
+            "question": "Els pacients de més edat se sentiran còmodes parlant amb una IA?",
+            "answer": "Hem dissenyat una interfície de veu natural i empàtica que s'allunya dels robots tradicionals de menú tancat. La conversa és oberta i directa, similar a parlar amb una persona, la qual cosa facilita que pacients de totes les edats s'hi sentin còmodes i ben atesos."
+          },
+          {
+            "question": "Podem personalitzar el 'to de veu' de la IA perquè reflecteixi la marca de la nostra clínica?",
+            "answer": "Sí, cada empleat digital és personalitzat per reflectir la identitat de la teva clínica. Podem ajustar el nivell de formalitat, el vocabulari especialitzat i la calidesa del missatge per garantir que la imatge de marca de la vostra consulta a Catalunya es mantingui intacta."
+          }
+        ]
+      }
+    },
+    "ai-digital-employees": {
+      "es": {
+        "seoTitle": "Empleados Digitales con IA: El Futuro de su Empresa | Ovela Interactive",
+        "seoDescription": "Optimice su negocio con empleados digitales de IA. Mejore la atención al cliente 24/7 en clínicas e inmobiliarias. Ahorre costes y agende citas hoy mismo.",
+        "tagline": "Representantes de IA personalizados: despliegue en semanas a una fracción del coste operativo.",
+        "heroIntro": "Un empleado digital de IA es un embajador interactivo en tiempo real —con voz, vídeo y chat— entrenado específicamente con el ADN de su marca y servicios. Desde Marbella hasta Barcelona, nuestra tecnología atiende a cada cliente personalmente, resuelve dudas complejas y gestiona citas en el idioma nativo del visitante. Es la evolución del talento humano: un profesional incansable disponible las 24 horas que garantiza que ninguna oportunidad de negocio se pierda por barreras idiomáticas o tiempos de espera.",
+        "faqs": [
+          {
+            "question": "¿Qué es exactamente un empleado digital de IA y en qué se diferencia de un chatbot?",
+            "answer": "A diferencia de un chatbot tradicional basado en botones, un empleado digital es una interfaz humana que interactúa mediante voz y vídeo en tiempo real. Utiliza inteligencia artificial generativa para comprender el contexto, mantener conversaciones fluidas y representar la imagen de marca de forma profesional y empática."
+          },
+          {
+            "question": "¿Cómo puede ayudar un embajador de IA en el sector inmobiliario en la Costa del Sol?",
+            "answer": "Permite captar y filtrar leads internacionales de forma inmediata, respondiendo dudas sobre propiedades en múltiples idiomas y coordinando visitas. Esto es vital en mercados como Marbella o Madrid, donde la rapidez y el trato multilingüe definen el cierre de una venta premium."
+          },
+          {
+            "question": "¿Es posible integrar la IA con mi sistema de gestión de citas para clínicas?",
+            "answer": "Nuestros empleados digitales se integran directamente con su CRM y calendarios existentes para gestionar agendas sin intervención humana. El sistema confirma citas, gestiona cancelaciones y actualiza la base de datos de pacientes automáticamente, cumpliendo con los estándares de privacidad requeridos."
+          },
+          {
+            "question": "¿En cuántos idiomas puede trabajar el empleado digital?",
+            "answer": "El sistema es inherentemente políglota y puede alternar entre más de 50 idiomas, incluidos el español, catalán, inglés, alemán y francés. Esto asegura que cualquier inversor o turista internacional en España sea atendido con la máxima cortesía en su lengua materna."
+          },
+          {
+            "question": "¿Cuánto tiempo se tarda en implementar esta tecnología en una empresa española?",
+            "answer": "El despliegue completo suele completarse en un plazo de dos a cuatro semanas. Tras una fase inicial de entrenamiento con sus materiales corporativos y protocolos de venta, el empleado digital está listo para interactuar con clientes reales en su sitio web o pantallas físicas."
+          },
+          {
+            "question": "¿Cómo se garantiza que la IA no dé información errónea sobre mis servicios?",
+            "answer": "Entrenamos cada IA exclusivamente con su 'fuente de verdad' corporativa: catálogos, manuales de servicio y Preguntas Frecuentes. Implementamos barreras de seguridad (guardrails) para que el representante digital solo proporcione datos verificados y actúe bajo el tono de voz específico de su empresa."
+          },
+          {
+            "question": "¿Cuál es el retorno de la inversión (ROI) esperado?",
+            "answer": "La inversión suele amortizarse en los primeros meses mediante la reducción radical de costes operativos y el aumento en la tasa de conversión de leads. Al atender consultas fuera del horario comercial, recupera clientes que su competencia suele perder por falta de respuesta inmediata."
+          },
+          {
+            "question": "¿Necesito conocimientos técnicos avanzados para gestionar mi empleado de IA?",
+            "answer": "En absoluto; en Ovela Interactive nos encargamos del desarrollo, entrenamiento y mantenimiento técnico. Usted recibirá un panel de control intuitivo con analíticas detalladas sobre las conversaciones y los leads captados, permitiéndole centrarse únicamente en la estrategia de su negocio."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Employé Digital IA : Recrutez votre expert 24/7 | Ovela Interactive",
+        "seoDescription": "Optimisez votre rentabilité avec un employé digital IA. Experts en relation client, conformes RGPD et disponibles 24/7. Découvrez nos solutions sur mesure.",
+        "tagline": "Une expertise incarnée par l'IA, déployée en quelques semaines pour une fraction du coût habituel.",
+        "heroIntro": "L'employé digital IA redéfinit l'excellence opérationnelle. Plus qu'un simple outil, il s'agit d'un représentant interactif — voix, vidéo et chat — totalement imprégné de l'ADN de votre marque et formé sur vos services spécifiques. Il accueille chaque visiteur avec le standing de votre entreprise, traite les objections, planifie les rendez-vous et qualifie vos leads sans interruption. Offrez à votre entreprise la rigueur d'un collaborateur d'élite combinée à la puissance technologique de l'IA.",
+        "faqs": [
+          {
+            "question": "Quelle est la différence entre un employé digital IA et un chatbot classique ?",
+            "answer": "Contrairement aux chatbots basés sur des arbres de décision rigides, l'employé digital utilise l'IA générative pour comprendre les nuances du langage naturel. Il offre une interaction fluide par la voix ou la vidéo, simulant une présence humaine capable de résoudre des problèmes complexes plutôt que de simples réponses automatiques."
+          },
+          {
+            "question": "Vos solutions d'IA sont-elles conformes au RGPD en France ?",
+            "answer": "La protection des données est au cœur de notre architecture. Toutes nos solutions sont conçues pour respecter strictement le RGPD, garantissant que les interactions avec vos clients français et européens sont sécurisées, avec un hébergement des données conforme aux normes de l'UE."
+          },
+          {
+            "question": "Comment l'IA peut-elle s'intégrer dans le secteur du luxe ou de l'hôtellerie ?",
+            "answer": "Dans le luxe, l'excellence du service est primordiale. Nos employés digitaux adoptent un registre de langue soutenu et une présentation visuelle élégante, agissant comme des concierges virtuels capables de guider vos clients VIP avec la précision et la courtoisie exigées par votre standing."
+          },
+          {
+            "question": "Quel est le délai moyen pour déployer un employé virtuel opérationnel ?",
+            "answer": "Grâce à notre infrastructure propriétaire chez Ovela Interactive, un déploiement complet prend généralement entre 3 et 6 semaines. Cela inclut l'entraînement de l'IA sur vos documents internes, la personnalisation de son apparence et l'intégration technique à vos systèmes existants."
+          },
+          {
+            "question": "L'IA peut-elle réellement prendre des rendez-vous sans intervention humaine ?",
+            "answer": "Absolument. Nos employés digitaux sont synchronisés en temps réel avec vos agendas (Google, Outlook, etc.). Ils vérifient les disponibilités, confirment les créneaux avec le client et notifient vos équipes instantanément, éliminant ainsi toute friction administrative."
+          },
+          {
+            "question": "Est-il possible de personnaliser la voix et l'apparence de l'IA ?",
+            "answer": "La personnalisation est totale pour garantir la cohérence de votre image de marque. Nous pouvons créer un avatar sur mesure ou utiliser l'image d'un collaborateur existant, tout en ajustant le ton de la voix pour qu'il soit professionnel, chaleureux ou institutionnel selon votre besoin."
+          },
+          {
+            "question": "Quel est le retour sur investissement d'un employé digital ?",
+            "answer": "Le ROI est immédiat par la réduction des coûts opérationnels et l'augmentation du taux de conversion des leads. Un employé digital coûte environ 70% de moins qu'un recrutement humain équivalent à temps plein, tout en assurant une disponibilité 24h/24 et 7j/7 sans aucun coût de formation continue."
+          },
+          {
+            "question": "L'IA peut-elle parler plusieurs langues pour une clientèle internationale ?",
+            "answer": "Oui, nos solutions sont nativement polyglottes. Votre employé digital peut basculer instantanément entre le français, l'anglais, l'allemand ou toute autre langue, permettant une expérience client fluide sans les coûts liés à l'embauche de personnel multilingue."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI Digitale Mitarbeiter: Skalierbare Effizienz | Ovela Interactive",
+        "seoDescription": "Optimieren Sie Ihre Geschäftsprozesse mit KI-Avataren. DSGVO-konform, rund um die Uhr einsatzbereit und voll integrierbar. Jetzt ROI berechnen lassen.",
+        "tagline": "Maßgeschneiderte KI-Mitarbeiter: Maximale Produktivität bei minimalen Betriebskosten – in wenigen Wochen einsatzbereit.",
+        "heroIntro": "Ein digitaler KI-Mitarbeiter ist weit mehr als ein Standard-Chatbot; er ist eine interaktive Full-Service-Schnittstelle in Echtzeit. Durch die nahtlose Integration von Voice, Video und Chat agiert er als vollständig trainierter Markenbotschafter, der Kundenanfragen präzise bearbeitet und qualifizierte Leads generiert. Er arbeitet 24/7, spricht jede Sprache Ihrer Zielgruppe fließend und garantiert eine messbare Steigerung der Prozesseffizienz bei gleichzeitiger Reduzierung der Personalkosten.",
+        "faqs": [
+          {
+            "question": "Was unterscheidet einen digitalen KI-Mitarbeiter von einem herkömmlichen Chatbot?",
+            "answer": "Während klassische Chatbots auf starren Entscheidungsbäumen basieren, nutzen digitale Mitarbeiter generative KI und NLP, um komplexe Kontexte zu verstehen. Sie agieren multimodal über Video und Sprache, führen echte Beratungsgespräche und können tiefergehende Transaktionen in Ihren Backend-Systemen ausführen."
+          },
+          {
+            "question": "Wie wird die DSGVO-Konformität bei der Nutzung von KI-Mitarbeitern sichergestellt?",
+            "answer": "Datensicherheit hat oberste Priorität. Unsere Lösungen werden nach europäischen Sicherheitsstandards implementiert, wobei Datenverschlüsselung und strikte Zugriffskontrollen gewährleisten, dass personenbezogene Informationen gemäß der DSGVO verarbeitet werden."
+          },
+          {
+            "question": "In welche bestehenden Systeme lassen sich die KI-Lösungen integrieren?",
+            "answer": "Die digitalen Mitarbeiter von Ovela Interactive verfügen über flexible API-Schnittstellen. Eine nahtlose Anbindung an gängige CRM-Systeme, ERP-Software sowie Terminbuchungstools wie Calendly oder Microsoft Outlook ist standardmäßig vorgesehen."
+          },
+          {
+            "question": "Wie hoch ist der tatsächliche ROI eines digitalen Mitarbeiters?",
+            "answer": "Der Return on Investment ergibt sich aus der sofortigen Senkung der Cost-per-Lead und der Entlastung des Bestandspersonals von repetitiven Aufgaben. In der Regel amortisieren sich die Implementierungskosten bereits innerhalb der ersten sechs Monate durch gesteigerte Konversionsraten und 24/7-Erreichbarkeit."
+          },
+          {
+            "question": "Wie lange dauert die Implementierungsphase bis zum Go-Live?",
+            "answer": "Ein einsatzbereiter, kundenspezifisch trainierter KI-Mitarbeiter wird üblicherweise innerhalb von 4 bis 8 Wochen bereitgestellt. Dies umfasst das Training auf Basis Ihrer Unternehmensdaten, die technische Integration und eine umfassende Testphase zur Qualitätssicherung."
+          },
+          {
+            "question": "Kann der KI-Mitarbeiter komplexe Beratungsgespräche führen?",
+            "answer": "Ja, durch das Training mit Ihren spezifischen Fachdaten und Whitepapern erreicht die KI ein Expertenniveau in Ihrem Fachbereich. Sie erkennt Nuancen in Kundenanfragen und kann gezielte Produktempfehlungen aussprechen, die auf den individuellen Bedürfnissen des Nutzers basieren."
+          },
+          {
+            "question": "Welche Branchen profitieren am stärksten von der KI-Automatisierung?",
+            "answer": "Besonders hohe Effizienzgewinne verzeichnen das Gesundheitswesen (Patientenkommunikation), die Immobilienbranche (Objektpräsentationen) und der gehobene Dienstleistungssektor. Überall dort, wo Erstkontakt und Terminierung kritische Erfolgsfaktoren sind, bietet die KI signifikante Vorteile."
+          },
+          {
+            "question": "Ist die KI in der Lage, Termine direkt im Kalender zu buchen?",
+            "answer": "Absolut. Der digitale Mitarbeiter prüft Verfügbarkeiten in Echtzeit und trägt Termine direkt in Ihren Kalender ein. Nach der Buchung erfolgt automatisch die Bestätigung an den Kunden sowie die Synchronisation mit Ihrem CRM-System."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Funcionários Digitais IA: A Evolução da Sua Equipe | Ovela Interactive",
+        "seoDescription": "Contrate representantes digitais de IA personalizados. Automatize vendas e recepção com tecnologia de voz e vídeo. Melhore seu ROI e escale hoje mesmo.",
+        "tagline": "Representantes digitais personalizados: prontos em semanas pelo custo de uma única contratação.",
+        "heroIntro": "Um funcionário digital de IA é um representante interativo em tempo real — voz, vídeo e chat — treinado especificamente com a identidade e o tom de voz da sua marca. Ele recebe cada visitante, soluciona dúvidas complexas, agenda reuniões e qualifica leads em qualquer idioma, 24 horas por dia. É a evolução da força de trabalho moderna: a eficiência de um colaborador de elite com a escalabilidade infinita da inteligência artificial.",
+        "faqs": [
+          {
+            "question": "O que é exatamente um funcionário digital de IA?",
+            "answer": "Diferente de sistemas básicos, o funcionário digital é uma presença virtual interativa que utiliza processamento de linguagem natural e avatares realistas para conversar com clientes. Ele atua como um recepcionista ou vendedor humano, capaz de processar informações em tempo real e executar tarefas operacionais complexas dentro do seu ecossistema digital."
+          },
+          {
+            "question": "Como a IA pode ajudar no mercado imobiliário em Portugal ou no Brasil?",
+            "answer": "No setor imobiliário, a IA atua como apresentadora de propriedades, atendendo investidores internacionais em múltiplos idiomas instantaneamente. Ela qualifica o interesse do lead, agenda visitas presenciais e fornece detalhes técnicos sobre empreendimentos em Lisboa ou São Paulo, garantindo que nenhum contato se perca por fuso horário."
+          },
+          {
+            "question": "Qual a diferença entre um funcionário digital e um chatbot comum?",
+            "answer": "Enquanto o chatbot é limitado a fluxos de texto rígidos, o funcionário digital entende contextos e nuances, oferecendo suporte por voz e vídeo de alta fidelidade. Ele proporciona uma experiência humanizada e empática, sendo capaz de resolver problemas reais em vez de apenas repetir respostas pré-programadas."
+          },
+          {
+            "question": "É difícil integrar essa inteligência artificial ao meu site ou CRM?",
+            "answer": "A integração é simples e ágil, sendo realizada pela nossa equipe de especialistas em poucas semanas. O funcionário digital é conectado diretamente às suas ferramentas de gestão (CRM) e calendários, garantindo que todos os dados coletados sejam sincronizados automaticamente com seu fluxo de vendas."
+          },
+          {
+            "question": "Quais são as principais vantagens para o setor de hotelaria e bem-estar?",
+            "answer": "Hotéis e clínicas utilizam a IA para recepção 24/7, respondendo dúvidas sobre serviços, check-in e procedimentos médicos de forma acolhedora. Isso elimina gargalos no atendimento telefônico, aumenta a satisfação do hóspede e permite que sua equipe física foque em tarefas que exigem toque humano presencial."
+          },
+          {
+            "question": "Em quais idiomas o representante digital pode atender?",
+            "answer": "A tecnologia é nativamente multilíngue e pode atender clientes em português, inglês, espanhol, francês, chinês e dezenas de outros idiomas. O sistema detecta automaticamente a língua do usuário, garantindo uma comunicação fluida e personalizada para mercados globais e turísticos."
+          },
+          {
+            "question": "Quanto tempo leva para implementar um funcionário digital?",
+            "answer": "Nosso processo de desenvolvimento e treinamento personalizado leva geralmente entre duas a quatro semanas. Esse tempo inclui a imersão na base de conhecimento da sua empresa para garantir que a IA fale com a autoridade e o estilo de comunicação exato da sua marca."
+          },
+          {
+            "question": "Qual é o retorno sobre o investimento (ROI) desta tecnologia?",
+            "answer": "O ROI é percebido imediatamente através da redução de custos operacionais com call centers e no aumento das taxas de conversão de leads. Um funcionário digital custa uma fração de um salário humano e trabalha sem interrupções, maximizando todas as oportunidades de venda que chegarem ao seu site."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Empleats Digitals amb IA: El futur de les empreses | Ovela Interactive",
+        "seoDescription": "Optimització empresarial amb recepcionistes i ambaixadors d'IA. Millori l'atenció al client i les conversions amb tecnologia de veu i vídeo en temps real.",
+        "tagline": "Representants d'IA personalitzats en setmanes, transformant la productivitat del teixit empresarial català.",
+        "heroIntro": "Un empleat digital amb IA és un representant interactiu en temps real —veu, vídeo i xat— format exclusivament en l'ADN de la seva marca i serveis. Aquest ambaixador digital saluda cada visitant, resol dubtes complexos, gestiona reserves i qualifica clients potencials les 24 hores del dia. És l'equivalent tecnològic de tenir el seu millor actiu humà disponible sempre, en qualsevol idioma i a un cost significativament inferior, integrant-se perfectament en l'estètica i valors de les empreses punteres de Barcelona i de tot el país.",
+        "faqs": [
+          {
+            "question": "Què és exactament un empleat digital amb IA i com es diferencia d'un xatbot?",
+            "answer": "A diferència dels xatbots mecànics basats en regles, un empleat digital utilitza Intel·ligència Artificial generativa per interactuar de forma fluida mitjançant veu i imatge. Actua com un membre real de l'equip que entén el context, aprèn del catàleg de la seva empresa i ofereix una experiència immersiva i personalitzada en lloc de respostes predefinides."
+          },
+          {
+            "question": "Com pot ajudar una recepció d'IA a una clínica o centre sanitari a Catalunya?",
+            "answer": "Els nostres empleats digitals gestionen el triatge inicial, programen cites i responen preguntes sobre tractaments mèdics de manera empàtica i immediata. Això permet que el personal de recepció es concentri en l'atenció presencial de qualitat, eliminant les esperes telefòniques i millorant la satisfacció del pacient."
+          },
+          {
+            "question": "Es pot configurar l'IA per parlar perfectament en català i castellà?",
+            "answer": "Absolutament. Les nostres solucions són nàtives i multilingües, garantint una atenció en català i castellà amb el registre i to adequats per al mercat local. Això assegura que la comunicació amb el client sigui natural i professional, respectant la realitat lingüística de cada negoci."
+          },
+          {
+            "question": "Quin és el temps mitjà per desplegar un representant digital a la meva empresa?",
+            "answer": "El procés d'implementació d'Ovela Interactive és àgil, normalment completant-se en poques setmanes. Des de la càrrega de dades i l'entrenament de l'IA fins a la integració en el seu lloc web, ens encarreguem que el representant estigui operatiu i generant ROI en un temps rècord."
+          },
+          {
+            "question": "Com beneficia aquesta tecnologia al sector immobiliari i de real estate?",
+            "answer": "Un ambaixador digital pot mostrar propietats, filtrar compradors segons pressupost i captar leads qualificats a qualsevol hora del dia o de la nit. En un mercat tan competitiu com el de Barcelona, oferir una resposta instantània marca la diferència entre guanyar un client o perdre'l davant la competència."
+          },
+          {
+            "question": "És rendible la inversió en empleats digitals per a una PIME?",
+            "answer": "Sí, el retorn de la inversió és elevat ja que redueix els costos operatius d'atenció al client fins a un 70%. Per una fracció del sou d'un empleat a jornada completa, disposa d'un sistema que mai dorm, no comet errors humans i escala el seu negoci sense augmentar el personal estructural."
+          },
+          {
+            "question": "Quins tipus de dades s'utilitzen per entrenar el meu empleat d'IA?",
+            "answer": "Utilitzem tota la informació rellevant del seu negoci: catàlegs de productes, historial de serveis, filosofia de marca i base de coneixements tècnics. Tota aquesta informació es processa de forma segura i privada per garantir que l'IA només proporcioni respostes precises i alineades amb la seva estratègia comercial."
+          },
+          {
+            "question": "L'IA pot gestionar directament la meva agenda i fer reserves?",
+            "answer": "Sí, els nostres empleats digitals s'integren completament amb el seu programari de gestió (CRM, calendaris de Google, sistemes de reserves). Poden confirmar disponibilitats en temps real, realitzar cobraments i enviar recordatoris automàtics, tancant el cicle de venda sense intervenció humana."
+          }
+        ]
+      }
+    }
+  },
+  "categories": {
+    "interactive-marketing": {
+      "es": {
+        "seoTitle": "Embajadores Digitales IA: Marketing Interactivo | Ovela Interactive",
+        "seoDescription": "Transforme su presencia digital con embajadores IA. Captación de leads y atención multilingüe 24/7 para el sector inmobiliario y clínicas en España.",
+        "intro": "Descubra cómo las marcas líderes están sustituyendo las campañas estáticas por embajadores digitales con IA: una experiencia inmersiva de voz y vídeo que interactúa con sus clientes en cualquier idioma, las 24 horas del día.",
+        "longIntro": "En un mercado tan relacional como el español, el marketing interactivo es la clave para convertir una visita web en una relación de confianza. Ya no basta con mostrar imágenes; el cliente de lujo en Marbella o el paciente internacional en Barcelona busca inmediatez y cercanía. En esta sección, presentamos demostraciones reales de embajadores de marca diseñados para inmobiliarias exclusivas, clínicas de estética y retail de alta gama. Estos empleados digitales no solo saludan: explican su propuesta de valor, resuelven dudas complejas en tiempo real y cualifican leads de forma natural. Con Ovela Interactive, su marca deja de ser un escaparate pasivo para convertirse en un anfitrión inteligente que se adapta a cada visitante, garantizando una ventaja competitiva medible.",
+        "faqs": [
+          {
+            "question": "¿Cómo ayuda un embajador IA a mi inmobiliaria en la Costa del Sol?",
+            "answer": "Un embajador digital actúa como un primer filtro cualificado, atendiendo a inversores internacionales en su propio idioma a cualquier hora del día. Puede mostrar villas, explicar calidades de construcción y concertar visitas físicas, asegurando que su equipo comercial reciba solo leads de alta intención."
+          },
+          {
+            "question": "¿Es posible integrar la IA en mi estrategia de marketing actual?",
+            "answer": "Absolutamente. Nuestros embajadores se integran en su ecosistema digital actual (web, redes sociales o kioscos físicos) sin necesidad de programar. Funcionan como un activo de marca propio que refuerza el tono de voz y la identidad visual de su empresa de forma coherente."
+          },
+          {
+            "question": "¿En cuántos idiomas puede interactuar el avatar digital?",
+            "answer": "Nuestra tecnología es nativamente multilingüe, soportando más de 50 idiomas con acentos naturales. Esto es fundamental para negocios en Madrid o las islas que reciben clientes de toda Europa, garantizando que nadie se sienta excluido por la barrera del idioma."
+          },
+          {
+            "question": "¿Qué diferencia hay entre este sistema y un chatbot tradicional?",
+            "answer": "A diferencia de los chatbots de texto limitados, nuestros embajadores utilizan vídeo y voz con una apariencia humana y empática. La respuesta es instantánea y conversacional, lo que genera una mayor retención del usuario y una percepción de marca mucho más sofisticada y tecnológica."
+          },
+          {
+            "question": "¿Cómo se gestionan los datos y leads captados por la IA?",
+            "answer": "Toda la información recopilada se sincroniza automáticamente con su CRM habitual en cumplimiento con la RGPD española. El sistema identifica las necesidades específicas del cliente y categoriza el lead, permitiendo que su equipo humano actúe con toda la información relevante en mano."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Ambassadeur Digital IA : Marketing Interactif | Ovela Interactive",
+        "seoDescription": "Transformez votre audience avec nos ambassadeurs digitaux IA. Engagement temps réel, storytelling immersif et conformité RGPD pour marques de luxe et retail.",
+        "intro": "Découvrez comment les marques visionnaires remplacent les campagnes statiques par des ambassadeurs IA multilingues. Une présence humaine digitale, disponible 24h/24 sur tous vos supports, pour une interaction client sans précédent.",
+        "longIntro": "Le marketing interactif franchit une nouvelle étape : celle de la conversion active. Pour les secteurs du luxe, de la mode et du lifestyle, l'enjeu n'est plus seulement de diffuser un message, mais de créer une rencontre. Nos ambassadeurs digitaux pilotés par l'IA incarnent l'identité de votre marque avec une élégance et une précision technique irréprochables. Chaque démo présente un hôte virtuel capable d'accueillir vos visiteurs en temps réel, de lever les freins à l'achat et de qualifier vos leads avec une finesse chirurgicale. En intégrant ces visages numériques à vos écosystèmes, vous prolongez la durée de session, collectez des données propriétaires précieuses et offrez aux directeurs artistiques un levier de communication vivant, capable d'évoluer au rythme de vos collections.",
+        "faqs": [
+          {
+            "question": "Quelles sont les garanties concernant la protection des données et le RGPD ?",
+            "answer": "La protection des données est au cœur de notre architecture. Nos collaborateurs digitaux sont conçus pour respecter strictement le cadre du RGPD, garantissant que chaque interaction client est sécurisée et que le consentement est géré de manière transparente et éthique."
+          },
+          {
+            "question": "Comment l'IA peut-elle respecter l'image de marque d'une maison de luxe ?",
+            "answer": "Nous personnalisons l'apparence, le ton de voix et le registre de langue de l'ambassadeur pour qu'ils s'alignent parfaitement sur votre charte de prestige. Contrairement à un chatbot classique, l'IA d'Ovela offre une fluidité verbale et une élégance visuelle dignes d'une expérience en boutique physique."
+          },
+          {
+            "question": "L'ambassadeur digital peut-il gérer des interactions en plusieurs langues ?",
+            "answer": "Absolument. Nos solutions sont nativement multilingues et capables de détecter la langue de l'utilisateur instantanément. Cela permet d'offrir un accueil personnalisé à une clientèle internationale sans avoir besoin de multiplier les actifs créatifs."
+          },
+          {
+            "question": "Quelle est la différence entre un ambassadeur IA et une vidéo marketing classique ?",
+            "answer": "La vidéo classique est un monologue linéaire, tandis que l'ambassadeur IA engage un dialogue. Il réactive l'intérêt du visiteur en répondant spécifiquement à ses questions, ce qui réduit considérablement le taux de rebond et augmente le taux de transformation."
+          },
+          {
+            "question": "Est-il complexe d'intégrer cette technologie sur un site e-commerce existant ?",
+            "answer": "L'intégration est fluide et optimisée pour ne pas alourdir le temps de chargement de vos pages. Nos ambassadeurs IA sont compatibles avec la majorité des CMS et outils de tracking actuels, permettant une mesure précise du ROI dès le premier jour."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "Interaktives Marketing mit KI-Markenbotschaftern | Ovela Interactive",
+        "seoDescription": "Maximieren Sie Ihre Conversion-Rate mit KI-Digital-Ambassadors. Erleben Sie skalierbare Kundeninteraktion in Echtzeit – 24/7, mehrsprachig & DSGVO-konform.",
+        "intro": "Ersetzen Sie statische Kampagnen durch proaktive KI-Markenbotschafter. Unsere digitalen Experten agieren via Video, Voice und Chat auf jedem Endgerät, um Besucher in Echtzeit zu beraten und messbare Leads zu generieren.",
+        "longIntro": "Im hart umkämpften digitalen Markt entscheidet die Interaktionsqualität über den ROI. Während klassische Werbeformate oft an Streuverlusten leiden, bieten unsere KI-basierten digitalen Markenbotschafter eine messbare Alternative für High-End-Retail, Lifestyle-Marken und Agenturen. Diese Video-First-KI fungiert als permanenter Host auf Ihrer Plattform: Sie begrüßt Besucher persönlich, klärt objektspezifische Rückfragen proaktiv und führt Qualifizierungsgespräche zur Lead-Generierung. Statt passiver Inhalte liefern wir eine dynamische Verkaufsschnittstelle, die sich nahtlos in bestehende CRM-Systeme integriert. Das Ergebnis für deutsche Unternehmen sind signifikant längere Verweildauern, eine präzise Attribution und eine Skalierbarkeit der Kundenansprache, die mit manuellem Personal wirtschaftlich nicht abbildbar wäre.",
+        "faqs": [
+          {
+            "question": "Wie hoch ist der Implementierungsaufwand für KI-Botschafter?",
+            "answer": "Die Integration erfolgt nahtlos über Web-Schnittstellen und erfordert keine tiefgreifenden Änderungen an Ihrer IT-Infrastruktur. Nach der Definition der Wissensbasis und des Brand-Designs ist das System innerhalb weniger Wochen einsatzbereit und voll funktionsfähig."
+          },
+          {
+            "question": "Ist die Nutzung der KI-Markenbotschafter DSGVO-konform?",
+            "answer": "Ja, Sicherheit und Datenschutz haben bei Ovela Interactive höchste Priorität. Die Datenerfassung und -verarbeitung erfolgt nach strengen europäischen Standards, wobei alle Interaktionen transparent und gemäß der geltenden Datenschutzgrundverordnung verschlüsselt werden."
+          },
+          {
+            "question": "Können die digitalen Mitarbeiter auch komplexe Fachfragen beantworten?",
+            "answer": "Unsere KI-Ambassadors werden mit Ihren spezifischen Produktdaten und FAQs trainiert, sodass sie präzise Auskünfte auf Expertenniveau geben. Bei Grenzfällen kann das System zudem eine Nahtlose Übergabe an menschliche Mitarbeiter oder ein Lead-Formular einleiten."
+          },
+          {
+            "question": "Wie wird der Erfolg und ROI der KI-Kampagnen gemessen?",
+            "answer": "Über ein integriertes Dashboard erhalten Sie detaillierte Kennzahlen zu Interaktionsraten, Verweildauer und Conversion-Events. Diese harten Daten ermöglichen eine präzise Performance-Analyse und belegen den direkten Einfluss auf die Customer Journey."
+          },
+          {
+            "question": "Funktionieren die KI-Hosts auch auf mobilen Endgeräten?",
+            "answer": "Absolut. Die Technologie ist für Responsive Design optimiert und liefert auf Smartphones, Tablets und Desktop-PCs eine identisch hohe Video- und Sprachqualität. Dies stellt eine konsistente Markenführung über alle digitalen Touchpoints hinweg sicher."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Embaixadores Digitais de IA: Marketing Interativo | Ovela Interactive",
+        "seoDescription": "Transforme leads em vendas com embaixadores digitais 24h. IA com voz e vídeo para luxo, imobiliário e varejo. Conheça o futuro do marketing humano e interativo.",
+        "intro": "Descubra como grandes marcas estão substituindo campanhas estáticas por embaixadores digitais sempre ativos. Atendimento humano por voz, vídeo e chat em qualquer idioma, garantindo presença total 24 horas por dia, em qualquer dispositivo.",
+        "longIntro": "O marketing interativo deixou de ser tendência para se tornar o diferencial entre um site que apenas informa e um canal que converte de verdade. Nesta seleção, apresentamos demonstrações de embaixadores de IA aplicados a setores de alto padrão, como moda de luxo, hospitalidade e o mercado imobiliário premium de São Paulo a Lisboa. Cada avatar digital atua como um anfitrião em tempo real: ele recebe o visitante, narra a história da marca, resolve objeções e captura leads qualificados no momento exato do interesse. O resultado é um aumento expressivo no tempo de permanência e na conversão, oferecendo aos diretores criativos um ativo dinâmico que se adapta ao público, superando as limitações dos formatos tradicionais de publicidade.",
+        "faqs": [
+          {
+            "question": "O embaixador digital consegue falar português do Brasil e de Portugal?",
+            "answer": "Sim, nossa tecnologia identifica a origem do usuário e adapta o sotaque e as expressões locais automaticamente. Isso garante uma comunicação fluida e natural, essencial para marcas que operam entre o mercado brasileiro e o europeu."
+          },
+          {
+            "question": "Como a IA ajuda no atendimento jurídico ou imobiliário?",
+            "answer": "A IA atua como um apresentador de propriedades ou consultor jurídico inicial, explicando contratos e detalhes técnicos de forma didática. Ela filtra as dúvidas mais comuns e encaminha apenas os leads realmente qualificados para a sua equipe comercial."
+          },
+          {
+            "question": "É possível integrar o embaixador de vídeo com o meu CRM?",
+            "answer": "Com certeza. Todas as informações coletadas durante a conversa, desde dados de contato até preferências de compra, são enviadas diretamente para o seu CRM em tempo real, otimizando o funil de vendas."
+          },
+          {
+            "question": "O avatar parece um robô ou a interação é humanizada?",
+            "answer": "Trabalhamos com processamento de linguagem natural de última geração e sincronia labial avançada. O objetivo é criar uma conexão empática, onde a voz e a expressão do embaixador transmitem a autoridade e o tom de voz da sua marca."
+          },
+          {
+            "question": "A implementação é demorada para campanhas de marketing?",
+            "answer": "Não, nossa plataforma foi desenhada para agilidade. Uma vez definido o roteiro e a identidade visual, o embaixador digital pode ser implementado em poucos dias, tornando-se um ativo escalável que funciona sem interrupções."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Ambaixadors Digitals amb IA: Màrqueting Interactiu | Ovela Interactive",
+        "seoDescription": "Transformi el seu negoci amb ambaixadors de marca digitals que interactuen en temps real. Solucions d'IA d'alt disseny per a empreses de Catalunya.",
+        "intro": "Descobreixi com les marques més innovadores estan substituint les campanyes estàtiques per ambaixadors digitals 24/7. Una experiència interactiva de veu i vídeo que respon en qualsevol idioma i des de qualsevol dispositiu, garantint una imatge impecable.",
+        "longIntro": "El màrqueting interactiu ja no és una tendència de futur, sinó l'element clau que diferencia un web informatiu d'un web d'alt rendiment. En aquesta galeria presentem demostracions d'ambaixadors de marca amb IA dissenyats per a l'ecosistema de Barcelona i Catalunya: des de boutiques de moda i clíniques d'estètica fins a estudis de disseny i real estate de luxe. Cada interactiu mostra la mateixa potència tecnològica: un amfitrió digital en temps real que saluda el visitant, narra el propòsit de la marca i resol objeccions al moment. El resultat és una retenció de l'usuari molt més alta i la captació de leads qualificats de forma orgànica. Els directors creatius de casa nostra disposen, per fi, d'un actiu que s'adapta al seu públic en lloc de dependre de formats rígids i obsolets.",
+        "faqs": [
+          {
+            "question": "L'ambaixador digital pot atendre els meus clients en català correctament?",
+            "answer": "Absolutament. Les nostres IA estan configurades per utilitzar un català natiu, genuí i adaptat al registre corporatiu que el seu negoci requereixi, evitant traduccions literals o calcs de l'espanyol."
+          },
+          {
+            "question": "Com millora aquesta tecnologia l'experiència de l'usuari al meu web?",
+            "answer": "A diferència d'un bot de xat convencional, un ambaixador digital ofereix una presència humana mitjançant vídeo i veu. Això genera una connexió emocional immediata, augmenta el temps de permanència i transmet una imatge de modernitat i proximitat."
+          },
+          {
+            "question": "És difícil d'implementar en una pàgina web ja existent?",
+            "answer": "No, la integració és senzilla i es realitza mitjançant un codi lleuger que no afecta la velocitat de càrrega del seu lloc. És totalment compatible amb els gestors de continguts més utilitzats pel sector creatiu i empresarial català."
+          },
+          {
+            "question": "Quins avantatges ofereix per a marques de luxe i disseny a Barcelona?",
+            "answer": "Permet mantenir l'exclusivitat oferint una atenció personalitzada les 24 hores del dia, sense esperes. És l'eina ideal per a showrooms digitals, immobiliària d'alt standing i clíniques que volen transmetre confiança i rigor des del primer clic."
+          },
+          {
+            "question": "Puc mesurar el retorn de la inversió (ROI) d'aquestes campanyes?",
+            "answer": "Sí, el sistema registra cada interacció, els dubtes més freqüents dels usuaris i la taxa de conversió de visitant a lead. Això permet optimitzar el missatge de marca basant-se en dades reals de comportament del seu públic objectiu."
+          }
+        ]
+      }
+    },
+    "wellness-spa": {
+      "es": {
+        "seoTitle": "AI Concierge para Hoteles, Spas y Clínicas | Ovela Interactive",
+        "seoDescription": "Optimice sus reservas y atención al cliente con conserjes digitales IA. Disponibilidad 24/7 y atención multilingüe para el sector wellness y hospitality.",
+        "intro": "Muchos centros de bienestar y hoteles pierden reservas clave por falta de atención nocturna o por barreras idiomáticas. Un conserje de IA liquida estas fricciones, atendiendo cada consulta de manera inmediata y profesional.",
+        "longIntro": "En sectores de alto nivel como el wellness y la hostelería en España, la atención al detalle es el motor de la rentabilidad. Centros de estética, clínicas privadas y hoteles boutique a menudo sufren una fuga de ingresos silenciosa: potenciales clientes abandonan la web al no recibir respuesta inmediata. Nuestras demostraciones muestran cómo un conserje con IA de Ovela Interactive transforma la experiencia del usuario. No es un chatbot genérico, sino un embajador digital que guía al huésped por tratamientos específicos, resuelve dudas sobre tarifas y disponibilidad, y cierra reservas en el idioma nativo del cliente. Desde Marbella hasta la Costa Brava, libere a su equipo de tareas repetitivas y asegure que ninguna consulta internacional quede sin respuesta, incluso fuera del horario comercial.",
+        "faqs": [
+          {
+            "question": "¿Cómo gestiona la IA a los clientes internacionales en zonas turísticas?",
+            "answer": "Nuestros conserjes digitales detectan automáticamente el idioma del usuario, ofreciendo una experiencia nativa en más de 30 idiomas. Esto es vital en mercados como Madrid, Barcelona o la Costa del Sol, donde la atención fluida en inglés, alemán o francés marca la diferencia entre una consulta y una reserva confirmada."
+          },
+          {
+            "question": "¿Se integra el conserje digital con mi sistema de reservas actual?",
+            "answer": "Sí, la IA de Ovela está diseñada para conectarse con los principales CRM y motores de reserva del sector hospitality y salud. El objetivo es que la conversión sea directa, actualizando la disponibilidad en tiempo real sin intervención manual del personal de recepción."
+          },
+          {
+            "question": "¿Qué ocurre si un cliente tiene una duda médica o técnica muy compleja?",
+            "answer": "El sistema está entrenado para resolver el 90% de las dudas frecuentes sobre servicios y logística. Ante consultas críticas que requieren criterio humano, la IA realiza un 'hand-off' o transferencia inteligente, recopilando los datos del cliente para que su equipo pueda contactarlo de forma prioritaria."
+          },
+          {
+            "question": "¿Es la voz y el tono de la IA personalizable para marcas de lujo?",
+            "answer": "Totalmente. Entendemos que un spa de lujo o una clínica estética requiere un registro sofisticado y empático. Configuramos la personalidad, el tono de voz y el vocabulario de la IA para que sea una extensión exacta de la identidad de su marca y sus valores de hospitalidad."
+          },
+          {
+            "question": "¿Cuánto tiempo se tarda en implementar esta tecnología en mi negocio?",
+            "answer": "El despliegue es ágil y eficiente. Tras una fase inicial de entrenamiento con su catálogo de servicios y protocolos, el conserje digital puede estar operativo en pocas semanas, permitiéndole notar una reducción en el volumen de llamadas rutinarias desde el primer mes."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Concierge IA pour Spa et Hôtellerie | Ovela Interactive",
+        "seoDescription": "Optimisez vos réservations 24/7 avec un concierge IA haut de gamme. Accueil multilingue, gestion des soins et conformité RGPD pour le luxe et le bien-être.",
+        "intro": "Maximisez vos réservations même en dehors des horaires d'ouverture. Notre concierge virtuel accueille vos clients, explique vos soins et convertit l'intérêt en rendez-vous, le tout dans la langue maternelle de vos visiteurs.",
+        "longIntro": "Dans les secteurs du bien-être et de l'hôtellerie française, chaque appel manqué est une opportunité perdue au profit de la concurrence. Les centres de thalassothérapie, spas de luxe et cliniques d'esthétique font face à un défi commun : offrir une assistance immédiate et personnalisée à une clientèle internationale exigeante. Nos démonstrations illustrent comment un concierge IA Ovela transforme cette expérience. En agissant comme une extension de votre front-desk, l'IA guide vos hôtes à travers votre carte de soins, répond aux questions sur les tarifs et sécurise les réservations en temps réel. Libéré des tâches répétitives et des barrières linguistiques, votre personnel sur site peut enfin se concentrer sur l'essentiel : l'excellence de l'accueil physique et le soin apporté au client.",
+        "faqs": [
+          {
+            "question": "Comment le concierge IA gère-t-il la confidentialité et le RGPD ?",
+            "answer": "La protection des données est notre priorité absolue pour le marché français. Nos solutions sont conçues pour respecter strictement le RGPD, garantissant que les informations personnelles et les détails des soins de vos clients sont traités de manière sécurisée et confidentielle."
+          },
+          {
+            "question": "L'IA est-elle capable de conseiller des soins spécifiques selon les besoins du client ?",
+            "answer": "Absolument. Nos agents virtuels sont formés sur votre catalogue de services pour recommander des cures ou des soins adaptés aux préférences exprimées par l'utilisateur. Cela permet une approche personnalisée qui valorise votre expertise dès le premier contact."
+          },
+          {
+            "question": "Le ton de l'IA est-il adapté aux codes de l'hôtellerie de luxe ?",
+            "answer": "Oui, nous paramétrons le registre de langue pour qu'il reflète l'élégance et la courtoisie propres à votre établissement. Le concierge utilise un français irréprochable et adopte une posture professionnelle qui respecte les standards de la haute hôtellerie."
+          },
+          {
+            "question": "L'outil peut-il se synchroniser avec notre logiciel de réservation actuel ?",
+            "answer": "Nos solutions d'IA s'intègrent via API aux principaux systèmes de gestion (PMS) et calendriers de réservation du marché. Cela permet une mise à jour des disponibilités en temps réel et une automatisation fluide sans doublon de saisie pour vos équipes."
+          },
+          {
+            "question": "Quelles sont les langues prises en charge pour la clientèle étrangère ?",
+            "answer": "Le concierge IA d'Ovela maîtrise plus de 50 langues de manière native. Que vos clients soient anglophones, sinophones ou arabophones, ils sont accueillis avec une fluidité naturelle, éliminant toute friction lors de la réservation de forfaits ou de séjours."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Concierge für Wellness & Spa: Buchungen steigern | Ovela Interactive",
+        "seoDescription": "Maximieren Sie Ihre Auslastung mit KI-Empfangsmitarbeitern. Automatisierte Buchungen, 24/7-Beratung für Spas und Hotels & volle Schnittstellen-Integration.",
+        "intro": "Unbeantwortete Anfragen nach Praxisschluss oder am Wochenende bedeuten direkten Umsatzverlust. Unsere KI-Concierges schließen diese Lücke, indem sie Gäste rund um die Uhr in ihrer Muttersprache beraten und Buchungsvorgänge fallabschließend bearbeiten.",
+        "longIntro": "In der Wellness- und Hotelleriebranche entscheiden oft Reaktionsgeschwindigkeit und Erreichbarkeit über die Belegung. Ein statisches Buchungsformular reicht heute nicht mehr aus, um anspruchsvolle Gäste zu konvertieren. Die untenstehenden Demos zeigen, wie unsere KI-Concierges als digitale Mitarbeiter agieren: Sie erklären komplexe Treatment-Pakete, prüfen Verfügbarkeiten in Echtzeit und erfassen Buchungen direkt im System – konsistent und präzise. Für deutsche Betriebe bedeutet dies nicht nur eine messbare Steigerung der Direct-Bookings, sondern auch eine signifikante Entlastung des Rezeptionspersonals von repetitiven Standardfragen. Dank nativer Mehrsprachigkeit werden internationale Gäste auf höchstem Niveau empfangen, während Ihr Team vor Ort den Fokus wieder auf den physischen Service am Gast legen kann.",
+        "faqs": [
+          {
+            "question": "Wie hoch ist der tatsächliche Implementierungsaufwand für unsere IT?",
+            "answer": "Die Einbindung erfolgt über eine unkomplizierte Schnittstelle (API) zu Ihren bestehenden Buchungssystemen wie MEWS oder Oracle. Unsere Experten übernehmen die Konfiguration, sodass für Sie kein nennenswerter technischer Eigenaufwand entsteht."
+          },
+          {
+            "question": "Kann die KI komplexe Behandlungsmodelle und Paketpreise korrekt erklären?",
+            "answer": "Ja, der KI-Concierge wird mit Ihren spezifischen Leistungsverzeichnissen und Protokollen trainiert. Er gibt präzise Auskünfte über Indikationen, Kontraindikationen und Inklusivleistungen Ihrer Spa-Angebote, genau wie ein geschulter Mitarbeiter."
+          },
+          {
+            "question": "Wie wird der Datenschutz (DSGVO) bei der Erfassung von Gastdaten gewährleistet?",
+            "answer": "Datensicherheit hat bei Ovela Interactive oberstes Gebot. Alle Systeme sind DSGVO-konform konfiguriert, nutzen Serverstandorte innerhalb der EU und verschlüsseln sämtliche Gästedaten nach aktuellsten Sicherheitsstandards."
+          },
+          {
+            "question": "Ist die KI in der Lage, Buchungen direkt in unseren Kalender einzutragen?",
+            "answer": "Absolut. Durch die bidirektionale Synchronisation mit Ihrem PMS oder Terminmanagement-Tool werden Termine in Echtzeit reserviert. Dies verhindert Überbuchungen und macht eine manuelle Übertragung durch Ihr Personal überflüssig."
+          },
+          {
+            "question": "In welchen Sprachen kann die KI die Gästeberatung durchführen?",
+            "answer": "Unsere KI-Lösungen sind nativ mehrsprachig und unterstützen über 30 Sprachen, darunter Englisch, Französisch und Spanisch. Der Gast wird automatisch in seiner bevorzugten Sprache betreut, was die Abbruchrate bei internationalen Buchungen massiv senkt."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Concierge de IA para Bem-Estar e Hotelaria | Ovela Interactive",
+        "seoDescription": "Transforme o atendimento do seu spa ou hotel com recepcionistas de IA. Automatize reservas e suporte multilíngue 24h com a Ovela Interactive.",
+        "intro": "Muitas reservas em centros de bem-estar e hotéis são perdidas fora do horário comercial ou por barreiras linguísticas. Um concierge de IA resolve esses três problemas simultaneamente, convertendo visitantes em hóspedes.",
+        "longIntro": "Spas, clínicas e hotéis enfrentam o mesmo vazamento silencioso de receita: visitantes chegam interessados, encontram informações estáticas e saem sem agendar. As demonstrações abaixo mostram a mudança quando um concierge de IA calmo e alinhado à sua marca substitui esse atrito. Ele guia os hóspedes por tratamentos, esclarece dúvidas sobre preços, recomenda pacotes e captura reservas no idioma nativo do cliente. Seja para o mercado de luxo em Portugal ou o crescente setor de bem-estar no Brasil, nossa IA acolhe o público internacional e converte consultas após o expediente em faturamento real. Sua equipe física fica livre de tarefas repetitivas, enquanto a taxa de conversão sobe desde o primeiro mês.",
+        "faqs": [
+          {
+            "question": "O concierge de IA consegue realizar agendamentos diretamente no meu sistema?",
+            "answer": "Sim, nossas soluções são desenvolvidas para se integrarem aos principais softwares de gestão de reservas de spas e hotéis. A IA verifica a disponibilidade em tempo real e finaliza o processo sem intervenção humana."
+          },
+          {
+            "question": "Como a IA lida com clientes estrangeiros que não falam português?",
+            "answer": "A IA da Ovela é verdadeiramente multilíngue, detectando e respondendo no idioma do cliente, seja inglês, espanhol, francês ou outros. Isso é essencial para propriedades em destinos turísticos como Algarve, Lisboa ou Rio de Janeiro."
+          },
+          {
+            "question": "A voz da IA soa natural ou parece um robô antigo?",
+            "answer": "Utilizamos tecnologia de voz de última geração com entonação humana, calorosa e profissional. O tom de voz é personalizado para refletir a sofisticação e a calma que o ambiente de bem-estar exige."
+          },
+          {
+            "question": "É possível personalizar as recomendações de pacotes e tratamentos?",
+            "answer": "Com certeza. Treinamos a IA com o seu menu de serviços completo, permitindo que ela faça upsell de tratamentos complementares e sugira pacotes personalizados de acordo com o perfil de cada hóspede."
+          },
+          {
+            "question": "Qual é a facilidade de implementação para quem já tem uma operação em curso?",
+            "answer": "A implementação é ágil e pouco invasiva. Nós cuidamos da configuração técnica para que a IA comece a atender seus clientes no site ou WhatsApp em poucas semanas, com suporte total da equipe Ovela."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Concierges d'IA per a Wellness i Hoteleria | Ovela Interactive",
+        "seoDescription": "Digitalitza la teva recepció amb assistents d'IA que parlen català i 50 idiomes més. Millora l'experiència del client i capta reserves 24/7 de forma nativa.",
+        "intro": "Moltes reserves de wellness i hoteleria es perden fora de l'horari comercial o per barreres lingüístiques. Un concierge d'IA resol aquests obstacles, convertint cada visita en una cita confirmada, a qualsevol hora.",
+        "longIntro": "A Catalunya, el sector del benestar i l'hoteleria exigeix un tracte exquisit i una imatge impecable. Tot i així, molts centres de wellness, clíniques i hotels de luxe pateixen una fuga silenciosa d'ingressos: clients potencials que marxen en no trobar respostes immediates. Els nostres empleats digitals canvien aquesta dinàmica, oferint una guia calmada i professional que acompanya l'usuari a través dels tractaments, detalla preus i gestiona disponibilitats en temps real. No és un xatbot convencional; és una extensió de la teva marca que rep el client internacional en el seu idioma i permet que l'equip presencial es concentri en el valor humà, eliminant la saturació de trucades i correus rutinaris des de la primera setmana.",
+        "faqs": [
+          {
+            "question": "Pot un assistent d'IA atendre en català amb un to natural i professional?",
+            "answer": "Absolutament. Els nostres concierges d'IA estan configurats per parlar un català natural i genuí, respectant el registre de la teva marca. Això garanteix una experiència de proximitat que els clients de casa valoren positivament."
+          },
+          {
+            "question": "Com gestiona l'IA les reserves directes i la disponibilitat del centre?",
+            "answer": "L'assistent s'integra directament amb el vostre programari de gestió de reserves (PMS) o calendari. Pot informar sobre hores lliures, confirmar cites al moment i enviar recordatoris, funcionant com un recepcionista actiu les 24 hores."
+          },
+          {
+            "question": "És útil per a hotels o clíniques amb un alt volum de clients estrangers?",
+            "answer": "És la solució ideal. L'IA detecta l'idioma de l'usuari automàticament i respon de manera nativa, eliminant la fricció lingüística i augmentant dràsticament la conversió de turistes i clients internacionals que visiten Barcelona i la costa."
+          },
+          {
+            "question": "Es pot personalitzar l'IA amb els protocols específics del meu spa o centre mèdic?",
+            "answer": "Sí, entrenem l'IA amb tota la informació dels teus tractaments, preus, condicions de cancel·lació i protocols de salut. L'assistent coneixerà el teu negoci tan bé com el teu millor treballador, assegurant respostes precises i segures."
+          },
+          {
+            "question": "Quin impacte té en la càrrega de treball de l'equip de recepció?",
+            "answer": "Els nostres clients reporten una reducció de més del 60% en trucades i correus de consultes bàsiques un cop implementat el sistema. Això permet que el personal de recepció pugui oferir un servei molt més personalitzat i càlid als hostes presencials."
+          }
+        ]
+      }
+    },
+    "real-estate": {
+      "es": {
+        "seoTitle": "AI Property Presenters para Inmobiliarias | Ovela Interactive",
+        "seoDescription": "Capta compradores internacionales en la Costa del Sol, Madrid y Barcelona con agentes virtuales multilingües disponibles las 24 horas para tus inmuebles.",
+        "intro": "No pierdas ni una sola oportunidad de venta por la barrera del idioma o la diferencia horaria. Nuestros agentes virtuales presentan tus propiedades con cercanía y precisión, convirtiendo cada visita web en una oportunidad real de negocio.",
+        "longIntro": "El sector inmobiliario en España exige inmediatez y un trato impecable, especialmente ante el creciente mercado de inversores internacionales en zonas como Marbella, Baleares o las grandes capitales. Los clientes de hoy no esperan a que abra la oficina; quieren explorar su futura vivienda el sábado por la noche o desde el extranjero en su propio idioma. Los AI Property Presenters de Ovela Interactive transforman tu catálogo en una experiencia interactiva sin descanso. Estos empleados digitales guían al comprador por cada estancia, resuelven dudas sobre calidades, metros cuadrados o servicios de la zona, y filtran a los interesados reales. Así, tu equipo comercial deja de repetir datos básicos y se centra exclusivamente en cerrar operaciones con leads ya cualificados.",
+        "faqs": [
+          {
+            "question": "¿El agente virtual puede atender a clientes en ruso, inglés o alemán?",
+            "answer": "Absolutamente. Nuestros presentadores de IA son nativos en más de 30 idiomas, permitiendo que un inversor en Estocolmo o Londres reciba una explicación detallada de una villa en la Costa del Sol en su lengua materna de forma fluida."
+          },
+          {
+            "question": "¿Cómo se integra esta tecnología con mi CRM inmobiliario actual?",
+            "answer": "La integración es sencilla y directa. Cada vez que la IA identifica a un comprador serio, envía los datos de contacto y el resumen de la conversación directamente a tu sistema de gestión, permitiendo que tus agentes retomen la venta con toda la información."
+          },
+          {
+            "question": "¿Qué ocurre si un cliente hace una pregunta muy específica sobre la normativa urbanística?",
+            "answer": "La IA se entrena con toda la documentación de tu agencia. Si la pregunta supera su base de conocimientos, el sistema captura la consulta con profesionalidad y redirige al cliente a uno de tus expertos humanos, asegurando que nadie se quede sin respuesta."
+          },
+          {
+            "question": "¿Es posible personalizar la apariencia del presentador con la imagen de mi marca?",
+            "answer": "Sí, diseñamos la estética y el tono de voz para que reflejen la identidad de tu inmobiliaria. Buscamos un equilibrio entre la calidez del trato humano y la eficiencia tecnológica que demandan los compradores de alto standing."
+          },
+          {
+            "question": "¿Realmente la IA puede ayudar a cerrar ventas en el mercado de lujo?",
+            "answer": "En el sector de lujo, la rapidez es sinónimo de exclusividad. Al ofrecer respuestas instantáneas y recorridos virtuales interactivos a cualquier hora, generas una confianza inicial que es crítica para que el comprador decida dar el siguiente paso y organizar una visita presencial."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Agent Immobilier IA : Présentation Biens de Luxe | Ovela Interactive",
+        "seoDescription": "Captez les acquéreurs internationaux 24/7. Nos présentateurs IA qualifient vos leads en plusieurs langues et assurent une visibilité constante de vos mandats.",
+        "intro": "L'immobilier de prestige et les clients internationaux n'attendent pas. Un présentateur de biens IA capture chaque opportunité en temps réel, brisant les barrières linguistiques et les contraintes horaires avec une précision chirurgicale.",
+        "longIntro": "Le marché immobilier français se digitalise et l'exigence des acquéreurs, notamment sur le segment du luxe, atteint des sommets. Entre le décalage horaire des investisseurs étrangers et l’impatience des acheteurs locaux, une agence perd en moyenne 40 % de ses leads hors des horaires de bureau. Nos présentateurs de biens IA agissent comme des collaborateurs numériques infatigables : ils guident les visiteurs, répondent aux points techniques (DPE, m², copropriété) et qualifient les intentions d'achat avant même que votre équipe ne décroche le téléphone. En intégrant cette technologie, vous garantissez un service haut de gamme, conforme au RGPD, tout en permettant à vos négociateurs de se concentrer sur l'essentiel : la signature des compromis de vente.",
+        "faqs": [
+          {
+            "question": "Quelles sont les garanties concernant la protection des données clients (RGPD) ?",
+            "answer": "La sécurité des données est au cœur de nos solutions pour les agences françaises. Toutes les interactions sont traitées conformément au RGPD, garantissant que les informations de vos prospects sont stockées de manière sécurisée et ne sont jamais utilisées à des fins tierces."
+          },
+          {
+            "question": "L'IA peut-elle répondre à des questions techniques sur le diagnostic de performance énergétique (DPE) ?",
+            "answer": "Absolument. Nos présentateurs IA sont paramétrés avec les fiches techniques complètes de vos mandats. Ils peuvent ainsi renseigner avec précision les acquéreurs sur le DPE, la surface Carrez, les charges de copropriété ou l'exposition des biens."
+          },
+          {
+            "question": "Comment se passe la transition entre la présentation IA et le négociateur humain ?",
+            "answer": "Le passage de relais est fluide : dès que l'IA détecte un prospect qualifié ou sérieux, elle enregistre la demande de rappel ou prend rendez-vous directement dans l'agenda de l'agent. La transcription intégrale de l'échange est envoyée au négociateur pour préparer sa visite."
+          },
+          {
+            "question": "L'agent virtuel peut-il communiquer avec des investisseurs étrangers ?",
+            "answer": "C'est l'un de ses plus grands atouts. Nos solutions gèrent plus de 50 langues nativement, permettant à un acquéreur chinois, américain ou émirati d'explorer votre catalogue de biens dans sa propre langue, avec une fluidité naturelle."
+          },
+          {
+            "question": "Est-ce que cette technologie remplace le contact humain dans mon agence ?",
+            "answer": "Bien au contraire, elle le valorise. L'IA gère le premier niveau de filtrage et les questions répétitives 24h/24, permettant à vos agents de se consacrer exclusivement aux étapes à haute valeur ajoutée comme la négociation finale et l'accompagnement personnalisé."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Immobilienpräsentatoren für Makler | Ovela Interactive",
+        "seoDescription": "Automatisieren Sie Objektbesichtigungen rund um die Uhr. Qualifizierte Leads, mehrsprachige Beratung und nahtlose CRM-Integration für deutsche Makler.",
+        "intro": "Internationaler Wettbewerb und Anfragen außerhalb der Geschäftszeiten kosten Makler wertvolle Abschlüsse. Unsere KI-Immobilienpräsentatoren übernehmen die Erstberatung interaktiv, präzise und in jeder Sprache, um potenzielle Käufer sofort zu binden.",
+        "longIntro": "Der Immobilienmarkt ist digitaler und schnelllebiger geworden. Potenzielle Käufer erwarten Informationen sofort – unabhängig von Wochenenden oder Sprachbarrieren. Unsere KI-Lösungen agieren als digitale Experten, die Objekte im Detail präsentieren, spezifische Fragen zu Bausubstanz, Lage oder Preis beantworten und Interessenten vorqualifizieren. Anstatt wertvolle Zeit mit repetitiven Erstbesichtigungen zu verlieren, konzentrieren sich Ihre Makler auf den finalen Abschluss. Das System erfasst alle Objektdaten präzise, protokolliert jedes Gespräch rechtssicher und leitet nur ernsthafte Kaufabsichten direkt in Ihr CRM weiter. So eliminieren Sie Zeitverluste und erschließen internationale Märkte, ohne Ihr Personal aufstocken zu müssen.",
+        "faqs": [
+          {
+            "question": "Wie wird die Datensicherheit und DSGVO-Konformität gewährleistet?",
+            "answer": "Alle Interaktionen werden auf europäischen Servern verarbeitet, die den strengen Anforderungen der DSGVO entsprechen. Wir implementieren dedizierte Sicherheitsrichtlinien, damit die Daten Ihrer Kunden und Ihre internen Objektdaten jederzeit geschützt bleiben."
+          },
+          {
+            "question": "Kann die KI komplexe Fragen zu Energieausweisen oder Grundbuchauszügen beantworten?",
+            "answer": "Ja, der KI-Präsentator wird direkt mit Ihren Objektdaten gespeist. Er kann technische Details wie Sanierungshistorie, Energieeffizienzklassen oder rechtliche Besonderheiten präzise erklären, sofern diese Informationen im Backend hinterlegt sind."
+          },
+          {
+            "question": "Ist die Integration in bestehende Maklersoftware wie onOffice oder FlowFact möglich?",
+            "answer": "Unsere KI-Agenten sind über Schnittstellen (APIs) flexibel an gängige CRM-Systeme anbindbar. Leads und Gesprächsprotokolle werden automatisiert übertragen, sodass Ihr Team lückenlos an die Vorqualifizierung anknüpfen kann."
+          },
+          {
+            "question": "Wie hoch ist der Implementierungsaufwand für neue Immobilienangebote?",
+            "answer": "Dank automatisierter Datenimport-Prozesse ist der Aufwand minimal. Sobald die Objektdaten vorliegen, kann die KI innerhalb kürzester Zeit für das neue Exposé geschult und auf Ihrer Webseite oder in Portalen aktiviert werden."
+          },
+          {
+            "question": "Unterstützt die KI auch Dialekte oder fachspezifische deutsche Begriffe?",
+            "answer": "Die Sprachmodelle sind auf den professionellen deutschen Immobilienmarkt optimiert und verstehen fachspezifische Termini ebenso wie natürliche Sprache. Dies sorgt für eine seriöse Außenwirkung und hohe Akzeptanz bei anspruchsvollen Kunden."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Apresentador de Imóveis com IA: Real Estate 24h | Ovela Interactive",
+        "seoDescription": "Capte leads internacionais e atenda interessados 24/7 com apresentadores de imóveis via IA. Aumente as vendas da sua imobiliária com visitas digitais.",
+        "intro": "Interessados internacionais e consultas fora do horário comercial são os leads que as imobiliárias mais perdem. Nossos apresentadores de imóveis com IA capturam essas oportunidades de forma interativa, em qualquer idioma, garantindo que nenhum contato esfrie.",
+        "longIntro": "O mercado imobiliário tornou-se global e digital. Hoje, o comprador espera explorar um imóvel no instante em que o interesse surge — seja de madrugada, no fim de semana ou em um idioma estrangeiro — sem precisar aguardar o retorno de um consultor. Nossos apresentadores de IA eliminam essa barreira: eles realizam tours virtuais, respondem detalhes técnicos sobre metragem, localização e valor, e qualificam o real interesse do cliente. Os vídeos abaixo demonstram como a IA guia o comprador e entrega para sua equipe apenas os leads prontos para o fechamento, já com o histórico completo da conversa. Sua imobiliária deixa de repetir informações básicas e passa a focar no que importa: a assinatura do contrato e o acolhimento consultivo.",
+        "faqs": [
+          {
+            "question": "O apresentador de IA consegue responder sobre a vizinhança do imóvel?",
+            "answer": "Sim, a IA é treinada com dados específicos do bairro, podendo informar sobre escolas, comércios locais e infraestrutura. Isso proporciona uma experiência completa, similar à de um consultor humano que conhece bem a região."
+          },
+          {
+            "question": "Como a ferramenta lida com clientes que falam outros idiomas?",
+            "answer": "A IA identifica e responde no idioma nativo do comprador instantaneamente. Para imobiliárias em Portugal ou regiões turísticas do Brasil, isso remove o obstáculo linguístico e atrai investidores estrangeiros que desejam atendimento imediato."
+          },
+          {
+            "question": "O lead é enviado diretamente para o corretor?",
+            "answer": "Exato. Assim que a IA identifica um alto potencial de compra, os dados e a transcrição da conversa são enviados para sua equipe. Isso garante que o corretor retome o contato já sabendo exatamente o que o cliente procura."
+          },
+          {
+            "question": "A IA substitui a visita presencial ao imóvel?",
+            "answer": "Ela funciona como um filtro de alta conversão que prepara o cliente para a visita física. O objetivo é poupar o tempo do corretor com curiosos, garantindo que ele vá ao imóvel apenas com leads qualificados e munidos de informações."
+          },
+          {
+            "question": "É difícil integrar essa tecnologia ao site da minha imobiliária?",
+            "answer": "A implementação é simples e otimizada para o setor imobiliário digital. Desenvolvemos o apresentador para que ele funcione harmoniosamente com seus anúncios e portais, elevando o padrão de hospitalidade digital da sua marca."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Presentadors de Propietats amb IA per Immobiliàries | Ovela Interactive",
+        "seoDescription": "Capta compradors internacionals i respon consultes 24/7 amb presentadors digitals natius. Impulsa la teva immobiliària a Catalunya amb IA d'avantguarda.",
+        "intro": "El mercat immobiliari a Catalunya és global i no s'atura mai. Amb un presentador de propietats amb IA, podràs atendre compradors de tot el món en el seu idioma, eliminant les barreres i captant leads mentre dorms.",
+        "longIntro": "A Barcelona i a tot el territori català, el sector immobiliari és cada cop més internacional, digital i exigent. Els compradors actuals no esperen a dilluns per resoldre dubtes; volen explorar l'habitatge en el moment precís de l'interès, sigui de nit o en cap de setmana. Les nostres demostracions mostren com la IA s'ha convertit en l'aliat estratègic de les agències: acompanyen el client per la propietat, responen detalls sobre metres quadrats, serveis del barri i preus, i qualifiquen l'interès real de cada prospecte. El resultat? Els teus agents deixen de repetir les mateixes dades i es concentren a tancar operacions, mentre la IA gestiona el volum inicial i les consultes internacionals amb una eficàcia humana i en qualsevol llengua.",
+        "faqs": [
+          {
+            "question": "El presentador digital pot atendre clients en diversos idiomes?",
+            "answer": "I tant, la nostra IA és políglota i pot interactuar de forma nativa en català, castellà, anglès, francès o qualsevol idioma del comprador. Això és clau per al mercat d'inversió estrangera a la Costa Brava o Barcelona."
+          },
+          {
+            "question": "Què passa quan un comprador vol fer una visita presencial?",
+            "answer": "La IA actua com un filtre intel·ligent: un cop detecta un interès seriós, recull les dades del client i programa una cita directament al calendari del vostre equip. Rebreu la transcripció de la conversa per conèixer les preferències del client abans de conèixer-lo."
+          },
+          {
+            "question": "Pot respondre preguntes tècniques sobre la cèdula d'habitabilitat o el barri?",
+            "answer": "Sí, el sistema s'entrena amb tota la documentació de la propietat. Pot informar sobre la certificació energètica, el transport públic proper, col·legis o qualsevol detall del Pla Urbanístic que vulgueu incloure."
+          },
+          {
+            "question": "És difícil d'especificar o integrar al web de la meva immobiliària?",
+            "answer": "Gens ni mica. El desplegament és ràpid i s'integra de forma orgànica amb el vostre CRM actual. Està dissenyat per millorar l'experiència d'usuari sense complicacions tècniques per a l'agència."
+          },
+          {
+            "question": "Com millora això la productivitat dels meus agents?",
+            "answer": "Els agents s'estalvien hores de tasques repetitives i consultes de baixa qualitat. Això els permet dedicar la seva expertesa exclusivament a les negociacions finals i al tracte personalitzat amb els propietaris."
+          }
+        ]
+      }
+    },
+    "ai-ambassador": {
+      "es": {
+        "seoTitle": "Embajadores de Marca con IA: Voz, Vídeo y Chat | Ovela Interactive",
+        "seoDescription": "Transforme su web con embajadores de IA multilingües. Atención 24/7, captación de leads y trato humano para clínicas, inmobiliarias y empresas en España.",
+        "intro": "Un embajador de marca de IA es la nueva cara visible de su negocio digital: una recepción cálida que saluda a cada visitante, en cualquier idioma y a cualquier hora, eliminando las esperas para siempre.",
+        "longIntro": "En los vídeos a continuación, presentamos a Isabella y al resto de embajadores de IA desarrollados por Ovela Interactive. A diferencia de un chatbot rígido, nuestros embajadores se entrenan meticulosamente con la voz, los servicios y los valores específicos de su marca para actuar como un anfitrión conversacional en tiempo real en su propia web. Combinamos voz, vídeo y procesamiento de lenguaje natural para que sus clientes en Marbella, Madrid o la Costa del Sol reciban respuestas fluidas en su lengua nativa. Mientras un chatbot sigue un guion limitado, nuestros embajadores mantienen conversaciones reales que aumentan el tiempo de permanencia y la tasa de conversión, enviando leads cualificados directamente a su CRM con una profesionalidad impecable.",
+        "faqs": [
+          {
+            "question": "¿En qué se diferencia un embajador de IA de un chatbot tradicional?",
+            "answer": "La principal diferencia es la capacidad de comprensión y el trato humano. Mientras el chatbot se limita a opciones cerradas y botones, el embajador mantiene una conversación fluida por voz o vídeo, entiende el contexto y representa la personalidad de su marca sin guiones prefijados."
+          },
+          {
+            "question": "¿Cómo gestiona la IA a los clientes internacionales en zonas como la Costa del Sol?",
+            "answer": "Nuestros embajadores son nativos en decenas de idiomas. Detectan automáticamente la lengua del visitante y responden al instante, lo que permite a inmobiliarias o clínicas estéticas atender a clientes británicos, alemanes o escandinavos con la misma eficacia que a un cliente local."
+          },
+          {
+            "question": "¿Es difícil integrar el embajador de IA en mi página web actual?",
+            "answer": "En absoluto. En Ovela Interactive nos encargamos de la implementación técnica para que el despliegue sea sencillo y compatible con su sitio web. Además, el sistema se conecta directamente con su CRM para que no pierda ninguna oportunidad de negocio."
+          },
+          {
+            "question": "¿Puedo personalizar el tono de voz para que sea acorde a mi clínica o negocio de lujo?",
+            "answer": "Totalmente. Entrenamos a la IA con su manual de marca y estilo. Puede optar por un tono clínico y profesional, o uno más cercano y relacional, asegurando que el embajador refleje exactamente la exclusividad y el prestigio de su empresa."
+          },
+          {
+            "question": "¿Qué tipo de acciones puede completar el embajador de forma autónoma?",
+            "answer": "Más allá de resolver dudas, el embajador puede cualificar leads, explicar servicios complejos de su catálogo, resolver objeciones de venta y dirigir al usuario hacia la reserva de una cita o el cierre de una consulta, operando las 24 horas del día."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Ambassadeur Digital IA : Humanisez votre Relation Client | Ovela",
+        "seoDescription": "Boostez vos conversions avec l'IA conversationnelle d'Ovela Interactive. Ambassadeurs vidéo, multilingues et conformes RGPD pour une expérience client premium.",
+        "intro": "L'ambassadeur digital est le nouveau visage de votre site web : un accueil humain, premium et disponible 24h/24 pour guider chaque visiteur, peu importe sa langue, sans aucun script rigide.",
+        "longIntro": "Les démonstrations présentées ici dévoilent Isabella et la nouvelle génération d'ambassadeurs IA conçus par Ovela Interactive. Contrairement aux chatbots classiques limités à des scénarios figés, nos ambassadeurs sont formés sur l'identité de votre marque, vos services et votre charte éditoriale spécifique au marché français. Ils agissent comme de véritables hôtes conversationnels en temps réel, intégrant la voix, la vidéo et le chat naturel. Vos clients obtiennent des réponses précises dans leur langue maternelle et finalisent leurs actions en toute confiance. Pour les secteurs du luxe, de la santé ou du service, la différence est immédiate : un temps d'engagement accru, une conversion optimisée et des leads qualifiés transmis directement dans votre CRM, avec une garantie totale de protection des données.",
+        "faqs": [
+          {
+            "question": "Quelle est la différence entre un chatbot et un ambassadeur IA ?",
+            "answer": "Un chatbot suit un script linéaire souvent frustrant, tandis qu'un ambassadeur IA utilise le traitement du langage naturel pour tenir une conversation fluide. Il comprend les nuances, s'adapte au ton de l'interlocuteur et humanise l'interaction grâce à une interface vidéo et vocale dynamique."
+          },
+          {
+            "question": "Comment assurez-vous la conformité RGPD de vos solutions ?",
+            "answer": "La protection des données est au cœur de notre développement. Toutes nos solutions sont conçues pour respecter strictement le RGPD, garantissant que les échanges avec vos clients en France et en Europe sont sécurisés, avec un hébergement des données conforme aux standards de confidentialité les plus élevés."
+          },
+          {
+            "question": "L'IA peut-elle s'adapter au ton de voix spécifique d'une marque de luxe ?",
+            "answer": "Absolument. Chaque ambassadeur Ovela est personnalisé pour refléter les codes de votre marque, qu'il s'agisse d'un registre formel, d'un accueil chaleureux ou d'une expertise technique pointue, assurant une cohérence parfaite avec votre image de marque."
+          },
+          {
+            "question": "Dans quelles langues l'ambassadeur digital peut-il échanger ?",
+            "answer": "Nos ambassadeurs sont nativement multilingues et peuvent basculer instantanément entre plus de 50 langues. Un visiteur étranger peut poser une question en anglais ou en espagnol, et l'IA lui répondra avec une fluidité naturelle sans latence de traduction."
+          },
+          {
+            "question": "Comment l'IA gère-t-elle la capture de leads et la prise de rendez-vous ?",
+            "answer": "L'ambassadeur est directement synchronisé avec vos outils (calendriers, CRM). Il qualifie le besoin du visiteur durant la conversation et peut fixer un rendez-vous ou enregistrer une coordonnée sans que l'utilisateur n'ait à remplir un formulaire statique rébarbatif."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Markenbotschafter: Rund-um-die-Uhr Lead-Generierung | Ovela Interactive",
+        "seoDescription": "Automatisieren Sie Kundeninteraktionen mit multilingualen KI-Markenbotschaftern. Steigern Sie ROI und Conversion-Rates durch digitale Mitarbeiter in Echtzeit.",
+        "intro": "Ein KI-Markenbotschafter ist das digitale Aushängeschild Ihres Unternehmens: Er begrüßt jeden Website-Besucher individuell, in jeder Sprache und zu jeder Uhrzeit – effizient, präzise und ohne starre Skripte.",
+        "longIntro": "Die folgenden Demos präsentieren Isabella und die Riege der KI-Botschafter von Ovela Interactive. Im Gegensatz zu herkömmlichen Chatbots agieren unsere digitalen Mitarbeiter auf Basis von tiefem Sprachverständnis und echter Markenidentität. Jeder Botschafter wird spezifisch auf Ihre Dienstleistungen und Ihre Corporate Voice trainiert und direkt in Ihre Web-Infrastruktur integriert. Die Kombination aus Voice, Video und natürlichem Chat ermöglicht es Besuchern, komplexe Fragen zu stellen und sofortige, fundierte Antworten zu erhalten. Für deutsche Unternehmen bedeutet dies: Höhere Verweildauer, messbare Steigerung der Conversion-Rates und eine nahtlose Lead-Übergabe direkt in Ihr CRM. Wo Chatbots an ihre Grenzen stoßen, fangen unsere Botschafter an, echte Werte zu schaffen.",
+        "faqs": [
+          {
+            "question": "Wie sicher ist die Einbindung in bestehende CRM-Systeme?",
+            "answer": "Unsere KI-Lösungen integrieren sich nahtlos über moderne APIs in gängige CRM-Systeme wie Salesforce, HubSpot oder Microsoft Dynamics. Die Datenübertragung erfolgt verschlüsselt, um höchste Sicherheitsstandards und Prozesszuverlässigkeit bei der Lead-Erfassung zu gewährleisten."
+          },
+          {
+            "question": "Sind die KI-Markenbotschafter konform mit der DSGVO?",
+            "answer": "Ja, der Datenschutz steht bei unseren Implementierungen für den EU-Markt an erster Stelle. Wir konfigurieren die Systeme so, dass sie datensparsam agieren und alle Anforderungen der DSGVO hinsichtlich Speicherung und Verarbeitung personenbezogener Daten erfüllen."
+          },
+          {
+            "question": "Benötigt der KI-Botschafter vordefinierte Antwort-Pfade?",
+            "answer": "Nein, unsere digitalen Mitarbeiter nutzen Natural Language Processing, um freie Nutzeranfragen zu verstehen und kontextbezogen zu antworten. Statt starrer Entscheidungsbäume führen sie echte Dialoge basierend auf dem Wissenstraining Ihres spezifischen Unternehmensprofils."
+          },
+          {
+            "question": "Welche Sprachen werden unterstützt?",
+            "answer": "Die KI-Botschafter agieren nativ in über 50 Sprachen. Sie erkennen die Sprache des Nutzers automatisch und reagieren fließend, was besonders für international agierende Unternehmen im Export- oder Tourismussektor die Barrieren für die Lead-Generierung senkt."
+          },
+          {
+            "question": "Wie hoch ist der zeitliche Aufwand für die Implementierung?",
+            "answer": "Nach der Bereitstellung Ihrer spezifischen Datenquellen und Markenrichtlinien ist das System innerhalb weniger Wochen einsatzbereit. Die technische Integration auf Ihrer Website erfolgt meist über ein einfaches Code-Snippet, ähnlich wie bei Analyse-Tools."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Embaixadores de Marca com IA: Atendimento 24h | Ovela Interactive",
+        "seoDescription": "Transforme seu site com IAs que falam, ouvem e vendem. Multilingue, humanizado e focado em conversão para hotelaria, saúde e o mercado imobiliário.",
+        "intro": "O embaixador de marca com IA é a nova porta de entrada do seu negócio digital. Ele recebe cada visitante de forma personalizada, em qualquer idioma e a qualquer hora, sem depender de scripts engessados.",
+        "longIntro": "Os vídeos abaixo apresentam a Isabella e outros embaixadores digitais criados pela Ovela Interactive. Diferente de um chatbot comum, nossas IAs são treinadas na voz e nos valores específicos de cada empresa, atuando como verdadeiros anfitriões em tempo real. Seja no mercado imobiliário em Portugal ou no setor de bem-estar no Brasil, a tecnologia de voz, vídeo e chat natural permite que o cliente tire dúvidas e agende serviços no próprio idioma. Enquanto robôs convencionais seguem caminhos rígidos, nossos embaixadores conduzem conversas fluidas que aumentam o tempo de permanência no site e garantem leads qualificados diretamente no seu CRM, elevando o patamar de autoridade da sua marca no mercado global.",
+        "faqs": [
+          {
+            "question": "O embaixador de IA consegue lidar com sotaques de Portugal e do Brasil?",
+            "answer": "Sim, nossa tecnologia é desenvolvida para compreender as nuances linguísticas e variações de sotaque de ambos os países. A IA adapta o vocabulário para garantir uma comunicação fluida e natural, seja atendendo um cliente em Lisboa ou em São Paulo."
+          },
+          {
+            "question": "Como a IA ajuda no atendimento a investidores estrangeiros no setor imobiliário?",
+            "answer": "A IA identifica automaticamente o idioma do visitante e pode apresentar propriedades, explicar legislações locais e captar contatos em mais de 50 línguas. Isso permite que imobiliárias no Algarve ou no Porto atendam compradores internacionais instantaneamente, sem barreiras linguísticas."
+          },
+          {
+            "question": "É muito difícil integrar essa tecnologia ao meu site atual?",
+            "answer": "A implementação é simples e rápida, geralmente feita através da inserção de um pequeno código no seu site. Nossa equipe cuida de todo o treinamento da IA com base nos seus manuais de serviço, garantindo que ela esteja pronta para operar em poucos dias."
+          },
+          {
+            "question": "Qual é a diferença entre os embaixadores de marca e um chatbot comum?",
+            "answer": "Chatbots tradicionais funcionam com árvores de decisão e opções limitadas, o que muitas vezes frustra o usuário. Nossos embaixadores usam processamento de linguagem natural e vídeo, permitindo uma conversa real, empática e capaz de resolver problemas complexos com o carisma de um atendente humano."
+          },
+          {
+            "question": "Os dados captados pela IA estão em conformidade com a LGPD e o RGPD?",
+            "answer": "Com certeza. Priorizamos a segurança de dados e garantimos que todas as interações e capturas de leads respeitem tanto a Lei Geral de Proteção de Dados no Brasil quanto o Regulamento Geral sobre a Proteção de Dados na Europa, protegendo sua empresa e seus clientes."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Ambaixadors Digitals amb IA: Millora la Teva Conversió | Ovela Interactive",
+        "seoDescription": "Transforma el teu web amb ambaixadors d'IA que parlen el català de tu a tu. Captació de leads, atenció multilingüe i experiència de marca premium a Catalunya.",
+        "intro": "Un ambaixador digital amb IA és la nova cara del seu negoci a la xarxa: rep cada visitant amb calidesa, en qualsevol idioma i a qualsevol hora, sense guions rígids ni esperes.",
+        "longIntro": "A les demostracions següents us presentem la Isabella i la família d'ambaixadors d'IA creats per Ovela Interactive. A diferència dels xatbots convencionals que frustren l'usuari, les nostres solucions estan entrenades específicament amb la veu, els serveis i el to de marca de cada client. Aquests ambaixadors actuen com a amfitrions en temps real al vostre web, integrant veu, vídeo i xat natural. El visitant pot preguntar el que vulgui i rebre una resposta coherent en el seu propi idioma, facilitant la conversió immediata. A Catalunya, on la proximitat i el disseny són claus, marcar la diferència entre un bot genèric i un ambaixador intel·ligent es tradueix en més temps d'interacció i leads de qualitat directes al vostre CRM.",
+        "faqs": [
+          {
+            "question": "En què es diferencia un ambaixador d'IA d'un xatbot de tota la vida?",
+            "answer": "Mentre que els xatbots tradicionals segueixen arbres de decisió rígids i sovint fallen, els nostres ambaixadors utilitzen IA generativa per mantenir converses fluides. No només responen preguntes, sinó que entenen el context i representen els valors de la vostra empresa amb un to totalment natural."
+          },
+          {
+            "question": "L'ambaixador pot parlar perfectament en català i atendre turistes en altres idiomes?",
+            "answer": "I tant. Les nostres IA estan configurades per detectar l'idioma de l'usuari instantàniament. Poden mantenir una conversa impecable en català per al mercat local i canviar al castellà, anglès, francès o qualsevol altra llengua per atendre clients internacionals."
+          },
+          {
+            "question": "Es pot integrar amb el CRM que ja fem servir a l'empresa?",
+            "answer": "Sí, l'objectiu és l'eficiència operativa. L'ambaixador no només parla, sinó que recull dades i qualifica els leads, enviant la informació directament al vostre CRM de vendes perquè el vostre equip comercial pugui fer el seguiment sense perdre cap oportunitat."
+          },
+          {
+            "question": "És adequat per a clíniques privades o serveis de real estate a Barcelona?",
+            "answer": "És la solució ideal. En sectors on l'estètica i la confiança són primordials, un ambaixador de vídeo transmet una professionalitat que un text escrit no pot igualar, convertint-se en el primer filtre perfecte per a pacients o inversors immobiliaris."
+          },
+          {
+            "question": "Com s'adapta la IA al to de veu específic de la meva marca?",
+            "answer": "Abans del desplegament, realitzem un procés d'entrenament personalitzat amb tot el contingut de la vostra empresa. Això garanteix que l'ambaixador conegui a fons els vostres serveis i utilitzi el registre (formal o proper) que millor us defineixi."
+          }
+        ]
+      }
+    },
+    "studio-overview": {
+      "es": {
+        "seoTitle": "Empleados Digitales con IA para Empresas | Ovela Interactive",
+        "seoDescription": "Transforme su negocio con embajadores de marca y recepcionistas IA 24/7. Soluciones personalizadas para clínicas, inmobiliarias y retail en España.",
+        "intro": "Descubra cómo Ovela Interactive redefine la atención al cliente de alto nivel. Creamos empleados digitales con inteligencia artificial que representan a su marca con la calidez y profesionalidad de su mejor anfitrión, activos 24/7 y en cualquier idioma.",
+        "longIntro": "En Ovela Interactive diseñamos y desplegamos empleados digitales con IA especializados en sectores donde el trato personal es clave: clínicas privadas, inmobiliarias de lujo, centros de bienestar y hospitality. Estos clips de presentación ofrecen una visión rápida de nuestro portfolio, desde embajadores de marca hasta presentadores de propiedades y conserjes para spas. Cada despliegue comienza con un entrenamiento profundo en la identidad de su marca e ingesta de conocimiento técnico, integrándose directamente en su sitio web y CRM. En mercados internacionales como la Costa del Sol, Madrid o Barcelona, nuestras IA eliminan las barreras lingüísticas, convirtiendo su web en un canal de ventas ininterrumpido que está operativo en un plazo de dos a cuatro semanas.",
+        "faqs": [
+          {
+            "question": "¿Cómo maneja la IA las consultas complejas de pacientes o clientes de lujo?",
+            "answer": "Nuestros empleados digitales están entrenados con la base de conocimientos específica de su negocio y protocolos de atención al cliente de alto nivel. Si la IA detecta una consulta que requiere intervención humana, realiza una transferencia inteligente al equipo correspondiente o agenda una cita directamente en su CRM."
+          },
+          {
+            "question": "¿En cuántos idiomas puede atender el embajador de marca?",
+            "answer": "La IA es multilingüe de forma nativa y puede atender en más de 50 idiomas, detectando automáticamente el idioma del usuario. Es la solución ideal para negocios en zonas turísticas o internacionales que necesitan dar una bienvenida impecable a clientes de toda Europa y el resto del mundo."
+          },
+          {
+            "question": "¿Es difícil integrar el empleado digital en mi página web actual?",
+            "answer": "Para nada; la integración es sencilla y plug-and-play mediante un breve código que se inserta en su web. Además, nos conectamos con sus herramientas habituales de gestión (CRM, calendarios o bases de datos) para que la información fluya sin trabajo manual adicional."
+          },
+          {
+            "question": "¿Cuánto tiempo se tarda en tener el sistema operativo en España?",
+            "answer": "El proceso completo, que incluye la fase de personalización de marca y el entrenamiento de la IA, suele durar entre dos y cuatro semanas. Trabajamos de forma ágil para que su canal de ventas digital empiece a generar resultados lo antes posible."
+          },
+          {
+            "question": "¿Qué diferencia hay entre este sistema y un chatbot convencional?",
+            "answer": "A diferencia de los chatbots rígidos basados en reglas, nuestros empleados digitales utilizan IA generativa avanzada para ofrecer una conversación natural, empática y contextual. No solo responden preguntas, sino que actúan como verdaderos embajadores que guían al cliente en el proceso de compra o reserva."
+          }
+        ]
+      },
+      "fr": {
+        "seoTitle": "Employés Digitaux IA : Studio de Création | Ovela Interactive",
+        "seoDescription": "Découvrez Ovela Interactive : concevez des ambassadeurs IA multilingues pour transformer l'expérience client et booster votre rentabilité 24h/24 et 7j/7.",
+        "intro": "Ovela Interactive donne vie à des employés digitaux par l'intelligence artificielle, capables de représenter votre marque avec l'élégance et la précision d'un hôte d'exception, tout en assurant une disponibilité multilingue sans interruption.",
+        "longIntro": "Le studio Ovela Interactive conçoit et déploie des employés digitaux sur mesure pour les cliniques, l'immobilier de prestige, le bien-être et l'hôtellerie de luxe. Cette sélection de vidéos présente l'étendue de notre savoir-faire : ambassadeurs de marque, présentateurs de propriétés d'exception et concierges digitaux. Chaque projet débute par une immersion profonde dans l'ADN de votre marque et l'intégration de vos bases de données propriétaires. Contrairement aux chatbots classiques, nos solutions s'intègrent nativement à votre site web et vos outils CRM pour une mise en service sous deux à quatre semaines. Optimisez vos processus de vente et l'accueil de votre clientèle grâce à une technologie conforme aux exigences européennes de confidentialité, alliant performance opérationnelle et excellence du service à la française.",
+        "faqs": [
+          {
+            "question": "Quelles sont les garanties concernant la protection des données et le RGPD ?",
+            "answer": "La sécurité des données est au cœur de notre méthodologie. Tous nos employés digitaux sont développés dans le respect strict des normes européennes RGPD, garantissant que les informations de vos clients sont chiffrées et traitées avec le plus haut niveau de confidentialité."
+          },
+          {
+            "question": "Comment l'IA apprend-elle les spécificités de ma marque ou de ma clinique ?",
+            "answer": "Nous procédons à une phase d'ingestion de connaissances personnalisée. L'intelligence artificielle est entraînée exclusivement sur vos protocoles, vos catalogues produits ou vos fiches techniques, garantissant des réponses précises, cohérentes et conformes à votre image de marque."
+          },
+          {
+            "question": "L'IA peut-elle prendre des rendez-vous directement dans mon calendrier ?",
+            "answer": "Oui, nos employés digitaux sont conçus pour se connecter directement à vos outils de gestion et CRM. Ils peuvent vérifier les disponibilités en temps réel, qualifier les prospects et confirmer des rendez-vous sans aucune intervention humaine."
+          },
+          {
+            "question": "Le ton de l'IA est-il adapté aux secteurs du luxe et du bien-être ?",
+            "answer": "Absolument. Nous paramétrons le registre de langue et le comportement non-verbal de nos ambassadeurs pour refléter les codes du luxe, assurant un accueil courtois, professionnel et une expérience client haut de gamme propre aux standards français."
+          },
+          {
+            "question": "Combien de temps faut-il pour déployer un employé digital opérationnel ?",
+            "answer": "Un déploiement complet prend généralement entre deux et quatre semaines. Ce délai inclut la personnalisation de l'avatar, l'entraînement de la base de connaissances et les tests d'intégration technique sur votre écosystème digital existant."
+          }
+        ]
+      },
+      "de": {
+        "seoTitle": "KI-Mitarbeiter im Einsatz: Studio-Überblick | Ovela Interactive",
+        "seoDescription": "Entdecken Sie, wie Ovela Interactive digitale Mitarbeiter für Kliniken, Immobilien und Luxusmarken entwickelt. 24/7-Verfügbarkeit, CRM-Integration & DSGVO-konform.",
+        "intro": "Ovela Interactive entwickelt digitale KI-Mitarbeiter, die Ihre Marke mit höchster Präzision repräsentieren. Unsere KI-Lösungen agieren als virtuelle Empfangschefs und Markenbotschafter – rund um die Uhr, mehrsprachig und auf dem Niveau Ihrer besten Mitarbeiter.",
+        "longIntro": "Die Effizienzsteigerung Ihrer digitalen Kanäle steht bei Ovela Interactive im Fokus. Wir konzipieren und implementieren spezialisierte KI-Agenten für Branchen mit hohem Beratungsbedarf – von der Medizintechnik über Immobilien bis hin zum Luxussegment. Unsere Studio-Showcases demonstrieren den praktischen Einsatz als virtuelle Property Presenter, Spa-Concierges oder interaktive Botschafter für komplexe Kampagnen. Der Prozess ist auf maximale Planungssicherheit ausgelegt: Jedes Modul durchläuft ein dezidiertes Training Ihrer Markenidentität und Fachdaten. Die technische Anbindung an bestehende Website-Strukturen und CRM-Systeme erfolgt nahtlos, sodass die Betriebsbereitschaft in der Regel innerhalb von zwei bis vier Wochen sichergestellt ist. Das Ergebnis ist eine messbare Entlastung Ihres Personals bei gleichzeitiger Optimierung der Conversion-Rate.",
+        "faqs": [
+          {
+            "question": "Wie wird der Datenschutz und die DSGVO-Konformität gewährleistet?",
+            "answer": "Sicherheit steht an erster Stelle. Unsere KI-Lösungen werden nach strengen europäischen Datenschutzrichtlinien implementiert, inklusive verschlüsselter Datenübertragung und Hosting auf konformen Servern, um höchste Compliance-Standards für deutsche Unternehmen zu erfüllen."
+          },
+          {
+            "question": "Lässt sich die KI an bestehende CRM-Systeme und Workflows anbinden?",
+            "answer": "Ja, die nahtlose Integration ist Kernbestandteil unserer Architektur. Unsere digitalen Mitarbeiter kommunizieren direkt mit gängigen CRM-Plattformen und Buchungssoftware, um Leads und Termine ohne manuellen Aufwand zu synchronisieren."
+          },
+          {
+            "question": "Wie hoch ist der Implementierungsaufwand für mein Unternehmen?",
+            "answer": "Der Prozess ist minimalinvasiv gestaltet. Nach der Bereitstellung Ihrer Wissensdatenbank übernimmt unser Studio das Training und die Programmierung; die finale Einbindung in Ihre Website erfolgt über ein einfaches Code-Snippet, meist innerhalb weniger Wochen."
+          },
+          {
+            "question": "Wie unterscheidet sich die KI-Lösung von herkömmlichen Chatbots?",
+            "answer": "Im Gegensatz zu regelbasierten Bots nutzen unsere KI-Mitarbeiter generative Sprachmodelle mit Marken-Training. Sie verstehen komplexe Anfragen im Kontext, agieren proaktiv verkaufsorientiert und bieten eine menschliche Interaktionsqualität ohne vordefinierte Entscheidungsbäume."
+          },
+          {
+            "question": "Ist die KI in der Lage, Fachbegriffe meiner Branche korrekt anzuwenden?",
+            "answer": "Absolut. Durch den Prozess der 'Knowledge Ingestion' füttern wir die KI mit Ihren spezifischen Fachunterlagen, Preislisten und Leitfäden. So agiert der digitale Mitarbeiter als Experte, der präzise und fachlich fundierte Auskünfte gibt."
+          }
+        ]
+      },
+      "pt": {
+        "seoTitle": "Atendimento com IA para Clínicas e Imóveis | Ovela Interactive",
+        "seoDescription": "Conheça nossos funcionários digitais com IA. Atendimento personalizado 24/7 para clínicas, imobiliárias e hotelaria. Converta visitas em vendas agora.",
+        "intro": "A Ovela Interactive cria funcionários digitais com IA que representam sua marca com a mesma excelência de um recepcionista de elite, disponíveis 24h em qualquer idioma.",
+        "longIntro": "A Ovela Interactive projeta e implementa funcionários digitais inteligentes para clínicas, imobiliárias, centros de bem-estar e o setor de hospitalidade de alto padrão. Nossos vídeos de demonstração apresentam um portfólio completo: de embaixadores de marca a apresentadores de imóveis e concierges para spas. No mercado brasileiro e português, a hospitalidade e o setor imobiliário exigem um toque humano e caloroso; por isso, cada IA é treinada com a identidade e o conhecimento técnico do cliente. Integrada diretamente ao seu site e CRM, a solução entra em operação em apenas duas a quatro semanas, transformando tráfego passivo em canais de receita ativos e personalizados.",
+        "faqs": [
+          {
+            "question": "O atendimento por IA parece artificial ou mecânico?",
+            "answer": "Não, nossas personas digitais são projetadas com naturalidade e empatia, adaptando-se ao tom de voz da sua marca. Elas garantem uma recepção calorosa e profissional, similar ao atendimento humano de alta qualidade."
+          },
+          {
+            "question": "Como a IA ajuda na venda de imóveis em Portugal e no Brasil?",
+            "answer": "A IA atua como apresentadora 24h, tirando dúvidas técnicas, agendando visitas e qualificando leads internacionais em vários idiomas. Isso permite que sua imobiliária atenda investidores no Algarve ou em São Paulo instantaneamente, independentemente do fuso horário."
+          },
+          {
+            "question": "É difícil integrar o funcionário digital ao meu site atual?",
+            "answer": "A implementação é simples e descomplicada, conectando-se diretamente ao seu site e CRM. Nossa equipe cuida de todo o processo de treinamento e ingestão de dados, com o sistema ficando pronto para o uso em poucas semanas."
+          },
+          {
+            "question": "A ferramenta funciona para clínicas de estética e centros de bem-estar?",
+            "answer": "Sim, a IA funciona como uma concierge de spa ou recepção clínica, gerenciando agendamentos e explicando procedimentos. Ela liberta sua equipe física para focar no cuidado presencial, enquanto o atendimento digital garante que nenhuma consulta seja perdida."
+          },
+          {
+            "question": "Quais são os idiomas suportados para atendimento internacional?",
+            "answer": "Nossas IAs são nativas em mais de 50 idiomas, incluindo Português (PT e BR), Inglês, Espanhol e Francês. Isso é ideal para empresas de luxo e turismo que recebem clientes de todo o mundo e exigem comunicação impecável."
+          }
+        ]
+      },
+      "ca": {
+        "seoTitle": "Empleats Digitals amb IA: El futur de la teva empresa | Ovela Interactive",
+        "seoDescription": "Descobreix com Ovela Interactive crea recepcionistes i ambaixadors amb IA per a clíniques, immobiliàries i retail. Presència 24/7 amb segell de qualitat.",
+        "intro": "L'estudi Ovela Interactive dissenya treballadors digitals d'IA que representen la teva marca amb la mateixa excel·lència que un amfitrió humà de primer nivell, disponibles les 24 hores del dia en qualsevol idioma i canal.",
+        "longIntro": "A Ovela Interactive liderem la nova era de l'atenció digital per a empreses referents a Barcelona i arreu de Catalunya. Dissenyem empleats digitals amb IA per a clíniques, immobiliàries, centres de luxe i hostaleria que no només responen preguntes, sinó que capturen l’essència de la teva marca. En aquests vídeos, podràs veure el nostre portafoli en acció: des d'ambaixadors de marca fins a conserges per a spas o gestors de propietats. Cada projecte s’inicia amb un entrenament profund sobre el coneixement del seu negoci, integrant-se directament al seu web i CRM en menys de quatre setmanes. Convertim la seva finestra digital en un canal de generació d’ingressos actiu i personalitzat sense descans.",
+        "faqs": [
+          {
+            "question": "Com pot un empleat digital mantenir l'estàndard de marca d'una clínica de luxe?",
+            "answer": "Els nostres empleats digitals s'entrenen amb la documentació interna i els valors de la teva empresa. Mantenen el to de veu català i el registre adequat, assegurant que cada interacció sigui professional, empàtica i alineada amb el prestigi del teu negoci."
+          },
+          {
+            "question": "Quant de temps triga la implementació de la IA a la meva web?",
+            "answer": "El procés típic de desplegament triga entre dues i quatre setmanes. Això inclou tot l'entrenament personalitzat, les proves de coneixement i la integració tècnica amb el teu CRM actual per a una gestió de leads sense friccions."
+          },
+          {
+            "question": "L'ambaixador digital pot parlar en català, castellà i altres idiomes simultàniament?",
+            "answer": "Exacte. Les nostres solucions són poliglotes i detecten automàticament l'idioma de l'usuari. Poden atendre clients en català amb total fluïdesa o canviar a qualsevol altra llengua segons les necessitats del teu mercat internacional."
+          },
+          {
+            "question": "Es pot integrar el sistema d'IA amb el meu calendari de reserves?",
+            "answer": "Sí, la nostra tecnologia es connecta directament amb plataformes de gestió de cites i CRM. L'empleat digital pot tancar visites reals, gestionar reserves o recollir dades de clients potencials de manera totalment autònoma."
+          },
+          {
+            "question": "Què diferencia Ovela Interactive d'un chatbot convencional?",
+            "answer": "A diferència dels chatbots basats en regles rígides, els nostres ambaixadors utilitzen IA generativa avançada. Ofereixen una experiència conversacional humana, entenen el context i estan dissenyats estèticament per representar el luxe i la modernitat de les empreses líders a Catalunya."
+          }
+        ]
+      }
+    }
+  }
+}

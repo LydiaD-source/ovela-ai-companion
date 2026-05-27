@@ -105,7 +105,7 @@ const Contact = () => {
           <div className="grid md:grid-cols-3 gap-6 text-center">
             {[
               { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com', href: 'mailto:support@ovelainteractive.com' },
-              { icon: MapPin, title: 'Location', value: 'Andorra La Vella' },
+              { icon: MapPin, title: 'Location', value: 'Andorra La Vella\nServing clients across Europe & international markets' },
               { icon: Clock, title: 'Hours', value: 'Monday–Friday\n9am–6pm CET' },
             ].map((item, i) => (
               <div key={i} className="p-6 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>

@@ -1,8 +1,93 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Mail, MapPin, Clock, MessageCircle, ArrowRight, Sparkles, Globe, Users, Palette, Handshake, Megaphone } from 'lucide-react';
+import { Mail, MapPin, Clock, MessageCircle, ArrowRight, Sparkles, Globe, Users, Palette, Handshake, Megaphone, Phone, HelpCircle } from 'lucide-react';
 import { useSEO } from '@/hooks/useSEO';
+import { useStructuredData } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
+
+const BASE_URL = 'https://www.ovelainteractive.com';
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": `${BASE_URL}/#business`,
+  "name": "Ovela Interactive",
+  "image": `${BASE_URL}/images/isabella-hero-native.png`,
+  "logo": `${BASE_URL}/favicon.png`,
+  "url": BASE_URL,
+  "telephone": "+376699369",
+  "email": "support@ovelainteractive.com",
+  "priceRange": "$$",
+  "description": "Ovela Interactive builds AI digital employees and AI representatives for clinics, real estate, hospitality, and modern businesses — including AI receptionists, multilingual customer communication, and lead engagement systems.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Avinguda Les Escoles 7",
+    "addressLocality": "Les Escaldes-Engordany",
+    "postalCode": "AD700",
+    "addressCountry": "AD"
+  },
+  "areaServed": ["AD", "ES", "FR", "PT", "DE", "EU"],
+  "openingHoursSpecification": [{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "opens": "09:00",
+    "closes": "18:00"
+  }],
+  "contactPoint": [{
+    "@type": "ContactPoint",
+    "telephone": "+376699369",
+    "email": "support@ovelainteractive.com",
+    "contactType": "sales",
+    "areaServed": ["AD", "ES", "FR", "PT", "DE", "EU"],
+    "availableLanguage": ["English", "Spanish", "French", "Catalan", "Portuguese", "German"]
+  }]
+};
+
+const contactPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact Ovela Interactive",
+  "url": `${BASE_URL}/contact`,
+  "description": "Contact Ovela Interactive to deploy AI digital employees, AI receptionists, and multilingual customer communication systems for your business.",
+  "mainEntity": { "@id": `${BASE_URL}/#business` }
+};
+
+const faqs = [
+  {
+    q: "What is Isabella and what can she do for my business?",
+    a: "Isabella is Ovela's AI digital employee — an interactive AI representative that greets website visitors, answers questions, presents products and services, qualifies leads, books appointments, and supports customer communication 24/7 in multiple languages."
+  },
+  {
+    q: "How do I start a conversation with Isabella?",
+    a: "Click the gold 'Ask Isabella' button visible on every page, or visit the homepage and tap the chat panel. Isabella responds instantly through text and video and can guide you through Ovela's services, pricing, and use cases."
+  },
+  {
+    q: "What can I ask Isabella?",
+    a: "Ask about AI digital employees, AI receptionists for clinics, real estate property presenters, multilingual customer communication, integrations with your CRM, pricing, timelines, and how an AI representative would fit your industry."
+  },
+  {
+    q: "Which industries does Ovela serve?",
+    a: "Ovela builds AI representatives for clinics and healthcare, real estate, hospitality, wellness, premium retail, and any business that needs scalable customer communication without increasing staff workload."
+  },
+  {
+    q: "How quickly can my AI digital employee be live?",
+    a: "Most Ovela AI representatives can be trained, integrated, and deployed within a few days, depending on industry, languages, and integrations required."
+  },
+  {
+    q: "How do I contact Ovela directly?",
+    a: "Call +376 699 369, email support@ovelainteractive.com, or visit our office at Avinguda Les Escoles 7, AD700, Les Escaldes-Engordany, Andorra. Hours are Monday–Friday, 9am–6pm CET."
+  }
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+};
 
 const Contact = () => {
   const { t } = useTranslation();
@@ -12,6 +97,8 @@ const Contact = () => {
     title: 'Contact Ovela | Build Your AI Digital Employee',
     description: 'Deploy AI representatives for clinics, real estate, and modern businesses. Chat with Isabella for instant answers about AI digital employees, customer communication systems, pricing, and integrations.'
   });
+
+  useStructuredData([localBusinessSchema, contactPageSchema, faqSchema], 'contact-structured-data');
 
   const handleStartChat = () => {
     window.location.href = '/?chat=open';

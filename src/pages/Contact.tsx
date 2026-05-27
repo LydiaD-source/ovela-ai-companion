@@ -189,10 +189,11 @@ const Contact = () => {
           <h2 className="font-playfair text-2xl md:text-3xl text-center mb-8" style={{ color: 'rgba(255,255,255,0.7)' }}>
             Prefer Direct Contact?
           </h2>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             {[
+              { icon: Phone, title: 'Phone', value: '+376 699 369', href: 'tel:+376699369' },
               { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com', href: 'mailto:support@ovelainteractive.com' },
-              { icon: MapPin, title: 'Location', value: 'Andorra La Vella\nServing clients across Europe & international markets' },
+              { icon: MapPin, title: 'Office', value: 'Avinguda Les Escoles 7\nAD700, Les Escaldes-Engordany\nAndorra' },
               { icon: Clock, title: 'Hours', value: 'Monday–Friday\n9am–6pm CET' },
             ].map((item, i) => (
               <div key={i} className="p-6 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -204,6 +205,37 @@ const Contact = () => {
                   <p className="text-sm whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.value}</p>
                 )}
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ — How to use Isabella */}
+      <section className="w-full py-16 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
+              <HelpCircle size={16} style={{ color: '#D4AF37' }} />
+              <span className="text-sm font-medium" style={{ color: '#D4AF37' }}>How To Use Isabella</span>
+            </div>
+            <h2 className="font-playfair text-3xl md:text-5xl mb-3" style={{ color: '#D4AF37' }}>
+              Frequently Asked Questions
+            </h2>
+            <p className="text-base md:text-lg" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              How to navigate, what to ask, and how Isabella supports your business.
+            </p>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((f, i) => (
+              <details key={i} className="group rounded-xl p-5 cursor-pointer" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.2)' }}>
+                <summary className="font-semibold flex items-center justify-between list-none" style={{ color: '#D4AF37' }}>
+                  <span>{f.q}</span>
+                  <ArrowRight size={18} className="transition-transform group-open:rotate-90" />
+                </summary>
+                <p className="mt-3 text-sm md:text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                  {f.a}
+                </p>
+              </details>
             ))}
           </div>
         </div>

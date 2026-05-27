@@ -74,7 +74,7 @@ const VideoDetail: React.FC = () => {
         ogType="video.other"
         schema={[videoSchema, breadcrumbSchema] as any}
       />
-      <div className="min-h-screen bg-[hsl(var(--background))] text-soft-white pt-28 pb-24">
+      <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">
           {/* Breadcrumb */}
           <nav className="text-xs text-soft-white/50 mb-4" aria-label="Breadcrumb">

@@ -208,6 +208,31 @@ const VideoDetail: React.FC = () => {
             </div>
           </article>
 
+          {/* FAQ — long-tail SEO + FAQPage rich result */}
+          <section className="mt-20 max-w-3xl" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="font-playfair text-2xl md:text-3xl mb-6">
+              Frequently asked questions
+            </h2>
+            <Accordion type="single" collapsible className="border-t border-soft-white/10">
+              {faqs.map((f, i) => (
+                <AccordionItem
+                  key={i}
+                  value={`faq-${i}`}
+                  className="border-b border-soft-white/10"
+                >
+                  <AccordionTrigger className="text-left text-soft-white hover:text-champagne-gold py-5">
+                    {f.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-soft-white/75 text-base leading-relaxed pb-5">
+                    {f.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </section>
+
+
+
           {related.length > 0 && (
             <section className="mt-20">
               <h2 className="font-playfair text-2xl mb-6">Related demos</h2>

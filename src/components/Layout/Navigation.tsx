@@ -9,13 +9,17 @@ const Navigation = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
+  const lang = t('languageCode', { defaultValue: '' }) || (typeof window !== 'undefined' ? (window.location.pathname.split('/').filter(Boolean)[0] || '') : '');
+  const langPrefix = ['fr', 'es', 'de', 'pt', 'ca'].includes(lang) ? `/${lang}` : '';
+
   const navItems = [
-    { name: t('nav.home'), path: '/' },
-    { name: t('nav.about'), path: '/about' },
-    { name: t('nav.pricing'), path: '/pricing' },
-    { name: t('nav.projects'), path: '/projects' },
-    { name: t('nav.partner'), path: '/partner' },
-    { name: t('nav.contact'), path: '/contact' },
+    { name: t('nav.home'), path: `${langPrefix}/` || '/' },
+    { name: t('nav.about'), path: `${langPrefix}/about` },
+    { name: t('nav.pricing'), path: `${langPrefix}/pricing` },
+    { name: t('nav.projects'), path: `${langPrefix}/projects` },
+    { name: t('nav.partner'), path: `${langPrefix}/partner` },
+    { name: t('nav.videos', { defaultValue: 'Videos' }), path: `${langPrefix}/videos` },
+    { name: t('nav.contact'), path: `${langPrefix}/contact` },
   ];
 
   // Close dropdown when clicking outside

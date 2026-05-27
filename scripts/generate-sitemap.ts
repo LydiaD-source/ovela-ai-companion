@@ -94,15 +94,20 @@ function makeUrlsetXml(): string {
 function makeVideoSitemapXml(): string {
   const urls = VIDEOS.map((v) => {
     const pageUrl = buildUrl('en', `/videos/${v.slug}`);
-    const safeTitle = v.title.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c] as string));
+    const meta = ytMeta[v.id];
+    const safe = (s: string) => s.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c] as string));
+    const desc = meta?.description?.trim() || `${v.title} — Ovela Interactive AI digital employee demo.`;
+    const thumb = meta?.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
+    const pubDate = meta?.publishedAt ? `\n      <video:publication_date>${meta.publishedAt}</video:publication_date>` : '';
+    const duration = meta?.duration ? `\n      <video:duration>${isoToSec(meta.duration)}</video:duration>` : '';
     return [
       '  <url>',
       `    <loc>${pageUrl}</loc>`,
       '    <video:video>',
-      `      <video:thumbnail_loc>https://i.ytimg.com/vi/${v.id}/hqdefault.jpg</video:thumbnail_loc>`,
-      `      <video:title>${safeTitle}</video:title>`,
-      `      <video:description>${safeTitle} — Ovela Interactive AI digital employee demo.</video:description>`,
-      `      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/${v.id}</video:player_loc>`,
+      `      <video:thumbnail_loc>${thumb}</video:thumbnail_loc>`,
+      `      <video:title>${safe(v.title)}</video:title>`,
+      `      <video:description>${safe(desc.slice(0, 2048))}</video:description>`,
+      `      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/${v.id}</video:player_loc>${pubDate}${duration}`,
       `      <video:family_friendly>yes</video:family_friendly>`,
       '    </video:video>',
       '  </url>',

@@ -4,6 +4,14 @@ import { ArrowLeft, MessageCircle, Calendar, Eye, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { getVideoBySlug, getRelatedVideos, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
+import { getCategorySEO, buildTopicsSentence } from '@/lib/videoSEOContent';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+
 
 function formatDuration(sec: number): string {
   if (!sec) return '';
@@ -25,6 +33,12 @@ const VideoDetail: React.FC = () => {
   const related = getRelatedVideos(video.slug, 4);
   const categoryLabel =
     VIDEO_LIBRARY_CATEGORIES.find((c) => c.key === video.category)?.label || 'AI Demos';
+
+  const seo = getCategorySEO(video.category);
+  const topicsSentence = buildTopicsSentence(video.tags, seo.semanticTopics);
+  const reinforcement = seo.reinforcement(video.title);
+  const industryContext = seo.industryContext;
+  const faqs = seo.faqs;
 
   const shortDesc = video.description.split('\n')[0].slice(0, 160);
 
@@ -64,6 +78,17 @@ const VideoDetail: React.FC = () => {
     ],
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+
+
   return (
     <>
       <SEO
@@ -72,7 +97,7 @@ const VideoDetail: React.FC = () => {
         description={shortDesc}
         ogImage={video.thumbnail}
         ogType="video.other"
-        schema={[videoSchema, breadcrumbSchema] as any}
+        schema={[videoSchema, breadcrumbSchema, faqSchema] as any}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">
@@ -108,12 +133,8 @@ const VideoDetail: React.FC = () => {
               <span className="px-3 py-1 rounded-full text-xs bg-champagne-gold/10 text-champagne-gold border border-champagne-gold/30">
                 {categoryLabel}
               </span>
-              {video.tags.slice(0, 4).map((t) => (
-                <span key={t} className="px-2 py-1 rounded-full text-xs bg-soft-white/5 text-soft-white/60 border border-soft-white/10">
-                  #{t}
-                </span>
-              ))}
             </div>
+
 
             <h1 className="font-playfair text-3xl md:text-5xl mb-4 gradient-text">{video.title}</h1>
 
@@ -138,13 +159,35 @@ const VideoDetail: React.FC = () => {
               )}
             </div>
 
-            <div className="prose prose-invert max-w-3xl mb-8">
+            {/* Industry context — category-aware framing */}
+            <p className="text-soft-white/90 text-lg leading-relaxed mb-6 max-w-3xl">
+              {industryContext}
+            </p>
+
+            {/* Full YouTube description */}
+            <div className="prose prose-invert max-w-3xl mb-6">
               {video.description.split('\n').filter(Boolean).map((para, i) => (
                 <p key={i} className="text-soft-white/80 text-base leading-relaxed mb-4 whitespace-pre-wrap">
                   {para}
                 </p>
               ))}
             </div>
+
+            {/* Semantic reinforcement block (80-120 words) */}
+            <div className="max-w-3xl mb-6 p-5 rounded-xl border border-soft-white/10 bg-soft-white/[0.03]">
+              <p className="text-soft-white/80 text-base leading-relaxed">
+                {reinforcement}
+              </p>
+            </div>
+
+            {/* Topics covered — sentence form (replaces hashtag chips for SEO) */}
+            {topicsSentence && (
+              <p className="text-soft-white/60 text-sm leading-relaxed mb-8 max-w-3xl">
+                <span className="text-champagne-gold/80 font-medium">Topics covered:</span>{' '}
+                {topicsSentence.replace(/^Topics covered:\s*/, '')}
+              </p>
+            )}
+
 
             <div className="flex flex-wrap gap-3">
               <Link
@@ -164,6 +207,31 @@ const VideoDetail: React.FC = () => {
               </a>
             </div>
           </article>
+
+          {/* FAQ — long-tail SEO + FAQPage rich result */}
+          <section className="mt-20 max-w-3xl" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="font-playfair text-2xl md:text-3xl mb-6">
+              Frequently asked questions
+            </h2>
+            <Accordion type="single" collapsible className="border-t border-soft-white/10">
+              {faqs.map((f, i) => (
+                <AccordionItem
+                  key={i}
+                  value={`faq-${i}`}
+                  className="border-b border-soft-white/10"
+                >
+                  <AccordionTrigger className="text-left text-soft-white hover:text-champagne-gold py-5">
+                    {f.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-soft-white/75 text-base leading-relaxed pb-5">
+                    {f.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </section>
+
+
 
           {related.length > 0 && (
             <section className="mt-20">

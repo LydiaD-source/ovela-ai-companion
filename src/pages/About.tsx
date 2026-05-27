@@ -184,13 +184,13 @@ const About = () => {
                 <Link to="/projects" className="text-[#D4AF37] hover:underline font-medium">Isabella</Link>{' '}
                 was developed as part of{' '}
                 <a href="https://www.wellnessgeni.com/" target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] hover:underline font-medium">WellnessGeni</a>{' '}
-                — a wellness-focused platform designed to encourage daily engagement, motivation and personal growth.
+                — a wellness-focused digital platform designed to encourage engagement, communication, and ongoing client interaction.
               </p>
               <p className="text-lg leading-relaxed mb-6" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
-                The project revealed something unexpected: people were not simply consuming content. They were forming genuine relationships through interaction.
+                The project revealed something unexpected: people responded more naturally to conversational digital experiences than to static content alone.
               </p>
               <p className="text-lg leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
-                That insight became the foundation of Ovela.
+                That insight became the foundation of Ovela's AI representative platform.
               </p>
               <blockquote className="font-playfair text-xl md:text-2xl italic pl-6 border-l-2" style={{ color: GOLD, borderColor: GOLD }}>
                 "We didn't set out to create a digital model. We set out to create a better digital experience."

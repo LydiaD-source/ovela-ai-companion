@@ -25,11 +25,12 @@ const IsabellaConcierge: React.FC = () => {
   // Hide on Home (any locale) — Isabella is already the hero.
   const path = location.pathname.replace(/^\/(fr|es|de|pt|ca)(\/|$)/, '/');
   const isHome = path === '/' || path === '';
-  if (isHome) return null;
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, loading]);
+
+  if (isHome) return null;
 
   const send = async () => {
     const text = input.trim();

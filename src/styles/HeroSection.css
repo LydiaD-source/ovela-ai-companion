@@ -264,8 +264,11 @@
 
 /* Primary CTA Button */
 .hero-btn-primary {
-  width: 280px;
+  min-width: 280px;
+  width: auto;
+  padding: 0 28px;
   height: 54px;
+  white-space: nowrap;
   border-radius: 12px;
   background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%);
   border: none;

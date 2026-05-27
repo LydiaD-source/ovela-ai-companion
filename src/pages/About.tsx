@@ -105,10 +105,10 @@ const About = () => {
               <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
                 In 2024, Ovela introduced{' '}
                 <Link to="/projects" className="text-[#D4AF37] hover:underline font-medium">Isabella</Link>{' '}
-                — one of the first interactive AI model ambassadors designed not only to present products, but to communicate, guide and engage with audiences in real time.
+                — one of the first AI digital representatives designed to communicate with visitors, guide customer interaction, and support businesses in real time.
               </p>
               <p className="text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
-                What began as an experiment in human-centered AI quickly became proof that digital representatives could do far more than traditional content.
+                What began as an experiment in human-centered AI quickly demonstrated how digital employees could improve communication, presentation, and customer engagement far beyond traditional websites or static content.
               </p>
             </div>
           </div>

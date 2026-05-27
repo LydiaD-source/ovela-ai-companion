@@ -17,7 +17,9 @@ export const SEOBreaker: React.FC = () => {
             lineHeight: '1.8',
           }}
         >
-          Ovela Interactive creates AI-powered digital humans that act as interactive hosts for websites, campaigns, and online platforms. Isabella, our AI model ambassador, helps businesses increase engagement, automate customer communication, and convert visitors into clients through real-time interaction.
+          Ovela creates AI digital employees designed to communicate with visitors, present services, answer questions, and support businesses around the clock.
+          <br /><br />
+          Our AI representatives help clinics, real estate agencies, wellness centers, and premium brands automate communication, qualify leads, and convert website traffic into real client interaction.
         </p>
       </div>
     </section>

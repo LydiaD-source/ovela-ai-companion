@@ -37,7 +37,7 @@ const VideoLibrary: React.FC = () => {
         description="Browse 100+ demos of AI digital employees, AI receptionists, and multilingual AI representatives across clinics, real estate, wellness, hospitality, and more."
         schema={itemListSchema}
       />
-      <div className="min-h-screen bg-[hsl(var(--background))] text-soft-white pt-32 pb-24">
+      <div className="min-h-screen bg-charcoal text-soft-white pt-32 pb-24">
         <div className="container mx-auto px-6 max-w-7xl">
           <header className="text-center mb-12">
             <h1 className="font-playfair text-4xl md:text-6xl mb-4 gradient-text">

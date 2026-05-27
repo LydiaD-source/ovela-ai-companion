@@ -93,12 +93,12 @@ const VideoCategory: React.FC = () => {
               Category · {videos.length} videos
             </p>
             <h1 className="font-playfair text-4xl md:text-6xl mb-5 gradient-text">{meta.h1}</h1>
-            <p className="text-soft-white/85 text-lg leading-relaxed">{meta.intro}</p>
+            <p className="text-soft-white/85 text-lg leading-relaxed">{intro}</p>
           </header>
 
           {/* Long intro — topical authority */}
           <section className="max-w-3xl mb-16 p-6 rounded-xl border border-soft-white/10 bg-soft-white/[0.03]">
-            <p className="text-soft-white/80 text-base leading-relaxed">{meta.longIntro}</p>
+            <p className="text-soft-white/80 text-base leading-relaxed">{longIntro}</p>
           </section>
 
           {/* Featured clips */}

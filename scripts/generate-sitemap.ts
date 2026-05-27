@@ -34,7 +34,14 @@ const STATIC_PATHS = [
   { path: '/industries/clinics', changefreq: 'monthly', priority: '0.8' },
   { path: '/industries/real-estate', changefreq: 'monthly', priority: '0.8' },
   { path: '/industries/wellness', changefreq: 'monthly', priority: '0.8' },
+  // Video category hubs
+  { path: '/videos/category/interactive-marketing', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/wellness-spa', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/real-estate', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/ai-ambassador', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/studio-overview', changefreq: 'weekly', priority: '0.7' },
 ];
+
 
 function slugify(title: string, id: string): string {
   const base = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 60);

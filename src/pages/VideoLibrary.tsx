@@ -4,6 +4,8 @@ import { Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { ALL_VIDEOS, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
+import { CATEGORY_META, getCategorySlugByKey } from '@/lib/videoCategoryMeta';
+
 
 const VideoLibrary: React.FC = () => {
   const { i18n } = useTranslation();
@@ -49,8 +51,28 @@ const VideoLibrary: React.FC = () => {
             </p>
           </header>
 
+          {/* Category hubs — topical authority links (also crawlable for SEO) */}
+          <section className="mb-12" aria-labelledby="hubs-heading">
+            <h2 id="hubs-heading" className="text-center text-soft-white/60 text-xs uppercase tracking-widest mb-4">
+              Browse by topic
+            </h2>
+            <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {CATEGORY_META.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    to={`${langPrefix}/videos/category/${c.slug}`}
+                    className="block text-center px-4 py-3 rounded-lg border border-soft-white/10 hover:border-champagne-gold/50 bg-soft-white/[0.03] text-soft-white/80 hover:text-champagne-gold text-sm transition-all"
+                  >
+                    {VIDEO_LIBRARY_CATEGORIES.find((v) => v.key === c.key)?.label || c.h1}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {/* Filter pills */}
           <nav className="flex flex-wrap gap-2 justify-center mb-12" aria-label="Industry filter">
+
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-full text-sm border transition-all ${

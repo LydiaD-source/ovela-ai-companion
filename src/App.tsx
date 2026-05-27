@@ -18,6 +18,8 @@ import Interactive from "./pages/Interactive";
 import Ecosystem from "./pages/Ecosystem";
 import VideoLibrary from "./pages/VideoLibrary";
 import VideoDetail from "./pages/VideoDetail";
+import VideoCategory from "./pages/VideoCategory";
+
 import Clinics from "./pages/industries/Clinics";
 import RealEstate from "./pages/industries/RealEstate";
 import Wellness from "./pages/industries/Wellness";
@@ -41,7 +43,9 @@ const SiteRoutes = () => (
     <Route path="pricing" element={<Pricing />} />
     <Route path="contact" element={<Contact />} />
     <Route path="videos" element={<VideoLibrary />} />
+    <Route path="videos/category/:categorySlug" element={<VideoCategory />} />
     <Route path="videos/:slug" element={<VideoDetail />} />
+
     <Route path="industries/clinics" element={<Clinics />} />
     <Route path="industries/real-estate" element={<RealEstate />} />
     <Route path="industries/wellness" element={<Wellness />} />

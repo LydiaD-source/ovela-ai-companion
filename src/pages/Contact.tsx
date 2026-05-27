@@ -126,10 +126,10 @@ const Contact = () => {
       <section className="w-full py-16 px-4">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="font-playfair text-3xl md:text-5xl mb-4" style={{ color: '#D4AF37' }}>
-            Let's Build Something That Works 24/7
+            Your AI Digital Employee Can Be Live In Days
           </h2>
           <p className="text-lg mb-8" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Your AI ambassador can be live in days — not months.
+            Ovela AI representatives help businesses answer questions, guide visitors, capture leads, and support customer communication around the clock.
           </p>
           <Button
             onClick={handleStartChat}
@@ -137,7 +137,7 @@ const Contact = () => {
             className="text-lg px-10 py-7 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)', color: '#0A0A23', fontWeight: 700 }}
           >
-            Start with Isabella Now
+            Start Building Your AI Representative
             <ArrowRight size={20} className="ml-2" />
           </Button>
         </div>

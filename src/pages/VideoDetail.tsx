@@ -6,6 +6,7 @@ import SEO from '@/components/SEO';
 import { getVideoBySlug, getRelatedVideos, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
 import { getCategorySEO, buildTopicsSentence } from '@/lib/videoSEOContent';
 import { getCategorySlugByKey } from '@/lib/videoCategoryMeta';
+import { getVideoQuotes } from '@/lib/videoQuotes';
 
 import {
   Accordion,

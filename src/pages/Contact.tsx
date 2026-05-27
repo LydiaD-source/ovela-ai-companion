@@ -9,8 +9,8 @@ const Contact = () => {
 
   useSEO({
     path: '/contact',
-    title: 'Contact Ovela Interactive | Start Your AI Project Today',
-    description: 'Get in touch with Ovela Interactive. Chat with Isabella, our AI ambassador, for instant answers about interactive campaigns, digital ambassadors, and AI-powered business solutions.'
+    title: 'Contact Ovela | Build Your AI Digital Employee',
+    description: 'Deploy AI representatives for clinics, real estate, and modern businesses. Chat with Isabella for instant answers about AI digital employees, customer communication systems, pricing, and integrations.'
   });
 
   const handleStartChat = () => {
@@ -18,11 +18,12 @@ const Contact = () => {
   };
 
   const services = [
-    { icon: Users, label: 'AI brand ambassadors' },
-    { icon: Globe, label: 'Interactive website hosts' },
-    { icon: Megaphone, label: 'Campaigns & product launches' },
-    { icon: Palette, label: 'Custom AI personas' },
-    { icon: Handshake, label: 'Licensing & partnerships' },
+    { icon: Users, label: 'AI digital employees' },
+    { icon: Globe, label: 'AI website receptionists' },
+    { icon: Megaphone, label: 'Product & service presentation systems' },
+    { icon: MessageCircle, label: 'AI customer communication platforms' },
+    { icon: Palette, label: 'Multilingual lead engagement' },
+    { icon: Handshake, label: 'Industry-trained AI representatives' },
   ];
 
   return (

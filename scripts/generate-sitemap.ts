@@ -1,9 +1,21 @@
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks).
 // Generates per-language sitemap with hreflang cross-links + video sitemap.
 
-import { writeFileSync, mkdirSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { VIDEO_CATEGORIES } from '../src/config/videoCatalog';
+
+// Optional rich metadata from YouTube fetch
+interface YTMeta { id: string; title: string; description: string; publishedAt: string; thumbnail: string; duration: string; }
+const ytPath = resolve('src/data/youtube-videos.json');
+const ytMeta: Record<string, YTMeta> = {};
+if (existsSync(ytPath)) {
+  for (const v of JSON.parse(readFileSync(ytPath, 'utf-8')) as YTMeta[]) ytMeta[v.id] = v;
+}
+function isoToSec(iso: string): number {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  return m ? (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0)) : 0;
+}
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 const LANGS = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;
@@ -35,13 +47,19 @@ function buildUrl(lang: string, path: string): string {
   return `${BASE_URL}${prefix}${cleanPath || (prefix ? '' : '/')}`;
 }
 
-// De-dup videos across categories
+// Use full YouTube catalog if available, else fall back to curated categories
 const seen = new Set<string>();
-const VIDEOS = VIDEO_CATEGORIES.flatMap((c) =>
-  c.videos
-    .filter((v) => (seen.has(v.id) ? false : (seen.add(v.id), true)))
-    .map((v) => ({ id: v.id, title: v.title, slug: slugify(v.title, v.id) })),
-);
+const ytIds = Object.keys(ytMeta);
+const VIDEOS = ytIds.length
+  ? ytIds.map((id) => {
+      const m = ytMeta[id];
+      return { id, title: m.title, slug: slugify(m.title, id) };
+    })
+  : VIDEO_CATEGORIES.flatMap((c) =>
+      c.videos
+        .filter((v) => (seen.has(v.id) ? false : (seen.add(v.id), true)))
+        .map((v) => ({ id: v.id, title: v.title, slug: slugify(v.title, v.id) })),
+    );
 
 function makeUrlsetXml(): string {
   const allPaths = [
@@ -80,15 +98,20 @@ function makeUrlsetXml(): string {
 function makeVideoSitemapXml(): string {
   const urls = VIDEOS.map((v) => {
     const pageUrl = buildUrl('en', `/videos/${v.slug}`);
-    const safeTitle = v.title.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c] as string));
+    const meta = ytMeta[v.id];
+    const safe = (s: string) => s.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&apos;' }[c] as string));
+    const desc = meta?.description?.trim() || `${v.title} — Ovela Interactive AI digital employee demo.`;
+    const thumb = meta?.thumbnail || `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
+    const pubDate = meta?.publishedAt ? `\n      <video:publication_date>${meta.publishedAt}</video:publication_date>` : '';
+    const duration = meta?.duration ? `\n      <video:duration>${isoToSec(meta.duration)}</video:duration>` : '';
     return [
       '  <url>',
       `    <loc>${pageUrl}</loc>`,
       '    <video:video>',
-      `      <video:thumbnail_loc>https://i.ytimg.com/vi/${v.id}/hqdefault.jpg</video:thumbnail_loc>`,
-      `      <video:title>${safeTitle}</video:title>`,
-      `      <video:description>${safeTitle} — Ovela Interactive AI digital employee demo.</video:description>`,
-      `      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/${v.id}</video:player_loc>`,
+      `      <video:thumbnail_loc>${thumb}</video:thumbnail_loc>`,
+      `      <video:title>${safe(v.title)}</video:title>`,
+      `      <video:description>${safe(desc.slice(0, 2048))}</video:description>`,
+      `      <video:player_loc allow_embed="yes">https://www.youtube-nocookie.com/embed/${v.id}</video:player_loc>${pubDate}${duration}`,
       `      <video:family_friendly>yes</video:family_friendly>`,
       '    </video:video>',
       '  </url>',

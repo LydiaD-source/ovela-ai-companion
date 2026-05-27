@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { getTopicHubBySlug, matchVideosForHub } from '@/lib/topicHubsContent';
+import { getLocalizedHub } from '@/lib/localizedSEO';
 
 const BASE = 'https://www.ovelainteractive.com';
 
@@ -21,6 +22,14 @@ const TopicHub: React.FC = () => {
 
   const hub = hubSlug ? getTopicHubBySlug(hubSlug) : undefined;
   if (!hub) return <Navigate to={`${langPrefix}/`} replace />;
+
+  // Apply localized overrides when available (ES/FR/DE/PT/CA); fall back to English source.
+  const loc = getLocalizedHub(hub.slug, lang);
+  const tagline = loc?.tagline || hub.tagline;
+  const heroIntro = loc?.heroIntro || hub.heroIntro;
+  const seoTitle = loc?.seoTitle || hub.seoTitle;
+  const seoDescription = loc?.seoDescription || hub.seoDescription;
+  const faqs = loc?.faqs?.length ? loc.faqs : hub.faqs;
 
   const videos = matchVideosForHub(hub, 9);
   const featured = videos.slice(0, 6);
@@ -41,7 +50,7 @@ const TopicHub: React.FC = () => {
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: hub.faqs.map((f) => ({
+    mainEntity: faqs.map((f) => ({
       '@type': 'Question',
       name: f.question,
       acceptedAnswer: { '@type': 'Answer', text: f.answer },
@@ -52,7 +61,7 @@ const TopicHub: React.FC = () => {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: hub.h1,
-    description: hub.seoDescription,
+    description: seoDescription,
     inLanguage: lang,
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     publisher: {
@@ -69,8 +78,8 @@ const TopicHub: React.FC = () => {
     <>
       <SEO
         path={path}
-        title={hub.seoTitle}
-        description={hub.seoDescription}
+        title={seoTitle}
+        description={seoDescription}
         ogType="article"
         schema={[breadcrumbSchema, faqSchema, articleSchema] as any}
       />
@@ -90,9 +99,9 @@ const TopicHub: React.FC = () => {
               Topic hub
             </p>
             <h1 className="font-playfair text-4xl md:text-6xl mb-5 gradient-text">{hub.h1}</h1>
-            <p className="text-soft-white/85 text-lg md:text-xl italic mb-6">{hub.tagline}</p>
+            <p className="text-soft-white/85 text-lg md:text-xl italic mb-6">{tagline}</p>
             <p className="text-soft-white/80 text-base md:text-lg leading-relaxed max-w-3xl">
-              {hub.heroIntro}
+              {heroIntro}
             </p>
           </header>
 
@@ -223,7 +232,7 @@ const TopicHub: React.FC = () => {
               Frequently asked questions
             </h2>
             <Accordion type="single" collapsible className="border-t border-soft-white/10">
-              {hub.faqs.map((f, i) => (
+              {faqs.map((f, i) => (
                 <AccordionItem
                   key={i}
                   value={`faq-${i}`}

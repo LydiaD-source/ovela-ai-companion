@@ -12,6 +12,7 @@ import {
 import { getCategoryMetaBySlug } from '@/lib/videoCategoryMeta';
 import { getVideosByCategoryKey } from '@/lib/videoLibrary';
 import { getCategorySEO } from '@/lib/videoSEOContent';
+import { getLocalizedCategory } from '@/lib/localizedSEO';
 
 const VideoCategory: React.FC = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -26,7 +27,13 @@ const VideoCategory: React.FC = () => {
   const featured = videos.slice(0, 6);
   const restCount = Math.max(0, videos.length - featured.length);
   const seo = getCategorySEO(meta.key);
-  const faqs = seo.faqs;
+
+  const loc = getLocalizedCategory(meta.slug, lang);
+  const seoTitle = loc?.seoTitle || meta.seoTitle;
+  const seoDescription = loc?.seoDescription || meta.seoDescription;
+  const intro = loc?.intro || meta.intro;
+  const longIntro = loc?.longIntro || meta.longIntro;
+  const faqs = loc?.faqs?.length ? loc.faqs : seo.faqs;
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -65,8 +72,8 @@ const VideoCategory: React.FC = () => {
     <>
       <SEO
         path={`/videos/category/${meta.slug}`}
-        title={meta.seoTitle}
-        description={meta.seoDescription}
+        title={seoTitle}
+        description={seoDescription}
         schema={[breadcrumbSchema, itemListSchema, faqSchema] as any}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">
@@ -86,12 +93,12 @@ const VideoCategory: React.FC = () => {
               Category · {videos.length} videos
             </p>
             <h1 className="font-playfair text-4xl md:text-6xl mb-5 gradient-text">{meta.h1}</h1>
-            <p className="text-soft-white/85 text-lg leading-relaxed">{meta.intro}</p>
+            <p className="text-soft-white/85 text-lg leading-relaxed">{intro}</p>
           </header>
 
           {/* Long intro — topical authority */}
           <section className="max-w-3xl mb-16 p-6 rounded-xl border border-soft-white/10 bg-soft-white/[0.03]">
-            <p className="text-soft-white/80 text-base leading-relaxed">{meta.longIntro}</p>
+            <p className="text-soft-white/80 text-base leading-relaxed">{longIntro}</p>
           </section>
 
           {/* Featured clips */}

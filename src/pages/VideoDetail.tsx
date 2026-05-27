@@ -97,7 +97,7 @@ const VideoDetail: React.FC = () => {
         description={shortDesc}
         ogImage={video.thumbnail}
         ogType="video.other"
-        schema={[videoSchema, breadcrumbSchema] as any}
+        schema={[videoSchema, breadcrumbSchema, faqSchema] as any}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">

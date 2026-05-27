@@ -6,6 +6,7 @@ import SEO from '@/components/SEO';
 import { getVideoBySlug, getRelatedVideos, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
 import { getCategorySEO, buildTopicsSentence } from '@/lib/videoSEOContent';
 import { getCategorySlugByKey } from '@/lib/videoCategoryMeta';
+import { getVideoQuotes } from '@/lib/videoQuotes';
 
 import {
   Accordion,
@@ -41,6 +42,7 @@ const VideoDetail: React.FC = () => {
   const reinforcement = seo.reinforcement(video.title);
   const industryContext = seo.industryContext;
   const faqs = seo.faqs;
+  const quotes = getVideoQuotes(video.id);
 
   const shortDesc = video.description.split('\n')[0].slice(0, 160);
 
@@ -90,6 +92,18 @@ const VideoDetail: React.FC = () => {
     })),
   };
 
+  const quotesSchema = quotes.length > 0 ? quotes.map((q) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Quotation',
+    text: q.text,
+    spokenByCharacter: 'Isabella',
+    isPartOf: {
+      '@type': 'VideoObject',
+      name: video.title,
+      url: `https://www.ovelainteractive.com${langPrefix}/videos/${video.slug}`,
+    },
+  })) : [];
+
 
   return (
     <>
@@ -99,7 +113,7 @@ const VideoDetail: React.FC = () => {
         description={shortDesc}
         ogImage={video.thumbnail}
         ogType="video.other"
-        schema={[videoSchema, breadcrumbSchema, faqSchema] as any}
+        schema={[videoSchema, breadcrumbSchema, faqSchema, ...quotesSchema] as any}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">
@@ -178,6 +192,22 @@ const VideoDetail: React.FC = () => {
             <p className="text-soft-white/90 text-lg leading-relaxed mb-6 max-w-3xl">
               {industryContext}
             </p>
+
+            {/* Key insights from this video (verbatim, quality-gated) */}
+            {quotes.length > 0 && (
+              <section className="max-w-3xl mb-8 space-y-4" aria-label="Key insights from this video">
+                {quotes.map((q, i) => (
+                  <blockquote
+                    key={i}
+                    cite={video.watchUrl}
+                    className="relative pl-6 border-l-2 border-champagne-gold/60 italic text-soft-white/90 text-lg leading-relaxed"
+                  >
+                    <span className="absolute -left-1 -top-2 text-champagne-gold/40 text-3xl font-serif select-none">“</span>
+                    {q.text}
+                  </blockquote>
+                ))}
+              </section>
+            )}
 
             {/* Full YouTube description */}
             <div className="prose prose-invert max-w-3xl mb-6">

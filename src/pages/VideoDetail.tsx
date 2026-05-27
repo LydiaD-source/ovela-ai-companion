@@ -159,13 +159,35 @@ const VideoDetail: React.FC = () => {
               )}
             </div>
 
-            <div className="prose prose-invert max-w-3xl mb-8">
+            {/* Industry context — category-aware framing */}
+            <p className="text-soft-white/90 text-lg leading-relaxed mb-6 max-w-3xl">
+              {industryContext}
+            </p>
+
+            {/* Full YouTube description */}
+            <div className="prose prose-invert max-w-3xl mb-6">
               {video.description.split('\n').filter(Boolean).map((para, i) => (
                 <p key={i} className="text-soft-white/80 text-base leading-relaxed mb-4 whitespace-pre-wrap">
                   {para}
                 </p>
               ))}
             </div>
+
+            {/* Semantic reinforcement block (80-120 words) */}
+            <div className="max-w-3xl mb-6 p-5 rounded-xl border border-soft-white/10 bg-soft-white/[0.03]">
+              <p className="text-soft-white/80 text-base leading-relaxed">
+                {reinforcement}
+              </p>
+            </div>
+
+            {/* Topics covered — sentence form (replaces hashtag chips for SEO) */}
+            {topicsSentence && (
+              <p className="text-soft-white/60 text-sm leading-relaxed mb-8 max-w-3xl">
+                <span className="text-champagne-gold/80 font-medium">Topics covered:</span>{' '}
+                {topicsSentence.replace(/^Topics covered:\s*/, '')}
+              </p>
+            )}
+
 
             <div className="flex flex-wrap gap-3">
               <Link

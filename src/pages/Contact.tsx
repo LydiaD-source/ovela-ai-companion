@@ -59,7 +59,7 @@ const Contact = () => {
               Talk to Isabella — Get Instant Answers
             </h2>
             <p className="mb-8 max-w-lg mx-auto text-base md:text-lg" style={{ color: 'rgba(255,255,255,0.8)' }}>
-              Describe your idea, and Isabella will guide you through possibilities, pricing, and next steps in real time.
+              Describe your business, communication challenges, or project goals, and Isabella will guide you through available solutions, pricing, integrations, and next steps in real time.
             </p>
             <Button
               onClick={handleStartChat}

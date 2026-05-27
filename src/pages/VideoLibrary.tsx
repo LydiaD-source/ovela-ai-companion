@@ -4,6 +4,8 @@ import { Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { ALL_VIDEOS, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
+import { CATEGORY_META, getCategorySlugByKey } from '@/lib/videoCategoryMeta';
+
 
 const VideoLibrary: React.FC = () => {
   const { i18n } = useTranslation();

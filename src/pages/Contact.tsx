@@ -33,13 +33,16 @@ const Contact = () => {
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
             <Sparkles size={16} style={{ color: '#D4AF37' }} />
-            <span className="text-sm font-medium" style={{ color: '#D4AF37' }}>Let's build something extraordinary</span>
+            <span className="text-sm font-medium" style={{ color: '#D4AF37' }}>Start Building Your AI Business Representative</span>
           </div>
           <h1 className="font-playfair text-4xl md:text-6xl lg:text-7xl mb-6" style={{ color: '#D4AF37' }}>
-            Start Your AI Project Today
+            Build Your AI Digital Employee
           </h1>
+          <p className="text-base md:text-lg max-w-2xl mx-auto mb-4" style={{ color: '#D4AF37', fontWeight: 500 }}>
+            AI Representatives For Clinics, Real Estate & Modern Businesses
+          </p>
           <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>
-            Whether you're building an interactive campaign, deploying a digital ambassador, or exploring AI for your business — we'll help you get started quickly.
+            Whether you need an AI receptionist, digital business representative, property presenter, or multilingual customer communication system, Ovela helps businesses deploy AI representatives quickly and effectively.
           </p>
         </div>
       </section>

@@ -9,8 +9,8 @@ const PartnerWithUs = () => {
   const { t } = useTranslation();
   useSEO({
     path: '/partner',
-    title: 'Build Your Interactive AI Team Member | Ovela',
-    description: 'Transform websites, campaigns and customer interactions into real-time conversations powered by custom AI representatives trained for your business.'
+    title: 'Build Your Own AI Digital Employee | Ovela',
+    description: 'Transform websites, customer communication, and lead engagement into real-time business interaction powered by AI representatives trained specifically for your industry.'
   });
 
   const openChat = () => {
@@ -20,19 +20,19 @@ const PartnerWithUs = () => {
   const capabilities = [
     {
       title: 'Interactive Brand Campaigns',
-      description: 'Create campaigns that don\'t stop at impressions. Allow audiences to explore, interact and engage in real time.',
-      bullets: ['Social activations', 'Product storytelling', 'Interactive advertising', 'Digital ambassadors']
+      description: 'Create AI-powered campaigns that continue communicating after the first click — helping visitors explore services, ask questions, and engage with your business in real time.',
+      bullets: ['AI-powered social campaigns', 'Product & service presentation', 'Interactive advertising experiences', 'AI brand representatives']
     },
     {
       title: 'Deploy an AI Team Member',
-      description: 'Choose an existing Ovela representative or create a custom digital team member designed specifically for your brand.',
-      bullets: ['Website host', 'Product specialist', 'Property presenter', 'Client concierge', 'Brand ambassador'],
+      description: 'Deploy an existing Ovela AI representative or create a custom AI digital employee trained specifically for your business, communication style, and customer journey.',
+      bullets: ['AI website receptionist', 'Product specialist', 'Property presenter', 'Client concierge', 'Brand representative'],
       note: 'Available 24/7 in multiple languages.'
     },
     {
       title: 'Custom Digital Representatives',
-      description: 'Every business is different. We design AI team members aligned with your industry, audience and communication style.',
-      bullets: ['Custom appearance', 'Brand voice', 'Industry expertise', 'Multilingual interaction', 'CRM integration']
+      description: 'Every business communicates differently. Ovela designs AI representatives aligned with your industry, audience, workflows, and customer communication needs.',
+      bullets: ['Custom appearance', 'Brand voice', 'Industry expertise', 'Multilingual interaction', 'CRM & booking integration']
     }
   ];
 
@@ -42,15 +42,16 @@ const PartnerWithUs = () => {
     'Recommend solutions',
     'Book appointments',
     'Capture leads',
+    'Qualify leads',
     'Guide customer journeys'
   ];
 
   const useCases = [
-    { icon: Stethoscope, industry: 'Healthcare', desc: 'Patient guidance & appointment booking' },
-    { icon: Building2, industry: 'Real Estate', desc: 'Interactive property presentation' },
-    { icon: Zap, industry: 'Technology', desc: 'Product education & lead qualification' },
-    { icon: Hotel, industry: 'Hospitality', desc: 'Digital concierge experiences' },
-    { icon: Briefcase, industry: 'Professional Services', desc: 'Client onboarding & information delivery' }
+    { icon: Stethoscope, industry: 'Healthcare', desc: 'Patient communication & appointment booking' },
+    { icon: Building2, industry: 'Real Estate', desc: 'AI property presentation & buyer engagement' },
+    { icon: Zap, industry: 'Technology', desc: 'Product explanation & lead qualification' },
+    { icon: Hotel, industry: 'Hospitality', desc: 'AI concierge & guest communication' },
+    { icon: Briefcase, industry: 'Professional Services', desc: 'Client onboarding & information management' }
   ];
 
   return (
@@ -65,19 +66,19 @@ const PartnerWithUs = () => {
             className="font-playfair text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
             style={{ color: '#D4AF37' }}
           >
-            Build Your Own Interactive<br className="hidden md:block" /> AI Team Member
+            Build Your Own AI Digital Employee
           </h1>
           <p
             className="text-lg sm:text-xl max-w-3xl mx-auto mb-6 leading-relaxed"
             style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}
           >
-            Transform websites, campaigns and customer interactions into real-time conversations powered by custom AI representatives trained for your business.
+            Transform websites, customer communication, and lead engagement into real-time business interaction powered by AI representatives trained specifically for your industry.
           </p>
           <p
             className="text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
             style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37', fontWeight: 400 }}
           >
-            Healthcare. Real Estate. Technology. Hospitality. Premium Services.<br />
+            Healthcare • Wellness • Real Estate • Technology • Hospitality • Premium Services<br />
             <span style={{ color: '#EDEDED' }}>Available 24/7. Multilingual. Always on.</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -149,12 +150,12 @@ const PartnerWithUs = () => {
       <section className="py-24" style={{ background: 'rgba(212,175,55,0.03)' }}>
         <div className="container mx-auto px-6 lg:px-20 text-center">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-10" style={{ color: '#D4AF37' }}>
-            Why Brands Are Switching to Interactive AI
+            Why Businesses Are Adopting AI Digital Employees
           </h2>
           <div className="grid sm:grid-cols-3 gap-8 max-w-4xl mx-auto mb-10">
             {[
               { icon: Users, stat: '2–3×', label: 'longer visitor engagement with interactive experiences' },
-              { icon: Zap, stat: 'Instant', label: 'AI hosts answer immediately — no lost leads' },
+              { icon: Zap, stat: 'Instant', label: 'AI representatives respond instantly — reducing missed leads and repetitive communication' },
               { icon: Globe, stat: '24/7', label: 'campaigns become scalable and always active' }
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-3">
@@ -165,7 +166,7 @@ const PartnerWithUs = () => {
             ))}
           </div>
           <p className="text-base italic max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37' }}>
-            While traditional content waits to be discovered, interactive experiences continue working around the clock.
+            Unlike traditional websites, AI representatives continue communicating, guiding visitors, and capturing opportunities around the clock.
           </p>
         </div>
       </section>
@@ -181,10 +182,10 @@ const PartnerWithUs = () => {
               More Than Content. More Than Chat.
             </h2>
             <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
-              Traditional websites inform. Interactive team members engage.
+              Traditional websites display information. AI digital employees help businesses communicate, guide visitors, and support customer interaction in real time.
             </p>
             <p className="text-base leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc', fontWeight: 300 }}>
-              Ovela representatives become part of your customer journey by helping visitors understand, explore and take action.
+              Ovela representatives become part of the customer journey by helping visitors explore services, receive answers, and take action faster.
             </p>
             <p className="text-base mb-6" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc' }}>They can:</p>
             <div className="flex flex-wrap justify-center gap-3 mb-8">
@@ -247,10 +248,10 @@ const PartnerWithUs = () => {
       <section className="py-28 text-center">
         <div className="container mx-auto px-6 lg:px-20">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-6" style={{ color: '#D4AF37' }}>
-            Let's Build Your Interactive Team Member
+            Let's Build Your AI Digital Team Member
           </h2>
           <p className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
-            Whether you need a digital receptionist, property presenter, product specialist or brand ambassador, Ovela can design an AI representative aligned with your business and audience.
+            Whether you need an AI receptionist, property presenter, product specialist, or digital brand representative, Ovela creates AI communication systems aligned with your business, industry, and customer experience.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button

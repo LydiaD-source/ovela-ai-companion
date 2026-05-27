@@ -248,10 +248,10 @@ const PartnerWithUs = () => {
       <section className="py-28 text-center">
         <div className="container mx-auto px-6 lg:px-20">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-6" style={{ color: '#D4AF37' }}>
-            Let's Build Your Interactive Team Member
+            Let's Build Your AI Digital Team Member
           </h2>
           <p className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
-            Whether you need a digital receptionist, property presenter, product specialist or brand ambassador, Ovela can design an AI representative aligned with your business and audience.
+            Whether you need an AI receptionist, property presenter, product specialist, or digital brand representative, Ovela creates AI communication systems aligned with your business, industry, and customer experience.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button

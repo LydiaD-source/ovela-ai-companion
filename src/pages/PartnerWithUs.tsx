@@ -9,8 +9,8 @@ const PartnerWithUs = () => {
   const { t } = useTranslation();
   useSEO({
     path: '/partner',
-    title: 'Build Your Interactive AI Team Member | Ovela',
-    description: 'Transform websites, campaigns and customer interactions into real-time conversations powered by custom AI representatives trained for your business.'
+    title: 'Build Your Own AI Digital Employee | Ovela',
+    description: 'Transform websites, customer communication, and lead engagement into real-time business interaction powered by AI representatives trained specifically for your industry.'
   });
 
   const openChat = () => {
@@ -20,19 +20,19 @@ const PartnerWithUs = () => {
   const capabilities = [
     {
       title: 'Interactive Brand Campaigns',
-      description: 'Create campaigns that don\'t stop at impressions. Allow audiences to explore, interact and engage in real time.',
-      bullets: ['Social activations', 'Product storytelling', 'Interactive advertising', 'Digital ambassadors']
+      description: 'Create AI-powered campaigns that continue communicating after the first click — helping visitors explore services, ask questions, and engage with your business in real time.',
+      bullets: ['AI-powered social campaigns', 'Product & service presentation', 'Interactive advertising experiences', 'AI brand representatives']
     },
     {
       title: 'Deploy an AI Team Member',
-      description: 'Choose an existing Ovela representative or create a custom digital team member designed specifically for your brand.',
-      bullets: ['Website host', 'Product specialist', 'Property presenter', 'Client concierge', 'Brand ambassador'],
+      description: 'Deploy an existing Ovela AI representative or create a custom AI digital employee trained specifically for your business, communication style, and customer journey.',
+      bullets: ['AI website receptionist', 'Product specialist', 'Property presenter', 'Client concierge', 'Brand representative'],
       note: 'Available 24/7 in multiple languages.'
     },
     {
       title: 'Custom Digital Representatives',
-      description: 'Every business is different. We design AI team members aligned with your industry, audience and communication style.',
-      bullets: ['Custom appearance', 'Brand voice', 'Industry expertise', 'Multilingual interaction', 'CRM integration']
+      description: 'Every business communicates differently. Ovela designs AI representatives aligned with your industry, audience, workflows, and customer communication needs.',
+      bullets: ['Custom appearance', 'Brand voice', 'Industry expertise', 'Multilingual interaction', 'CRM & booking integration']
     }
   ];
 
@@ -42,15 +42,16 @@ const PartnerWithUs = () => {
     'Recommend solutions',
     'Book appointments',
     'Capture leads',
+    'Qualify leads',
     'Guide customer journeys'
   ];
 
   const useCases = [
-    { icon: Stethoscope, industry: 'Healthcare', desc: 'Patient guidance & appointment booking' },
-    { icon: Building2, industry: 'Real Estate', desc: 'Interactive property presentation' },
-    { icon: Zap, industry: 'Technology', desc: 'Product education & lead qualification' },
-    { icon: Hotel, industry: 'Hospitality', desc: 'Digital concierge experiences' },
-    { icon: Briefcase, industry: 'Professional Services', desc: 'Client onboarding & information delivery' }
+    { icon: Stethoscope, industry: 'Healthcare', desc: 'Patient communication & appointment booking' },
+    { icon: Building2, industry: 'Real Estate', desc: 'AI property presentation & buyer engagement' },
+    { icon: Zap, industry: 'Technology', desc: 'Product explanation & lead qualification' },
+    { icon: Hotel, industry: 'Hospitality', desc: 'AI concierge & guest communication' },
+    { icon: Briefcase, industry: 'Professional Services', desc: 'Client onboarding & information management' }
   ];
 
   return (

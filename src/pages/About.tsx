@@ -294,7 +294,7 @@ const About = () => {
             Your Website Should Work Like A Team
           </h2>
           <p className="mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, color: 'rgba(10,10,35,0.8)', fontWeight: 400, lineHeight: 1.6 }}>
-            Whether you need a digital receptionist, product specialist, property presenter or brand ambassador, Ovela can help you create an interactive experience designed around your business.
+            Whether you need an AI receptionist, product specialist, property presenter, or digital business representative, Ovela helps organizations create scalable customer communication systems designed around their business.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a href="#team">

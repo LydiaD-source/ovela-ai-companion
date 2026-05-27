@@ -346,45 +346,45 @@
     "chatSubtext": "Connect with Isabella on the home page"
   },
   "projects": {
-    "title": "Interactive Projects. Real Business Results.",
-    "subtitle": "Discover how Ovela transforms websites into interactive business environments through AI team members, cinematic media and intelligent client engagement.",
+    "title": "AI Digital Employees Delivering Real Business Results",
+    "subtitle": "Discover how Ovela transforms websites into AI-powered business environments through digital employees, customer communication systems, cinematic media, and intelligent lead engagement.",
     "items": {
       "luxDefTec": {
         "name": "LuxDefTec",
         "subtitle": "Technology Communication & Product Presentation",
-        "description": "Complex products require clear communication. Ovela combines digital presenters, cinematic visuals and interactive experiences to help technology companies explain, demonstrate and engage."
+        "description": "Complex products require clear communication. Ovela combines AI presenters, cinematic visuals, and intelligent customer interaction to help technology companies explain products, present solutions, and improve engagement online."
       },
       "robocareAI": {
         "name": "Digital Care Companion",
         "subtitle": "Human Connection Through Technology",
-        "description": "Designed to support seniors and individuals requiring additional assistance through multilingual conversation, reminders, entertainment and emotional engagement."
+        "description": "Designed to support seniors and individuals requiring additional assistance through multilingual AI communication, reminders, emotional engagement, and ongoing digital companionship."
       },
       "ambassador": {
         "name": "Brand Ambassador Experiences",
-        "subtitle": "Digital Presence Beyond Advertising",
-        "description": "Interactive ambassadors combine presentation, communication and engagement to create memorable brand experiences that continue long after a traditional campaign ends."
+        "subtitle": "AI Brand Representatives & Customer Engagement",
+        "description": "AI representatives combine presentation, communication, and lead engagement to help businesses create stronger digital brand experiences that continue beyond traditional advertising campaigns."
       },
       "wellnessGeni": {
         "name": "WellnessGeni",
-        "subtitle": "The Foundation of Interactive Communication",
-        "description": "The project that introduced Isabella as a multilingual digital companion capable of conversation, education, guidance and personalized interaction across multiple roles and industries."
+        "subtitle": "The Foundation Of AI Human Communication",
+        "description": "The project that introduced Isabella as a multilingual AI digital companion capable of conversation, education, guidance, and customer interaction across wellness, lifestyle, and communication-focused environments."
       }
     },
     "upcomingTitle": "Future Projects",
-    "upcomingSubtitle": "Ovela continues to expand its portfolio across healthcare, technology, real estate, lifestyle and premium service industries.",
+    "upcomingSubtitle": "Ovela continues expanding AI communication systems across healthcare, wellness, technology, hospitality, real estate, and premium service industries.",
     "upcoming": {
-      "lingerie": "Interactive Hospitality Concierge",
+      "lingerie": "AI Hospitality Concierge",
       "calendar": "Executive Wellness Programs",
       "runway": "Luxury Property Experiences",
-      "industry": "Industry-Specific AI Team Members"
+      "industry": "Industry-Trained AI Representatives"
     },
-    "ctaButton": "Build Your Interactive Team →",
-    "ctaSubtext": "Whether you need a digital receptionist, property presenter, product specialist or client concierge, Ovela designs AI team members aligned with your business and audience.",
+    "ctaButton": "Build Your AI Digital Team →",
+    "ctaSubtext": "Whether you need an AI receptionist, property presenter, product specialist, or digital concierge, Ovela designs AI team members aligned with your industry, communication needs, and customer experience.",
     "featured": {
       "label": "Live Implementation",
       "name": "WellneSpirit Institute",
-      "subtitle": "Interactive Patient Experience",
-      "description": "A fully interactive healthcare environment where visitors can explore treatments, receive guidance, ask questions and connect with the clinic through a digital team member trained specifically for patient communication."
+      "subtitle": "AI Patient Guidance & Communication",
+      "description": "A fully integrated AI communication environment where visitors can explore treatments, ask questions, receive guidance, and connect with the clinic through a digital representative trained specifically for healthcare communication and patient support."
     },
     "moreTitle": "More Projects"
   },

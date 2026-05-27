@@ -26,9 +26,10 @@ import CookieConsentBanner from "@/components/UI/CookieConsentBanner";
 
 const queryClient = new QueryClient();
 
-// Reusable route tree — mounted twice (English at root, others under /:lang)
-const AppRoutes = () => (
-  <Routes>
+const LANG_PREFIXES = ['fr', 'es', 'de', 'pt', 'ca'] as const;
+
+const SiteRoutes = () => (
+  <>
     <Route index element={<Home />} />
     <Route path="interactive" element={<Interactive />} />
     <Route path="ecosystem" element={<Ecosystem />} />
@@ -44,7 +45,7 @@ const AppRoutes = () => (
     <Route path="industries/real-estate" element={<RealEstate />} />
     <Route path="industries/wellness" element={<Wellness />} />
     <Route path="*" element={<NotFound />} />
-  </Routes>
+  </>
 );
 
 const App = () => {
@@ -59,12 +60,14 @@ const App = () => {
             <Navigation />
             <main className="flex-1">
               <Routes>
-                {/* Language-prefixed routes — fr, es, de, pt, ca */}
-                <Route path="/:lang(fr|es|de|pt|ca)/*" element={<LangLayout />}>
-                  <Route path="*" element={<AppRoutes />} />
-                </Route>
-                {/* Default (English) routes at root */}
-                <Route path="/*" element={<AppRoutes />} />
+                {/* English at root */}
+                <Route path="/">{SiteRoutes()}</Route>
+                {/* Per-language prefixed routes */}
+                {LANG_PREFIXES.map((lang) => (
+                  <Route key={lang} path={`/${lang}`} element={<LangLayout />}>
+                    {SiteRoutes()}
+                  </Route>
+                ))}
               </Routes>
             </main>
           </div>

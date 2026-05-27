@@ -1,29 +1,16 @@
 {
+  "rewrites": [
+    {
+      "source": "/((?!api|favicon\\.ico|favicon\\.png|robots\\.txt|sitemap\\.xml|video-sitemap\\.xml|images|BingSiteAuth\\.xml|_redirects).*)",
+      "destination": "/index.html"
+    }
+  ],
   "redirects": [
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "ovelainteractive.com" }],
       "destination": "https://www.ovelainteractive.com/:path*",
       "statusCode": 301
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.ovelainteractive.com" }, { "type": "header", "key": "x-forwarded-proto", "value": "http" }],
-      "destination": "https://www.ovelainteractive.com/:path*",
-      "statusCode": 301
-    }
-  ],
-  "rewrites": [
-    { "source": "/about", "destination": "/index.html" },
-    { "source": "/partner", "destination": "/index.html" },
-    { "source": "/pricing", "destination": "/index.html" },
-    { "source": "/projects", "destination": "/index.html" },
-    { "source": "/contact", "destination": "/index.html" },
-    { "source": "/interactive", "destination": "/index.html" },
-    { "source": "/wellnessgeni", "destination": "/index.html" },
-    {
-      "source": "/((?!api|favicon\\.ico|favicon\\.png|robots\\.txt|sitemap\\.xml|images|BingSiteAuth\\.xml|_redirects).*)",
-      "destination": "/index.html"
     }
   ]
 }

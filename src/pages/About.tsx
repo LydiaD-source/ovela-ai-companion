@@ -54,13 +54,13 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
               <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl mb-6" style={{ color: GOLD }}>
-                Where Interactive Business Experiences Begin
+                Building AI Digital Employees For Modern Businesses
               </h1>
               <p className="text-lg lg:text-xl leading-relaxed mb-5" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                Ovela was created to solve a simple problem: websites, campaigns and digital content attract attention, but rarely create meaningful interaction.
+                Ovela was created to solve a growing business problem: modern websites attract visitors, but most fail to communicate, qualify leads, or guide customers effectively.
               </p>
               <p className="text-lg lg:text-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                We build digital team members that communicate, guide and engage in real time — transforming passive visitors into active conversations.
+                We build AI digital employees that help businesses answer questions, present services, support customer communication, and stay available around the clock.
               </p>
             </div>
             <div className="order-1 lg:order-2 flex justify-center lg:justify-end">

@@ -34,6 +34,12 @@ const VideoDetail: React.FC = () => {
   const categoryLabel =
     VIDEO_LIBRARY_CATEGORIES.find((c) => c.key === video.category)?.label || 'AI Demos';
 
+  const seo = getCategorySEO(video.category);
+  const topicsSentence = buildTopicsSentence(video.tags, seo.semanticTopics);
+  const reinforcement = seo.reinforcement(video.title);
+  const industryContext = seo.industryContext;
+  const faqs = seo.faqs;
+
   const shortDesc = video.description.split('\n')[0].slice(0, 160);
 
   const videoSchema = {
@@ -71,6 +77,17 @@ const VideoDetail: React.FC = () => {
       { '@type': 'ListItem', position: 3, name: video.title, item: `https://www.ovelainteractive.com${langPrefix}/videos/${video.slug}` },
     ],
   };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+
 
   return (
     <>

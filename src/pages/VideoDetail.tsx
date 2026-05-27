@@ -133,12 +133,8 @@ const VideoDetail: React.FC = () => {
               <span className="px-3 py-1 rounded-full text-xs bg-champagne-gold/10 text-champagne-gold border border-champagne-gold/30">
                 {categoryLabel}
               </span>
-              {video.tags.slice(0, 4).map((t) => (
-                <span key={t} className="px-2 py-1 rounded-full text-xs bg-soft-white/5 text-soft-white/60 border border-soft-white/10">
-                  #{t}
-                </span>
-              ))}
             </div>
+
 
             <h1 className="font-playfair text-3xl md:text-5xl mb-4 gradient-text">{video.title}</h1>
 

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { ALL_VIDEOS, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
 import { CATEGORY_META, getCategorySlugByKey } from '@/lib/videoCategoryMeta';
+import { TOPIC_HUBS } from '@/lib/topicHubsContent';
 
 
 const VideoLibrary: React.FC = () => {
@@ -64,6 +65,25 @@ const VideoLibrary: React.FC = () => {
                     className="block text-center px-4 py-3 rounded-lg border border-soft-white/10 hover:border-champagne-gold/50 bg-soft-white/[0.03] text-soft-white/80 hover:text-champagne-gold text-sm transition-all"
                   >
                     {VIDEO_LIBRARY_CATEGORIES.find((v) => v.key === c.key)?.label || c.h1}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Topic hubs — Tier 3 authority pages */}
+          <section className="mb-12" aria-labelledby="topics-heading">
+            <h2 id="topics-heading" className="text-center text-soft-white/60 text-xs uppercase tracking-widest mb-4">
+              Authority topics
+            </h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              {TOPIC_HUBS.map((h) => (
+                <li key={h.slug}>
+                  <Link
+                    to={`${langPrefix}/topics/${h.slug}`}
+                    className="block text-center px-4 py-3 rounded-lg border border-champagne-gold/20 hover:border-champagne-gold/60 bg-champagne-gold/[0.04] text-soft-white/85 hover:text-champagne-gold text-sm transition-all"
+                  >
+                    {h.h1.split(' — ')[0]}
                   </Link>
                 </li>
               ))}

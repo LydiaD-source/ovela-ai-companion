@@ -182,10 +182,10 @@ const PartnerWithUs = () => {
               More Than Content. More Than Chat.
             </h2>
             <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#EDEDED', fontWeight: 300 }}>
-              Traditional websites inform. Interactive team members engage.
+              Traditional websites display information. AI digital employees help businesses communicate, guide visitors, and support customer interaction in real time.
             </p>
             <p className="text-base leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc', fontWeight: 300 }}>
-              Ovela representatives become part of your customer journey by helping visitors understand, explore and take action.
+              Ovela representatives become part of the customer journey by helping visitors explore services, receive answers, and take action faster.
             </p>
             <p className="text-base mb-6" style={{ fontFamily: 'Inter, sans-serif', color: '#ccc' }}>They can:</p>
             <div className="flex flex-wrap justify-center gap-3 mb-8">

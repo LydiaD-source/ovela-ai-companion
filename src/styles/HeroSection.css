@@ -441,7 +441,9 @@
   }
   
   .hero-btn-primary {
-    width: 240px;
+    min-width: 240px;
+    width: auto;
+    padding: 0 20px;
     height: 48px;
     font-size: 14px;
   }

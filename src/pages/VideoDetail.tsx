@@ -132,10 +132,23 @@ const VideoDetail: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="px-3 py-1 rounded-full text-xs bg-champagne-gold/10 text-champagne-gold border border-champagne-gold/30">
-                {categoryLabel}
-              </span>
+              {(() => {
+                const hubSlug = getCategorySlugByKey(video.category);
+                return hubSlug ? (
+                  <Link
+                    to={`${langPrefix}/videos/category/${hubSlug}`}
+                    className="px-3 py-1 rounded-full text-xs bg-champagne-gold/10 text-champagne-gold border border-champagne-gold/30 hover:bg-champagne-gold/20 transition-colors"
+                  >
+                    {categoryLabel} →
+                  </Link>
+                ) : (
+                  <span className="px-3 py-1 rounded-full text-xs bg-champagne-gold/10 text-champagne-gold border border-champagne-gold/30">
+                    {categoryLabel}
+                  </span>
+                );
+              })()}
             </div>
+
 
 
             <h1 className="font-playfair text-3xl md:text-5xl mb-4 gradient-text">{video.title}</h1>

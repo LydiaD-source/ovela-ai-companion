@@ -12,6 +12,9 @@ const ytMeta: Record<string, YTMeta> = {};
 if (existsSync(ytPath)) {
   for (const v of JSON.parse(readFileSync(ytPath, 'utf-8')) as YTMeta[]) ytMeta[v.id] = v;
 }
+function isoToSec(iso: string): number {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  return m ? (+(m[1] || 0)) * 3600 + (+(m[2] || 0)) * 60 + (+(m[3] || 0)) : 0;
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 const LANGS = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;

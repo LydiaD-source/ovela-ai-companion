@@ -9,8 +9,8 @@ const Contact = () => {
 
   useSEO({
     path: '/contact',
-    title: 'Contact Ovela Interactive | Start Your AI Project Today',
-    description: 'Get in touch with Ovela Interactive. Chat with Isabella, our AI ambassador, for instant answers about interactive campaigns, digital ambassadors, and AI-powered business solutions.'
+    title: 'Contact Ovela | Build Your AI Digital Employee',
+    description: 'Deploy AI representatives for clinics, real estate, and modern businesses. Chat with Isabella for instant answers about AI digital employees, customer communication systems, pricing, and integrations.'
   });
 
   const handleStartChat = () => {
@@ -18,11 +18,12 @@ const Contact = () => {
   };
 
   const services = [
-    { icon: Users, label: 'AI brand ambassadors' },
-    { icon: Globe, label: 'Interactive website hosts' },
-    { icon: Megaphone, label: 'Campaigns & product launches' },
-    { icon: Palette, label: 'Custom AI personas' },
-    { icon: Handshake, label: 'Licensing & partnerships' },
+    { icon: Users, label: 'AI digital employees' },
+    { icon: Globe, label: 'AI website receptionists' },
+    { icon: Megaphone, label: 'Product & service presentation systems' },
+    { icon: MessageCircle, label: 'AI customer communication platforms' },
+    { icon: Palette, label: 'Multilingual lead engagement' },
+    { icon: Handshake, label: 'Industry-trained AI representatives' },
   ];
 
   return (
@@ -32,13 +33,16 @@ const Contact = () => {
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)' }}>
             <Sparkles size={16} style={{ color: '#D4AF37' }} />
-            <span className="text-sm font-medium" style={{ color: '#D4AF37' }}>Let's build something extraordinary</span>
+            <span className="text-sm font-medium" style={{ color: '#D4AF37' }}>Start Building Your AI Business Representative</span>
           </div>
           <h1 className="font-playfair text-4xl md:text-6xl lg:text-7xl mb-6" style={{ color: '#D4AF37' }}>
-            Start Your AI Project Today
+            Build Your AI Digital Employee
           </h1>
+          <p className="text-base md:text-lg max-w-2xl mx-auto mb-4" style={{ color: '#D4AF37', fontWeight: 500 }}>
+            AI Representatives For Clinics, Real Estate & Modern Businesses
+          </p>
           <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.85)' }}>
-            Whether you're building an interactive campaign, deploying a digital ambassador, or exploring AI for your business — we'll help you get started quickly.
+            Whether you need an AI receptionist, digital business representative, property presenter, or multilingual customer communication system, Ovela helps businesses deploy AI representatives quickly and effectively.
           </p>
         </div>
       </section>
@@ -55,7 +59,7 @@ const Contact = () => {
               Talk to Isabella — Get Instant Answers
             </h2>
             <p className="mb-8 max-w-lg mx-auto text-base md:text-lg" style={{ color: 'rgba(255,255,255,0.8)' }}>
-              Describe your idea, and Isabella will guide you through possibilities, pricing, and next steps in real time.
+              Describe your business, communication challenges, or project goals, and Isabella will guide you through available solutions, pricing, integrations, and next steps in real time.
             </p>
             <Button
               onClick={handleStartChat}
@@ -101,7 +105,7 @@ const Contact = () => {
           <div className="grid md:grid-cols-3 gap-6 text-center">
             {[
               { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com', href: 'mailto:support@ovelainteractive.com' },
-              { icon: MapPin, title: 'Location', value: 'Andorra La Vella' },
+              { icon: MapPin, title: 'Location', value: 'Andorra La Vella\nServing clients across Europe & international markets' },
               { icon: Clock, title: 'Hours', value: 'Monday–Friday\n9am–6pm CET' },
             ].map((item, i) => (
               <div key={i} className="p-6 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -122,10 +126,10 @@ const Contact = () => {
       <section className="w-full py-16 px-4">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="font-playfair text-3xl md:text-5xl mb-4" style={{ color: '#D4AF37' }}>
-            Let's Build Something That Works 24/7
+            Your AI Digital Employee Can Be Live In Days
           </h2>
           <p className="text-lg mb-8" style={{ color: 'rgba(255,255,255,0.7)' }}>
-            Your AI ambassador can be live in days — not months.
+            Ovela AI representatives help businesses answer questions, guide visitors, capture leads, and support customer communication around the clock.
           </p>
           <Button
             onClick={handleStartChat}
@@ -133,7 +137,7 @@ const Contact = () => {
             className="text-lg px-10 py-7 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #F7E7CE 100%)', color: '#0A0A23', fontWeight: 700 }}
           >
-            Start with Isabella Now
+            Start Building Your AI Representative
             <ArrowRight size={20} className="ml-2" />
           </Button>
         </div>

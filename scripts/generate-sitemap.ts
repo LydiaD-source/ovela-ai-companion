@@ -1,9 +1,17 @@
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks).
 // Generates per-language sitemap with hreflang cross-links + video sitemap.
 
-import { writeFileSync, mkdirSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { VIDEO_CATEGORIES } from '../src/config/videoCatalog';
+
+// Optional rich metadata from YouTube fetch
+interface YTMeta { id: string; title: string; description: string; publishedAt: string; thumbnail: string; duration: string; }
+const ytPath = resolve('src/data/youtube-videos.json');
+const ytMeta: Record<string, YTMeta> = {};
+if (existsSync(ytPath)) {
+  for (const v of JSON.parse(readFileSync(ytPath, 'utf-8')) as YTMeta[]) ytMeta[v.id] = v;
+}
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 const LANGS = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;

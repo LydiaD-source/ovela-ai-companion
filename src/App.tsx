@@ -23,6 +23,7 @@ import RealEstate from "./pages/industries/RealEstate";
 import Wellness from "./pages/industries/Wellness";
 import NotFound from "./pages/NotFound";
 import CookieConsentBanner from "@/components/UI/CookieConsentBanner";
+import IsabellaConcierge from "@/components/UI/IsabellaConcierge";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => {
             </main>
           </div>
           <CookieConsentBanner />
+          <IsabellaConcierge />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

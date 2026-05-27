@@ -50,7 +50,7 @@ const TopicHub: React.FC = () => {
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: hub.faqs.map((f) => ({
+    mainEntity: faqs.map((f) => ({
       '@type': 'Question',
       name: f.question,
       acceptedAnswer: { '@type': 'Answer', text: f.answer },
@@ -61,7 +61,7 @@ const TopicHub: React.FC = () => {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: hub.h1,
-    description: hub.seoDescription,
+    description: seoDescription,
     inLanguage: lang,
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
     publisher: {
@@ -78,8 +78,8 @@ const TopicHub: React.FC = () => {
     <>
       <SEO
         path={path}
-        title={hub.seoTitle}
-        description={hub.seoDescription}
+        title={seoTitle}
+        description={seoDescription}
         ogType="article"
         schema={[breadcrumbSchema, faqSchema, articleSchema] as any}
       />

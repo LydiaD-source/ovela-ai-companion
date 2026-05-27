@@ -43,7 +43,9 @@ const SiteRoutes = () => (
     <Route path="pricing" element={<Pricing />} />
     <Route path="contact" element={<Contact />} />
     <Route path="videos" element={<VideoLibrary />} />
+    <Route path="videos/category/:categorySlug" element={<VideoCategory />} />
     <Route path="videos/:slug" element={<VideoDetail />} />
+
     <Route path="industries/clinics" element={<Clinics />} />
     <Route path="industries/real-estate" element={<RealEstate />} />
     <Route path="industries/wellness" element={<Wellness />} />

@@ -11,8 +11,8 @@ const chatHref = '/?chat=open';
 const About = () => {
   useSEO({
     path: '/about',
-    title: 'About Ovela Interactive | Interactive Business Experiences',
-    description: 'Ovela builds digital team members that communicate, guide and engage in real time — transforming passive visitors into active conversations.'
+    title: 'About Ovela | AI Digital Employees For Modern Businesses',
+    description: 'Ovela builds AI digital employees and AI representatives that communicate with visitors, qualify leads, present services and support customer communication around the clock.'
   });
 
   const team = [
@@ -20,29 +20,29 @@ const About = () => {
       icon: Stethoscope,
       name: 'Isabella',
       image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758802492/1_21_cqlyv4.jpg',
-      focus: 'Healthcare • Hospitality • Client Guidance',
-      desc: 'Helping visitors explore services, understand options and take action.',
+      focus: 'Healthcare • Wellness • Client Communication',
+      desc: 'Helping visitors understand services, explore solutions, and communicate with businesses more effectively.',
     },
     {
       icon: Cpu,
       name: 'Dario',
       image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/lucid-origin_artistic_portrait_photography_of_ultra_realistic_portrait_of_a_handsome_masculin-0_1_xelofp.jpg',
-      focus: 'Technology • Innovation • Product Presentation',
-      desc: 'Explaining complex products and communicating technical solutions with clarity.',
+      focus: 'Technology • Product Communication • Innovation',
+      desc: 'Explaining products, services, and technical solutions through AI-powered customer interaction.',
     },
     {
       icon: HomeIcon,
       name: 'Mirella',
       image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1779109383/mirella_face_d8ix2l.png',
-      focus: 'Property • Lifestyle • Premium Experiences',
-      desc: 'Presenting properties and helping buyers engage before the first viewing.',
+      focus: 'Real Estate • Lifestyle • Property Presentation',
+      desc: 'Helping agencies present properties, qualify interest, and engage buyers before the first appointment.',
     },
     {
       icon: Sparkles,
       name: 'Future Team Members',
       image: null as string | null,
       focus: 'Custom-Built For Any Industry',
-      desc: 'Ovela representatives can be custom-created for any industry, role or brand.',
+      desc: 'Ovela AI representatives can be custom-built for any industry, role or business communication need.',
     },
   ];
 
@@ -54,13 +54,13 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
               <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl mb-6" style={{ color: GOLD }}>
-                Where Interactive Business Experiences Begin
+                Building AI Digital Employees For Modern Businesses
               </h1>
               <p className="text-lg lg:text-xl leading-relaxed mb-5" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                Ovela was created to solve a simple problem: websites, campaigns and digital content attract attention, but rarely create meaningful interaction.
+                Ovela was created to solve a growing business problem: modern websites attract visitors, but most fail to communicate, qualify leads, or guide customers effectively.
               </p>
               <p className="text-lg lg:text-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                We build digital team members that communicate, guide and engage in real time — transforming passive visitors into active conversations.
+                We build AI digital employees that help businesses answer questions, present services, support customer communication, and stay available around the clock.
               </p>
             </div>
             <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
@@ -105,10 +105,10 @@ const About = () => {
               <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
                 In 2024, Ovela introduced{' '}
                 <Link to="/projects" className="text-[#D4AF37] hover:underline font-medium">Isabella</Link>{' '}
-                — one of the first interactive AI model ambassadors designed not only to present products, but to communicate, guide and engage with audiences in real time.
+                — one of the first AI digital representatives designed to communicate with visitors, guide customer interaction, and support businesses in real time.
               </p>
               <p className="text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
-                What began as an experiment in human-centered AI quickly became proof that digital representatives could do far more than traditional content.
+                What began as an experiment in human-centered AI quickly demonstrated how digital employees could improve communication, presentation, and customer engagement far beyond traditional websites or static content.
               </p>
             </div>
           </div>
@@ -131,13 +131,13 @@ const About = () => {
                 From Content To Conversation
               </h2>
               <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                Traditional websites provide information. Ovela creates interaction.
+                Traditional websites display information. Ovela creates AI-powered business communication.
               </p>
               <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                We combine AI representatives, cinematic media, intelligent automation and business knowledge to build experiences that help visitors explore, understand and take action.
+                We combine AI representatives, cinematic media, intelligent automation, and industry-specific knowledge to help businesses engage visitors, answer questions, guide decisions, and improve customer interaction online.
               </p>
               <p className="text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-                Our goal is simple: make every digital interaction feel more human, more useful and more memorable.
+                Our goal is simple: create digital experiences that feel more human, more useful, and more effective.
               </p>
             </div>
             <div className="flex justify-center lg:justify-end">
@@ -184,13 +184,13 @@ const About = () => {
                 <Link to="/projects" className="text-[#D4AF37] hover:underline font-medium">Isabella</Link>{' '}
                 was developed as part of{' '}
                 <a href="https://www.wellnessgeni.com/" target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] hover:underline font-medium">WellnessGeni</a>{' '}
-                — a wellness-focused platform designed to encourage daily engagement, motivation and personal growth.
+                — a wellness-focused digital platform designed to encourage engagement, communication, and ongoing client interaction.
               </p>
               <p className="text-lg leading-relaxed mb-6" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
-                The project revealed something unexpected: people were not simply consuming content. They were forming genuine relationships through interaction.
+                The project revealed something unexpected: people responded more naturally to conversational digital experiences than to static content alone.
               </p>
               <p className="text-lg leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif', color: '#2a2a2a', fontWeight: 300 }}>
-                That insight became the foundation of Ovela.
+                That insight became the foundation of Ovela's AI representative platform.
               </p>
               <blockquote className="font-playfair text-xl md:text-2xl italic pl-6 border-l-2" style={{ color: GOLD, borderColor: GOLD }}>
                 "We didn't set out to create a digital model. We set out to create a better digital experience."
@@ -215,7 +215,7 @@ const About = () => {
               Meet The Ovela Team
             </h2>
             <p className="text-lg" style={{ fontFamily: 'Inter, sans-serif', color: 'rgba(255,255,255,0.8)', fontWeight: 300 }}>
-              Every Ovela representative is trained for a specific environment, audience and customer journey.
+              Every Ovela AI representative is trained for a specific industry, customer journey, and business communication environment.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -272,16 +272,16 @@ const About = () => {
               Shaping Tomorrow
             </p>
             <h2 className="font-playfair text-4xl lg:text-5xl mb-8" style={{ color: GOLD }}>
-              Building The Future Of Interactive Business
+              The Future Of AI Business Communication
             </h2>
             <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-              The next generation of digital experiences will not be static.
+              The next generation of websites will do more than display information.
             </p>
             <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-              Visitors will ask questions, receive guidance, explore solutions and interact naturally with businesses online.
+              Businesses will increasingly rely on AI digital employees to answer questions, guide visitors, qualify leads, support customer communication, and remain available beyond traditional business hours.
             </p>
             <p className="text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-              Ovela is helping organizations prepare for that future today through interactive representatives, intelligent automation and immersive digital communication.
+              Ovela helps organizations prepare for that future through AI representatives, intelligent automation, and immersive digital communication systems.
             </p>
           </div>
         </div>
@@ -294,7 +294,7 @@ const About = () => {
             Your Website Should Work Like A Team
           </h2>
           <p className="mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, color: 'rgba(10,10,35,0.8)', fontWeight: 400, lineHeight: 1.6 }}>
-            Whether you need a digital receptionist, product specialist, property presenter or brand ambassador, Ovela can help you create an interactive experience designed around your business.
+            Whether you need an AI receptionist, product specialist, property presenter, or digital business representative, Ovela helps organizations create scalable customer communication systems designed around their business.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a href="#team">

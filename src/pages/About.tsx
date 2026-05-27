@@ -272,16 +272,16 @@ const About = () => {
               Shaping Tomorrow
             </p>
             <h2 className="font-playfair text-4xl lg:text-5xl mb-8" style={{ color: GOLD }}>
-              Building The Future Of Interactive Business
+              The Future Of AI Business Communication
             </h2>
             <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-              The next generation of digital experiences will not be static.
+              The next generation of websites will do more than display information.
             </p>
             <p className="text-lg leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-              Visitors will ask questions, receive guidance, explore solutions and interact naturally with businesses online.
+              Businesses will increasingly rely on AI digital employees to answer questions, guide visitors, qualify leads, support customer communication, and remain available beyond traditional business hours.
             </p>
             <p className="text-lg leading-relaxed" style={{ fontFamily: 'Inter, sans-serif', color: '#FFFFFF', fontWeight: 300 }}>
-              Ovela is helping organizations prepare for that future today through interactive representatives, intelligent automation and immersive digital communication.
+              Ovela helps organizations prepare for that future through AI representatives, intelligent automation, and immersive digital communication systems.
             </p>
           </div>
         </div>

@@ -43,13 +43,19 @@ function buildUrl(lang: string, path: string): string {
   return `${BASE_URL}${prefix}${cleanPath || (prefix ? '' : '/')}`;
 }
 
-// De-dup videos across categories
+// Use full YouTube catalog if available, else fall back to curated categories
 const seen = new Set<string>();
-const VIDEOS = VIDEO_CATEGORIES.flatMap((c) =>
-  c.videos
-    .filter((v) => (seen.has(v.id) ? false : (seen.add(v.id), true)))
-    .map((v) => ({ id: v.id, title: v.title, slug: slugify(v.title, v.id) })),
-);
+const ytIds = Object.keys(ytMeta);
+const VIDEOS = ytIds.length
+  ? ytIds.map((id) => {
+      const m = ytMeta[id];
+      return { id, title: m.title, slug: slugify(m.title, id) };
+    })
+  : VIDEO_CATEGORIES.flatMap((c) =>
+      c.videos
+        .filter((v) => (seen.has(v.id) ? false : (seen.add(v.id), true)))
+        .map((v) => ({ id: v.id, title: v.title, slug: slugify(v.title, v.id) })),
+    );
 
 function makeUrlsetXml(): string {
   const allPaths = [

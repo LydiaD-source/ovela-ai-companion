@@ -11,8 +11,8 @@ const chatHref = '/?chat=open';
 const About = () => {
   useSEO({
     path: '/about',
-    title: 'About Ovela Interactive | Interactive Business Experiences',
-    description: 'Ovela builds digital team members that communicate, guide and engage in real time — transforming passive visitors into active conversations.'
+    title: 'About Ovela | AI Digital Employees For Modern Businesses',
+    description: 'Ovela builds AI digital employees and AI representatives that communicate with visitors, qualify leads, present services and support customer communication around the clock.'
   });
 
   const team = [
@@ -20,29 +20,29 @@ const About = () => {
       icon: Stethoscope,
       name: 'Isabella',
       image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758802492/1_21_cqlyv4.jpg',
-      focus: 'Healthcare • Hospitality • Client Guidance',
-      desc: 'Helping visitors explore services, understand options and take action.',
+      focus: 'Healthcare • Wellness • Client Communication',
+      desc: 'Helping visitors understand services, explore solutions, and communicate with businesses more effectively.',
     },
     {
       icon: Cpu,
       name: 'Dario',
       image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/lucid-origin_artistic_portrait_photography_of_ultra_realistic_portrait_of_a_handsome_masculin-0_1_xelofp.jpg',
-      focus: 'Technology • Innovation • Product Presentation',
-      desc: 'Explaining complex products and communicating technical solutions with clarity.',
+      focus: 'Technology • Product Communication • Innovation',
+      desc: 'Explaining products, services, and technical solutions through AI-powered customer interaction.',
     },
     {
       icon: HomeIcon,
       name: 'Mirella',
       image: 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1779109383/mirella_face_d8ix2l.png',
-      focus: 'Property • Lifestyle • Premium Experiences',
-      desc: 'Presenting properties and helping buyers engage before the first viewing.',
+      focus: 'Real Estate • Lifestyle • Property Presentation',
+      desc: 'Helping agencies present properties, qualify interest, and engage buyers before the first appointment.',
     },
     {
       icon: Sparkles,
       name: 'Future Team Members',
       image: null as string | null,
       focus: 'Custom-Built For Any Industry',
-      desc: 'Ovela representatives can be custom-created for any industry, role or brand.',
+      desc: 'Ovela AI representatives can be custom-built for any industry, role or business communication need.',
     },
   ];
 

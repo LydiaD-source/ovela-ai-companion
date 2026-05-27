@@ -42,6 +42,7 @@ const VideoDetail: React.FC = () => {
   const reinforcement = seo.reinforcement(video.title);
   const industryContext = seo.industryContext;
   const faqs = seo.faqs;
+  const quotes = getVideoQuotes(video.id);
 
   const shortDesc = video.description.split('\n')[0].slice(0, 160);
 
@@ -90,6 +91,18 @@ const VideoDetail: React.FC = () => {
       acceptedAnswer: { '@type': 'Answer', text: f.answer },
     })),
   };
+
+  const quotesSchema = quotes.length > 0 ? quotes.map((q) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Quotation',
+    text: q.text,
+    spokenByCharacter: 'Isabella',
+    isPartOf: {
+      '@type': 'VideoObject',
+      name: video.title,
+      url: `https://www.ovelainteractive.com${langPrefix}/videos/${video.slug}`,
+    },
+  })) : [];
 
 
   return (

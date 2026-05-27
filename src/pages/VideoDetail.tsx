@@ -193,6 +193,22 @@ const VideoDetail: React.FC = () => {
               {industryContext}
             </p>
 
+            {/* Key insights from this video (verbatim, quality-gated) */}
+            {quotes.length > 0 && (
+              <section className="max-w-3xl mb-8 space-y-4" aria-label="Key insights from this video">
+                {quotes.map((q, i) => (
+                  <blockquote
+                    key={i}
+                    cite={video.watchUrl}
+                    className="relative pl-6 border-l-2 border-champagne-gold/60 italic text-soft-white/90 text-lg leading-relaxed"
+                  >
+                    <span className="absolute -left-1 -top-2 text-champagne-gold/40 text-3xl font-serif select-none">“</span>
+                    {q.text}
+                  </blockquote>
+                ))}
+              </section>
+            )}
+
             {/* Full YouTube description */}
             <div className="prose prose-invert max-w-3xl mb-6">
               {video.description.split('\n').filter(Boolean).map((para, i) => (

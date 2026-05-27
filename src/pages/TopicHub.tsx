@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { getTopicHubBySlug, matchVideosForHub } from '@/lib/topicHubsContent';
+import { getLocalizedHub } from '@/lib/localizedSEO';
 
 const BASE = 'https://www.ovelainteractive.com';
 
@@ -21,6 +22,14 @@ const TopicHub: React.FC = () => {
 
   const hub = hubSlug ? getTopicHubBySlug(hubSlug) : undefined;
   if (!hub) return <Navigate to={`${langPrefix}/`} replace />;
+
+  // Apply localized overrides when available (ES/FR/DE/PT/CA); fall back to English source.
+  const loc = getLocalizedHub(hub.slug, lang);
+  const tagline = loc?.tagline || hub.tagline;
+  const heroIntro = loc?.heroIntro || hub.heroIntro;
+  const seoTitle = loc?.seoTitle || hub.seoTitle;
+  const seoDescription = loc?.seoDescription || hub.seoDescription;
+  const faqs = loc?.faqs?.length ? loc.faqs : hub.faqs;
 
   const videos = matchVideosForHub(hub, 9);
   const featured = videos.slice(0, 6);

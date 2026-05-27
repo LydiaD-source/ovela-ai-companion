@@ -99,9 +99,9 @@ const TopicHub: React.FC = () => {
               Topic hub
             </p>
             <h1 className="font-playfair text-4xl md:text-6xl mb-5 gradient-text">{hub.h1}</h1>
-            <p className="text-soft-white/85 text-lg md:text-xl italic mb-6">{hub.tagline}</p>
+            <p className="text-soft-white/85 text-lg md:text-xl italic mb-6">{tagline}</p>
             <p className="text-soft-white/80 text-base md:text-lg leading-relaxed max-w-3xl">
-              {hub.heroIntro}
+              {heroIntro}
             </p>
           </header>
 
@@ -232,7 +232,7 @@ const TopicHub: React.FC = () => {
               Frequently asked questions
             </h2>
             <Accordion type="single" collapsible className="border-t border-soft-white/10">
-              {hub.faqs.map((f, i) => (
+              {faqs.map((f, i) => (
                 <AccordionItem
                   key={i}
                   value={`faq-${i}`}

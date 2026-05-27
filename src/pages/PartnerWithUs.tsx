@@ -150,12 +150,12 @@ const PartnerWithUs = () => {
       <section className="py-24" style={{ background: 'rgba(212,175,55,0.03)' }}>
         <div className="container mx-auto px-6 lg:px-20 text-center">
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold mb-10" style={{ color: '#D4AF37' }}>
-            Why Brands Are Switching to Interactive AI
+            Why Businesses Are Adopting AI Digital Employees
           </h2>
           <div className="grid sm:grid-cols-3 gap-8 max-w-4xl mx-auto mb-10">
             {[
               { icon: Users, stat: '2–3×', label: 'longer visitor engagement with interactive experiences' },
-              { icon: Zap, stat: 'Instant', label: 'AI hosts answer immediately — no lost leads' },
+              { icon: Zap, stat: 'Instant', label: 'AI representatives respond instantly — reducing missed leads and repetitive communication' },
               { icon: Globe, stat: '24/7', label: 'campaigns become scalable and always active' }
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-3">
@@ -166,7 +166,7 @@ const PartnerWithUs = () => {
             ))}
           </div>
           <p className="text-base italic max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif', color: '#D4AF37' }}>
-            While traditional content waits to be discovered, interactive experiences continue working around the clock.
+            Unlike traditional websites, AI representatives continue communicating, guiding visitors, and capturing opportunities around the clock.
           </p>
         </div>
       </section>

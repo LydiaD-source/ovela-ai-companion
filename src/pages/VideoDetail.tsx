@@ -1,9 +1,17 @@
 import React from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
-import { ArrowLeft, MessageCircle } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Calendar, Eye, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
-import { getVideoBySlug, getRelatedVideos } from '@/lib/videoLibrary';
+import { getVideoBySlug, getRelatedVideos, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
+
+function formatDuration(sec: number): string {
+  if (!sec) return '';
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+}
 
 const VideoDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -15,6 +23,10 @@ const VideoDetail: React.FC = () => {
   if (!video) return <Navigate to={`${langPrefix}/videos`} replace />;
 
   const related = getRelatedVideos(video.slug, 4);
+  const categoryLabel =
+    VIDEO_LIBRARY_CATEGORIES.find((c) => c.key === video.category)?.label || 'AI Demos';
+
+  const shortDesc = video.description.split('\n')[0].slice(0, 160);
 
   const videoSchema = {
     '@context': 'https://schema.org',
@@ -22,9 +34,16 @@ const VideoDetail: React.FC = () => {
     name: video.title,
     description: video.description,
     thumbnailUrl: [video.thumbnail],
-    uploadDate: '2025-01-01',
+    uploadDate: video.publishedAt,
+    duration: video.duration,
     contentUrl: video.watchUrl,
     embedUrl: video.embedUrl,
+    interactionStatistic: {
+      '@type': 'InteractionCounter',
+      interactionType: { '@type': 'WatchAction' },
+      userInteractionCount: video.viewCount,
+    },
+    keywords: video.tags.join(', '),
     publisher: {
       '@type': 'Organization',
       name: 'Ovela Interactive',
@@ -35,18 +54,37 @@ const VideoDetail: React.FC = () => {
     },
   };
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `https://www.ovelainteractive.com${langPrefix}/` },
+      { '@type': 'ListItem', position: 2, name: 'Video Library', item: `https://www.ovelainteractive.com${langPrefix}/videos` },
+      { '@type': 'ListItem', position: 3, name: video.title, item: `https://www.ovelainteractive.com${langPrefix}/videos/${video.slug}` },
+    ],
+  };
+
   return (
     <>
       <SEO
         path={`/videos/${video.slug}`}
-        title={`${video.title} | Ovela Interactive`}
-        description={video.description}
+        title={`${video.title} — AI ${categoryLabel} Demo | Ovela Interactive`}
+        description={shortDesc}
         ogImage={video.thumbnail}
         ogType="video.other"
-        schema={videoSchema}
+        schema={[videoSchema, breadcrumbSchema] as any}
       />
       <div className="min-h-screen bg-[hsl(var(--background))] text-soft-white pt-28 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">
+          {/* Breadcrumb */}
+          <nav className="text-xs text-soft-white/50 mb-4" aria-label="Breadcrumb">
+            <Link to={`${langPrefix}/`} className="hover:text-champagne-gold">Home</Link>
+            <span className="mx-2">/</span>
+            <Link to={`${langPrefix}/videos`} className="hover:text-champagne-gold">Videos</Link>
+            <span className="mx-2">/</span>
+            <span className="text-soft-white/70">{categoryLabel}</span>
+          </nav>
+
           <Link
             to={`${langPrefix}/videos`}
             className="inline-flex items-center gap-2 text-soft-white/70 hover:text-champagne-gold mb-6 text-sm"
@@ -66,18 +104,65 @@ const VideoDetail: React.FC = () => {
               />
             </div>
 
-            <h1 className="font-playfair text-3xl md:text-5xl mb-4 gradient-text">{video.title}</h1>
-            <p className="text-soft-white/80 text-lg leading-relaxed mb-8 max-w-3xl">
-              {video.description}
-            </p>
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs bg-champagne-gold/10 text-champagne-gold border border-champagne-gold/30">
+                {categoryLabel}
+              </span>
+              {video.tags.slice(0, 4).map((t) => (
+                <span key={t} className="px-2 py-1 rounded-full text-xs bg-soft-white/5 text-soft-white/60 border border-soft-white/10">
+                  #{t}
+                </span>
+              ))}
+            </div>
 
-            <Link
-              to={`${langPrefix}/contact`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-champagne-gold text-charcoal font-medium hover:scale-105 transition-transform"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Talk to Isabella about this
-            </Link>
+            <h1 className="font-playfair text-3xl md:text-5xl mb-4 gradient-text">{video.title}</h1>
+
+            <div className="flex flex-wrap gap-5 text-xs text-soft-white/60 mb-6">
+              {video.publishedAt && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {new Date(video.publishedAt).toLocaleDateString(lang, { year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
+              )}
+              {video.durationSeconds > 0 && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" />
+                  {formatDuration(video.durationSeconds)}
+                </span>
+              )}
+              {video.viewCount > 0 && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Eye className="w-3.5 h-3.5" />
+                  {video.viewCount.toLocaleString()} views
+                </span>
+              )}
+            </div>
+
+            <div className="prose prose-invert max-w-3xl mb-8">
+              {video.description.split('\n').filter(Boolean).map((para, i) => (
+                <p key={i} className="text-soft-white/80 text-base leading-relaxed mb-4 whitespace-pre-wrap">
+                  {para}
+                </p>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to={`${langPrefix}/contact`}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-champagne-gold text-charcoal font-medium hover:scale-105 transition-transform"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Talk to Isabella about this
+              </Link>
+              <a
+                href={video.watchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-soft-white/20 text-soft-white hover:border-champagne-gold/50"
+              >
+                Watch on YouTube
+              </a>
+            </div>
           </article>
 
           {related.length > 0 && (

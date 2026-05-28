@@ -64,8 +64,21 @@ function autoCategorize(title: string, tags: string[]): string {
 }
 
 // Build a fallback rich description if YouTube description is empty/short
+function stripHashtags(text: string): string {
+  return text
+    // Remove hashtags (unicode-aware: letters, numbers, underscore)
+    .replace(/#[\p{L}\p{N}_]+/gu, '')
+    // Collapse leftover whitespace runs on each line
+    .split('\n')
+    .map((line) => line.replace(/[ \t]{2,}/g, ' ').trimEnd())
+    .join('\n')
+    // Collapse 3+ blank lines down to 2
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function buildDescription(title: string, ytDescription: string, categoryLabel: string): string {
-  const trimmed = (ytDescription || '').trim();
+  const trimmed = stripHashtags((ytDescription || '').trim());
   if (trimmed.length >= 120) return trimmed;
   const base = `${title}. Discover how Ovela Interactive deploys AI digital employees and multilingual AI representatives for ${categoryLabel.toLowerCase()} — real-time, always-on customer communication that converts visitors into qualified leads 24/7.`;
   return trimmed ? `${trimmed}\n\n${base}` : base;

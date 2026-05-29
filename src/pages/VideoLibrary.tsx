@@ -77,7 +77,7 @@ const VideoLibrary: React.FC = () => {
             <h2 id="topics-heading" className="text-center text-soft-white/60 text-xs uppercase tracking-widest mb-4">
               Authority topics
             </h2>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {TOPIC_HUBS.map((h) => (
                 <li key={h.slug}>
                   <Link

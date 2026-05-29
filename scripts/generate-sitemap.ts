@@ -46,6 +46,12 @@ const STATIC_PATHS = [
   { path: '/topics/ai-property-presenter', changefreq: 'weekly', priority: '0.9' },
   { path: '/topics/ai-patient-communication', changefreq: 'weekly', priority: '0.9' },
   { path: '/topics/ai-digital-employees', changefreq: 'weekly', priority: '0.95' },
+  { path: '/topics/ai-clinic-receptionist', changefreq: 'weekly', priority: '0.9' },
+  { path: '/topics/after-hours-lead-capture', changefreq: 'weekly', priority: '0.9' },
+  { path: '/topics/multilingual-customer-communication', changefreq: 'weekly', priority: '0.9' },
+  { path: '/topics/ai-for-wellness-clinics', changefreq: 'weekly', priority: '0.9' },
+  { path: '/topics/digital-concierge-hotels-spa', changefreq: 'weekly', priority: '0.9' },
+  { path: '/topics/executive-wellness-programs', changefreq: 'weekly', priority: '0.85' },
 ];
 
 

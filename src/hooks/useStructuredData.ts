@@ -96,6 +96,39 @@ export const professionalServiceSchema = {
   }
 };
 
+// LocalBusiness schema — strengthens local/regional discovery and entity recognition
+export const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": `${BASE_URL}/#localbusiness`,
+  "name": "Ovela Interactive",
+  "url": BASE_URL,
+  "image": `${BASE_URL}/images/isabella-hero-native.png`,
+  "logo": `${BASE_URL}/favicon.png`,
+  "description": "AI-powered marketing agency building interactive AI digital employees, AI receptionists, and multilingual brand ambassadors for clinics, real estate, wellness, hospitality, and luxury brands across Europe.",
+  "priceRange": "€€€",
+  "areaServed": [
+    { "@type": "Country", "name": "Andorra" },
+    { "@type": "Country", "name": "Spain" },
+    { "@type": "Country", "name": "France" },
+    { "@type": "Country", "name": "Luxembourg" },
+    { "@type": "Country", "name": "Switzerland" },
+    { "@type": "Country", "name": "Italy" },
+    { "@type": "Country", "name": "Portugal" },
+    { "@type": "Country", "name": "Germany" }
+  ],
+  "knowsLanguage": ["en", "es", "fr", "de", "pt", "ca", "it", "ar"],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "url": `${BASE_URL}/contact`,
+    "availableLanguage": ["English", "Spanish", "French", "German", "Portuguese", "Catalan", "Italian", "Arabic"]
+  },
+  "sameAs": [
+    "https://www.linkedin.com/company/ovela-interactive"
+  ]
+};
+
 // Service schemas for pricing page (replaces Product schemas)
 export const pricingServiceSchemas = [
   {

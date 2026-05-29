@@ -37,7 +37,7 @@ const VideoLibrary: React.FC = () => {
       <SEO
         path="/videos"
         title="AI Digital Employee Video Library | Ovela Interactive"
-        description="Browse 100+ demos of AI digital employees, AI receptionists, and multilingual AI representatives across clinics, real estate, wellness, hospitality, and more."
+        description="Hundreds of real demos of AI digital employees, AI receptionists, and multilingual AI representatives across clinics, real estate, wellness, hospitality, and more — updated weekly."
         schema={itemListSchema}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-32 pb-24">
@@ -47,8 +47,9 @@ const VideoLibrary: React.FC = () => {
               AI Digital Employee Video Library
             </h1>
             <p className="text-soft-white/70 max-w-2xl mx-auto">
-              {ALL_VIDEOS.length} real demos of AI representatives at work — clinics, real estate,
+              Hundreds of real demos of AI representatives at work — clinics, real estate,
               wellness, hospitality, luxury retail, and multilingual customer communication.
+              New demos added every week.
             </p>
           </header>
 

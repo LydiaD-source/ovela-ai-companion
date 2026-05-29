@@ -312,13 +312,13 @@ export const TOPIC_HUBS: TopicHub[] = [
   // ─────────────────────────────────────────────────────────────────────
   {
     slug: 'ai-patient-communication',
-    seoTitle: 'AI Patient Communication — Multilingual Clinic Reception | Ovela Interactive',
+    seoTitle: 'Multilingual Patient Communication — AI for International Clinic Patients | Ovela Interactive',
     seoDescription:
-      'Multilingual AI patient communication for clinics: 24/7 intake, appointment booking, triage, and after-hours enquiries — for dental, aesthetic, wellness, and longevity practices.',
-    h1: 'AI Patient Communication & Multilingual Clinic Reception',
-    tagline: 'A calm, multilingual front desk for every clinic — 24 hours a day.',
+      'Multilingual AI patient communication for clinics with international patients: native-language intake, triage, consultation prep, and follow-up across English, Spanish, French, German, Portuguese, Catalan, Italian and Arabic.',
+    h1: 'Multilingual Patient Communication',
+    tagline: 'Every patient, in their own language — without hiring a multilingual team for every shift.',
     heroIntro:
-      'Clinics share three universal problems: staff overload, multilingual barriers, and unanswered after-hours enquiries. An AI patient communication system fixes all three — handling intake, booking, triage, and follow-up in every patient\'s native language, without adding headcount.',
+      'Aesthetic, dental, longevity, and high-end wellness clinics increasingly serve international patients — and increasingly lose them at the first contact form they cannot read. Multilingual AI patient communication closes that gap: native-language intake, treatment explanations, consultation prep, and follow-up across the eight European languages that matter most, day or night, without expanding the human team.',
     videoKeywords: [
       'clinic', 'patient', 'medical', 'dental', 'aesthetic', 'dermatology',
       'longevity', 'wellness', 'reception', 'multilingual', 'booking',

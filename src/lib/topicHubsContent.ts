@@ -153,13 +153,13 @@ export const TOPIC_HUBS: TopicHub[] = [
   // ─────────────────────────────────────────────────────────────────────
   {
     slug: 'executive-burnout-recovery',
-    seoTitle: 'Executive Burnout Recovery — Stress Phases, Pre-Burnout & Longevity | Ovela Interactive',
+    seoTitle: 'Executive Wellness Communication — AI for Burnout Recovery & Longevity Clinics | Ovela Interactive',
     seoDescription:
-      'Educational hub on executive burnout: stress phases, pre-burnout signals, chronic fatigue, and structured recovery for high-performers. WellneSpirit by Ovela.',
-    h1: 'Executive Burnout & Wellness Recovery',
-    tagline: 'The stress phases, the recovery system, and the technology that keeps high-performers in the game.',
+      'AI-powered communication for executive wellness clinics and longevity programmes: burnout phases, pre-burnout signals, structured recovery, and the always-on AI ambassador that guides high-performers between sessions.',
+    h1: 'Executive Wellness Communication — AI for Burnout Recovery & Longevity Clinics',
+    tagline: 'The stress phases, the recovery system, and the AI ambassador that keeps high-performers in the game.',
     heroIntro:
-      'Burnout is rarely sudden. It is a slow accumulation across measurable phases — alarm, resistance, exhaustion — that high-performers learn to ignore until the body stops cooperating. This hub explains the science, the signals, and the structured recovery used by the WellneSpirit programme, supported by the AI ambassadors and educational content built by Ovela Interactive.',
+      'Executive wellness clinics and longevity programmes share one operational problem: the highest-value clients arrive with detailed questions at the worst possible times — late at night, between flights, the morning after a bad week. This hub explains the science of burnout, the structured recovery used by programmes like WellneSpirit, and how an always-on AI ambassador becomes the communication layer that keeps executives engaged between in-person sessions.',
     videoKeywords: [
       'burnout', 'stress', 'recovery', 'wellness', 'wellnespirit', 'longevity',
       'executive', 'fatigue', 'mental health', 'spa', 'reset', 'restorative',

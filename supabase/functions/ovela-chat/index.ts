@@ -365,6 +365,9 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
 - wellness_assessment_suggestion — when user shares symptoms / how they feel (stress, burnout, sleep, pain, hormones, skin). NEVER diagnose. Always include the disclaimer the tool returns and recommend WellneSpirit handoff. If symptoms are vague or multi-system, recommend the full body assessment.
 
 After any tool call, present results conversationally (1 short paragraph + 3–4 bullet figures), then ask one follow-up question.`;
+
+      aiMessages.push({ role: "system", content: isabellaSystemPrompt });
+
       
       // Add conversation history for context (this is critical!)
       if (conversationHistory && Array.isArray(conversationHistory) && conversationHistory.length > 0) {

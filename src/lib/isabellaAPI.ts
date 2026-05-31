@@ -26,26 +26,29 @@ export interface ConversationMessage {
   content: string;
 }
 
+export interface IsabellaContext {
+  page_context?: string;
+  tool_context?: string;
+  authority_topic?: string;
+}
+
 class IsabellaAPI {
   /**
    * Send a message to Isabella and get a response
-   * @param message - Current user message
-   * @param persona - Isabella's persona
-   * @param conversationHistory - Previous messages for context (last 10 kept for efficiency)
-   * Language is auto-detected by the AI from the user's message — no need to pass it explicitly.
    */
   async sendMessage(
-    message: string, 
+    message: string,
     persona?: string,
     conversationHistory?: ConversationMessage[],
+    context?: IsabellaContext,
   ): Promise<IsabellaResponse> {
     try {
       const { data: userInfo } = await supabase.auth.getUser();
       const uid = userInfo?.user?.id ?? 'ovela-guest';
-      
+
       // Keep only last 10 messages for efficiency
       const recentHistory = conversationHistory?.slice(-10) || [];
-      
+
       const { data, error } = await supabase.functions.invoke('ovela-chat', {
         body: {
           prompt: message,
@@ -54,7 +57,10 @@ class IsabellaAPI {
           persona: persona || 'isabella-navia',
           source: 'ovela',
           context: 'ovela-interactive',
-          conversation_history: recentHistory
+          conversation_history: recentHistory,
+          page_context: context?.page_context,
+          tool_context: context?.tool_context,
+          authority_topic: context?.authority_topic,
         }
       });
 

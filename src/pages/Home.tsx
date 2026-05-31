@@ -117,7 +117,7 @@ const Home = () => {
     };
   }, []);
 
-  // Handle URL params: open chat & optionally pre-seed a partner context message
+  // Handle URL params: open chat & optionally pre-seed (partner OR authority tool)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const partner = params.get('partner');
@@ -127,9 +127,31 @@ const Home = () => {
       superior: 'Superior Immobiliaris',
       general: 'the Ovela Network',
     };
+
+    // 1) Authority-tool launch from any TopicHub page
+    let toolSeed: { initialPrompt: string; tool_context?: string; authority_topic?: string } | null = null;
+    try {
+      const raw = sessionStorage.getItem('ovela:isabella:tool');
+      if (raw) {
+        toolSeed = JSON.parse(raw);
+        sessionStorage.removeItem('ovela:isabella:tool');
+      }
+    } catch {}
+
+    if (toolSeed?.initialPrompt) {
+      // Expose context to the chat so the next sendMessage carries it server-side
+      (window as any).__ISABELLA_CTX__ = {
+        tool_context: toolSeed.tool_context,
+        authority_topic: toolSeed.authority_topic,
+      };
+      setInitialChatMessage(toolSeed.initialPrompt);
+      activateChatRef.current?.();
+      window.history.replaceState({}, '', '/');
+      return;
+    }
+
     if (partner && partnerLabels[partner]) {
       const label = partnerLabels[partner];
-      // Direct registration intent — instructs Isabella to skip pitch and start collecting info
       const msg = `I'd like to register for Ovela Network membership${partner === 'general' ? '' : ` for ${label} access`}. Please acknowledge my interest, confirm my details will be sent to the Ovela team, and go straight into collecting my information (full name, email, company, country, and a short note on what I'm looking for). Skip the presentation — I'll ask if I want to know more.`;
       setInitialChatMessage(msg);
       activateChatRef.current?.();

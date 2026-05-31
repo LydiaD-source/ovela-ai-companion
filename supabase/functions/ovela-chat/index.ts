@@ -432,6 +432,55 @@ After any tool call, present results conversationally (1 short paragraph + 3–4
               required: ["category"]
             }
           }
+        },
+        {
+          type: "function",
+          function: {
+            name: "calculate_receptionist_cost",
+            description: "Compute realistic annual employer cost of a human reception/front-desk role in a European country, and compare it to Isabella's published Ovela tiers. Use when user asks about cost, salary, ROI vs hiring, or what an employee would cost in their country. Numbers are Eurostat-style 2024-2025 ranges.",
+            parameters: {
+              type: "object",
+              properties: {
+                country: { type: "string", description: "ISO country code: ES, PT, FR, DE, IT, NL, BE, AD, CH, UK, IE" },
+                role: { type: "string", enum: ["receptionist","front_desk_clinic","hotel_concierge","real_estate_junior_filter","customer_support_agent","executive_assistant"] },
+                languages: { type: "number", description: "Total languages required (1 = native only). +5% per extra language." },
+                shifts: { type: "string", enum: ["business","extended","247"], description: "business ≈ 1× FTE, extended ≈ 1.6×, 247 ≈ 3.2× FTE for full coverage" },
+                premium_skills: { type: "boolean", description: "True for medical/legal/CRM specialist vocabulary." }
+              },
+              required: ["country"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "calculate_missed_leads",
+            description: "Compute revenue lost to missed inbound calls/messages (after-hours, busy lines, language barriers) and net benefit vs Isabella's Pro tier. Use when user mentions missed calls, after-hours, lost leads, slow response, or wants to quantify the cost of not capturing inbounds.",
+            parameters: {
+              type: "object",
+              properties: {
+                monthly_inbound: { type: "number", description: "Total inbound inquiries per month (calls + forms + DMs)." },
+                miss_rate_pct: { type: "number", description: "% currently missed/unanswered (default 35)." },
+                conversion_rate_pct: { type: "number", description: "% of captured leads that become customers (default 20)." },
+                avg_deal_value_eur: { type: "number", description: "Average customer value in EUR (default 1500)." }
+              },
+              required: ["monthly_inbound"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "wellness_assessment_suggestion",
+            description: "SUGGESTION ONLY — never a diagnosis. When a user describes symptoms (stress, burnout, sleep, pain, hormones, skin), call this to map their words to a likely WellneSpirit therapy pack and a handoff. Always present the disclaimer the tool returns and recommend a full assessment when symptoms are vague or multi-system. Tool's text already includes the WellneSpirit handoff.",
+            parameters: {
+              type: "object",
+              properties: {
+                symptoms_text: { type: "string", description: "The user's own description of how they feel / their symptoms." }
+              },
+              required: ["symptoms_text"]
+            }
+          }
         }
       ];
 

@@ -121,6 +121,25 @@ const TopicHub: React.FC = () => {
             </p>
           </header>
 
+          {/* Isabella tool launchers — domain-specific, deterministic */}
+          {HUB_TOOLS[hub.slug]?.length > 0 && (
+            <section className="mb-16" aria-labelledby="tools-heading">
+              <h2 id="tools-heading" className="font-playfair text-xl md:text-2xl mb-2 text-soft-white/90">
+                Try it now — powered by Isabella
+              </h2>
+              <p className="text-soft-white/60 text-sm mb-5">
+                Real calculations, not guesses. Isabella runs the numbers live in chat.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {HUB_TOOLS[hub.slug].map((t) => (
+                  <AuthorityTool key={t} tool={t} authorityTopic={hub.h1} />
+                ))}
+              </div>
+            </section>
+          )}
+
+
+
           {/* Long-form sections */}
           <article className="space-y-12 mb-20">
             {hub.sections.map((s, i) => (

@@ -1,11 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Calculator, HeartPulse, TrendingDown, MessageCircle } from 'lucide-react';
 
 /**
- * Authority tool launcher — fires a `isabella:open` window event that
- * IsabellaConcierge listens for. Opens the concierge with a pre-seeded
- * prompt + tool_context + authority_topic so Isabella behaves as a
- * domain-specific tool, not a generic chat.
+ * Authority tool launcher — routes every click to the MAIN Isabella
+ * (animated + voice-enabled) on the Home page, with a pre-seeded prompt
+ * + tool_context + authority_topic stored in sessionStorage. There is
+ * only ONE Isabella; no secondary chat instances.
  */
 
 export type ToolKind = 'receptionist_cost' | 'missed_leads' | 'wellness_assessment';
@@ -43,32 +45,40 @@ const TOOL_PRESETS: Record<ToolKind, {
   },
 };
 
+export const ISABELLA_TOOL_STORAGE_KEY = 'ovela:isabella:tool';
+
 interface AuthorityToolProps {
   tool: ToolKind;
   authorityTopic: string;
   variant?: 'card' | 'inline';
 }
 
-export const launchIsabellaTool = (tool: ToolKind, authorityTopic: string) => {
-  const preset = TOOL_PRESETS[tool];
-  window.dispatchEvent(
-    new CustomEvent('isabella:open', {
-      detail: {
-        initialPrompt: preset.initialPrompt,
-        tool_context: preset.tool_context,
-        authority_topic: authorityTopic,
-      },
-    }),
-  );
-};
-
 const AuthorityTool: React.FC<AuthorityToolProps> = ({ tool, authorityTopic, variant = 'card' }) => {
   const preset = TOOL_PRESETS[tool];
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'en';
+  const langPrefix = lang === 'en' ? '' : `/${lang}`;
+
+  const launch = () => {
+    try {
+      sessionStorage.setItem(
+        ISABELLA_TOOL_STORAGE_KEY,
+        JSON.stringify({
+          initialPrompt: preset.initialPrompt,
+          tool_context: preset.tool_context,
+          authority_topic: authorityTopic,
+        }),
+      );
+    } catch {}
+    // Always send the user to the main Isabella on Home; chat=open triggers her.
+    navigate(`${langPrefix}/?chat=open`);
+  };
 
   if (variant === 'inline') {
     return (
       <button
-        onClick={() => launchIsabellaTool(tool, authorityTopic)}
+        onClick={launch}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-champagne-gold text-charcoal text-sm font-medium hover:scale-105 transition-transform"
       >
         {preset.icon}
@@ -79,7 +89,7 @@ const AuthorityTool: React.FC<AuthorityToolProps> = ({ tool, authorityTopic, var
 
   return (
     <button
-      onClick={() => launchIsabellaTool(tool, authorityTopic)}
+      onClick={launch}
       className="group w-full text-left p-5 rounded-xl border border-champagne-gold/30 bg-gradient-to-br from-champagne-gold/[0.07] to-transparent hover:border-champagne-gold/70 transition-all"
     >
       <div className="flex items-start gap-4">

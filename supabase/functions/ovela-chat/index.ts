@@ -353,9 +353,18 @@ When user mentions creating content, videos, clips, promotions, brand ambassador
 - After explaining, if user shows interest → trigger lead capture (name, email, project type, short description).
 - Optionally offer to show relevant video examples from the portfolio if context is about content/video.
 
-${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
+${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}
 
-      aiMessages.push({ role: "system", content: isabellaSystemPrompt });
+${authorityTopic ? `\nAUTHORITY TOPIC (this conversation is on a ${authorityTopic} page): Speak as the expert on this topic. Frame answers around it.` : ""}
+${pageContext ? `\nPAGE CONTEXT: ${pageContext}` : ""}
+${toolContext ? `\nTOOL CONTEXT: The user just launched the "${toolContext}" tool. Ask the minimum questions needed to call the matching tool, then call it. Do NOT invent numbers — always use the tool.` : ""}
+
+DETERMINISTIC TOOLS (use them — never guess numbers):
+- calculate_receptionist_cost — when user asks salary/cost comparisons, ROI vs hiring, "how much would a receptionist cost in X". Required: country (ES,PT,FR,DE,IT,NL,BE,AD,CH,UK,IE). Optional: role, languages, shifts (business|extended|247), premium_skills. Ask only the 1–2 missing essentials.
+- calculate_missed_leads — when user mentions missed calls, after-hours leads, lost revenue, language barriers losing customers. Inputs: monthly_inbound (required), miss_rate_pct, conversion_rate_pct, avg_deal_value_eur (sensible defaults if unknown).
+- wellness_assessment_suggestion — when user shares symptoms / how they feel (stress, burnout, sleep, pain, hormones, skin). NEVER diagnose. Always include the disclaimer the tool returns and recommend WellneSpirit handoff. If symptoms are vague or multi-system, recommend the full body assessment.
+
+After any tool call, present results conversationally (1 short paragraph + 3–4 bullet figures), then ask one follow-up question.`;
       
       // Add conversation history for context (this is critical!)
       if (conversationHistory && Array.isArray(conversationHistory) && conversationHistory.length > 0) {

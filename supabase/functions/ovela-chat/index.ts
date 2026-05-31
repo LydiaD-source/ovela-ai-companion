@@ -572,6 +572,33 @@ After any tool call, present results conversationally (1 short paragraph + 3–4
               console.error('❌ Error parsing suggest_videos arguments:', parseError);
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
             }
+          } else if (toolCall.function?.name === 'calculate_receptionist_cost') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = calcReceptionistCost(args);
+              console.log('💰 Receptionist cost calc:', { country: result.country, role: result.role });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'calculate_missed_leads') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = calcMissedLeads(args);
+              console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'wellness_assessment_suggestion') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = wellnessAssessmentSuggestion(args);
+              console.log('🌿 Wellness suggestion:', { tags: result.matched_tags });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
           }
         }
 

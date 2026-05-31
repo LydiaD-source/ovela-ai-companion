@@ -11,6 +11,22 @@ import {
 } from '@/components/ui/accordion';
 import { getTopicHubBySlug, matchVideosForHub } from '@/lib/topicHubsContent';
 import { getLocalizedHub } from '@/lib/localizedSEO';
+import AuthorityTool, { ToolKind } from '@/components/UI/AuthorityTool';
+
+// Map each topic hub to the tools Isabella should expose on that page.
+const HUB_TOOLS: Record<string, ToolKind[]> = {
+  'ai-receptionist':                    ['receptionist_cost', 'missed_leads'],
+  'ai-digital-employees':               ['receptionist_cost', 'missed_leads'],
+  'ai-clinic-receptionist':             ['receptionist_cost', 'missed_leads', 'wellness_assessment'],
+  'after-hours-lead-capture':           ['missed_leads', 'receptionist_cost'],
+  'multilingual-customer-communication':['receptionist_cost', 'missed_leads'],
+  'ai-for-wellness-clinics':            ['wellness_assessment', 'receptionist_cost'],
+  'executive-burnout-recovery':         ['wellness_assessment'],
+  'executive-wellness-programs':        ['wellness_assessment'],
+  'multilingual-patient-communication': ['receptionist_cost', 'missed_leads'],
+  'ai-property-presenter':              ['missed_leads', 'receptionist_cost'],
+  'digital-concierge-hotels-spa':       ['receptionist_cost', 'missed_leads'],
+};
 
 const BASE = 'https://www.ovelainteractive.com';
 

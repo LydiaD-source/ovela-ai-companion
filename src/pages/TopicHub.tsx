@@ -11,6 +11,22 @@ import {
 } from '@/components/ui/accordion';
 import { getTopicHubBySlug, matchVideosForHub } from '@/lib/topicHubsContent';
 import { getLocalizedHub } from '@/lib/localizedSEO';
+import AuthorityTool, { ToolKind } from '@/components/UI/AuthorityTool';
+
+// Map each topic hub to the tools Isabella should expose on that page.
+const HUB_TOOLS: Record<string, ToolKind[]> = {
+  'ai-receptionist':                    ['receptionist_cost', 'missed_leads'],
+  'ai-digital-employees':               ['receptionist_cost', 'missed_leads'],
+  'ai-clinic-receptionist':             ['receptionist_cost', 'missed_leads', 'wellness_assessment'],
+  'after-hours-lead-capture':           ['missed_leads', 'receptionist_cost'],
+  'multilingual-customer-communication':['receptionist_cost', 'missed_leads'],
+  'ai-for-wellness-clinics':            ['wellness_assessment', 'receptionist_cost'],
+  'executive-burnout-recovery':         ['wellness_assessment'],
+  'executive-wellness-programs':        ['wellness_assessment'],
+  'multilingual-patient-communication': ['receptionist_cost', 'missed_leads'],
+  'ai-property-presenter':              ['missed_leads', 'receptionist_cost'],
+  'digital-concierge-hotels-spa':       ['receptionist_cost', 'missed_leads'],
+};
 
 const BASE = 'https://www.ovelainteractive.com';
 
@@ -104,6 +120,25 @@ const TopicHub: React.FC = () => {
               {heroIntro}
             </p>
           </header>
+
+          {/* Isabella tool launchers — domain-specific, deterministic */}
+          {HUB_TOOLS[hub.slug]?.length > 0 && (
+            <section className="mb-16" aria-labelledby="tools-heading">
+              <h2 id="tools-heading" className="font-playfair text-xl md:text-2xl mb-2 text-soft-white/90">
+                Try it now — powered by Isabella
+              </h2>
+              <p className="text-soft-white/60 text-sm mb-5">
+                Real calculations, not guesses. Isabella runs the numbers live in chat.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {HUB_TOOLS[hub.slug].map((t) => (
+                  <AuthorityTool key={t} tool={t} authorityTopic={hub.h1} />
+                ))}
+              </div>
+            </section>
+          )}
+
+
 
           {/* Long-form sections */}
           <article className="space-y-12 mb-20">

@@ -1,6 +1,7 @@
 // ovela-chat index.ts - defensive, single-source of truth
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion } from "./_tools.ts";
 
 /**
  * NOTE:
@@ -135,6 +136,10 @@ serve(async (req) => {
     const clientId = body?.client_id ?? ovelaClientFromEnv;
     const conversationHistory = body?.conversation_history || [];
     const language = body?.language || "auto";
+    // Page / tool context injected from the client (authority pages, calculators, assessments)
+    const pageContext = (body?.page_context || "").toString().slice(0, 500);
+    const toolContext = (body?.tool_context || "").toString().slice(0, 200); // e.g. "receptionist_cost_calculator"
+    const authorityTopic = (body?.authority_topic || "").toString().slice(0, 200);
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
@@ -348,9 +353,21 @@ When user mentions creating content, videos, clips, promotions, brand ambassador
 - After explaining, if user shows interest → trigger lead capture (name, email, project type, short description).
 - Optionally offer to show relevant video examples from the portfolio if context is about content/video.
 
-${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
+${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}
+
+${authorityTopic ? `\nAUTHORITY TOPIC (this conversation is on a ${authorityTopic} page): Speak as the expert on this topic. Frame answers around it.` : ""}
+${pageContext ? `\nPAGE CONTEXT: ${pageContext}` : ""}
+${toolContext ? `\nTOOL CONTEXT: The user just launched the "${toolContext}" tool. Ask the minimum questions needed to call the matching tool, then call it. Do NOT invent numbers — always use the tool.` : ""}
+
+DETERMINISTIC TOOLS (use them — never guess numbers):
+- calculate_receptionist_cost — when user asks salary/cost comparisons, ROI vs hiring, "how much would a receptionist cost in X". Required: country (ES,PT,FR,DE,IT,NL,BE,AD,CH,UK,IE). Optional: role, languages, shifts (business|extended|247), premium_skills. Ask only the 1–2 missing essentials.
+- calculate_missed_leads — when user mentions missed calls, after-hours leads, lost revenue, language barriers losing customers. Inputs: monthly_inbound (required), miss_rate_pct, conversion_rate_pct, avg_deal_value_eur (sensible defaults if unknown).
+- wellness_assessment_suggestion — when user shares symptoms / how they feel (stress, burnout, sleep, pain, hormones, skin). NEVER diagnose. Always include the disclaimer the tool returns and recommend WellneSpirit handoff. If symptoms are vague or multi-system, recommend the full body assessment.
+
+After any tool call, present results conversationally (1 short paragraph + 3–4 bullet figures), then ask one follow-up question.`;
 
       aiMessages.push({ role: "system", content: isabellaSystemPrompt });
+
       
       // Add conversation history for context (this is critical!)
       if (conversationHistory && Array.isArray(conversationHistory) && conversationHistory.length > 0) {
@@ -413,6 +430,55 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
                 }
               },
               required: ["category"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "calculate_receptionist_cost",
+            description: "Compute realistic annual employer cost of a human reception/front-desk role in a European country, and compare it to Isabella's published Ovela tiers. Use when user asks about cost, salary, ROI vs hiring, or what an employee would cost in their country. Numbers are Eurostat-style 2024-2025 ranges.",
+            parameters: {
+              type: "object",
+              properties: {
+                country: { type: "string", description: "ISO country code: ES, PT, FR, DE, IT, NL, BE, AD, CH, UK, IE" },
+                role: { type: "string", enum: ["receptionist","front_desk_clinic","hotel_concierge","real_estate_junior_filter","customer_support_agent","executive_assistant"] },
+                languages: { type: "number", description: "Total languages required (1 = native only). +5% per extra language." },
+                shifts: { type: "string", enum: ["business","extended","247"], description: "business ≈ 1× FTE, extended ≈ 1.6×, 247 ≈ 3.2× FTE for full coverage" },
+                premium_skills: { type: "boolean", description: "True for medical/legal/CRM specialist vocabulary." }
+              },
+              required: ["country"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "calculate_missed_leads",
+            description: "Compute revenue lost to missed inbound calls/messages (after-hours, busy lines, language barriers) and net benefit vs Isabella's Pro tier. Use when user mentions missed calls, after-hours, lost leads, slow response, or wants to quantify the cost of not capturing inbounds.",
+            parameters: {
+              type: "object",
+              properties: {
+                monthly_inbound: { type: "number", description: "Total inbound inquiries per month (calls + forms + DMs)." },
+                miss_rate_pct: { type: "number", description: "% currently missed/unanswered (default 35)." },
+                conversion_rate_pct: { type: "number", description: "% of captured leads that become customers (default 20)." },
+                avg_deal_value_eur: { type: "number", description: "Average customer value in EUR (default 1500)." }
+              },
+              required: ["monthly_inbound"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "wellness_assessment_suggestion",
+            description: "SUGGESTION ONLY — never a diagnosis. When a user describes symptoms (stress, burnout, sleep, pain, hormones, skin), call this to map their words to a likely WellneSpirit therapy pack and a handoff. Always present the disclaimer the tool returns and recommend a full assessment when symptoms are vague or multi-system. Tool's text already includes the WellneSpirit handoff.",
+            parameters: {
+              type: "object",
+              properties: {
+                symptoms_text: { type: "string", description: "The user's own description of how they feel / their symptoms." }
+              },
+              required: ["symptoms_text"]
             }
           }
         }
@@ -505,6 +571,33 @@ ${effectiveGuide ? `\nBRAND CONTEXT:\n${effectiveGuide}` : ""}`;
             } catch (parseError) {
               console.error('❌ Error parsing suggest_videos arguments:', parseError);
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
+            }
+          } else if (toolCall.function?.name === 'calculate_receptionist_cost') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = calcReceptionistCost(args);
+              console.log('💰 Receptionist cost calc:', { country: result.country, role: result.role });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'calculate_missed_leads') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = calcMissedLeads(args);
+              console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'wellness_assessment_suggestion') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = wellnessAssessmentSuggestion(args);
+              console.log('🌿 Wellness suggestion:', { tags: result.matched_tags });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
             }
           }
         }

@@ -18,6 +18,8 @@ const IsabellaConcierge: React.FC = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [toolContext, setToolContext] = useState<string | undefined>();
+  const [authorityTopic, setAuthorityTopic] = useState<string | undefined>();
   const location = useLocation();
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -30,10 +32,7 @@ const IsabellaConcierge: React.FC = () => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, loading]);
 
-  if (isHome) return null;
-
-  const send = async () => {
-    const text = input.trim();
+  const sendWithContext = async (text: string, ctx?: { tool_context?: string; authority_topic?: string }) => {
     if (!text || loading) return;
     const next: Msg[] = [...messages, { role: 'user', content: text }];
     setMessages(next);
@@ -41,7 +40,12 @@ const IsabellaConcierge: React.FC = () => {
     setLoading(true);
     try {
       const history: ConversationMessage[] = next.map((m) => ({ role: m.role, content: m.content }));
-      const res = await isabellaAPI.sendMessage(text, 'isabella-navia', history);
+      const pageContext = `User is on ${location.pathname}`;
+      const res = await isabellaAPI.sendMessage(text, 'isabella-navia', history, {
+        page_context: pageContext,
+        tool_context: ctx?.tool_context ?? toolContext,
+        authority_topic: ctx?.authority_topic ?? authorityTopic,
+      });
       setMessages((m) => [...m, { role: 'assistant', content: res.message || '…' }]);
     } catch (e) {
       setMessages((m) => [
@@ -52,6 +56,31 @@ const IsabellaConcierge: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Listen for tool launches from anywhere on the site.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail || {};
+      setToolContext(detail.tool_context);
+      setAuthorityTopic(detail.authority_topic);
+      setOpen(true);
+      if (detail.initialPrompt) {
+        // give the panel a tick to mount
+        setTimeout(() => sendWithContext(detail.initialPrompt, {
+          tool_context: detail.tool_context,
+          authority_topic: detail.authority_topic,
+        }), 100);
+      }
+    };
+    window.addEventListener('isabella:open', handler as EventListener);
+    return () => window.removeEventListener('isabella:open', handler as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, loading, toolContext, authorityTopic]);
+
+  if (isHome) return null;
+
+  const send = () => sendWithContext(input.trim());
+
 
   const openFullExperience = () => {
     setOpen(false);

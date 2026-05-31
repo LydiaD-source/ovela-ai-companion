@@ -136,6 +136,10 @@ serve(async (req) => {
     const clientId = body?.client_id ?? ovelaClientFromEnv;
     const conversationHistory = body?.conversation_history || [];
     const language = body?.language || "auto";
+    // Page / tool context injected from the client (authority pages, calculators, assessments)
+    const pageContext = (body?.page_context || "").toString().slice(0, 500);
+    const toolContext = (body?.tool_context || "").toString().slice(0, 200); // e.g. "receptionist_cost_calculator"
+    const authorityTopic = (body?.authority_topic || "").toString().slice(0, 200);
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;

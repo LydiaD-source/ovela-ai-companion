@@ -514,6 +514,61 @@ After any tool call, present results conversationally (1 short paragraph + key b
               required: ["symptoms_text"]
             }
           }
+        },
+        {
+          type: "function",
+          function: {
+            name: "nutrition_assessment",
+            description: "Protein & Nutrition Assessment. Call ONLY after you have weight_kg, activity_level, goal AND your own estimates of daily intake from the meal diary the user provided (typed, pasted, or extracted from an attachment). You produce the estimates by reading the diary; the tool returns targets, gaps, scores, priorities, and a 7-day plan. Educational only.",
+            parameters: {
+              type: "object",
+              properties: {
+                age: { type: "number" },
+                gender: { type: "string", enum: ["male","female","other"] },
+                height_cm: { type: "number" },
+                weight_kg: { type: "number" },
+                activity_level: { type: "string", enum: ["sedentary","moderate","active","athlete"] },
+                goal: { type: "string", enum: ["fat_loss","energy","performance","muscle_maintenance","healthy_aging","longevity"] },
+                est_calories: { type: "number", description: "Your estimated daily calories from the diary." },
+                est_protein_g: { type: "number" },
+                est_carbs_g: { type: "number" },
+                est_fat_g: { type: "number" },
+                est_hydration_l: { type: "number" },
+                low_protein_breakfast: { type: "boolean" },
+                sugar_snacks: { type: "boolean" },
+                low_vegetables: { type: "boolean" },
+                high_processed: { type: "boolean" },
+                irregular_meals: { type: "boolean" }
+              },
+              required: ["weight_kg"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "biological_age_assessment",
+            description: "Lifestyle-only biological age estimate. Educational, never medical. NEVER ask about diseases, diagnoses, or prescription medications. Call after collecting the lifestyle inputs conversationally (2–3 questions at a time).",
+            parameters: {
+              type: "object",
+              properties: {
+                chronological_age: { type: "number" },
+                gender: { type: "string", enum: ["male","female","other"] },
+                height_cm: { type: "number" },
+                weight_kg: { type: "number" },
+                waist_cm: { type: "number" },
+                sleep_hours: { type: "number" },
+                exercise_sessions_per_week: { type: "number" },
+                stress_level: { type: "number", description: "1–10" },
+                alcohol_units_per_week: { type: "number" },
+                smoking: { type: "string", enum: ["never","former","current"] },
+                energy_level: { type: "number", description: "1–10" },
+                recovery_speed: { type: "number", description: "1–10" },
+                digestive_health: { type: "number", description: "1–10" }
+              },
+              required: ["chronological_age"]
+            }
+          }
         }
       ];
 

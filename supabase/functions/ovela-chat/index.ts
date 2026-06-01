@@ -367,7 +367,7 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
 - calculate_receptionist_cost — when user asks salary/cost comparisons, ROI vs hiring, "how much would a receptionist cost in X". Required: country (ES,PT,FR,DE,IT,NL,BE,AD,CH,UK,IE). Optional: role, languages, shifts (business|extended|247), premium_skills. Ask only the 1–2 missing essentials.
 - calculate_missed_leads — when user mentions missed calls, after-hours leads, lost revenue, language barriers losing customers. Inputs: monthly_inbound (required), miss_rate_pct, conversion_rate_pct, avg_deal_value_eur (sensible defaults if unknown).
 - wellness_assessment_suggestion — when user shares symptoms / how they feel (stress, burnout, sleep, pain, hormones, skin). NEVER diagnose. Always include the disclaimer the tool returns and recommend WellneSpirit handoff. If symptoms are vague or multi-system, recommend the full body assessment.
-- nutrition_assessment — Protein & Nutrition Assessment. You are the analyst. Read the user's meal diary (typed, pasted, or extracted from attachments) and ESTIMATE daily averages: calories, protein_g, carbs_g, fat_g, hydration_l. Note qualitative flags (low_protein_breakfast, sugar_snacks, low_vegetables, high_processed, irregular_meals). REQUIRED before tool: weight_kg, activity_level, goal. Ask for these first if missing. After tool returns, present results conversationally — show scores, the 3 priorities, and the 7-day plan. End by offering: "Would you like me to package this as a downloadable PDF report?"
+- nutrition_assessment — Protein & Nutrition Assessment. You are the nutrition consultant receiving the person in your office. Gather inputs like a clinician taking intake, NOT a form. REQUIRED before calling the tool: age, gender, height_cm, weight_kg, activity_level, primary goal (fat_loss / muscle_gain / performance / healthy_aging / energy / longevity / recovery), diet_type (omnivore / vegetarian / vegan). HIGHLY USEFUL — ask if it flows naturally: waist_cm, occupation, sleep_hours, alcohol_units_per_week, strength_sessions_per_week, cardio_sessions_per_week. Ask 2–3 questions per turn in warm conversational batches. Example batch 1: "First, can I get your age, gender, height, and weight?" Batch 2: "What's your main goal — fat loss, muscle gain, energy, healthy aging, longevity, performance, or recovery? And are you omnivore, vegetarian, or vegan?" Batch 3: "How many strength and cardio sessions do you do per week, and how are you sleeping?" Then ask for the meal diary (typed, pasted, uploaded, or photo). Read the diary and ESTIMATE est_calories / est_protein_g / est_carbs_g / est_fat_g / est_hydration_l plus qualitative flags (low_protein_breakfast, sugar_snacks, low_vegetables, high_processed, irregular_meals). Call the tool. The tool returns an 8-section enriched report — give a short conversational summary, then output the fenced assessment-report block so the page can offer the PDF.
 - biological_age_assessment — Lifestyle-only, never medical. Ask for: chronological_age, gender, height_cm, weight_kg, waist_cm, sleep_hours, exercise_sessions_per_week, stress_level (1–10), alcohol_units_per_week, smoking (never/former/current), energy_level (1–10), recovery_speed (1–10), digestive_health (1–10). Do NOT ask about diseases, medications, or diagnoses. Ask 2–3 questions at a time, conversationally. When you have enough, call the tool. Then present the biological age estimate, score breakdown, top 3 contributors, and the 6/12 month projections. End by offering the PDF.
 
 ASSESSMENT FLOW (nutrition + biological age):
@@ -526,7 +526,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
           type: "function",
           function: {
             name: "nutrition_assessment",
-            description: "Protein & Nutrition Assessment. Call ONLY after you have weight_kg, activity_level, goal AND your own estimates of daily intake from the meal diary the user provided (typed, pasted, or extracted from an attachment). You produce the estimates by reading the diary; the tool returns targets, gaps, scores, priorities, and a 7-day plan. Educational only.",
+            description: "Protein & Nutrition Assessment. Call ONLY after you have gathered the REQUIRED inputs (age, gender, height_cm, weight_kg, activity_level, primary goal, diet_type) AND your own estimates of daily intake from the meal diary the user provided. You produce the estimates by reading the diary. Tool returns an 8-section enriched report (executive summary, muscle preservation, protein strategy, meal framework, metabolic support, resistance training, biological age impact, weekly action plan). Educational only.",
             parameters: {
               type: "object",
               properties: {
@@ -534,9 +534,16 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 gender: { type: "string", enum: ["male","female","other"] },
                 height_cm: { type: "number" },
                 weight_kg: { type: "number" },
+                waist_cm: { type: "number", description: "Optional but valuable." },
                 activity_level: { type: "string", enum: ["sedentary","moderate","active","athlete"] },
-                goal: { type: "string", enum: ["fat_loss","energy","performance","muscle_maintenance","healthy_aging","longevity"] },
-                est_calories: { type: "number", description: "Your estimated daily calories from the diary." },
+                occupation: { type: "string", description: "executive, office worker, athlete, tradesperson, etc." },
+                goal: { type: "string", enum: ["fat_loss","muscle_gain","performance","healthy_aging","energy","longevity","recovery","muscle_maintenance"] },
+                diet_type: { type: "string", enum: ["omnivore","vegetarian","vegan"] },
+                sleep_hours: { type: "number" },
+                alcohol_units_per_week: { type: "number" },
+                strength_sessions_per_week: { type: "number" },
+                cardio_sessions_per_week: { type: "number" },
+                est_calories: { type: "number" },
                 est_protein_g: { type: "number" },
                 est_carbs_g: { type: "number" },
                 est_fat_g: { type: "number" },
@@ -547,7 +554,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 high_processed: { type: "boolean" },
                 irregular_meals: { type: "boolean" }
               },
-              required: ["weight_kg"]
+              required: ["weight_kg","age","gender","height_cm","activity_level","goal","diet_type"]
             }
           }
         },

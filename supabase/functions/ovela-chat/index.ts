@@ -1,7 +1,7 @@
 // ovela-chat index.ts - defensive, single-source of truth
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion } from "./_tools.ts";
+import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, biologicalAgeAssessment } from "./_tools.ts";
 
 /**
  * NOTE:
@@ -140,6 +140,10 @@ serve(async (req) => {
     const pageContext = (body?.page_context || "").toString().slice(0, 500);
     const toolContext = (body?.tool_context || "").toString().slice(0, 200); // e.g. "receptionist_cost_calculator"
     const authorityTopic = (body?.authority_topic || "").toString().slice(0, 200);
+    // Attachments: { name, mime_type, data_url?, text? } — images sent as data URL to Gemini vision,
+    // text/PDF content extracted client-side and passed as `text`. NOT persisted.
+    const attachments: Array<{ name?: string; mime_type?: string; data_url?: string; text?: string }> =
+      Array.isArray(body?.attachments) ? body.attachments.slice(0, 6) : [];
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;

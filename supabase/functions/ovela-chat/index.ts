@@ -382,6 +382,8 @@ ASSESSMENT FLOW (nutrition + biological age):
 Place a 2–3 sentence human summary BEFORE the fenced block. After the block, ask if they want it emailed.
 - Never store or remember health details across conversations. If the user starts a new chat, the previous assessment is gone.
 
+After any tool call, present results conversationally (1 short paragraph + key bullet figures), then ask one follow-up question.`;
+
       aiMessages.push({ role: "system", content: isabellaSystemPrompt });
 
       
@@ -394,9 +396,24 @@ Place a 2–3 sentence human summary BEFORE the fenced block. After the block, a
           }
         }
       }
-      
-      // Add current user message
-      aiMessages.push({ role: "user", content: incomingMessage || "Hello" });
+
+      // Build current user message — multimodal if attachments are present.
+      const userText = incomingMessage || "Hello";
+      if (attachments.length > 0) {
+        const contentParts: any[] = [{ type: "text", text: userText }];
+        for (const att of attachments) {
+          if (att.data_url && /^image\//i.test(att.mime_type || "")) {
+            contentParts.push({ type: "image_url", image_url: { url: att.data_url } });
+          } else if (att.text && att.text.trim()) {
+            const label = att.name ? `[Attached document "${att.name}" — extracted text]` : "[Attached document — extracted text]";
+            contentParts.push({ type: "text", text: `${label}\n${att.text.slice(0, 12000)}` });
+          }
+        }
+        aiMessages.push({ role: "user", content: contentParts });
+        console.log(`📎 User message includes ${attachments.length} attachment(s)`);
+      } else {
+        aiMessages.push({ role: "user", content: userText });
+      }
 
       const lovableKey = Deno.env.get("LOVABLE_API_KEY");
       if (!lovableKey) {

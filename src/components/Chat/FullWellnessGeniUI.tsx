@@ -69,6 +69,22 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>({});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Tool context persists for the whole assessment session, not just the first message.
+  const [toolCtx, setToolCtx] = useState<{ tool_context?: string; authority_topic?: string } | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const w = (window as any).__ISABELLA_CTX__;
+    if (w) { try { delete (window as any).__ISABELLA_CTX__; } catch {} return w; }
+    return null;
+  });
+  // Listen for tool launches that happen while the chat is already open.
+  useEffect(() => {
+    const onCtx = (e: Event) => {
+      const d = (e as CustomEvent).detail || {};
+      setToolCtx({ tool_context: d.tool_context, authority_topic: d.authority_topic });
+    };
+    window.addEventListener('isabella:tool-context', onCtx as EventListener);
+    return () => window.removeEventListener('isabella:tool-context', onCtx as EventListener);
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
@@ -150,16 +166,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
         content: m.text
       }));
-      const ctx = (window as any).__ISABELLA_CTX__ as
-        | { tool_context?: string; authority_topic?: string }
-        | undefined;
-      if (ctx) {
-        try { delete (window as any).__ISABELLA_CTX__; } catch {}
-      }
       const isa = await isabellaAPI.sendMessage(text, defaultPersona, history, {
         page_context: typeof window !== 'undefined' ? `User is on ${window.location.pathname}` : undefined,
-        tool_context: ctx?.tool_context,
-        authority_topic: ctx?.authority_topic,
+        tool_context: toolCtx?.tool_context,
+        authority_topic: toolCtx?.authority_topic,
         attachments: attachmentsToSend,
       });
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
@@ -213,7 +223,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory, pendingAttachments]);
+  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory, pendingAttachments, toolCtx]);
 
   // File handler — images become data URLs, text/PDF/DOC are read as text.
   // Nothing is uploaded to storage. Files are sent inline with the next message.
@@ -417,7 +427,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] rounded-xl p-3 ${message.sender === 'user' ? 'bg-soft-white/20 text-soft-white ml-4' : 'bg-soft-white/10 text-soft-white mr-4'}`}>
-              <p className="text-sm">{message.text}</p>
+              <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+              {message.attachmentNames && message.attachmentNames.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {message.attachmentNames.map((n, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-champagne-gold/20 text-champagne-gold text-[10px]">
+                      <FileText className="w-3 h-3" />{n}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {message.report && (
+                <button
+                  onClick={() => downloadAssessmentReport(message.report!)}
+                  className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-champagne-gold text-charcoal text-xs font-medium hover:bg-champagne-gold/90 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download PDF report
+                </button>
+              )}
               {/* Video cards — show pre-selected clips to avoid repeats */}
               {message.selectedVideoIds && message.selectedVideoIds.length > 0 && (
                 <div className="mt-3 flex flex-col gap-2">
@@ -500,7 +528,38 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {!emailInputMode && isListening && (
           <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Speak now — tap "Send" when ready</p>
         )}
-        <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end">
+        {pendingAttachments.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-1">
+            {pendingAttachments.map((a, i) => (
+              <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-champagne-gold/20 text-champagne-gold text-[11px]">
+                {a.mime_type.startsWith('image/') ? <ImageIcon className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                {a.name || a.mime_type}
+                <button type="button" onClick={() => setPendingAttachments(prev => prev.filter((_, j) => j !== i))} className="ml-1 hover:text-soft-white">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,application/pdf,.txt,.md,.csv,.doc,.docx"
+          className="hidden"
+          onChange={(e) => { handleFiles(e.target.files); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+        />
+        <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end gap-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading}
+            className="flex-shrink-0 h-12 w-12 flex items-center justify-center rounded-full bg-soft-white/10 hover:bg-soft-white/20 text-soft-white transition-colors disabled:opacity-40"
+            title="Attach meal diary, PDF, or screenshot"
+            aria-label="Attach file"
+          >
+            <Paperclip className="w-4 h-4" />
+          </button>
           <div className="relative w-full min-w-0">
             <Input
               type={emailInputMode ? "email" : "text"}

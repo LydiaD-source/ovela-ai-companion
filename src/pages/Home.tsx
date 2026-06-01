@@ -144,6 +144,10 @@ const Home = () => {
         tool_context: toolSeed.tool_context,
         authority_topic: toolSeed.authority_topic,
       };
+      // Also dispatch in case the chat is already mounted (open).
+      window.dispatchEvent(new CustomEvent('isabella:tool-context', {
+        detail: { tool_context: toolSeed.tool_context, authority_topic: toolSeed.authority_topic }
+      }));
       setInitialChatMessage(toolSeed.initialPrompt);
       activateChatRef.current?.();
       window.history.replaceState({}, '', '/');

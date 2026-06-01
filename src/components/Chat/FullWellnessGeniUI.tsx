@@ -166,16 +166,10 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
         content: m.text
       }));
-      const ctx = (window as any).__ISABELLA_CTX__ as
-        | { tool_context?: string; authority_topic?: string }
-        | undefined;
-      if (ctx) {
-        try { delete (window as any).__ISABELLA_CTX__; } catch {}
-      }
       const isa = await isabellaAPI.sendMessage(text, defaultPersona, history, {
         page_context: typeof window !== 'undefined' ? `User is on ${window.location.pathname}` : undefined,
-        tool_context: ctx?.tool_context,
-        authority_topic: ctx?.authority_topic,
+        tool_context: toolCtx?.tool_context,
+        authority_topic: toolCtx?.authority_topic,
         attachments: attachmentsToSend,
       });
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";

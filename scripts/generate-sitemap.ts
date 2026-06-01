@@ -81,18 +81,29 @@ const VIDEOS = ytIds.length
     );
 
 function makeUrlsetXml(): string {
-  const allPaths = [
+  const videoEntries = VIDEOS.map((v) => ({
+    path: `/videos/${v.slug}`,
+    changefreq: 'monthly',
+    priority: '0.6',
+    englishOnly: true, // content is not translated per language
+  }));
+  const allPaths: Array<{ path: string; changefreq: string; priority: string; englishOnly?: boolean }> = [
     ...STATIC_PATHS,
-    ...VIDEOS.map((v) => ({ path: `/videos/${v.slug}`, changefreq: 'monthly', priority: '0.6' })),
+    ...videoEntries,
   ];
 
-  const urls = allPaths.flatMap((entry) =>
-    LANGS.map((lang) => {
+  const urls = allPaths.flatMap((entry) => {
+    const langs = entry.englishOnly ? (['en'] as const) : LANGS;
+    return langs.map((lang) => {
       const loc = buildUrl(lang, entry.path);
-      const alternates = LANGS.map(
-        (l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${buildUrl(l, entry.path)}" />`,
-      ).join('\n');
-      const xDefault = `    <xhtml:link rel="alternate" hreflang="x-default" href="${buildUrl('en', entry.path)}" />`;
+      const alternates = entry.englishOnly
+        ? ''
+        : LANGS.map(
+            (l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${buildUrl(l, entry.path)}" />`,
+          ).join('\n');
+      const xDefault = entry.englishOnly
+        ? ''
+        : `    <xhtml:link rel="alternate" hreflang="x-default" href="${buildUrl('en', entry.path)}" />`;
       return [
         '  <url>',
         `    <loc>${loc}</loc>`,
@@ -102,9 +113,9 @@ function makeUrlsetXml(): string {
         alternates,
         xDefault,
         '  </url>',
-      ].join('\n');
-    }),
-  );
+      ].filter(Boolean).join('\n');
+    });
+  });
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',

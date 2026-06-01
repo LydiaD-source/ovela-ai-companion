@@ -1,7 +1,7 @@
 // ovela-chat index.ts - defensive, single-source of truth
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion } from "./_tools.ts";
+import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, biologicalAgeAssessment } from "./_tools.ts";
 
 /**
  * NOTE:
@@ -140,6 +140,10 @@ serve(async (req) => {
     const pageContext = (body?.page_context || "").toString().slice(0, 500);
     const toolContext = (body?.tool_context || "").toString().slice(0, 200); // e.g. "receptionist_cost_calculator"
     const authorityTopic = (body?.authority_topic || "").toString().slice(0, 200);
+    // Attachments: { name, mime_type, data_url?, text? } — images sent as data URL to Gemini vision,
+    // text/PDF content extracted client-side and passed as `text`. NOT persisted.
+    const attachments: Array<{ name?: string; mime_type?: string; data_url?: string; text?: string }> =
+      Array.isArray(body?.attachments) ? body.attachments.slice(0, 6) : [];
 
     // Fetch brand guide from WellnessGeni admin if available
     let fetchedGuide: string | undefined = undefined;
@@ -363,8 +367,22 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
 - calculate_receptionist_cost — when user asks salary/cost comparisons, ROI vs hiring, "how much would a receptionist cost in X". Required: country (ES,PT,FR,DE,IT,NL,BE,AD,CH,UK,IE). Optional: role, languages, shifts (business|extended|247), premium_skills. Ask only the 1–2 missing essentials.
 - calculate_missed_leads — when user mentions missed calls, after-hours leads, lost revenue, language barriers losing customers. Inputs: monthly_inbound (required), miss_rate_pct, conversion_rate_pct, avg_deal_value_eur (sensible defaults if unknown).
 - wellness_assessment_suggestion — when user shares symptoms / how they feel (stress, burnout, sleep, pain, hormones, skin). NEVER diagnose. Always include the disclaimer the tool returns and recommend WellneSpirit handoff. If symptoms are vague or multi-system, recommend the full body assessment.
+- nutrition_assessment — Protein & Nutrition Assessment. You are the analyst. Read the user's meal diary (typed, pasted, or extracted from attachments) and ESTIMATE daily averages: calories, protein_g, carbs_g, fat_g, hydration_l. Note qualitative flags (low_protein_breakfast, sugar_snacks, low_vegetables, high_processed, irregular_meals). REQUIRED before tool: weight_kg, activity_level, goal. Ask for these first if missing. After tool returns, present results conversationally — show scores, the 3 priorities, and the 7-day plan. End by offering: "Would you like me to package this as a downloadable PDF report?"
+- biological_age_assessment — Lifestyle-only, never medical. Ask for: chronological_age, gender, height_cm, weight_kg, waist_cm, sleep_hours, exercise_sessions_per_week, stress_level (1–10), alcohol_units_per_week, smoking (never/former/current), energy_level (1–10), recovery_speed (1–10), digestive_health (1–10). Do NOT ask about diseases, medications, or diagnoses. Ask 2–3 questions at a time, conversationally. When you have enough, call the tool. Then present the biological age estimate, score breakdown, top 3 contributors, and the 6/12 month projections. End by offering the PDF.
 
-After any tool call, present results conversationally (1 short paragraph + 3–4 bullet figures), then ask one follow-up question.`;
+ASSESSMENT FLOW (nutrition + biological age):
+- Open with the GDPR-style disclaimer ONCE at start of an assessment: "Before we begin — this assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional. Continue?"
+- Ask questions in small batches (1–3 at a time), never as a form. Sound like a wellness consultant, not a calculator.
+- For nutrition: offer the four input options upfront — "You can type your week, paste a diary, upload a PDF/screenshot, or describe it to me. What works best?"
+- If an attachment is present, acknowledge it ("I've read your meal log — quick clarifications…") and extract the estimates yourself before calling the tool.
+- After the tool returns, output the structured report inside a fenced block exactly like this so the page can offer a PDF download:
+\`\`\`assessment-report
+{ "type": "nutrition_assessment" | "biological_age", "title": "...", "data": <the tool result> }
+\`\`\`
+Place a 2–3 sentence human summary BEFORE the fenced block. After the block, ask if they want it emailed.
+- Never store or remember health details across conversations. If the user starts a new chat, the previous assessment is gone.
+
+After any tool call, present results conversationally (1 short paragraph + key bullet figures), then ask one follow-up question.`;
 
       aiMessages.push({ role: "system", content: isabellaSystemPrompt });
 
@@ -378,9 +396,24 @@ After any tool call, present results conversationally (1 short paragraph + 3–4
           }
         }
       }
-      
-      // Add current user message
-      aiMessages.push({ role: "user", content: incomingMessage || "Hello" });
+
+      // Build current user message — multimodal if attachments are present.
+      const userText = incomingMessage || "Hello";
+      if (attachments.length > 0) {
+        const contentParts: any[] = [{ type: "text", text: userText }];
+        for (const att of attachments) {
+          if (att.data_url && /^image\//i.test(att.mime_type || "")) {
+            contentParts.push({ type: "image_url", image_url: { url: att.data_url } });
+          } else if (att.text && att.text.trim()) {
+            const label = att.name ? `[Attached document "${att.name}" — extracted text]` : "[Attached document — extracted text]";
+            contentParts.push({ type: "text", text: `${label}\n${att.text.slice(0, 12000)}` });
+          }
+        }
+        aiMessages.push({ role: "user", content: contentParts });
+        console.log(`📎 User message includes ${attachments.length} attachment(s)`);
+      } else {
+        aiMessages.push({ role: "user", content: userText });
+      }
 
       const lovableKey = Deno.env.get("LOVABLE_API_KEY");
       if (!lovableKey) {
@@ -479,6 +512,61 @@ After any tool call, present results conversationally (1 short paragraph + 3–4
                 symptoms_text: { type: "string", description: "The user's own description of how they feel / their symptoms." }
               },
               required: ["symptoms_text"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "nutrition_assessment",
+            description: "Protein & Nutrition Assessment. Call ONLY after you have weight_kg, activity_level, goal AND your own estimates of daily intake from the meal diary the user provided (typed, pasted, or extracted from an attachment). You produce the estimates by reading the diary; the tool returns targets, gaps, scores, priorities, and a 7-day plan. Educational only.",
+            parameters: {
+              type: "object",
+              properties: {
+                age: { type: "number" },
+                gender: { type: "string", enum: ["male","female","other"] },
+                height_cm: { type: "number" },
+                weight_kg: { type: "number" },
+                activity_level: { type: "string", enum: ["sedentary","moderate","active","athlete"] },
+                goal: { type: "string", enum: ["fat_loss","energy","performance","muscle_maintenance","healthy_aging","longevity"] },
+                est_calories: { type: "number", description: "Your estimated daily calories from the diary." },
+                est_protein_g: { type: "number" },
+                est_carbs_g: { type: "number" },
+                est_fat_g: { type: "number" },
+                est_hydration_l: { type: "number" },
+                low_protein_breakfast: { type: "boolean" },
+                sugar_snacks: { type: "boolean" },
+                low_vegetables: { type: "boolean" },
+                high_processed: { type: "boolean" },
+                irregular_meals: { type: "boolean" }
+              },
+              required: ["weight_kg"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "biological_age_assessment",
+            description: "Lifestyle-only biological age estimate. Educational, never medical. NEVER ask about diseases, diagnoses, or prescription medications. Call after collecting the lifestyle inputs conversationally (2–3 questions at a time).",
+            parameters: {
+              type: "object",
+              properties: {
+                chronological_age: { type: "number" },
+                gender: { type: "string", enum: ["male","female","other"] },
+                height_cm: { type: "number" },
+                weight_kg: { type: "number" },
+                waist_cm: { type: "number" },
+                sleep_hours: { type: "number" },
+                exercise_sessions_per_week: { type: "number" },
+                stress_level: { type: "number", description: "1–10" },
+                alcohol_units_per_week: { type: "number" },
+                smoking: { type: "string", enum: ["never","former","current"] },
+                energy_level: { type: "number", description: "1–10" },
+                recovery_speed: { type: "number", description: "1–10" },
+                digestive_health: { type: "number", description: "1–10" }
+              },
+              required: ["chronological_age"]
             }
           }
         }
@@ -595,6 +683,24 @@ After any tool call, present results conversationally (1 short paragraph + 3–4
               const args = JSON.parse(toolCall.function.arguments || "{}");
               const result = wellnessAssessmentSuggestion(args);
               console.log('🌿 Wellness suggestion:', { tags: result.matched_tags });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'nutrition_assessment') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = nutritionAssessment(args);
+              console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'biological_age_assessment') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = biologicalAgeAssessment(args);
+              console.log('⏳ Bio-age assessment:', { delta: result.difference_years });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

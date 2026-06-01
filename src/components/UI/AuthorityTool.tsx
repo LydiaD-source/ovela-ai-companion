@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Calculator, HeartPulse, TrendingDown, MessageCircle } from 'lucide-react';
+import { Calculator, HeartPulse, TrendingDown, MessageCircle, Apple, Hourglass } from 'lucide-react';
 
 /**
  * Authority tool launcher — routes every click to the MAIN Isabella
@@ -10,7 +10,12 @@ import { Calculator, HeartPulse, TrendingDown, MessageCircle } from 'lucide-reac
  * only ONE Isabella; no secondary chat instances.
  */
 
-export type ToolKind = 'receptionist_cost' | 'missed_leads' | 'wellness_assessment';
+export type ToolKind =
+  | 'receptionist_cost'
+  | 'missed_leads'
+  | 'wellness_assessment'
+  | 'nutrition_assessment'
+  | 'biological_age';
 
 const TOOL_PRESETS: Record<ToolKind, {
   label: string;
@@ -42,6 +47,22 @@ const TOOL_PRESETS: Record<ToolKind, {
     initialPrompt:
       "I'd like a quick wellness suggestion — not a diagnosis. Ask me about my symptoms and recommend the right WellneSpirit assessment or therapy pack.",
     tool_context: 'wellness_assessment_suggestion',
+  },
+  nutrition_assessment: {
+    label: 'Analyze my diet & protein intake',
+    sub: 'Upload, paste, type or describe a typical week — Isabella analyses protein, balance and improvement opportunities.',
+    icon: <Apple className="w-5 h-5" />,
+    initialPrompt:
+      "I'd like the Protein & Nutrition Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
+    tool_context: 'nutrition_assessment',
+  },
+  biological_age: {
+    label: 'Estimate my biological age',
+    sub: 'Lifestyle, recovery, sleep and activity — Isabella estimates how your body may be aging.',
+    icon: <Hourglass className="w-5 h-5" />,
+    initialPrompt:
+      "I'd like the Biological Age Assessment. Please run it conversationally — lifestyle questions only, no medical history. Start with the disclaimer, then ask 2–3 questions at a time.",
+    tool_context: 'biological_age_assessment',
   },
 };
 

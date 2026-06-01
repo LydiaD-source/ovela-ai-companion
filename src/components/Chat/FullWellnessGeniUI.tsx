@@ -131,25 +131,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return;
 
+    const attachmentsToSend = pendingAttachments;
     const userMessage: Message = {
       id: Date.now().toString(),
       text,
       sender: 'user',
-      timestamp: new Date()
+      timestamp: new Date(),
+      attachmentNames: attachmentsToSend.map(a => a.name || a.mime_type),
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
+    setPendingAttachments([]);
     setIsLoading(true);
 
     try {
-      // Pass full conversation history so Isabella has context
       const history = messages.map(m => ({
         role: m.sender === 'user' ? 'user' as const : 'assistant' as const,
         content: m.text
       }));
-      // Pick up any authority-tool context set by Home from sessionStorage,
-      // then clear it so it only rides the first message.
       const ctx = (window as any).__ISABELLA_CTX__ as
         | { tool_context?: string; authority_topic?: string }
         | undefined;
@@ -160,10 +160,13 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         page_context: typeof window !== 'undefined' ? `User is on ${window.location.pathname}` : undefined,
         tool_context: ctx?.tool_context,
         authority_topic: ctx?.authority_topic,
+        attachments: attachmentsToSend,
       });
-      const assistantText = isa.message || "I'm sorry — I didn't get that. Please try again.";
+      const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
+      // Extract any structured assessment report and strip it from the visible text.
+      const { report, cleaned } = extractAssessmentReport(rawText);
+      const assistantText = cleaned || rawText;
 
-      // Pick unseen clips for this category
       let selectedVideoIds: string[] | undefined;
       const cat = isa.videoSuggestion?.category;
       const count = isa.videoSuggestion?.count || 2;
@@ -171,7 +174,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         const allVids = getVideosByCategory(cat).length > 0 ? getVideosByCategory(cat) : getFallbackVideos();
         const seen = new Set(shownByCategory[cat] || []);
         const pool = allVids.filter(v => !seen.has(v.id));
-        const source = pool.length > 0 ? pool : allVids; // reset if exhausted
+        const source = pool.length > 0 ? pool : allVids;
         const picked = [...source].sort(() => Math.random() - 0.5).slice(0, count);
         selectedVideoIds = picked.map(v => v.id);
         setShownByCategory(prev => ({
@@ -188,6 +191,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         videoCategory: cat,
         videoCount: count,
         selectedVideoIds,
+        report,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -209,7 +213,57 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory]);
+  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory, pendingAttachments]);
+
+  // File handler — images become data URLs, text/PDF/DOC are read as text.
+  // Nothing is uploaded to storage. Files are sent inline with the next message.
+  const handleFiles = useCallback(async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const next: IsabellaAttachment[] = [];
+    for (const file of Array.from(files).slice(0, 4)) {
+      if (file.size > 8 * 1024 * 1024) {
+        toast({ title: 'File too large', description: `${file.name} exceeds 8 MB.`, variant: 'destructive' });
+        continue;
+      }
+      try {
+        if (file.type.startsWith('image/')) {
+          const dataUrl: string = await new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(String(r.result));
+            r.onerror = () => rej(r.error);
+            r.readAsDataURL(file);
+          });
+          next.push({ name: file.name, mime_type: file.type, data_url: dataUrl });
+        } else if (file.type === 'application/pdf') {
+          // Extract text with pdfjs-dist
+          const pdfjs: any = await import('pdfjs-dist');
+          // @ts-ignore worker import
+          const worker = await import('pdfjs-dist/build/pdf.worker.mjs?url').catch(() => null);
+          if (worker?.default) pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+          const buf = await file.arrayBuffer();
+          const pdf = await pdfjs.getDocument({ data: buf }).promise;
+          let txt = '';
+          for (let i = 1; i <= Math.min(pdf.numPages, 20); i++) {
+            const page = await pdf.getPage(i);
+            const tc = await page.getTextContent();
+            txt += tc.items.map((it: any) => it.str).join(' ') + '\n';
+          }
+          next.push({ name: file.name, mime_type: file.type, text: txt.trim().slice(0, 12000) });
+        } else {
+          // Treat anything else as text (txt/md/csv/docx-as-text)
+          const t = await file.text();
+          next.push({ name: file.name, mime_type: file.type || 'text/plain', text: t.slice(0, 12000) });
+        }
+      } catch (e) {
+        console.error('Attachment error', e);
+        toast({ title: 'Could not read file', description: file.name, variant: 'destructive' });
+      }
+    }
+    if (next.length > 0) {
+      setPendingAttachments(prev => [...prev, ...next].slice(0, 4));
+      toast({ title: 'Attached', description: `${next.length} file(s) ready. Type your message and send.` });
+    }
+  }, []);
 
   // Keep sendMessageRef updated with latest sendMessage
   useEffect(() => {

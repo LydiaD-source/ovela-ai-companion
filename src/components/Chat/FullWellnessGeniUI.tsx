@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe, Check, X } from 'lucide-react';
+import { Volume2, VolumeX, Send, Loader2, RotateCcw, Mic, MicOff, Globe, Check, X, Paperclip, FileText, Image as ImageIcon, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { textToSpeechService } from '@/lib/textToSpeech';
-import { isabellaAPI } from '@/lib/isabellaAPI';
+import { isabellaAPI, type IsabellaAttachment } from '@/lib/isabellaAPI';
 import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
+import { extractAssessmentReport, downloadAssessmentReport, type AssessmentReport } from '@/lib/assessmentReport';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 
@@ -19,6 +20,8 @@ interface Message {
   videoCategory?: string;
   videoCount?: number;
   selectedVideoIds?: string[];
+  report?: AssessmentReport | null;
+  attachmentNames?: string[];
 }
 
 

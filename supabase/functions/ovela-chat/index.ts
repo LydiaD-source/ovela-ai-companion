@@ -526,7 +526,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
           type: "function",
           function: {
             name: "nutrition_assessment",
-            description: "Protein & Nutrition Assessment. Call ONLY after you have weight_kg, activity_level, goal AND your own estimates of daily intake from the meal diary the user provided (typed, pasted, or extracted from an attachment). You produce the estimates by reading the diary; the tool returns targets, gaps, scores, priorities, and a 7-day plan. Educational only.",
+            description: "Protein & Nutrition Assessment. Call ONLY after you have gathered the REQUIRED inputs (age, gender, height_cm, weight_kg, activity_level, primary goal, diet_type) AND your own estimates of daily intake from the meal diary the user provided. You produce the estimates by reading the diary. Tool returns an 8-section enriched report (executive summary, muscle preservation, protein strategy, meal framework, metabolic support, resistance training, biological age impact, weekly action plan). Educational only.",
             parameters: {
               type: "object",
               properties: {
@@ -534,9 +534,16 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 gender: { type: "string", enum: ["male","female","other"] },
                 height_cm: { type: "number" },
                 weight_kg: { type: "number" },
+                waist_cm: { type: "number", description: "Optional but valuable." },
                 activity_level: { type: "string", enum: ["sedentary","moderate","active","athlete"] },
-                goal: { type: "string", enum: ["fat_loss","energy","performance","muscle_maintenance","healthy_aging","longevity"] },
-                est_calories: { type: "number", description: "Your estimated daily calories from the diary." },
+                occupation: { type: "string", description: "executive, office worker, athlete, tradesperson, etc." },
+                goal: { type: "string", enum: ["fat_loss","muscle_gain","performance","healthy_aging","energy","longevity","recovery","muscle_maintenance"] },
+                diet_type: { type: "string", enum: ["omnivore","vegetarian","vegan"] },
+                sleep_hours: { type: "number" },
+                alcohol_units_per_week: { type: "number" },
+                strength_sessions_per_week: { type: "number" },
+                cardio_sessions_per_week: { type: "number" },
+                est_calories: { type: "number" },
                 est_protein_g: { type: "number" },
                 est_carbs_g: { type: "number" },
                 est_fat_g: { type: "number" },
@@ -547,7 +554,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 high_processed: { type: "boolean" },
                 irregular_meals: { type: "boolean" }
               },
-              required: ["weight_kg"]
+              required: ["weight_kg","age","gender","height_cm","activity_level","goal","diet_type"]
             }
           }
         },

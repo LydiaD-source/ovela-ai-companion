@@ -18,6 +18,14 @@ interface SEOProps {
   schema?: object | object[];
   /** noindex (e.g. duplicate language variants if desired) */
   noindex?: boolean;
+  /**
+   * If true, canonical always points to the English (no-prefix) URL and no
+   * hreflang alternates are emitted. Use for pages whose content is not
+   * actually translated per language (e.g. video detail pages) so Google
+   * consolidates ranking signals onto one URL instead of treating the
+   * /fr, /es, /ca variants as thin duplicates.
+   */
+  singleCanonical?: boolean;
 }
 
 function buildUrl(lang: string, path: string): string {

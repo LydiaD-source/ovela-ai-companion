@@ -687,6 +687,24 @@ After any tool call, present results conversationally (1 short paragraph + key b
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
             }
+          } else if (toolCall.function?.name === 'nutrition_assessment') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = nutritionAssessment(args);
+              console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
+          } else if (toolCall.function?.name === 'biological_age_assessment') {
+            try {
+              const args = JSON.parse(toolCall.function.arguments || "{}");
+              const result = biologicalAgeAssessment(args);
+              console.log('⏳ Bio-age assessment:', { delta: result.difference_years });
+              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+            } catch (e) {
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
+            }
           }
         }
 

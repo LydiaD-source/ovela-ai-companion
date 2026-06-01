@@ -113,6 +113,7 @@ const VideoDetail: React.FC = () => {
         description={shortDesc}
         ogImage={video.thumbnail}
         ogType="video.other"
+        singleCanonical
         schema={[videoSchema, breadcrumbSchema, faqSchema, ...quotesSchema] as any}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">

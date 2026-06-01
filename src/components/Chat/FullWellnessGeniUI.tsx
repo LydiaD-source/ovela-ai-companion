@@ -528,7 +528,38 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {!emailInputMode && isListening && (
           <p className="mb-1 pl-1 text-left text-xs text-champagne-gold animate-pulse">Speak now — tap "Send" when ready</p>
         )}
-        <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end">
+        {pendingAttachments.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-1">
+            {pendingAttachments.map((a, i) => (
+              <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-champagne-gold/20 text-champagne-gold text-[11px]">
+                {a.mime_type.startsWith('image/') ? <ImageIcon className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                {a.name || a.mime_type}
+                <button type="button" onClick={() => setPendingAttachments(prev => prev.filter((_, j) => j !== i))} className="ml-1 hover:text-soft-white">
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*,application/pdf,.txt,.md,.csv,.doc,.docx"
+          className="hidden"
+          onChange={(e) => { handleFiles(e.target.files); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+        />
+        <form onSubmit={handleSubmit} className="mt-0 flex w-full items-end gap-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading}
+            className="flex-shrink-0 h-12 w-12 flex items-center justify-center rounded-full bg-soft-white/10 hover:bg-soft-white/20 text-soft-white transition-colors disabled:opacity-40"
+            title="Attach meal diary, PDF, or screenshot"
+            aria-label="Attach file"
+          >
+            <Paperclip className="w-4 h-4" />
+          </button>
           <div className="relative w-full min-w-0">
             <Input
               type={emailInputMode ? "email" : "text"}

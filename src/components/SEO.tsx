@@ -42,10 +42,11 @@ export const SEO: React.FC<SEOProps> = ({
   ogType = 'website',
   schema,
   noindex,
+  singleCanonical,
 }) => {
   const { i18n } = useTranslation();
   const currentLang = (i18n.language?.split('-')[0] || 'en') as typeof SUPPORTED_LANGUAGES[number];
-  const canonicalUrl = buildUrl(currentLang, path);
+  const canonicalUrl = singleCanonical ? buildUrl('en', path) : buildUrl(currentLang, path);
   const schemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 
   return (
@@ -57,11 +58,13 @@ export const SEO: React.FC<SEOProps> = ({
 
       <link rel="canonical" href={canonicalUrl} />
 
-      {/* hreflang alternates — one per language pointing at the actual URL */}
-      {SUPPORTED_LANGUAGES.map((lang) => (
+      {/* hreflang alternates — only when the page is genuinely translated. */}
+      {!singleCanonical && SUPPORTED_LANGUAGES.map((lang) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={buildUrl(lang, path)} />
       ))}
-      <link rel="alternate" hrefLang="x-default" href={buildUrl('en', path)} />
+      {!singleCanonical && (
+        <link rel="alternate" hrefLang="x-default" href={buildUrl('en', path)} />
+      )}
 
       {/* Open Graph */}
       <meta property="og:type" content={ogType} />

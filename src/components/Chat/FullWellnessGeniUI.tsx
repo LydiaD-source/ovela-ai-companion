@@ -9,6 +9,7 @@ import { isabellaAPI, type IsabellaAttachment } from '@/lib/isabellaAPI';
 import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
 import { extractAssessmentReport, downloadAssessmentReport, type AssessmentReport } from '@/lib/assessmentReport';
+import { humanizeForSpeech } from '@/lib/humanizeSpeech';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
 

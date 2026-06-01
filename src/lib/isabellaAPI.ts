@@ -26,10 +26,18 @@ export interface ConversationMessage {
   content: string;
 }
 
+export interface IsabellaAttachment {
+  name?: string;
+  mime_type: string;
+  data_url?: string;
+  text?: string;
+}
+
 export interface IsabellaContext {
   page_context?: string;
   tool_context?: string;
   authority_topic?: string;
+  attachments?: IsabellaAttachment[];
 }
 
 class IsabellaAPI {
@@ -61,6 +69,7 @@ class IsabellaAPI {
           page_context: context?.page_context,
           tool_context: context?.tool_context,
           authority_topic: context?.authority_topic,
+          attachments: context?.attachments || [],
         }
       });
 

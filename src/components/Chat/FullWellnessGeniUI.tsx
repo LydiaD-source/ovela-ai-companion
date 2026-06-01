@@ -223,7 +223,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory, pendingAttachments]);
+  }, [defaultPersona, onAIResponse, isMuted, stopListening, messages, shownByCategory, pendingAttachments, toolCtx]);
 
   // File handler — images become data URLs, text/PDF/DOC are read as text.
   // Nothing is uploaded to storage. Files are sent inline with the next message.

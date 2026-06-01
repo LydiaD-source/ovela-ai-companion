@@ -67,7 +67,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>({});
-  
+  const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);
 

@@ -207,11 +207,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // Trigger D-ID or TTS
-      if (onAIResponse && assistantText) {
-        onAIResponse(assistantText);
-      } else if (!isMuted && assistantText) {
-        try { await textToSpeechService.speakText(assistantText); } catch {}
+      // Trigger D-ID or TTS — humanize so units/punctuation sound natural.
+      const spoken = humanizeForSpeech(assistantText);
+      if (onAIResponse && spoken) {
+        onAIResponse(spoken);
+      } else if (!isMuted && spoken) {
+        try { await textToSpeechService.speakText(spoken); } catch {}
       }
 
     } catch (error) {

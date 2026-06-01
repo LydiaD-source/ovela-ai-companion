@@ -69,6 +69,22 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>({});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Tool context persists for the whole assessment session, not just the first message.
+  const [toolCtx, setToolCtx] = useState<{ tool_context?: string; authority_topic?: string } | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const w = (window as any).__ISABELLA_CTX__;
+    if (w) { try { delete (window as any).__ISABELLA_CTX__; } catch {} return w; }
+    return null;
+  });
+  // Listen for tool launches that happen while the chat is already open.
+  useEffect(() => {
+    const onCtx = (e: Event) => {
+      const d = (e as CustomEvent).detail || {};
+      setToolCtx({ tool_context: d.tool_context, authority_topic: d.authority_topic });
+    };
+    window.addEventListener('isabella:tool-context', onCtx as EventListener);
+    return () => window.removeEventListener('isabella:tool-context', onCtx as EventListener);
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const languageMenuRef = useRef<HTMLDivElement>(null);

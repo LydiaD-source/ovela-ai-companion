@@ -123,12 +123,20 @@ function ensureSpace(doc: jsPDF, y: number, needed: number) {
   return y;
 }
 
-// ── Nutrition report ────────────────────────────────────────────────────
+// ── Nutrition report (8-section enriched) ───────────────────────────────
 function buildNutrition(doc: jsPDF, data: any) {
   header(doc, 'Protein & Nutrition Assessment');
   let y = 110;
 
-  // Snapshot
+  // 1. Executive summary
+  if (data.executive_summary) {
+    y = sectionTitle(doc, '1 · Executive summary', y);
+    y = paragraph(doc, data.executive_summary, y);
+    y += 8;
+  }
+
+  // Snapshot scores
+  y = ensureSpace(doc, y, 180);
   y = sectionTitle(doc, 'Nutrition snapshot', y);
   const s = data.scores || {};
   y = scoreRow(doc, 'Protein', s.protein ?? 0, y);
@@ -149,44 +157,147 @@ function buildNutrition(doc: jsPDF, data: any) {
     `Protein: ${t.protein_g?.low_g ?? '—'}–${t.protein_g?.high_g ?? '—'} g\n` +
     `Carbohydrates: ${t.carbs_g?.low_g ?? '—'}–${t.carbs_g?.high_g ?? '—'} g\n` +
     `Fat: ${t.fat_g?.low_g ?? '—'}–${t.fat_g?.high_g ?? '—'} g\n` +
-    `Hydration: ~${t.hydration_l ?? '—'} L`,
-    y);
+    `Hydration: ~${t.hydration_l ?? '—'} L`, y);
   y += 6;
 
-  // Estimated intake & gap
-  const est = data.estimated_intake || {};
-  const gap = data.gaps || {};
-  y = ensureSpace(doc, y, 80);
-  y = sectionTitle(doc, "Isabella's estimate from your diary", y);
-  y = paragraph(doc,
-    `Calories: ${est.calories ?? '—'} kcal · Protein: ${est.protein_g ?? '—'} g · ` +
-    `Carbs: ${est.carbs_g ?? '—'} g · Fat: ${est.fat_g ?? '—'} g · Hydration: ${est.hydration_l ?? '—'} L\n` +
-    (gap.protein_g != null ? `Protein gap: ${gap.protein_g} g/day\n` : '') +
-    (gap.hydration_l != null ? `Hydration gap: ${gap.hydration_l} L/day` : ''),
-    y);
-  y += 6;
+  // 2. Muscle preservation
+  const mp = data.muscle_preservation;
+  if (mp) {
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, '2 · Muscle preservation', y);
+    y = paragraph(doc,
+      `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
+      `Recommended protein: ${mp.recommended_protein_g ?? '—'} g/day\n` +
+      `Status: ${mp.status}`, y);
+    y += 4;
+    y = scoreRow(doc, 'Muscle preservation score', mp.score ?? 0, y);
+    if (mp.note) { y += 4; y = paragraph(doc, mp.note, y, { color: MUTED, size: 9 }); }
+    y += 6;
+  }
+
+  // 3. Protein strategy
+  const ps = data.protein_strategy;
+  if (ps) {
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, `3 · Protein strategy (${ps.diet_type})`, y);
+    y = paragraph(doc, 'Best protein sources for you:', y);
+    (ps.best_sources || []).forEach((src: string) => {
+      y = ensureSpace(doc, y, 14);
+      y = paragraph(doc, `• ${src}`, y);
+    });
+    y += 6;
+  }
+
+  // 4. Daily meal framework
+  const mf = data.daily_meal_framework;
+  if (mf) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, `4 · Daily meal framework (~${mf.total_protein_g} g protein)`, y);
+    (mf.meals || []).forEach((m: any) => {
+      y = ensureSpace(doc, y, 36);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(NAVY);
+      doc.text(`${m.meal} — ${m.protein_g} g protein`, 40, y);
+      y += 14;
+      y = paragraph(doc, m.example, y, { color: MUTED });
+      y += 4;
+    });
+  }
+
+  // 5. Metabolic support
+  const ms = data.metabolic_support;
+  if (ms) {
+    y = ensureSpace(doc, y, 100);
+    y = sectionTitle(doc, '5 · Metabolic support', y);
+    y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
+    if ((ms.biggest_opportunities || []).length) {
+      y += 4;
+      y = paragraph(doc, 'Biggest opportunities:', y);
+      ms.biggest_opportunities.forEach((o: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `• ${o}`, y);
+      });
+    }
+    y += 6;
+  }
+
+  // 6. Resistance training
+  const rt = data.resistance_training;
+  if (rt) {
+    y = ensureSpace(doc, y, 120);
+    y = sectionTitle(doc, '6 · Resistance training recommendation', y);
+    y = paragraph(doc,
+      `Age: ${rt.age}    Goal: ${rt.goal}\n` +
+      `• ${rt.strength_sessions_per_week} resistance sessions per week\n` +
+      `• ${rt.cardio_sessions_per_week} cardio sessions per week\n` +
+      `• ${rt.mobility_minutes_per_day} minutes of daily mobility work`, y);
+    if (rt.reason) { y += 4; y = paragraph(doc, rt.reason, y, { color: MUTED, size: 9 }); }
+    y += 6;
+  }
+
+  // 7. Biological age impact
+  const bai = data.biological_age_impact;
+  if (bai) {
+    y = ensureSpace(doc, y, 120);
+    y = sectionTitle(doc, '7 · Biological age impact factors', y);
+    if ((bai.positive || []).length) {
+      y = paragraph(doc, 'Positive:', y);
+      bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `✓ ${p}`, y); });
+      y += 4;
+    }
+    if ((bai.needs_improvement || []).length) {
+      y = paragraph(doc, 'Needs improvement:', y);
+      bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `⚠ ${p}`, y); });
+      y += 4;
+    }
+    if (bai.note) { y = paragraph(doc, bai.note, y, { color: MUTED, size: 9 }); y += 6; }
+  }
 
   // Priorities
-  y = ensureSpace(doc, y, 130);
-  y = sectionTitle(doc, 'Three highest-impact improvements', y);
-  (data.improvement_priorities || []).forEach((p: any, i: number) => {
-    y = ensureSpace(doc, y, 50);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(NAVY);
-    doc.text(`${i + 1}. ${p.title}`, 40, y);
-    y += 14;
-    y = paragraph(doc, p.detail, y, { color: MUTED });
+  if ((data.improvement_priorities || []).length) {
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, 'Three highest-impact improvements', y);
+    data.improvement_priorities.forEach((p: any, i: number) => {
+      y = ensureSpace(doc, y, 50);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(NAVY);
+      doc.text(`${i + 1}. ${p.title}`, 40, y);
+      y += 14;
+      y = paragraph(doc, p.detail, y, { color: MUTED });
+      y += 4;
+    });
+  }
+
+  // 8. Weekly action plan
+  const wap = data.weekly_action_plan;
+  if (wap) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, "8 · Isabella's weekly action plan", y);
+    y = paragraph(doc, 'Your priority focus this week:', y);
+    (wap.priorities || []).forEach((p: string) => {
+      y = ensureSpace(doc, y, 16);
+      y = paragraph(doc, `☐ ${p}`, y);
+    });
+    y += 6;
+    y = paragraph(doc, 'Expected benefits:', y);
+    (wap.expected_benefits || []).forEach((b: string) => {
+      y = ensureSpace(doc, y, 14);
+      y = paragraph(doc, `• ${b}`, y);
+    });
     y += 4;
-  });
+  }
 
   // 7-day plan
-  y = ensureSpace(doc, y, 180);
-  y = sectionTitle(doc, '7-day protein upgrade plan', y);
-  (data.seven_day_plan || []).forEach((line: string) => {
-    y = ensureSpace(doc, y, 18);
-    y = paragraph(doc, `• ${line}`, y);
-  });
+  if ((data.seven_day_plan || []).length) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '7-day protein upgrade plan', y);
+    data.seven_day_plan.forEach((line: string) => {
+      y = ensureSpace(doc, y, 18);
+      y = paragraph(doc, `• ${line}`, y);
+    });
+  }
 }
 
 // ── Biological age report ───────────────────────────────────────────────

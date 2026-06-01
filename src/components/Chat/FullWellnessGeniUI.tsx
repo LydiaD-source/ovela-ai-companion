@@ -427,7 +427,25 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         {messages.map((message) => (
           <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] rounded-xl p-3 ${message.sender === 'user' ? 'bg-soft-white/20 text-soft-white ml-4' : 'bg-soft-white/10 text-soft-white mr-4'}`}>
-              <p className="text-sm">{message.text}</p>
+              <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+              {message.attachmentNames && message.attachmentNames.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {message.attachmentNames.map((n, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-champagne-gold/20 text-champagne-gold text-[10px]">
+                      <FileText className="w-3 h-3" />{n}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {message.report && (
+                <button
+                  onClick={() => downloadAssessmentReport(message.report!)}
+                  className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-champagne-gold text-charcoal text-xs font-medium hover:bg-champagne-gold/90 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download PDF report
+                </button>
+              )}
               {/* Video cards — show pre-selected clips to avoid repeats */}
               {message.selectedVideoIds && message.selectedVideoIds.length > 0 && (
                 <div className="mt-3 flex flex-col gap-2">

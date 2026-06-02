@@ -4,7 +4,11 @@ import { FashionForwardGallery } from './FashionForwardGallery';
 import { VideoWithSound } from './VideoWithSound';
 import { useTranslation } from 'react-i18next';
 
-export const ShowcaseSection = () => {
+interface ShowcaseSectionProps {
+  injectAfter?: Record<number, React.ReactNode>;
+}
+
+export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({ injectAfter }) => {
   const [isFashionGalleryOpen, setIsFashionGalleryOpen] = useState(false);
   const { t } = useTranslation();
 

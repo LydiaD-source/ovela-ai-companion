@@ -714,6 +714,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
               const result = nutritionAssessment(args);
+              nutritionReportPayload = result;
               console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
@@ -723,6 +724,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
               const result = biologicalAgeAssessment(args);
+              bioAgeReportPayload = result;
               console.log('⏳ Bio-age assessment:', { delta: result.difference_years });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {

@@ -42,8 +42,8 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({ injectAfter })
     <section className="w-full bg-black">
       <FashionForwardGallery isOpen={isFashionGalleryOpen} onClose={() => setIsFashionGalleryOpen(false)} />
       {showcaseItems.map((item, index) => (
+        <React.Fragment key={index}>
         <div
-          key={index}
           className="flex flex-col md:flex-row min-h-screen"
           style={{
             flexDirection: item.layout === 'media-right' ? 'row-reverse' : 'row'

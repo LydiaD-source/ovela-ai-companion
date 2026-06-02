@@ -5,6 +5,7 @@ import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
+import { AssessmentsSection, AssessmentLaunchPayload } from '@/components/Home/AssessmentsSection';
 import { SEOBreaker } from '@/components/Home/SEOBreaker';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';

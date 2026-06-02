@@ -643,6 +643,9 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let crmSubmitted = false;
       let videoSuggestion: { category: string; count: number } | null = null;
 
+      let nutritionReportPayload: any = null;
+      let bioAgeReportPayload: any = null;
+
       if (toolCalls && toolCalls.length > 0) {
         const toolResults: any[] = [];
 
@@ -711,6 +714,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
               const result = nutritionAssessment(args);
+              nutritionReportPayload = result;
               console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
@@ -720,6 +724,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
               const result = biologicalAgeAssessment(args);
+              bioAgeReportPayload = result;
               console.log('⏳ Bio-age assessment:', { delta: result.difference_years });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
@@ -734,6 +739,13 @@ After any tool call, present results conversationally (1 short paragraph + key b
             const followUpMessages = [...aiMessages, aiBody.choices[0].message];
             for (const tr of toolResults) {
               followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
+            }
+            if (nutritionReportPayload || bioAgeReportPayload) {
+              const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'biological_age';
+              followUpMessages.push({
+                role: "system",
+                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download button. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add one short line offering to email it or discuss the improvements.`
+              });
             }
 
             const followUpRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -764,6 +776,19 @@ After any tool call, present results conversationally (1 short paragraph + key b
             } else if (videoSuggestion) {
               finalMessage = "Here are some examples of my recent work — take a look!";
             }
+          }
+
+          // Guarantee the fenced assessment-report block is present so PDF download always renders.
+          const hasBlock = /```assessment-report/i.test(finalMessage);
+          if (!hasBlock && (nutritionReportPayload || bioAgeReportPayload)) {
+            const payload = nutritionReportPayload
+              ? { type: 'nutrition_assessment', title: 'Protein & Nutrition Assessment', data: nutritionReportPayload }
+              : { type: 'biological_age', title: 'Biological Age Assessment', data: bioAgeReportPayload };
+            const summary = finalMessage && finalMessage.trim().length > 0
+              ? finalMessage.trim()
+              : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nWould you like me to email this to you, or shall we walk through the top improvements together?`;
+            console.log("🧷 Injected missing assessment-report block for", payload.type);
           }
         }
       }

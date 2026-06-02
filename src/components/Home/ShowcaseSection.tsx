@@ -125,6 +125,8 @@ export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({ injectAfter })
             </div>
           </div>
         </div>
+        {injectAfter?.[index] ?? null}
+        </React.Fragment>
       ))}
     </section>
   );

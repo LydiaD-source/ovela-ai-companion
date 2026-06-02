@@ -411,7 +411,11 @@ const Home = () => {
         {/* Magazine-Style Sections Below Hero */}
         <LookbookCarousel />
         <AboutSection onChatClick={activateChat} />
-        <ShowcaseSection />
+        <ShowcaseSection
+          injectAfter={{
+            0: <AssessmentsSection onLaunch={launchAssessment} />,
+          }}
+        />
         <CTASection onChatClick={activateChat} />
         <FooterMinimal />
       </div>

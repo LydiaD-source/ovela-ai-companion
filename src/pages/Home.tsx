@@ -5,6 +5,7 @@ import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
+import { AssessmentsSection, AssessmentLaunchPayload } from '@/components/Home/AssessmentsSection';
 import { SEOBreaker } from '@/components/Home/SEOBreaker';
 import { CTASection } from '@/components/Home/CTASection';
 import { FooterMinimal } from '@/components/Home/FooterMinimal';
@@ -217,6 +218,22 @@ const Home = () => {
     activateChatRef.current = activateChat;
   }, [activateChat]);
 
+  // Launch an assessment from the homepage AssessmentsSection.
+  // Seeds Isabella's context, opens chat, scrolls to it.
+  const launchAssessment = useCallback((payload: AssessmentLaunchPayload) => {
+    (window as any).__ISABELLA_CTX__ = {
+      tool_context: payload.tool_context,
+      authority_topic: payload.authority_topic,
+    };
+    window.dispatchEvent(new CustomEvent('isabella:tool-context', {
+      detail: { tool_context: payload.tool_context, authority_topic: payload.authority_topic }
+    }));
+    setInitialChatMessage(payload.initialPrompt);
+    activateChat();
+    // Smooth scroll back up so the user sees Isabella respond
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+  }, [activateChat]);
+
   return (
     <>
       {/* SEO Schema for Isabella's Video */}
@@ -394,7 +411,11 @@ const Home = () => {
         {/* Magazine-Style Sections Below Hero */}
         <LookbookCarousel />
         <AboutSection onChatClick={activateChat} />
-        <ShowcaseSection />
+        <ShowcaseSection
+          injectAfter={{
+            0: <AssessmentsSection onLaunch={launchAssessment} />,
+          }}
+        />
         <CTASection onChatClick={activateChat} />
         <FooterMinimal />
       </div>

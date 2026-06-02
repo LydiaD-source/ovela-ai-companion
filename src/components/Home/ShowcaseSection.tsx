@@ -4,7 +4,11 @@ import { FashionForwardGallery } from './FashionForwardGallery';
 import { VideoWithSound } from './VideoWithSound';
 import { useTranslation } from 'react-i18next';
 
-export const ShowcaseSection = () => {
+interface ShowcaseSectionProps {
+  injectAfter?: Record<number, React.ReactNode>;
+}
+
+export const ShowcaseSection: React.FC<ShowcaseSectionProps> = ({ injectAfter }) => {
   const [isFashionGalleryOpen, setIsFashionGalleryOpen] = useState(false);
   const { t } = useTranslation();
 
@@ -38,8 +42,8 @@ export const ShowcaseSection = () => {
     <section className="w-full bg-black">
       <FashionForwardGallery isOpen={isFashionGalleryOpen} onClose={() => setIsFashionGalleryOpen(false)} />
       {showcaseItems.map((item, index) => (
+        <React.Fragment key={index}>
         <div
-          key={index}
           className="flex flex-col md:flex-row min-h-screen"
           style={{
             flexDirection: item.layout === 'media-right' ? 'row-reverse' : 'row'
@@ -121,6 +125,8 @@ export const ShowcaseSection = () => {
             </div>
           </div>
         </div>
+        {injectAfter?.[index] ?? null}
+        </React.Fragment>
       ))}
     </section>
   );

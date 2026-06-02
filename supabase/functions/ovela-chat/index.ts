@@ -643,6 +643,9 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let crmSubmitted = false;
       let videoSuggestion: { category: string; count: number } | null = null;
 
+      let nutritionReportPayload: any = null;
+      let bioAgeReportPayload: any = null;
+
       if (toolCalls && toolCalls.length > 0) {
         const toolResults: any[] = [];
 

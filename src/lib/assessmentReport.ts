@@ -148,22 +148,59 @@ function buildNutrition(doc: jsPDF, data: any) {
   y = scoreRow(doc, 'OVERALL NUTRITION', s.overall_nutrition ?? 0, y);
   y += 10;
 
-  // Targets
-  y = ensureSpace(doc, y, 130);
+  // Targets + calculation basis
+  y = ensureSpace(doc, y, 160);
   y = sectionTitle(doc, 'Your daily targets', y);
   const t = data.targets || {};
+  const cb = data.calculation_basis;
+  if (cb?.note) {
+    y = paragraph(doc, cb.note, y, { color: MUTED, size: 9 });
+    y += 4;
+  }
   y = paragraph(doc,
-    `Calories: ~${t.daily_calories ?? '—'} kcal\n` +
+    `Calories: ~${t.daily_calories ?? '—'} kcal${t.maintenance_calories && t.maintenance_calories !== t.daily_calories ? `  (maintenance ~${t.maintenance_calories} kcal)` : ''}\n` +
     `Protein: ${t.protein_g?.low_g ?? '—'}–${t.protein_g?.high_g ?? '—'} g\n` +
     `Carbohydrates: ${t.carbs_g?.low_g ?? '—'}–${t.carbs_g?.high_g ?? '—'} g\n` +
     `Fat: ${t.fat_g?.low_g ?? '—'}–${t.fat_g?.high_g ?? '—'} g\n` +
     `Hydration: ~${t.hydration_l ?? '—'} L`, y);
   y += 6;
 
+  // Weekly protein gap callout
+  if (data.gaps?.weekly_protein_g > 0) {
+    y = ensureSpace(doc, y, 50);
+    doc.setFillColor('#fff8e1');
+    doc.rect(40, y - 12, 515, 36, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(NAVY);
+    doc.text(`Weekly protein gap: ${data.gaps.weekly_protein_g} g`, 50, y + 2);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(MUTED);
+    doc.text(`That is roughly ${data.gaps.protein_g} g/day × 7 — closing it is your fastest body-composition lever.`, 50, y + 16);
+    y += 32;
+  }
+
+  // Fastest win highlight
+  if (data.fastest_win) {
+    y = ensureSpace(doc, y, 110);
+    y = sectionTitle(doc, '⚡ Fastest win', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(NAVY);
+    doc.text(data.fastest_win.title, 40, y); y += 16;
+    y = paragraph(doc, data.fastest_win.action, y);
+    if ((data.fastest_win.expected_benefits || []).length) {
+      y = paragraph(doc, `Expected benefits: ${data.fastest_win.expected_benefits.join(', ')}.`, y, { color: MUTED, size: 9 });
+    }
+    if (data.fastest_win.closes_pct_of_weekly_gap > 0) {
+      y = paragraph(doc, `This single change closes approximately ${data.fastest_win.closes_pct_of_weekly_gap}% of your weekly protein gap.`, y, { color: MUTED, size: 9 });
+    }
+    y += 8;
+  }
+
   // 2. Muscle preservation
   const mp = data.muscle_preservation;
   if (mp) {
-    y = ensureSpace(doc, y, 130);
+    y = ensureSpace(doc, y, 160);
     y = sectionTitle(doc, '2 · Muscle preservation', y);
     y = paragraph(doc,
       `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
@@ -171,21 +208,49 @@ function buildNutrition(doc: jsPDF, data: any) {
       `Status: ${mp.status}`, y);
     y += 4;
     y = scoreRow(doc, 'Muscle preservation score', mp.score ?? 0, y);
+    if ((mp.reasons || []).length) {
+      y += 4;
+      y = paragraph(doc, 'Why this score:', y);
+      mp.reasons.forEach((r: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${r}`, y, { color: MUTED, size: 9 }); });
+    }
     if (mp.note) { y += 4; y = paragraph(doc, mp.note, y, { color: MUTED, size: 9 }); }
     y += 6;
   }
 
-  // 3. Protein strategy
+  // 3. Protein strategy + distribution + 30g swaps
   const ps = data.protein_strategy;
   if (ps) {
-    y = ensureSpace(doc, y, 130);
+    y = ensureSpace(doc, y, 180);
     y = sectionTitle(doc, `3 · Protein strategy (${ps.diet_type})`, y);
-    y = paragraph(doc, 'Best protein sources for you:', y);
-    (ps.best_sources || []).forEach((src: string) => {
-      y = ensureSpace(doc, y, 14);
-      y = paragraph(doc, `• ${src}`, y);
-    });
-    y += 6;
+    y = paragraph(doc, 'Best protein sources:', y);
+    (ps.best_sources || []).forEach((src: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${src}`, y); });
+    y += 4;
+    if (ps.distribution) {
+      y = paragraph(doc, `Distribution status: ${ps.distribution.status}`, y, { color: MUTED, size: 9 });
+      if (ps.distribution.score != null) {
+        y += 2;
+        y = scoreRow(doc, 'Protein distribution score', ps.distribution.score, y);
+      }
+      if (ps.distribution.meals) {
+        ps.distribution.meals.forEach((m: any) => {
+          y = ensureSpace(doc, y, 14);
+          y = paragraph(doc, `   ${m.meal}: ${m.protein_g ?? '—'} g  (target 30–40 g per main meal)`, y, { color: MUTED, size: 9 });
+        });
+      }
+      y += 4;
+    }
+    if ((ps.thirty_gram_options || []).length) {
+      y = ensureSpace(doc, y, 80);
+      y = paragraph(doc, 'To add 30 g of protein — choose ONE:', y);
+      ps.thirty_gram_options.forEach((opt: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `✓ ${opt}`, y); });
+      y += 4;
+    }
+    if (ps.vegetarian_alternatives) {
+      y = ensureSpace(doc, y, 60);
+      y = paragraph(doc, 'Vegetarian alternatives:', y, { color: MUTED, size: 9 });
+      y = paragraph(doc, ps.vegetarian_alternatives.join(', '), y, { color: MUTED, size: 9 });
+      y += 6;
+    }
   }
 
   // 4. Daily meal framework

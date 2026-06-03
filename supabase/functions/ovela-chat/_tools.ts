@@ -198,37 +198,52 @@ export function wellnessAssessmentSuggestion(args: {
   };
 }
 
-// ─── Nutrition Assessment (deterministic targets + scoring + rich report) ──
-// Isabella sends the *estimated* intake numbers she derived from the meal diary
-// (or a parsed document). This function returns targets, gaps, scores AND
-// the full enriched 8-section report payload (Executive Summary, Muscle
-// Preservation, Protein Strategy, Daily Meal Framework, Metabolic Support,
-// Resistance Training, Biological Age Impact, Weekly Action Plan).
-// All ranges are evidence-based, conservative, non-prescriptive.
+// ─── Nutrition Assessment (PRO v2) ────────────────────────────────────
+// Executive-wellness model. Practical & longevity-focused, NOT bodybuilding.
+//
+// Key v2 logic:
+//   • Calculation weight = TARGET weight when BMI > 28 and goal = fat_loss
+//     (estimated at BMI 24 if user did not supply target_weight_kg).
+//   • Age / gender modifiers raise protein for adults 45+ and post-menopausal women.
+//   • Carbs, fat, hydration are all g per kg of calculation weight.
+//   • Adds: protein distribution score, weekly protein gap, 30g food swaps,
+//     vegetarian variants, "fastest win" highlight, muscle preservation reasons.
 
 type ActivityLevel = "sedentary" | "moderate" | "active" | "athlete";
 type NutritionGoal =
   | "fat_loss" | "muscle_gain" | "performance"
   | "healthy_aging" | "energy" | "longevity" | "recovery"
-  | "muscle_maintenance";
+  | "muscle_maintenance" | "maintenance";
 type DietType = "omnivore" | "vegetarian" | "vegan";
 
+// Conservative executive-wellness protein g/kg of CALCULATION weight.
 const PROTEIN_RANGE: Record<NutritionGoal, [number, number]> = {
-  fat_loss:           [1.8, 2.4],
-  muscle_gain:        [1.8, 2.4],
-  performance:        [1.8, 2.2],
-  muscle_maintenance: [1.4, 2.0],
-  healthy_aging:      [1.4, 2.0],
-  energy:             [1.2, 1.6],
-  longevity:          [1.2, 1.8],
-  recovery:           [1.6, 2.0],
+  fat_loss:           [1.6, 2.0],
+  muscle_gain:        [1.8, 2.2],
+  performance:        [1.6, 2.0],
+  muscle_maintenance: [1.4, 1.8],
+  healthy_aging:      [1.2, 1.6],
+  energy:             [1.0, 1.4],
+  longevity:          [1.2, 1.6],
+  recovery:           [1.4, 1.8],
+  maintenance:        [1.2, 1.6],
+};
+
+// Carbs g/kg of calculation weight by goal.
+const CARB_RANGE: Record<NutritionGoal, [number, number]> = {
+  fat_loss:           [2.0, 3.0],
+  muscle_gain:        [4.0, 5.0],
+  performance:        [4.0, 6.0],
+  muscle_maintenance: [3.0, 4.0],
+  healthy_aging:      [3.0, 4.0],
+  energy:             [3.0, 4.0],
+  longevity:          [3.0, 4.0],
+  recovery:           [3.0, 4.0],
+  maintenance:        [3.0, 4.0],
 };
 
 const ACTIVITY_FACTOR: Record<ActivityLevel, number> = {
-  sedentary: 1.35,
-  moderate:  1.55,
-  active:    1.75,
-  athlete:   1.95,
+  sedentary: 1.35, moderate: 1.55, active: 1.75, athlete: 1.95,
 };
 
 const PROTEIN_SOURCES: Record<DietType, string[]> = {
@@ -237,11 +252,38 @@ const PROTEIN_SOURCES: Record<DietType, string[]> = {
   vegan: ["Tofu", "Tempeh", "Edamame", "Lentils", "Chickpeas", "Soy milk", "Pea protein", "Seitan"],
 };
 
+// "Add 30g protein — choose ONE" actionable options.
+const THIRTY_G_SWAPS: Record<DietType, string[]> = {
+  omnivore: [
+    "150 g chicken breast",
+    "1 scoop whey + 200 g Greek yogurt",
+    "200 g cottage cheese",
+    "4 eggs + 100 g Greek yogurt",
+    "150 g tuna or salmon",
+  ],
+  vegetarian: [
+    "1 scoop whey + 200 g Greek yogurt",
+    "250 g cottage cheese",
+    "4 eggs + 100 g Greek yogurt",
+    "200 g tempeh",
+    "300 g Greek yogurt + 30 g nuts",
+  ],
+  vegan: [
+    "1.5 scoops pea protein",
+    "200 g tempeh",
+    "250 g firm tofu",
+    "200 g edamame + 1 scoop pea protein",
+    "150 g seitan",
+  ],
+};
+
+const VEGETARIAN_ALTS = ["Greek yogurt", "Cottage cheese", "Eggs", "Tempeh", "Tofu", "Edamame", "Lentils", "Whey/casein protein"];
+
 function buildMealFramework(diet: DietType, dailyProteinG: number) {
   const meals = [
-    { meal: "Breakfast", pct: 0.25 },
+    { meal: "Breakfast", pct: 0.28 },
     { meal: "Lunch",     pct: 0.30 },
-    { meal: "Snack",     pct: 0.15 },
+    { meal: "Snack",     pct: 0.12 },
     { meal: "Dinner",    pct: 0.30 },
   ];
   const ex: Record<DietType, Record<string, string>> = {
@@ -276,7 +318,9 @@ export function nutritionAssessment(args: {
   gender?: "male" | "female" | "other";
   height_cm?: number;
   weight_kg: number;
+  target_weight_kg?: number;
   waist_cm?: number;
+  body_fat_pct?: number;
   activity_level?: ActivityLevel;
   occupation?: string;
   goal?: NutritionGoal;
@@ -290,6 +334,10 @@ export function nutritionAssessment(args: {
   est_carbs_g?: number;
   est_fat_g?: number;
   est_hydration_l?: number;
+  breakfast_protein_g?: number;
+  lunch_protein_g?: number;
+  dinner_protein_g?: number;
+  snack_protein_g?: number;
   low_protein_breakfast?: boolean;
   sugar_snacks?: boolean;
   low_vegetables?: boolean;
@@ -304,19 +352,52 @@ export function nutritionAssessment(args: {
   const height = args.height_cm || (gender === "female" ? 165 : 178);
   const diet: DietType = (args.diet_type as DietType) || "omnivore";
 
+  const bmi = Math.round((weight / Math.pow(height / 100, 2)) * 10) / 10;
+
+  // Decide CALCULATION weight (target-weight method when overweight + fat_loss).
+  let calcWeight = weight;
+  let calcMethod: "current_weight" | "target_weight" = "current_weight";
+  let targetWeight: number | null = args.target_weight_kg ?? null;
+  let estimatedTarget = false;
+  const overweightForLoss = (bmi > 28 || (args.body_fat_pct ?? 0) >= 28) && goal === "fat_loss";
+  if (overweightForLoss) {
+    if (targetWeight && targetWeight < weight) {
+      calcWeight = targetWeight;
+    } else {
+      targetWeight = Math.round(24 * Math.pow(height / 100, 2));
+      estimatedTarget = true;
+      calcWeight = targetWeight;
+    }
+    calcMethod = "target_weight";
+  }
+
+  // Calories from current weight (Mifflin-St Jeor), adjusted for fat loss.
   const bmr = gender === "female"
-    ? 10*weight + 6.25*height - 5*age - 161
-    : 10*weight + 6.25*height - 5*age + 5;
+    ? 10 * weight + 6.25 * height - 5 * age - 161
+    : 10 * weight + 6.25 * height - 5 * age + 5;
   const tdee = Math.round(bmr * ACTIVITY_FACTOR[activity]);
+  const calorieTarget = goal === "fat_loss" ? Math.round(tdee * 0.82) : tdee;
 
-  const [pLo, pHi] = PROTEIN_RANGE[goal];
-  const proteinTarget = { low_g: Math.round(weight * pLo), high_g: Math.round(weight * pHi) };
-  const hydrationTargetL = Math.round((weight * 0.033) * 10) / 10;
-  const carbTargetRange = { low_g: Math.round((tdee * 0.40) / 4), high_g: Math.round((tdee * 0.55) / 4) };
-  const fatTargetRange  = { low_g: Math.round((tdee * 0.25) / 9), high_g: Math.round((tdee * 0.35) / 9) };
+  // Age / gender protein modifier (sarcopenia awareness).
+  let ageBoost = 0;
+  if (age >= 65) ageBoost = 0.3;
+  else if (age >= 50) ageBoost = 0.2;
+  else if (age >= 45) ageBoost = 0.1;
+  if (gender === "female" && age >= 50) ageBoost += 0.1;
 
-  const proteinMid = (proteinTarget.low_g + proteinTarget.high_g) / 2;
+  const [pLoBase, pHiBase] = PROTEIN_RANGE[goal];
+  const pLo = pLoBase + ageBoost;
+  const pHi = pHiBase + ageBoost;
+  const proteinTarget = { low_g: Math.round(calcWeight * pLo), high_g: Math.round(calcWeight * pHi) };
+  const proteinMid = Math.round((proteinTarget.low_g + proteinTarget.high_g) / 2);
+
+  const hydrationTargetL = Math.round((calcWeight * 0.033) * 10) / 10;
+  const [cLo, cHi] = CARB_RANGE[goal];
+  const carbTargetRange = { low_g: Math.round(calcWeight * cLo), high_g: Math.round(calcWeight * cHi) };
+  const fatTargetRange = { low_g: Math.round(calcWeight * 0.8), high_g: Math.round(calcWeight * 1.0) };
+
   const proteinGap = args.est_protein_g != null ? Math.round(proteinMid - args.est_protein_g) : null;
+  const weeklyProteinGap = proteinGap != null && proteinGap > 0 ? proteinGap * 7 : 0;
   const hydrationGapL = args.est_hydration_l != null ? Math.round((hydrationTargetL - args.est_hydration_l) * 10) / 10 : null;
 
   const score = (val: number | null, target: number, tolerance = 0.25) => {
@@ -328,15 +409,39 @@ export function nutritionAssessment(args: {
   };
 
   const proteinScore   = score(args.est_protein_g ?? null, proteinMid, 0.2);
-  const carbsScore     = args.high_processed ? 55 : score(args.est_carbs_g ?? null, (carbTargetRange.low_g + carbTargetRange.high_g)/2, 0.3);
-  const fatScore       = score(args.est_fat_g ?? null, (fatTargetRange.low_g + fatTargetRange.high_g)/2, 0.3);
+  const carbsScore     = args.high_processed ? 55 : score(args.est_carbs_g ?? null, (carbTargetRange.low_g + carbTargetRange.high_g) / 2, 0.3);
+  const fatScore       = score(args.est_fat_g ?? null, (fatTargetRange.low_g + fatTargetRange.high_g) / 2, 0.3);
   const hydrationScore = score(args.est_hydration_l ?? null, hydrationTargetL, 0.2);
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
        - (args.irregular_meals ? 10 : 0) - (args.low_vegetables ? 10 : 0));
-  const overall = Math.round((proteinScore*1.3 + carbsScore + fatScore + hydrationScore + recoveryScore) / 5.3);
+  const overall = Math.round((proteinScore * 1.3 + carbsScore + fatScore + hydrationScore + recoveryScore) / 5.3);
 
-  // Muscle preservation (age-aware)
+  // Protein distribution (per-meal scoring).
+  const distMeals = [
+    { meal: "Breakfast", g: args.breakfast_protein_g ?? null },
+    { meal: "Lunch",     g: args.lunch_protein_g     ?? null },
+    { meal: "Snack",     g: args.snack_protein_g     ?? null },
+    { meal: "Dinner",    g: args.dinner_protein_g    ?? null },
+  ];
+  const hasDistribution = distMeals.some(m => m.g != null);
+  const scoreMeal = (g: number | null, isSnack: boolean) => {
+    if (g == null) return null;
+    if (isSnack) return g >= 10 ? 100 : Math.round(g * 10);
+    if (g >= 30) return 100;
+    if (g <= 0) return 0;
+    return Math.round((g / 30) * 100);
+  };
+  const distScores = distMeals.map(m => ({ ...m, score: scoreMeal(m.g, m.meal === "Snack") }));
+  const valid = distScores.filter(d => d.score != null) as { meal: string; g: number; score: number }[];
+  const distributionScore = valid.length ? Math.round(valid.reduce((a, b) => a + b.score, 0) / valid.length) : null;
+  const distributionStatus = distributionScore == null
+    ? "Add per-meal protein amounts to score distribution."
+    : distributionScore >= 80 ? "Excellent — protein spread evenly across the day."
+    : distributionScore >= 55 ? "Moderate — one or two meals are protein-light."
+    : "Poor — protein is concentrated at one meal. Anchoring breakfast is your biggest win.";
+
+  // Muscle preservation with explicit reasons.
   const strength = args.strength_sessions_per_week ?? 0;
   let musclePres = 50;
   if (args.est_protein_g != null) {
@@ -344,33 +449,37 @@ export function nutritionAssessment(args: {
     musclePres = Math.round(20 + Math.min(1, r) * 60);
   }
   musclePres += Math.min(strength, 4) * 6;
-  if (age >= 45) musclePres -= 8; else if (age >= 35) musclePres -= 4;
+  if (age >= 50) musclePres -= 10; else if (age >= 40) musclePres -= 6;
+  if (gender === "female" && age >= 50) musclePres -= 4;
   musclePres = Math.max(10, Math.min(100, musclePres));
   const muscleStatus =
     musclePres >= 75 ? "Good — muscle preservation looks well supported." :
     musclePres >= 55 ? "Moderate — improvements would meaningfully protect muscle mass." :
                        "High risk of gradual muscle loss without changes.";
+  const muscleReasons: string[] = [];
+  if (age >= 40) muscleReasons.push(`Age ${age} — natural muscle loss begins around 40 without resistance training.`);
+  if (proteinGap != null && proteinGap > 15) muscleReasons.push(`Protein intake roughly ${proteinGap} g/day below target.`);
+  if (strength < 3) muscleReasons.push(`Only ${strength} resistance session${strength === 1 ? "" : "s"} per week (3 is the protective minimum).`);
+  if (args.low_protein_breakfast) muscleReasons.push("Breakfast is low in protein — the most leverageable meal.");
+  if (gender === "female" && age >= 50) muscleReasons.push("Post-menopausal protein requirements are 10–20% higher.");
 
-  // Metabolic support score
   const sleepH = args.sleep_hours ?? 6.5;
   const sleepComp = Math.max(0, 100 - Math.abs(sleepH - 7.5) * 18);
-  const metabolicSupport = Math.round((proteinScore*0.35 + hydrationScore*0.25 + sleepComp*0.25 + Math.min(100, strength*22)*0.15));
+  const metabolicSupport = Math.round((proteinScore * 0.35 + hydrationScore * 0.25 + sleepComp * 0.25 + Math.min(100, strength * 22) * 0.15));
 
-  // Resistance training recommendation
   const reco = (() => {
-    const base = age >= 35 ? 3 : 2;
+    const base = age >= 50 ? 3 : age >= 35 ? 3 : 2;
     const cardio = goal === "fat_loss" ? 3 : 2;
     return {
       strength_sessions_per_week: goal === "muscle_gain" ? 4 : base,
       cardio_sessions_per_week: cardio,
       mobility_minutes_per_day: 10,
-      reason: age >= 35
-        ? "After approximately age 35, adults naturally lose muscle mass unless resistance training and adequate protein are maintained. Muscle preservation is one of the strongest predictors of healthy aging, mobility, and long-term metabolic health."
+      reason: age >= 45
+        ? "After 45, adults lose roughly 1% of muscle mass per year without resistance training. Two to three short strength sessions per week is the single strongest longevity input."
         : "Resistance training builds the metabolic and structural foundation that protects energy, posture, and long-term health.",
     };
   })();
 
-  // Biological age impact
   const positives: string[] = [];
   const needs: string[] = [];
   if (fatScore >= 75) positives.push("Healthy fat intake");
@@ -382,32 +491,60 @@ export function nutritionAssessment(args: {
   if ((args.alcohol_units_per_week ?? 0) > 14) needs.push("Alcohol load");
   if (strength >= 2) positives.push("Resistance training present"); else needs.push("Resistance training");
 
-  // Improvement priorities
   const priorities: { title: string; detail: string }[] = [];
-  if (args.low_protein_breakfast || (proteinGap != null && proteinGap > 20)) {
-    priorities.push({ title: "Anchor protein at breakfast",
-      detail: "Aim for 30–40 g of protein within an hour of waking. Closes 30–50% of a daily protein gap on its own." });
+  if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 55) || (proteinGap != null && proteinGap > 20)) {
+    priorities.push({
+      title: "Anchor protein at breakfast",
+      detail: "Aim for 30–40 g of protein within an hour of waking. Closes 30–50% of a daily protein gap on its own and stabilises afternoon energy.",
+    });
   }
   if (strength < 2) {
-    priorities.push({ title: `Add resistance training (${reco.strength_sessions_per_week}× per week)`,
-      detail: "Two to three short strength sessions per week is the single most underused longevity input." });
+    priorities.push({
+      title: `Add resistance training (${reco.strength_sessions_per_week}× per week)`,
+      detail: "Two to three short strength sessions per week is the single most underused longevity input.",
+    });
   }
-  if (args.sugar_snacks) {
-    priorities.push({ title: "Replace afternoon sugar snacks",
-      detail: "Swap for a protein-forward option (yoghurt, eggs, cottage cheese, edamame). Stabilises afternoon energy." });
-  }
-  if (hydrationGapL != null && hydrationGapL > 0.6) {
-    priorities.push({ title: `Increase hydration by ~${hydrationGapL} L/day`,
-      detail: "Front-load 500 ml on waking and 500 ml between meals." });
-  }
-  if (args.low_vegetables) {
-    priorities.push({ title: "Add one vegetable-forward meal per day",
-      detail: "Half a plate of vegetables improves fibre, micronutrients, and satiety without restriction." });
-  }
-  while (priorities.length < 3) priorities.push({
-    title: "Maintain consistency for 7 days",
-    detail: "Repeat the strongest two days from this week. Consistency beats perfection.",
-  });
+  if (args.sugar_snacks) priorities.push({ title: "Replace afternoon sugar snacks", detail: "Swap for a protein-forward option (yogurt, eggs, cottage cheese, edamame)." });
+  if (hydrationGapL != null && hydrationGapL > 0.6) priorities.push({ title: `Increase hydration by ~${hydrationGapL} L/day`, detail: "Front-load 500 ml on waking and 500 ml between meals." });
+  if (args.low_vegetables) priorities.push({ title: "Add one vegetable-forward meal per day", detail: "Half a plate of vegetables improves fibre, micronutrients, and satiety." });
+  if ((args.alcohol_units_per_week ?? 0) > 10) priorities.push({ title: "Reduce alcohol load", detail: "Target ≤ 7 units/week — fastest single change for sleep quality, recovery, and visceral fat." });
+  while (priorities.length < 3) priorities.push({ title: "Maintain consistency for 7 days", detail: "Repeat the strongest two days from this week. Consistency beats perfection." });
+
+  // Fastest win — the single highest-impact change.
+  const fastestWin = (() => {
+    const benefits = ["Improved satiety", "Reduced cravings", "Better recovery", "Easier fat loss"];
+    if (proteinGap != null && proteinGap > 15 && (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60))) {
+      const closePct = Math.min(50, Math.round(35 / Math.max(proteinGap, 35) * 100));
+      return {
+        title: "Add 30–35 g of protein at breakfast",
+        action: `Choose one: ${THIRTY_G_SWAPS[diet][0]}, or ${THIRTY_G_SWAPS[diet][1]}.`,
+        expected_benefits: benefits,
+        closes_pct_of_weekly_gap: closePct,
+      };
+    }
+    if (strength < 2) {
+      return {
+        title: `Start ${reco.strength_sessions_per_week} short resistance sessions per week`,
+        action: "30–40 minutes each. Compound movements: squat, hinge, push, pull.",
+        expected_benefits: ["Muscle preservation", "Metabolic health", "Glucose control", "Healthy aging"],
+        closes_pct_of_weekly_gap: 0,
+      };
+    }
+    if (hydrationGapL != null && hydrationGapL > 0.6) {
+      return {
+        title: `Increase hydration by ${hydrationGapL} L/day`,
+        action: "500 ml on waking, 500 ml mid-morning, 500 ml mid-afternoon.",
+        expected_benefits: ["Energy stability", "Cognitive clarity", "Fewer false hunger cues"],
+        closes_pct_of_weekly_gap: 0,
+      };
+    }
+    return {
+      title: "Hold the current pattern for 14 days",
+      action: "Your foundation is solid — repeat your two best days for two weeks.",
+      expected_benefits: ["Cement habits", "Visible body composition change", "Better sleep and recovery"],
+      closes_pct_of_weekly_gap: 0,
+    };
+  })();
 
   const sevenDay = [
     "Day 1 — Protein breakfast (30–40 g). Hit hydration target.",
@@ -419,10 +556,9 @@ export function nutritionAssessment(args: {
     "Day 7 — Light review. Keep the two habits that felt easiest.",
   ];
 
-  // Executive summary
   const supportPct = Math.round(overall * 0.95);
   const limiting =
-    proteinScore < carbsScore && proteinScore < hydrationScore ? "protein intake" :
+    proteinScore < carbsScore && proteinScore < hydrationScore ? "protein intake (and how it is distributed across the day)" :
     hydrationScore < carbsScore ? "hydration" :
     recoveryScore < 60 ? "recovery support (sleep, meal timing, vegetables)" :
     "overall consistency";
@@ -430,23 +566,24 @@ export function nutritionAssessment(args: {
   if (proteinScore < 70) summaryRisks.push("reduced muscle mass and slower recovery");
   if (hydrationScore < 70) summaryRisks.push("lower energy stability");
   if (recoveryScore < 70) summaryRisks.push("blunted recovery and afternoon energy dips");
-  if (strength < 2 && age >= 35) summaryRisks.push("accelerated age-related muscle loss");
+  if (strength < 2 && age >= 40) summaryRisks.push("accelerated age-related muscle loss");
+  const methodLine = calcMethod === "target_weight"
+    ? `Your targets are calculated against a healthy target weight of ${calcWeight} kg${estimatedTarget ? " (estimated from your height)" : ""} rather than your current weight — this is the practical, sustainable approach for fat loss.`
+    : "";
   const executiveSummary =
     `Your current nutrition supports approximately ${supportPct}% of your body's recovery requirements. ` +
     `The largest limiting factor appears to be ${limiting}. ` +
     (summaryRisks.length
-      ? `If maintained long term, this pattern may contribute to ${summaryRisks.slice(0,3).join(", ")}. `
+      ? `If maintained long term, this pattern may contribute to ${summaryRisks.slice(0, 3).join(", ")}. `
       : "Your foundation is solid — the focus is fine-tuning rather than rebuilding. ") +
+    (methodLine ? methodLine + " " : "") +
     `Small, consistent adjustments over the next 7–14 days produce the most visible change.`;
 
   const weeklyActions: string[] = [];
-  if (proteinGap != null && proteinGap > 0) {
-    weeklyActions.push(`Reach ${proteinMid} g of protein daily (currently ~${args.est_protein_g} g).`);
-  } else {
-    weeklyActions.push(`Maintain ${proteinTarget.low_g}–${proteinTarget.high_g} g protein daily.`);
-  }
+  if (proteinGap != null && proteinGap > 0) weeklyActions.push(`Reach ${proteinMid} g of protein daily (currently ~${args.est_protein_g} g).`);
+  else weeklyActions.push(`Maintain ${proteinTarget.low_g}–${proteinTarget.high_g} g protein daily.`);
   weeklyActions.push(`Add strength training ${reco.strength_sessions_per_week}× weekly.`);
-  weeklyActions.push(`Increase water intake to ~${hydrationTargetL} L per day.`);
+  weeklyActions.push(`Hydrate to ~${hydrationTargetL} L per day.`);
   weeklyActions.push("Add vegetables to two meals daily.");
   const expectedBenefits = [
     "Improved satiety and fewer cravings",
@@ -457,25 +594,43 @@ export function nutritionAssessment(args: {
 
   return {
     inputs: {
-      weight_kg: weight, height_cm: height, waist_cm: args.waist_cm ?? null,
+      weight_kg: weight, height_cm: height, bmi,
+      target_weight_kg: targetWeight, waist_cm: args.waist_cm ?? null,
+      body_fat_pct: args.body_fat_pct ?? null,
       activity_level: activity, goal, gender, age,
-      occupation: args.occupation ?? null,
-      diet_type: diet,
+      occupation: args.occupation ?? null, diet_type: diet,
       sleep_hours: args.sleep_hours ?? null,
       alcohol_units_per_week: args.alcohol_units_per_week ?? null,
       strength_sessions_per_week: strength,
       cardio_sessions_per_week: args.cardio_sessions_per_week ?? null,
     },
-    targets: { daily_calories: tdee, protein_g: proteinTarget, carbs_g: carbTargetRange, fat_g: fatTargetRange, hydration_l: hydrationTargetL },
+    calculation_basis: {
+      method: calcMethod,
+      calc_weight_kg: calcWeight,
+      estimated_target: estimatedTarget,
+      age_boost_g_per_kg: ageBoost,
+      note: calcMethod === "target_weight"
+        ? `Macros use target weight (${calcWeight} kg)${estimatedTarget ? ", estimated at a healthy BMI of 24" : ""} to keep recommendations practical and adherence-friendly.`
+        : "Macros use current weight — appropriate at this BMI and goal.",
+    },
+    targets: {
+      daily_calories: calorieTarget,
+      maintenance_calories: tdee,
+      protein_g: proteinTarget,
+      carbs_g: carbTargetRange,
+      fat_g: fatTargetRange,
+      hydration_l: hydrationTargetL,
+    },
     estimated_intake: {
       calories: args.est_calories ?? null, protein_g: args.est_protein_g ?? null,
       carbs_g: args.est_carbs_g ?? null, fat_g: args.est_fat_g ?? null,
       hydration_l: args.est_hydration_l ?? null,
     },
-    gaps: { protein_g: proteinGap, hydration_l: hydrationGapL },
+    gaps: { protein_g: proteinGap, weekly_protein_g: weeklyProteinGap, hydration_l: hydrationGapL },
     scores: {
       protein: proteinScore, carbs: carbsScore, fat: fatScore,
       hydration: hydrationScore, recovery_support: recoveryScore,
+      protein_distribution: distributionScore,
       muscle_preservation: musclePres, metabolic_support: metabolicSupport,
       overall_nutrition: overall,
     },
@@ -485,15 +640,29 @@ export function nutritionAssessment(args: {
       recommended_protein_g: proteinMid,
       score: musclePres,
       status: muscleStatus,
-      note: age >= 35
-        ? "After approximately age 35, adults naturally begin losing muscle mass unless resistance training and adequate protein intake are maintained."
+      reasons: muscleReasons,
+      note: age >= 45
+        ? "After approximately age 45, adults begin losing 1% of muscle mass per year unless resistance training and adequate protein are maintained."
         : "Building muscle reserves now creates the strongest possible foundation for the decades ahead.",
     },
-    protein_strategy: { diet_type: diet, best_sources: PROTEIN_SOURCES[diet] },
-    daily_meal_framework: {
-      diet_type: diet, total_protein_g: proteinMid,
-      meals: buildMealFramework(diet, proteinMid),
+    protein_strategy: {
+      diet_type: diet,
+      best_sources: PROTEIN_SOURCES[diet],
+      thirty_gram_options: THIRTY_G_SWAPS[diet],
+      vegetarian_alternatives: diet === "vegan" ? null : VEGETARIAN_ALTS,
+      distribution: hasDistribution ? {
+        meals: distScores.map(d => ({ meal: d.meal, protein_g: d.g, score: d.score })),
+        target_per_main_meal_g: "30–40",
+        score: distributionScore,
+        status: distributionStatus,
+      } : {
+        meals: null,
+        target_per_main_meal_g: "30–40",
+        score: null,
+        status: distributionStatus,
+      },
     },
+    daily_meal_framework: { diet_type: diet, total_protein_g: proteinMid, meals: buildMealFramework(diet, proteinMid) },
     metabolic_support: {
       score: metabolicSupport,
       biggest_opportunities: [
@@ -510,6 +679,7 @@ export function nutritionAssessment(args: {
       note: "Improving the items above may significantly improve energy, recovery, and long-term resilience. Educational estimate only.",
     },
     improvement_priorities: priorities.slice(0, 3),
+    fastest_win: fastestWin,
     seven_day_plan: sevenDay,
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },
     disclaimer:

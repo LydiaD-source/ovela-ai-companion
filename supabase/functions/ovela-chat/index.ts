@@ -730,10 +730,45 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'nutrition_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
-              const result = nutritionAssessment(args);
-              nutritionReportPayload = result;
-              console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
-              toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+
+              // HARD GATE: verify a real weekly food diary exists in the conversation history
+              // or in the current message / attachments before allowing the assessment to run.
+              const FOOD_KEYWORDS = /\b(breakfast|lunch|dinner|snack|brunch|supper|meal|eggs?|chicken|beef|fish|salmon|tuna|rice|pasta|bread|toast|oat|yog(h)?urt|cheese|salad|veg|fruit|banana|apple|coffee|tea|milk|protein|shake|wine|beer|water|almond|nuts?|potato|tomato|avocado|sandwich|soup|steak|pork|turkey|tofu|beans?|lentils?|quinoa|cereal|smoothie|monday|tuesday|wednesday|thursday|friday|saturday|sunday|petit[- ]?d[ée]jeuner|d[ée]jeuner|d[íi]ner|desayuno|comida|cena|frühstück|mittag|abendessen|colazione|pranzo|cena)\b/i;
+              const collectFoodText = () => {
+                const parts: string[] = [];
+                if (incomingMessage) parts.push(incomingMessage);
+                for (const att of attachments) {
+                  if (att.text) parts.push(att.text);
+                  if (att.data_url && /^image\//i.test(att.mime_type || "")) parts.push("[image_attachment]");
+                }
+                for (const m of conversationHistory) {
+                  if (m?.role === 'user' && typeof m.content === 'string') parts.push(m.content);
+                }
+                return parts.join("\n");
+              };
+              const corpus = collectFoodText();
+              const matches = corpus.match(new RegExp(FOOD_KEYWORDS, 'gi')) || [];
+              const hasImageAttachment = attachments.some(a => /^image\//i.test(a.mime_type || ""));
+              const hasDocAttachment = attachments.some(a => a.text && a.text.length > 200);
+              const looksLikeDiary = matches.length >= 6 || hasImageAttachment || hasDocAttachment || corpus.length > 600;
+
+              if (!looksLikeDiary) {
+                console.warn('🛑 Nutrition tool blocked — no weekly food diary detected', { matches: matches.length, corpusLen: corpus.length });
+                nutritionReportPayload = null;
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "FOOD_INTAKE_NOT_RECEIVED",
+                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. The user has not yet provided their weekly food intake. Reply with ONLY a warm reminder: 'I still need your weekly food intake before I can complete the assessment — please share what you typically eat across a full week (breakfast, lunch, dinner, snacks, drinks). You can type, paste, upload a PDF or screenshot, or send a photo of your meals.' Then wait. Do not advance the protocol."
+                  })
+                });
+              } else {
+                const result = nutritionAssessment(args);
+                nutritionReportPayload = result;
+                console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
+                toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+              }
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
             }

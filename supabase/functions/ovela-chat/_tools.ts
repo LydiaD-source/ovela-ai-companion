@@ -1565,6 +1565,137 @@ export function recoveryResilienceAssessment(args: {
     day_90: 'If the pattern holds, biological recovery markers (HRV, resting heart rate, morning cortisol) typically shift into healthier ranges and burnout-risk indicators usually drop one full category.',
   };
 
+  // ── Recovery Stage zone (from executive wellness) ────────────
+  const recovery_stage = (() => {
+    const s = executiveWellness;
+    if (s >= 80) return {
+      zone: 'Green Zone', range: '80–100',
+      summary: 'Recovery inputs are comfortably matching performance demands. Maintain the routines that are working.',
+    };
+    if (s >= 60) return {
+      zone: 'Performance Zone', range: '60–79',
+      summary: 'You remain functional and productive, but current stress load is beginning to exceed recovery inputs. Protect recovery before performance starts to decline.',
+    };
+    if (s >= 40) return {
+      zone: 'Recovery Deficit', range: '40–59',
+      summary: 'Recovery is no longer keeping up with the load. Energy, focus and resilience are likely to feel inconsistent until recovery inputs are rebuilt.',
+    };
+    return {
+      zone: 'Burnout Risk Zone', range: 'Below 40',
+      summary: 'Indicators suggest sustained recovery debt. This is not a diagnosis, but a strong signal to prioritise recovery and consider professional support.',
+    };
+  })();
+
+  // ── Recovery Drains vs Recovery Protectors ───────────────────
+  // Use the same factorScores list; below midline = drain, above = protector.
+  const drainsRaw = factorScores
+    .filter(f => f.score < 55)
+    .slice(0, 4)
+    .map(f => ({
+      area: f.key,
+      score_impact: -Math.round((60 - f.score) * 0.4), // signed weight, capped naturally
+      detail: f.win,
+    }));
+  const protectorsRaw = [...factorScores]
+    .sort((a, b) => b.score - a.score)
+    .filter(f => f.score >= 65)
+    .slice(0, 4)
+    .map(f => ({
+      area: f.key,
+      score_impact: +Math.round((f.score - 60) * 0.4),
+      detail: `Strong input (${f.score}/100) — keep protecting this; it is meaningfully buffering your overall recovery.`,
+    }));
+  const recovery_drivers = {
+    drains: drainsRaw,
+    protectors: protectorsRaw,
+  };
+
+  // ── Executive Recovery Archetype ─────────────────────────────
+  const archetype = (() => {
+    const highLoad = workH >= 55 || (args.pressure_frequency ?? 0) >= 7;
+    const trains = (args.exercise_sessions_per_week ?? 0) >= 2 && (args.exercise_type === 'resistance' || args.exercise_type === 'mixed');
+    const sleepShort = (args.sleep_hours ?? 7) < 6.5 || (args.sleep_quality ?? 6) <= 5;
+    const highStress = (args.stress_level ?? 5) >= 7;
+    const lowEnergy = (args.energy_level ?? 6) <= 4;
+    const goodBalance = (args.work_life_balance ?? 5) >= 7 && (args.stress_level ?? 5) <= 5;
+
+    if (burnoutRisk === 'Elevated' || (sleepShort && lowEnergy && highStress)) {
+      return {
+        name: 'The Burnout Rebuilder',
+        characteristics: ['Recovery debt has accumulated', 'Energy and motivation under pressure', 'Sleep no longer fully restorative', 'Discipline still present but harder to sustain'],
+        typical_risk: 'Continued performance only through stimulants and willpower until the body forces a reset.',
+        primary_focus: 'Rebuild sleep, nervous-system regulation and recovery boundaries before adding any new training load.',
+      };
+    }
+    if (sleepShort && highLoad) {
+      return {
+        name: 'The Sleep-Deprived Operator',
+        characteristics: ['High output sustained on insufficient sleep', 'Cognitive sharpness masking physiological cost', 'Reliance on caffeine to bridge afternoons', 'Recovery treated as optional'],
+        typical_risk: 'Cumulative cognitive and cardiovascular cost that only becomes visible after months or years.',
+        primary_focus: 'Treat sleep as a non-negotiable performance input — fix duration first, quality second.',
+      };
+    }
+    if (highStress && trains) {
+      return {
+        name: 'The High-Stress Optimizer',
+        characteristics: ['Trains hard to manage stress', 'High self-imposed standards', 'Strong physical baseline', 'Stress regulation tools underused'],
+        typical_risk: 'Training becomes the only recovery channel — when it slips, stress has nowhere to discharge.',
+        primary_focus: 'Add nervous-system regulation (breathing, daylight, true rest days) alongside training.',
+      };
+    }
+    if (highLoad && !trains) {
+      return {
+        name: 'The Overextended Executive',
+        characteristics: ['Workload consistently above 55 hours', 'Movement and training inconsistent', 'Recovery sacrificed for delivery', 'Energy stable but reserves thinning'],
+        typical_risk: 'Loss of muscle mass and metabolic reserves over time, leaving fewer buffers against future stress.',
+        primary_focus: 'Protect two short training sessions per week and one full recovery day, non-negotiably.',
+      };
+    }
+    if (highLoad && trains) {
+      return {
+        name: 'The High-Performer Under Load',
+        characteristics: ['Strong work ethic and output', 'Good physical discipline', 'Recovery often sacrificed for productivity', 'Energy remains stable until recovery debt accumulates'],
+        typical_risk: 'Burnout through accumulation rather than collapse.',
+        primary_focus: 'Protect recovery before performance begins declining.',
+      };
+    }
+    if (goodBalance && trains) {
+      return {
+        name: 'The Resilient Performer',
+        characteristics: ['Recovery inputs match performance demands', 'Sustainable training pattern', 'Healthy stress regulation', 'Strong long-term trajectory'],
+        typical_risk: 'Complacency — small drifts in sleep or movement can erode the baseline over 6–12 months.',
+        primary_focus: 'Maintain consistency and add one new recovery input per quarter to keep compounding.',
+      };
+    }
+    return {
+      name: 'The Steady Operator',
+      characteristics: ['Moderate workload', 'Mixed recovery inputs', 'Energy and motivation in functional range', 'No single dominant weakness'],
+      typical_risk: 'Plateau — recovery is adequate but not optimised, leaving performance and longevity gains on the table.',
+      primary_focus: 'Pick the single lowest factor below and rebuild it over the next 30 days.',
+    };
+  })();
+
+  // ── Executive Age Impact (educational estimate only) ─────────
+  // Map executive_wellness vs age into a "recovery profile age" estimate.
+  // Centered so a score of ~70 ≈ same chronological age.
+  const executive_age_impact = (() => {
+    const offset = Math.round((70 - executiveWellness) * 0.25); // ±7 yrs typical
+    const currentProfile = Math.max(25, age + offset);
+    const projectedOffset = Math.round((70 - projectedExec) * 0.25);
+    const projectedProfile = Math.max(25, age + projectedOffset);
+    return {
+      chronological_age: age,
+      current_profile_age: currentProfile,
+      projected_profile_age_90d: projectedProfile,
+      narrative:
+        `Based on current recovery inputs, your recovery profile resembles the average ${currentProfile}-year-old executive ` +
+        `(your chronological age is ${age}). If the recommendations in this report are implemented consistently, your ` +
+        `projected recovery profile within 90 days is closer to a highly recovered ${projectedProfile}-year-old executive. ` +
+        `This is an educational estimate, not a medical or biological age measurement.`,
+    };
+  })();
+
+
   return {
     inputs: {
       age,

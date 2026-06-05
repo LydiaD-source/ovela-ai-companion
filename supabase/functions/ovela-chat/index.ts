@@ -701,6 +701,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
       let nutritionReportPayload: any = null;
       let bioAgeReportPayload: any = null;
+      let assessmentReportResponse: any = null;
 
       // 🛟 DEFERRAL GUARD — if the model just promised a report but didn't call the tool,
       // force a second pass with tool_choice "required" so the user never sees
@@ -927,6 +928,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             const payload = nutritionReportPayload
               ? { type: 'nutrition_assessment', title: 'Executive Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
               : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
+            assessmentReportResponse = payload;
             const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
             const existingReportBlock = finalMessage.match(reportBlockRe);
             let hasValidBlock = false;
@@ -966,6 +968,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
         message: finalMessage, 
         data: { 
           crm_submitted: crmSubmitted,
+          ...(assessmentReportResponse ? { assessment_report: assessmentReportResponse } : {}),
           ...(videoSuggestion ? { video_suggestion: videoSuggestion } : {})
         } 
       }), {

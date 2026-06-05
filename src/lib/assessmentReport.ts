@@ -1272,6 +1272,7 @@ function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   installSanitizer(doc);
   if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
+  else if (report.type === 'business_calculator') buildBusinessCalculator(doc, report.data);
   else buildRecoveryResilience(doc, report.data);
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
@@ -1283,9 +1284,9 @@ function buildAssessmentDoc(report: AssessmentReport): jsPDF {
 
 export function assessmentReportFilename(report: AssessmentReport): string {
   const stamp = new Date().toISOString().slice(0, 10);
-  return report.type === 'nutrition_assessment'
-    ? `isabella-nutrition-assessment-${stamp}.pdf`
-    : `isabella-recovery-resilience-${stamp}.pdf`;
+  if (report.type === 'nutrition_assessment') return `isabella-nutrition-assessment-${stamp}.pdf`;
+  if (report.type === 'business_calculator') return `isabella-receptionist-cost-${stamp}.pdf`;
+  return `isabella-recovery-resilience-${stamp}.pdf`;
 }
 
 /** Build the PDF and trigger the download. */

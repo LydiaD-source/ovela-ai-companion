@@ -8,7 +8,8 @@ import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI, type IsabellaAttachment } from '@/lib/isabellaAPI';
 import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
-import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, type AssessmentReport } from '@/lib/assessmentReport';
+import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, assessmentReportToBase64, assessmentReportFilename, type AssessmentReport } from '@/lib/assessmentReport';
+import { supabase } from '@/integrations/supabase/client';
 import { humanizeForSpeech } from '@/lib/humanizeSpeech';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';

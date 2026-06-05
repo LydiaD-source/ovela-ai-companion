@@ -332,6 +332,8 @@ export function nutritionAssessment(args: {
   diet_type?: DietType;
   sleep_hours?: number;
   alcohol_units_per_week?: number;
+  coffee_cups_per_day?: number;
+  daily_walk_minutes?: number;
   strength_sessions_per_week?: number;
   cardio_sessions_per_week?: number;
   est_calories?: number;

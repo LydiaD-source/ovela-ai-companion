@@ -254,6 +254,28 @@ function buildNutrition(doc: jsPDF, data: any) {
   y = scoreRow(doc, 'OVERALL NUTRITION', s.overall_nutrition ?? 0, y);
   y += 10;
 
+  // Score drivers (transparency for hydration / carb / recovery scores)
+  const drivers = data.score_drivers;
+  if (drivers && (drivers.hydration || drivers.carbs || drivers.recovery_support)) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, 'Why these scores', y);
+    const blocks: Array<[string, any]> = [
+      ['Hydration', drivers.hydration],
+      ['Carbohydrate quality', drivers.carbs],
+      ['Recovery support', drivers.recovery_support],
+    ];
+    for (const [label, blk] of blocks) {
+      if (!blk) continue;
+      y = ensureSpace(doc, y, 50);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(label, 40, y); y += 14;
+      (blk.positives || []).forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `+ ${p}`, y, { color: '#2d8a5e', size: 9 }); });
+      (blk.limiting || []).forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `- ${p}`, y, { color: '#c2553a', size: 9 }); });
+      y += 4;
+    }
+  }
+
+
   // Targets + calculation basis
   y = ensureSpace(doc, y, 160);
   y = sectionTitle(doc, 'Your daily targets', y);

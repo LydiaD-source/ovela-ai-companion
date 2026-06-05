@@ -264,7 +264,7 @@ export function calcReceptionistCost(args: {
   };
 
   // ─── 12-Month Cost of Inaction ────────────────────────────────────
-  const turnover_exposure_12mo = Math.round((hidden.turnover_risk = turnoverRisk) * 2);
+  const turnover_exposure_12mo = Math.round(turnoverRisk * 2);
   const cost_of_inaction = {
     hidden_staffing_cost_eur: hiddenTotal,
     missed_revenue_eur: annual_revenue_protected_eur,

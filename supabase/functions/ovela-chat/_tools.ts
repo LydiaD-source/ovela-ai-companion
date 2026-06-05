@@ -598,6 +598,59 @@ export function nutritionAssessment(args: {
     "Stronger long-term metabolic and muscular foundation",
   ];
 
+  // ── Lifestyle factors (alcohol, coffee, walking) ────────────────────
+  const alcohol = args.alcohol_units_per_week ?? null;
+  const coffee = args.coffee_cups_per_day ?? null;
+  const walk = args.daily_walk_minutes ?? null;
+  const lifestyleFactors = {
+    alcohol: alcohol == null ? null : {
+      units_per_week: alcohol,
+      status:
+        alcohol === 0 ? "None reported — optimal for recovery and body composition." :
+        alcohol <= 7 ? "Moderate intake. Reducing by 1–2 servings per week may further improve sleep efficiency, recovery quality, and fat-loss progress." :
+        alcohol <= 14 ? "Above the recommended weekly load. This range typically blunts sleep depth, protein synthesis, and visceral-fat loss. Aim for ≤ 7 units/week." :
+        "Elevated weekly load. Strongest single change for sleep quality, hormonal balance, and body composition is reducing toward ≤ 7 units/week.",
+    },
+    coffee: coffee == null ? null : {
+      cups_per_day: coffee,
+      status:
+        coffee <= 3 ? "Appropriate if consumed before midday. Avoid caffeine within 8 hours of bedtime if recovery or sleep quality become limiting factors." :
+        coffee <= 5 ? "On the higher side. Cap at ~400 mg/day (≈ 4 cups) and keep all intake before 2 pm." :
+        "High daily intake. Reduce gradually and shift all consumption to before noon to protect deep sleep.",
+    },
+    walking: walk == null ? null : {
+      minutes_per_day: walk,
+      status:
+        walk >= 30 ? "Consistent daily walking is one of the strongest longevity markers — keep this habit." :
+        walk >= 15 ? "Good base. Extending to 30 min/day adds meaningful cardiovascular and metabolic benefit." :
+        "Add a daily 20–30 min walk — one of the highest-ROI, lowest-effort longevity inputs.",
+    },
+  };
+
+  // Add walking & coffee to the positive/improvement lists when reported.
+  if (walk != null && walk >= 30) positives.push("Daily walking habit (≥ 30 min)");
+  if (walk != null && walk >= 15 && walk < 30) positives.push("Consistent low-intensity movement");
+  if (coffee != null && coffee <= 3) positives.push("Moderate coffee intake");
+
+  // ── Weight-loss projection (only meaningful for fat_loss) ───────────
+  const weightLossProjection = goal === "fat_loss" ? (() => {
+    const deficit = Math.max(0, tdee - calorieTarget); // ~18% of TDEE
+    // ~7700 kcal per kg of fat; project a sustainable 0.3–0.7 kg / week range.
+    const weeklyLow = Math.max(0.3, Math.round((deficit * 7 / 9000) * 10) / 10);
+    const weeklyHigh = Math.max(weeklyLow + 0.2, Math.round((deficit * 7 / 6500) * 10) / 10);
+    return {
+      assumes: `Protein intake reaches ${proteinTarget.low_g}–${proteinTarget.high_g} g/day and current activity is maintained.`,
+      satiety_within_days: "7–14",
+      visible_change_weeks: "4–8",
+      weekly_kg_low: weeklyLow,
+      weekly_kg_high: Math.min(0.9, weeklyHigh),
+      monthly_kg_low: Math.round(weeklyLow * 4 * 10) / 10,
+      monthly_kg_high: Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10,
+      note: "Educational estimate only. Real-world progress depends on adherence, sleep, stress and hormonal factors.",
+    };
+  })() : null;
+
+
   return {
     inputs: {
       weight_kg: weight, height_cm: height, bmi,

@@ -1834,11 +1834,14 @@ export function recoveryResilienceAssessment(args: {
     executive_dashboard,
     outlook_30_60_90,
     executive_age_impact,
+    trajectory,
+    nutrition_integration,
 
     executive_summary:
       `Your current recovery capacity supports approximately ${recoveryCapacity}% of your performance demands. ` +
       `The largest limiting factors appear to be ${factorScores.slice(0, 3).map(f => f.key.toLowerCase()).join(", ")}. ` +
-      `Small improvements in these areas may significantly improve resilience and energy over the next 30–90 days.`,
+      `Small improvements in these areas may significantly improve resilience and energy over the next 30–90 days.` +
+      _summaryNutritionLine,
     burnout_note:
       burnoutRisk === "Elevated"
         ? "Current indicators suggest elevated accumulated stress and reduced recovery reserves. This is not a diagnosis. If these patterns persist or affect quality of life, consider a comprehensive executive wellness evaluation through WellneSpirit."

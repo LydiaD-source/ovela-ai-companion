@@ -277,6 +277,27 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_trial: {
+        Row: {
+          assessment_count: number
+          first_assessment_at: string
+          last_assessment_at: string
+          user_key: string
+        }
+        Insert: {
+          assessment_count?: number
+          first_assessment_at?: string
+          last_assessment_at?: string
+          user_key: string
+        }
+        Update: {
+          assessment_count?: number
+          first_assessment_at?: string
+          last_assessment_at?: string
+          user_key?: string
+        }
+        Relationships: []
+      }
       authorized_users: {
         Row: {
           added_at: string

@@ -197,6 +197,63 @@ async function submitLeadToCRM(leadData: any) {
   }
 }
 
+// ── 7-day free trial gate for the nutrition assessment ─────────────────
+// Tracks first-assessment timestamp per user_key in public.assessment_trial.
+// After 7 days, returns trial_expired=true so the chat can replace the
+// PDF delivery with the WellneSpirit upsell.
+const TRIAL_WINDOW_DAYS = 7;
+async function checkAndRecordTrial(userKey: string): Promise<{ trial_expired: boolean; days_used: number; first_at: string | null }> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey || !userKey) {
+      return { trial_expired: false, days_used: 0, first_at: null };
+    }
+    const headers = {
+      "apikey": serviceKey,
+      "Authorization": `Bearer ${serviceKey}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation",
+    };
+    // 1) Try to fetch existing record
+    const getRes = await fetch(`${supabaseUrl}/rest/v1/assessment_trial?user_key=eq.${encodeURIComponent(userKey)}&select=user_key,first_assessment_at,assessment_count`, { headers });
+    let row: any = null;
+    if (getRes.ok) {
+      const arr = await getRes.json();
+      row = Array.isArray(arr) && arr.length ? arr[0] : null;
+    }
+    const now = Date.now();
+    if (!row) {
+      // Insert new
+      await fetch(`${supabaseUrl}/rest/v1/assessment_trial`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ user_key: userKey, first_assessment_at: new Date().toISOString(), assessment_count: 1, last_assessment_at: new Date().toISOString() }),
+      });
+      return { trial_expired: false, days_used: 0, first_at: new Date().toISOString() };
+    }
+    const firstAt = new Date(row.first_assessment_at).getTime();
+    const daysUsed = Math.floor((now - firstAt) / (1000 * 60 * 60 * 24));
+    const expired = daysUsed > TRIAL_WINDOW_DAYS;
+    // Bump count + last seen (best-effort)
+    await fetch(`${supabaseUrl}/rest/v1/assessment_trial?user_key=eq.${encodeURIComponent(userKey)}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify({ assessment_count: (row.assessment_count ?? 0) + 1, last_assessment_at: new Date().toISOString() }),
+    });
+    return { trial_expired: expired, days_used: daysUsed, first_at: row.first_assessment_at };
+  } catch (e) {
+    console.warn("⚠️ Trial check failed (allowing assessment):", e);
+    return { trial_expired: false, days_used: 0, first_at: null };
+  }
+}
+
+const WELLNESPIRIT_PRE_EXPIRY_FOOTER =
+  "\n\nIf you'd like weekly tracking, progress comparisons and monthly reassessments, the full monthly programme lives at our clinical partner WellneSpirit (wellnespirit.com).";
+
+const WELLNESPIRIT_EXPIRED_MESSAGE =
+  "Thank you for using your free 7-day Isabella assessment window.\n\nTo continue receiving weekly assessments, progress tracking and ongoing support from Isabella, please activate the full monthly programme at our clinical partner **WellneSpirit** — visit wellnespirit.com and register for the Executive Wellness subscription.\n\nYour previous assessment, scores and recommendations remain valid for the next 14 days.";
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -483,7 +540,7 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
   VALIDATION LAYER: If at Phase 4 the user writes anything that is not an actual food diary, respond: "I still need your weekly food intake before I can complete the assessment — please share what you typically eat across a full week (meals, snacks, drinks). You can type, paste, or upload it." Repeat until a real diary arrives. NEVER produce a report. NEVER call the tool.
 
   Phase 5 — ASSESSMENT GENERATION (only after a real diary has been received):
-    • Silently estimate est_calories / est_protein_g / est_carbs_g / est_fat_g / est_hydration_l plus breakfast_protein_g / lunch_protein_g / dinner_protein_g / snack_protein_g and qualitative flags. ALWAYS pass alcohol_units_per_week, coffee_cups_per_day and daily_walk_minutes from Phase 3. ALWAYS pass meal_observations: 3-5 specific sentences quoting the actual foods/patterns the user wrote (e.g. "Breakfasts were toast, cereal and coffee with little protein."). ALWAYS pass disliked_foods (foods they avoid/dislike/are allergic to) and preferred_foods (foods they clearly enjoy) — extract these from the diary and earlier turns.
+    • Silently estimate est_calories / est_protein_g / est_carbs_g / est_fat_g / est_hydration_l plus breakfast_protein_g / lunch_protein_g / dinner_protein_g / snack_protein_g and qualitative flags. ALWAYS pass alcohol_units_per_week, coffee_cups_per_day and daily_walk_minutes from Phase 3. ALWAYS pass meal_observations: 3-5 specific sentences quoting the actual foods/patterns the user wrote (e.g. "Breakfasts were toast, cereal and coffee with little protein."). ALWAYS pass disliked_foods (foods they avoid/dislike/are allergic to) and preferred_foods (foods they clearly enjoy) — extract these from the diary and earlier turns. ALWAYS pass time_budget — before generating, ask ONE short question: "One last thing — which best describes you: enjoy cooking, cook when you have time, need quick meals, or travel frequently?" Map the answer to enjoys_cooking | cooks_when_time | needs_quick_meals | travels_frequently. ALWAYS pass habit_upgrades — 3-5 specific upgrades that anchor to meals the user ALREADY eats (e.g. { existing_meal: "Your yogurt breakfast", upgrade: "Add one scoop of whey for ~25 g protein", why: "Closes ~40% of your daily protein gap without changing routine" }). NEVER invent a meal the user did not mention. PASS nutrition_risk_flags when the diary supports them (e.g. low oily fish → omega-3 moderate; no vegetables → fibre + vegetable diversity moderate). Also pass oily_fish_per_week and vegetable_servings_per_day if you can estimate them from the diary.
     • CALL nutrition_assessment IN THE SAME TURN as your acknowledgement of the diary. No deferrals, no "next message", no "in a moment".
     • In the SAME reply: warm 4–6 sentence verbal summary highlighting the "fastest win", THEN the fenced assessment-report block verbatim so the PDF renders automatically. User must NEVER have to ask for the PDF.
     • ABSOLUTELY FORBIDDEN: announcing a future report without producing it. Phrases like "I will now generate", "I'll create your report", "generating your assessment", "your report is being prepared", "based on this I've estimated…" are BANNED unless you are ALSO calling nutrition_assessment in the very same turn AND emitting the fenced assessment-report block. If you catch yourself about to defer — STOP, call the tool now, emit the block now.
@@ -689,7 +746,12 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 irregular_meals: { type: "boolean" },
                 meal_observations: { type: "array", items: { type: "string" }, description: "REQUIRED. 3-5 SPECIFIC sentences quoting patterns from THIS user's diary. Examples: 'Breakfasts were primarily toast, cereal and coffee with minimal protein.' 'Dinner contained roughly 55% of total daily protein.' 'Vegetables appeared only at dinner.' Be concrete — reference foods the user actually mentioned." },
                 disliked_foods: { type: "array", items: { type: "string" }, description: "Foods the user dislikes, avoids, or is allergic to (e.g. 'chicken','dairy','eggs','fish'). Used to filter meal suggestions." },
-                preferred_foods: { type: "array", items: { type: "string" }, description: "Foods the user clearly enjoys and eats often (used to bias meal examples)." }
+                preferred_foods: { type: "array", items: { type: "string" }, description: "Foods the user clearly enjoys and eats often (used to bias meal examples)." },
+                time_budget: { type: "string", enum: ["enjoys_cooking","cooks_when_time","needs_quick_meals","travels_frequently"], description: "ALWAYS ASK before generating. Tailors recommendations to the user's cooking time. Quick-meal and traveller profiles should never receive recipes that require soaking, marinating or long prep." },
+                habit_upgrades: { type: "array", description: "REQUIRED. 3-5 specific upgrades anchored to meals the user ALREADY eats. Example: { existing_meal: 'Your yogurt breakfast', upgrade: 'Add one scoop of whey for +25 g protein', why: 'Closes ~40% of the daily protein gap without changing routine' }. Never suggest a meal the user did not mention.", items: { type: "object", properties: { existing_meal: { type: "string" }, upgrade: { type: "string" }, why: { type: "string" } }, required: ["existing_meal","upgrade","why"] } },
+                nutrition_risk_flags: { type: "array", description: "Optional. Observational micronutrient flags inferred from the diary (NOT diagnoses). Allowed nutrients: Fibre, Omega-3, Magnesium, Potassium, Vitamin D, Vitamin B12, Iron, Vegetable diversity.", items: { type: "object", properties: { nutrient: { type: "string" }, confidence: { type: "string", enum: ["low","moderate","high"] }, reasoning: { type: "string" } }, required: ["nutrient","confidence"] } },
+                oily_fish_per_week: { type: "number", description: "Servings of oily fish (salmon, mackerel, sardines, trout) per week — used for omega-3 inference." },
+                vegetable_servings_per_day: { type: "number", description: "Average vegetable servings per day from the diary." }
               },
               required: ["weight_kg","age","gender","height_cm","activity_level","goal","diet_type"]
             }
@@ -859,9 +921,14 @@ After any tool call, present results conversationally (1 short paragraph + key b
       }
 
 
+      // Trial state for this request (populated by nutrition tool branch)
+      let trialDaysUsed: number | null = null;
+      let trialForceFinalMessage: string | null = null;
+
       if (effectiveToolCalls && effectiveToolCalls.length > 0) {
         const toolCalls = effectiveToolCalls;
         const toolResults: any[] = [];
+
 
         for (const toolCall of toolCalls) {
           if (toolCall.function?.name === 'extract_contact_details') {
@@ -976,10 +1043,30 @@ After any tool call, present results conversationally (1 short paragraph + key b
                   })
                 });
               } else {
-                const result = nutritionAssessment(normalizedArgs);
-                nutritionReportPayload = result;
-                console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
-                toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+                // 7-day free trial gate (Ovela / WellneSpirit free version)
+                const trialKey = `${clientId || 'ovela'}::${userId || 'guest'}`;
+                const trial = await checkAndRecordTrial(trialKey);
+                if (trial.trial_expired) {
+                  console.warn('⏳ Trial expired — blocking PDF, sending WellneSpirit upsell', { trialKey, daysUsed: trial.days_used });
+                  nutritionReportPayload = null;
+                  toolResults.push({
+                    id: toolCall.id,
+                    content: JSON.stringify({
+                      blocked: true,
+                      reason: "TRIAL_EXPIRED",
+                      days_used: trial.days_used,
+                      instruction: "Do NOT generate a report, PDF, score, or assessment-report block. The user's 7-day free assessment window has ended. Reply with ONLY this message verbatim: " + JSON.stringify(WELLNESPIRIT_EXPIRED_MESSAGE)
+                    })
+                  });
+                  // Pre-fill the final message in case the model ignores the instruction
+                  trialForceFinalMessage = WELLNESPIRIT_EXPIRED_MESSAGE;
+                } else {
+                  const result = nutritionAssessment(normalizedArgs);
+                  nutritionReportPayload = result;
+                  console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition, daysUsed: trial.days_used });
+                  toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+                  trialDaysUsed = trial.days_used;
+                }
               }
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
@@ -1076,9 +1163,20 @@ After any tool call, present results conversationally (1 short paragraph + key b
             const summary = cleaned.length > 0
               ? cleaned
               : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
-            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`;
-            console.log("🧷 Injected valid assessment-report block for", payload.type);
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
+            console.log("🧷 Injected valid assessment-report block for", payload.type, { trialDaysUsed });
+          } else {
+            // Block already present — still ensure WellneSpirit footer appears once
+            if (!/wellnespirit\.com/i.test(finalMessage)) {
+              finalMessage = `${finalMessage}${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
+            }
           }
+        }
+
+        // If trial expired, override anything and deliver only the upsell
+        if (trialForceFinalMessage) {
+          finalMessage = trialForceFinalMessage;
+          assessmentReportResponse = null;
         }
 
         if (!assessmentReportResponse && /`{2,3}\s*assessment-report/i.test(finalMessage)) {

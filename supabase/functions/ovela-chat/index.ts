@@ -592,26 +592,56 @@ After any tool call, present results conversationally (1 short paragraph + key b
         {
           type: "function",
           function: {
-            name: "biological_age_assessment",
-            description: "Lifestyle-only biological age estimate. Educational, never medical. NEVER ask about diseases, diagnoses, or prescription medications. Call after collecting the lifestyle inputs conversationally (2–3 questions at a time).",
+            name: "recovery_resilience_assessment",
+            description: "Executive Recovery & Resilience Assessment. Lifestyle-only, never medical, never a diagnosis. Call ONLY after Phases 1–4 (personal profile, workload & stress, recovery, lifestyle & resilience) have been completed conversationally. Returns recovery_capacity, stress_load, resilience, lifestyle_recovery, burnout_risk (Low/Moderate/Elevated), executive_wellness scores, an executive summary, top 3 fastest wins, and a 7-day recovery plan.",
             parameters: {
               type: "object",
               properties: {
-                chronological_age: { type: "number" },
+                age: { type: "number" },
                 gender: { type: "string", enum: ["male","female","other"] },
                 height_cm: { type: "number" },
                 weight_kg: { type: "number" },
-                waist_cm: { type: "number" },
+                occupation: { type: "string" },
+                primary_goal: { type: "string", enum: ["more_energy","better_recovery","reduce_stress","prevent_burnout","improve_performance","improve_longevity"] },
+
+                work_hours_per_week: { type: "number" },
+                focused_work_hours_per_day: { type: "number" },
+                meeting_hours_per_day: { type: "number" },
+                travel_hours_per_day: { type: "number" },
+                works_evenings: { type: "boolean" },
+                works_weekends: { type: "boolean" },
+                pressure_frequency: { type: "number", description: "1–10" },
+                responsibility_level: { type: "number", description: "1–10" },
+
                 sleep_hours: { type: "number" },
+                sleep_quality: { type: "number", description: "1–10" },
+                wakes_refreshed: { type: "boolean" },
                 exercise_sessions_per_week: { type: "number" },
-                stress_level: { type: "number", description: "1–10" },
+                exercise_type: { type: "string", enum: ["resistance","cardio","walking","mixed","none"] },
+                takes_recovery_days: { type: "boolean" },
+                outdoor_hours_per_week: { type: "number" },
+
                 alcohol_units_per_week: { type: "number" },
-                smoking: { type: "string", enum: ["never","former","current"] },
+                caffeine_per_day: { type: "number" },
+                water_liters_per_day: { type: "number" },
+                social_support: { type: "number", description: "1–10" },
+                work_life_balance: { type: "number", description: "1–10" },
+                stress_level: { type: "number", description: "1–10" },
                 energy_level: { type: "number", description: "1–10" },
-                recovery_speed: { type: "number", description: "1–10" },
-                digestive_health: { type: "number", description: "1–10" }
+                motivation_level: { type: "number", description: "1–10" },
+
+                nutrition: {
+                  type: "object",
+                  description: "Optional. Passed only if the user shared a previous Isabella Nutrition Report.",
+                  properties: {
+                    protein_score: { type: "number" },
+                    hydration_score: { type: "number" },
+                    recovery_score: { type: "number" },
+                    muscle_preservation_score: { type: "number" }
+                  }
+                }
               },
-              required: ["chronological_age"]
+              required: ["age"]
             }
           }
         }

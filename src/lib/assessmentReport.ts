@@ -329,7 +329,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   y = scoreRow(doc, 'Carbohydrate quality', s.carbs ?? 0, y);
   y = scoreRow(doc, 'Fat quality', s.fat ?? 0, y);
   y = scoreRow(doc, 'Hydration', s.hydration ?? 0, y);
-  y = scoreRow(doc, 'Recovery Support Score', s.recovery_support ?? 0, y);
+  y = scoreRow(doc, 'Recovery inputs (nutrition contribution)', s.recovery_support ?? 0, y);
   y += 10;
 
   // Why these scores (transparency)

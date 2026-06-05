@@ -1194,6 +1194,7 @@ export function nutritionAssessment(args: {
     executive_benchmark: executiveBenchmark,
     reassessment_projection: reassessmentProjection,
     success_preview: successPreview,
+    dominant_nutrition_patterns: dominantNutritionPatterns,
     nutrition_risk_flags: nutritionRiskFlags,
     habit_upgrades: habitUpgrades,
     meal_framework_replacements: mealFrameworkReplacements,

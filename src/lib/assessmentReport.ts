@@ -768,6 +768,27 @@ function buildNutrition(doc: jsPDF, data: any) {
 
   // (Top meals moved earlier — section 5b)
 
+  // 17b. Dominant Nutrition Patterns (practitioner-style pattern read)
+  const patterns = Array.isArray(data.dominant_nutrition_patterns) ? data.dominant_nutrition_patterns : [];
+  if (patterns.length) {
+    y = ensureSpace(doc, y, 50 + patterns.length * 40);
+    y = sectionTitle(doc, 'Dominant nutrition patterns', y);
+    y = paragraph(doc, "How a practitioner would read your week — not nutrients in isolation, but the patterns they form.", y, { color: MUTED, size: 9 });
+    y += 4;
+    patterns.forEach((p: any, i: number) => {
+      y = ensureSpace(doc, y, 40);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(`Pattern ${i + 1}: ${p.pattern}`, 40, y); y += 14;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(GOLD);
+      doc.text('Impact:', 40, y);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
+      const impactLines = doc.splitTextToSize(p.impact, 480);
+      doc.text(impactLines, 80, y); y += 14 + (impactLines.length - 1) * 11;
+      y += 4;
+    });
+    y += 6;
+  }
+
   // 18. Isabella's Clinical Observation
   if (data.clinical_perspective) {
     y = ensureSpace(doc, y, 110);

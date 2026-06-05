@@ -814,9 +814,8 @@ export function nutritionAssessment(args: {
 
   // ── Executive Benchmark (peer comparison — psychologically motivating) ─
   const cohortLabel = (() => {
-    const g = gender === "female" ? "Women" : gender === "male" ? "Men" : "Adults";
     const lo = Math.max(20, Math.floor(age / 5) * 5);
-    return `${g} aged ${lo}-${lo + 9}`;
+    return `Adults aged ${lo}-${lo + 9}`;
   })();
   const posLabel = (s: number) =>
     s >= 80 ? "Top 20%" :

@@ -686,7 +686,10 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 sugar_snacks: { type: "boolean" },
                 low_vegetables: { type: "boolean" },
                 high_processed: { type: "boolean" },
-                irregular_meals: { type: "boolean" }
+                irregular_meals: { type: "boolean" },
+                meal_observations: { type: "array", items: { type: "string" }, description: "REQUIRED. 3-5 SPECIFIC sentences quoting patterns from THIS user's diary. Examples: 'Breakfasts were primarily toast, cereal and coffee with minimal protein.' 'Dinner contained roughly 55% of total daily protein.' 'Vegetables appeared only at dinner.' Be concrete — reference foods the user actually mentioned." },
+                disliked_foods: { type: "array", items: { type: "string" }, description: "Foods the user dislikes, avoids, or is allergic to (e.g. 'chicken','dairy','eggs','fish'). Used to filter meal suggestions." },
+                preferred_foods: { type: "array", items: { type: "string" }, description: "Foods the user clearly enjoys and eats often (used to bias meal examples)." }
               },
               required: ["weight_kg","age","gender","height_cm","activity_level","goal","diet_type"]
             }

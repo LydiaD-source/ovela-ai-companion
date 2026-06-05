@@ -1482,6 +1482,89 @@ export function recoveryResilienceAssessment(args: {
     { day: "Day 7", focus: "Reflection", action: "Score sleep, energy, stress. Re-plan the next 7 days." },
   ];
 
+  // ── Isabella's Clinical Observation (pattern-based, never diagnostic) ──
+  const obsBits: string[] = [];
+  if (workH >= 55 && (args.works_evenings || args.works_weekends)) {
+    obsBits.push(`a ${workH}-hour work week extending into evenings and weekends, which compresses recovery windows`);
+  } else if (workH >= 55) {
+    obsBits.push(`a ${workH}-hour work week that consistently exceeds healthy recovery thresholds`);
+  }
+  if ((args.pressure_frequency ?? 0) >= 7 && (args.stress_level ?? 0) >= 7) {
+    obsBits.push(`sustained high-pressure responsibility paired with self-reported stress at ${args.stress_level}/10`);
+  }
+  if ((args.sleep_hours ?? 7) >= 7 && (args.sleep_quality ?? 6) >= 7) {
+    obsBits.push(`sleep duration and quality are genuine strengths protecting your baseline`);
+  } else if ((args.sleep_hours ?? 7) < 7) {
+    obsBits.push(`sleep is running below the 7-hour mark, which limits overnight recovery`);
+  }
+  if ((args.exercise_sessions_per_week ?? 0) >= 3 && (args.exercise_type === 'resistance' || args.exercise_type === 'mixed')) {
+    obsBits.push(`a consistent resistance-training pattern that supports long-term resilience`);
+  }
+  if ((args.work_life_balance ?? 5) <= 5) {
+    obsBits.push(`work-life balance scored at ${args.work_life_balance}/10, signalling limited true downtime`);
+  }
+  if ((args.social_support ?? 5) <= 4) {
+    obsBits.push(`low social-support inputs, which reduces the buffering effect against chronic stress`);
+  }
+  if (alc > 7) {
+    obsBits.push(`alcohol intake above the 7-unit weekly threshold that begins to interfere with deep sleep`);
+  }
+  const isabella_observation =
+    `Reviewing your full profile, the pattern I see is ${obsBits.slice(0, 5).join('; ')}. ` +
+    `Your energy and motivation remain at ${args.energy_level ?? '—'}/10, which tells me your physiological reserves are still intact — the work is to protect them before stress load erodes that buffer.`;
+
+  // ── Dominant Recovery Patterns (4 max) ───────────────────────
+  const dominant_patterns: Array<{ pattern: string; impact: string }> = [];
+  if (workH >= 55 && (args.works_evenings || args.works_weekends)) {
+    dominant_patterns.push({ pattern: 'Workload spilling into evenings and weekends', impact: 'No clean recovery boundary — autonomic nervous system stays partially activated 7 days a week.' });
+  }
+  if ((args.stress_level ?? 0) >= 7 && stressInv <= 40) {
+    dominant_patterns.push({ pattern: 'High self-reported stress with limited regulation tools', impact: 'Sustained cortisol exposure that gradually depletes recovery capacity even when sleep is adequate.' });
+  }
+  if ((args.work_life_balance ?? 5) <= 5) {
+    dominant_patterns.push({ pattern: 'Imbalanced work-life ratio', impact: 'Reduced parasympathetic recovery time — the body never fully switches off.' });
+  }
+  if ((args.social_support ?? 5) <= 4) {
+    dominant_patterns.push({ pattern: 'Low social-recovery inputs', impact: 'Missing one of the strongest scientifically-validated buffers against burnout.' });
+  }
+  if (alc > 7) {
+    dominant_patterns.push({ pattern: 'Alcohol pattern interfering with deep sleep', impact: 'Even modest evening alcohol cuts REM and slow-wave sleep, reducing the recovery value of the hours in bed.' });
+  }
+  if ((args.exercise_sessions_per_week ?? 0) >= 3 && (args.exercise_type === 'resistance' || args.exercise_type === 'mixed')) {
+    dominant_patterns.push({ pattern: 'Strong training consistency', impact: 'Protective factor — muscle mass and cardiovascular fitness are buffering against age-related decline.' });
+  }
+  const topPatterns = dominant_patterns.slice(0, 4);
+
+  // ── Executive Dashboard (biggest opportunities + 14-day projection) ──
+  const biggest_opportunities = factorScores.slice(0, 4).map((f) => ({
+    area: f.key,
+    current_score: f.score,
+    action: f.win,
+  }));
+  const projectedRecovery = clamp(recoveryCapacity + 8);
+  const projectedResilience = clamp(resilience + 6);
+  const projectedStress = clamp(stressLoad - 8);
+  const projectedExec = clamp(
+    projectedRecovery * 0.30 + (100 - projectedStress) * 0.25 + projectedResilience * 0.25 + clamp(lifestyleRecovery + 5) * 0.20
+  );
+  const executive_dashboard = {
+    biggest_opportunities,
+    expected_14_day_gains: {
+      recovery_capacity: { current: recoveryCapacity, projected: projectedRecovery },
+      resilience: { current: resilience, projected: projectedResilience },
+      stress_load: { current: stressLoad, projected: projectedStress },
+      executive_wellness: { current: executiveWellness, projected: projectedExec },
+    },
+    note: 'Projections assume consistent execution of the 7-day plan repeated twice. Educational estimate only.',
+  };
+
+  // ── 30/60/90-day outlook ─────────────────────────────────────
+  const outlook_30_60_90 = {
+    day_30: 'Sleep quality, morning energy and stress regulation typically improve first — most executives notice fewer afternoon energy dips and a calmer Sunday-evening baseline.',
+    day_60: 'Recovery capacity and resilience scores begin to compound — strength sessions feel easier, perceived workload drops without changing actual hours.',
+    day_90: 'If the pattern holds, biological recovery markers (HRV, resting heart rate, morning cortisol) typically shift into healthier ranges and burnout-risk indicators usually drop one full category.',
+  };
+
   return {
     inputs: {
       age,
@@ -1518,6 +1601,10 @@ export function recoveryResilienceAssessment(args: {
       stress_regulation: stressInv,
       hydration_alcohol_caffeine: lifestyleRecovery,
     },
+    isabella_observation,
+    dominant_patterns: topPatterns,
+    executive_dashboard,
+    outlook_30_60_90,
     executive_summary:
       `Your current recovery capacity supports approximately ${recoveryCapacity}% of your performance demands. ` +
       `The largest limiting factors appear to be ${factorScores.slice(0, 3).map(f => f.key.toLowerCase()).join(", ")}. ` +

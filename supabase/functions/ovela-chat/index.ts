@@ -1151,7 +1151,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
         // as a valid fenced block regardless of whether the model already wrote text.
         if (nutritionReportPayload || bioAgeReportPayload) {
           const payload = nutritionReportPayload
-            ? { type: 'nutrition_assessment', title: 'Executive Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
+            ? { type: 'nutrition_assessment', title: 'Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
             : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
           assessmentReportResponse = payload;
           const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;

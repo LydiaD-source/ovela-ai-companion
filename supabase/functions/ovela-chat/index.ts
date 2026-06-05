@@ -1175,15 +1175,16 @@ After any tool call, present results conversationally (1 short paragraph + key b
           if (existingReportBlock) {
             hasValidBlock = isMeaningfulReportPayload(parseAssessmentReportBlock(finalMessage));
           }
+          const isBusinessReport = payload.type === 'business_calculator';
           if (!hasValidBlock) {
             const cleaned = finalMessage.replace(reportBlockRe, '').trim();
             const summary = cleaned.length > 0
               ? cleaned
-              : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
-            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
+              : "Here's your personalized assessment — I've outlined your scores, the biggest opportunities, and the next steps.";
+            const footer = isBusinessReport ? '' : WELLNESPIRIT_PRE_EXPIRY_FOOTER;
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.${footer}`;
             console.log("🧷 Injected valid assessment-report block for", payload.type, { trialDaysUsed });
-          } else {
-            // Block already present — still ensure WellneSpirit footer appears once
+          } else if (!isBusinessReport) {
             if (!/wellnespirit\.com/i.test(finalMessage)) {
               finalMessage = `${finalMessage}${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
             }

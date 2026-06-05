@@ -330,6 +330,22 @@ function buildMealFramework(diet: DietType, dailyProteinG: number, dislikes: str
   }));
 }
 
+export type TimeBudget = "enjoys_cooking" | "cooks_when_time" | "needs_quick_meals" | "travels_frequently";
+
+const TIME_BUDGET_LABEL: Record<TimeBudget, string> = {
+  enjoys_cooking: "Enjoys cooking",
+  cooks_when_time: "Cooks when time allows",
+  needs_quick_meals: "Needs quick meals",
+  travels_frequently: "Travels frequently",
+};
+
+const TIME_BUDGET_NOTE: Record<TimeBudget, string> = {
+  enjoys_cooking: "Full recipes welcome — recommendations include light prep and batch cooking.",
+  cooks_when_time: "Mix of quick options and one or two cooked meals per day.",
+  needs_quick_meals: "Buy-ready, minimal prep. Most meals under 5 minutes to assemble.",
+  travels_frequently: "Hotel- and travel-friendly options: whey, Greek yogurt, ready-cooked protein, eggs.",
+};
+
 export function nutritionAssessment(args: {
   age?: number;
   gender?: "male" | "female" | "other";
@@ -365,6 +381,11 @@ export function nutritionAssessment(args: {
   meal_observations?: string[];
   disliked_foods?: string[];
   preferred_foods?: string[];
+  time_budget?: TimeBudget;
+  habit_upgrades?: Array<{ existing_meal?: string; upgrade?: string; why?: string }>;
+  nutrition_risk_flags?: Array<{ nutrient?: string; confidence?: "low" | "moderate" | "high"; reasoning?: string }>;
+  oily_fish_per_week?: number;
+  vegetable_servings_per_day?: number;
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";

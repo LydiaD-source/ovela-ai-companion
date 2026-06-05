@@ -381,11 +381,10 @@ export function nutritionAssessment(args: {
   const tdee = Math.round(bmr * ACTIVITY_FACTOR[activity]);
   const calorieTarget = goal === "fat_loss" ? Math.round(tdee * 0.82) : tdee;
 
-  // Age / gender protein modifier (sarcopenia awareness).
+  // Age / gender protein modifier (sarcopenia awareness — kicks in at 50+).
   let ageBoost = 0;
-  if (age >= 65) ageBoost = 0.3;
-  else if (age >= 50) ageBoost = 0.2;
-  else if (age >= 45) ageBoost = 0.1;
+  if (age >= 65) ageBoost = 0.2;
+  else if (age >= 50) ageBoost = 0.1;
   if (gender === "female" && age >= 50) ageBoost += 0.1;
 
   const [pLoBase, pHiBase] = PROTEIN_RANGE[goal];

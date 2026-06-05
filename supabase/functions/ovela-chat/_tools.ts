@@ -407,12 +407,13 @@ export function nutritionAssessment(args: {
   const hydrationGapL = args.est_hydration_l != null ? Math.round((hydrationTargetL - args.est_hydration_l) * 10) / 10 : null;
 
   const score = (val: number | null, target: number, tolerance = 0.25) => {
-    if (val == null) return 60;
+    if (val == null) return 50;
     const ratio = val / target;
-    if (ratio >= 1 - tolerance && ratio <= 1 + tolerance) return 95;
-    const dist = Math.abs(1 - ratio);
-    return Math.max(20, Math.round(100 - dist * 120));
+    if (ratio >= 1 - tolerance && ratio <= 1 + tolerance) return 92;
+    if (ratio < 1) return Math.max(20, Math.round(ratio * 95));
+    return Math.max(40, Math.round(100 - (ratio - 1) * 80));
   };
+
 
   const proteinScore   = score(args.est_protein_g ?? null, proteinMid, 0.2);
   const carbsScore     = args.high_processed ? 55 : score(args.est_carbs_g ?? null, (carbTargetRange.low_g + carbTargetRange.high_g) / 2, 0.3);
@@ -646,12 +647,79 @@ export function nutritionAssessment(args: {
       weekly_kg_high: Math.min(0.9, weeklyHigh),
       monthly_kg_low: Math.round(weeklyLow * 4 * 10) / 10,
       monthly_kg_high: Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10,
-      note: "Educational estimate only. Real-world progress depends on adherence, sleep, stress and hormonal factors.",
+      note: `A sustainable fat-loss rate for this profile is approximately ${Math.round(weeklyLow * 4 * 10) / 10}-${Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10} kg per month when nutrition, activity and recovery remain consistent. Educational estimate only.`,
     };
   })() : null;
 
+  // ── Score drivers (transparency — why each score is what it is) ──────
+  const hydrationDrivers = (() => {
+    const positives: string[] = [];
+    const limiting: string[] = [];
+    if (args.est_hydration_l != null) {
+      if (args.est_hydration_l >= hydrationTargetL * 0.85) {
+        positives.push(`Drinking ~${args.est_hydration_l} L/day, near the ${hydrationTargetL} L target`);
+      } else {
+        limiting.push(`Currently ~${args.est_hydration_l} L/day vs target ~${hydrationTargetL} L (gap ~${hydrationGapL} L)`);
+      }
+    } else {
+      limiting.push("Daily fluid intake not reported");
+    }
+    if ((args.coffee_cups_per_day ?? 0) >= 4) limiting.push("High coffee intake increases fluid turnover");
+    if ((args.alcohol_units_per_week ?? 0) > 7) limiting.push("Alcohol load increases dehydration risk");
+    return { positives, limiting };
+  })();
+
+  const carbsDrivers = (() => {
+    const positives: string[] = [];
+    const limiting: string[] = [];
+    if (args.high_processed) limiting.push("High intake of refined / processed carbohydrates");
+    if (args.low_vegetables) limiting.push("Low vegetable diversity reported");
+    if (args.sugar_snacks) limiting.push("Frequent sugar-based snacks");
+    if (!args.high_processed) positives.push("Mostly whole-food carbohydrate sources");
+    if (!args.low_vegetables) positives.push("Vegetables present in daily meals");
+    if (args.est_carbs_g != null) {
+      if (args.est_carbs_g < carbTargetRange.low_g) limiting.push(`Carb intake (~${args.est_carbs_g} g) below the ${carbTargetRange.low_g}-${carbTargetRange.high_g} g target`);
+      else if (args.est_carbs_g > carbTargetRange.high_g) limiting.push(`Carb intake (~${args.est_carbs_g} g) above the ${carbTargetRange.low_g}-${carbTargetRange.high_g} g target`);
+      else positives.push(`Carb intake within the ${carbTargetRange.low_g}-${carbTargetRange.high_g} g target range`);
+    }
+    return { positives, limiting };
+  })();
+
+  const recoveryDrivers = (() => {
+    const positives: string[] = [];
+    const limiting: string[] = [];
+    if (sleepH >= 7) positives.push(`${sleepH} hours of sleep per night`);
+    else limiting.push(`Sleep duration ${sleepH} h is below the 7-8 h target`);
+    if (walk != null && walk >= 30) positives.push(`Daily walking habit (${walk} min)`);
+    else if (walk != null && walk >= 15) positives.push(`Some daily walking (${walk} min)`);
+    if (strength >= 2) positives.push(`Resistance training ${strength}x per week`);
+    else limiting.push(`Resistance training only ${strength}x per week (target ${reco.strength_sessions_per_week}x)`);
+    if (proteinGap != null && proteinGap > 15) limiting.push(`Protein deficit (~${proteinGap} g/day) blunts overnight repair`);
+    if (args.low_protein_breakfast) limiting.push("Low-protein breakfast limits morning recovery");
+    if (args.sugar_snacks) limiting.push("Sugar-based snacks impair recovery");
+    if (args.irregular_meals) limiting.push("Irregular meal timing reduces recovery consistency");
+    if (args.low_vegetables) limiting.push("Low vegetable intake limits micronutrient recovery support");
+    if ((args.alcohol_units_per_week ?? 0) > 7) limiting.push(`Alcohol intake (~${args.alcohol_units_per_week} units/week) blunts deep sleep`);
+    return { positives, limiting };
+  })();
+
+  const executivePerformanceImpact = {
+    current_likely_influences: [
+      "Afternoon energy stability",
+      "Training recovery quality",
+      "Hunger and craving control",
+      "Body composition trajectory",
+      "Long-term muscle preservation",
+    ],
+    strongest_immediate_opportunity: {
+      title: fastestWin.title,
+      action: fastestWin.action,
+      expected_effects: fastestWin.expected_benefits,
+    },
+  };
 
   return {
+
     inputs: {
       weight_kg: weight, height_cm: height, bmi,
       target_weight_kg: targetWeight, waist_cm: args.waist_cm ?? null,
@@ -745,6 +813,12 @@ export function nutritionAssessment(args: {
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },
     lifestyle_factors: lifestyleFactors,
     weight_loss_projection: weightLossProjection,
+    score_drivers: {
+      hydration: hydrationDrivers,
+      carbs: carbsDrivers,
+      recovery_support: recoveryDrivers,
+    },
+    executive_performance_impact: executivePerformanceImpact,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

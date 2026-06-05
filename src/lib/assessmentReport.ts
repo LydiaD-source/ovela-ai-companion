@@ -126,6 +126,36 @@ const NAVY = '#0d1b2a';
 const INK = '#1a1a1a';
 const MUTED = '#666666';
 
+// jsPDF's built-in Helvetica uses WinAnsi encoding and cannot render most
+// Unicode glyphs (emoji, ≤ ≥ – — · ✓ ✗ ☐ ⚡ €, curly quotes, etc.).
+// When it encounters one, the output is corrupted ("&¡ F a s t e s t w i n").
+// We sanitize ALL text passed to the document before it reaches the encoder.
+const UNICODE_MAP: Record<string, string> = {
+  '⚡': '*', '★': '*', '✦': '*', '✱': '*',
+  '✓': '+', '✔': '+',
+  '✗': 'x', '✘': 'x', '×': 'x', '✕': 'x',
+  '☐': '[ ]', '☑': '[x]', '☒': '[x]',
+  '≤': '<=', '≥': '>=', '≠': '!=', '≈': '~',
+  '–': '-', '—': '-', '−': '-',
+  '·': '-', '•': '-', '●': '-', '◦': '-', '▪': '-', '■': '-',
+  '€': 'EUR', '£': 'GBP', '¥': 'JPY',
+  '°': ' deg',
+  '“': '"', '”': '"', '„': '"', '«': '"', '»': '"',
+  '‘': "'", '’': "'", '‚': "'",
+  '…': '...',
+  '\u00a0': ' ', '\u2009': ' ', '\u202f': ' ', '\u200b': '',
+};
+function sanitize(text: string): string {
+  if (!text) return text;
+  let out = '';
+  for (const ch of text) {
+    if (ch in UNICODE_MAP) out += UNICODE_MAP[ch];
+    else if (ch.charCodeAt(0) < 256) out += ch;
+    else out += '?'; // any other non-WinAnsi char → safe placeholder
+  }
+  return out;
+}
+
 function header(doc: jsPDF, title: string) {
   doc.setFillColor(NAVY);
   doc.rect(0, 0, 595, 70, 'F');
@@ -223,6 +253,28 @@ function buildNutrition(doc: jsPDF, data: any) {
   y += 6;
   y = scoreRow(doc, 'OVERALL NUTRITION', s.overall_nutrition ?? 0, y);
   y += 10;
+
+  // Score drivers (transparency for hydration / carb / recovery scores)
+  const drivers = data.score_drivers;
+  if (drivers && (drivers.hydration || drivers.carbs || drivers.recovery_support)) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, 'Why these scores', y);
+    const blocks: Array<[string, any]> = [
+      ['Hydration', drivers.hydration],
+      ['Carbohydrate quality', drivers.carbs],
+      ['Recovery support', drivers.recovery_support],
+    ];
+    for (const [label, blk] of blocks) {
+      if (!blk) continue;
+      y = ensureSpace(doc, y, 50);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(label, 40, y); y += 14;
+      (blk.positives || []).forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `+ ${p}`, y, { color: '#2d8a5e', size: 9 }); });
+      (blk.limiting || []).forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `- ${p}`, y, { color: '#c2553a', size: 9 }); });
+      y += 4;
+    }
+  }
+
 
   // Targets + calculation basis
   y = ensureSpace(doc, y, 160);
@@ -442,6 +494,33 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
+  // 9b. Executive performance impact
+  const epi = data.executive_performance_impact;
+  if (epi) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, '10 · Executive performance impact', y);
+    if ((epi.current_likely_influences || []).length) {
+      y = paragraph(doc, 'Your current nutrition likely influences:', y);
+      epi.current_likely_influences.forEach((p: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `- ${p}`, y);
+      });
+      y += 4;
+    }
+    if (epi.strongest_immediate_opportunity) {
+      const op = epi.strongest_immediate_opportunity;
+      y = ensureSpace(doc, y, 70);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text('Strongest immediate opportunity', 40, y); y += 14;
+      y = paragraph(doc, op.title, y);
+      if (op.action) y = paragraph(doc, op.action, y, { color: MUTED, size: 9 });
+      if ((op.expected_effects || []).length) {
+        y = paragraph(doc, `Expected effects: ${op.expected_effects.join(', ')}.`, y, { color: MUTED, size: 9 });
+      }
+      y += 6;
+    }
+  }
+
 
   // Priorities
   if ((data.improvement_priorities || []).length) {
@@ -599,8 +678,24 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
   }
 }
 
+function installSanitizer(doc: jsPDF) {
+  const anyDoc = doc as any;
+  const origText = anyDoc.text.bind(doc);
+  anyDoc.text = (text: any, ...rest: any[]) => {
+    if (typeof text === 'string') text = sanitize(text);
+    else if (Array.isArray(text)) text = text.map((t: any) => typeof t === 'string' ? sanitize(t) : t);
+    return origText(text, ...rest);
+  };
+  const origSplit = anyDoc.splitTextToSize.bind(doc);
+  anyDoc.splitTextToSize = (text: any, width: number, opts?: any) => {
+    if (typeof text === 'string') text = sanitize(text);
+    return origSplit(text, width, opts);
+  };
+}
+
 function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  installSanitizer(doc);
   if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
   else buildRecoveryResilience(doc, report.data);
   const pages = doc.getNumberOfPages();

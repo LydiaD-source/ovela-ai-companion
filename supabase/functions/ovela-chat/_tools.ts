@@ -186,6 +186,15 @@ export function calcReceptionistCost(args: {
       : `Even before counting hidden costs, the salary delta alone justifies the switch within the first fiscal year.`,
   ];
 
+  // Isabella Business Observation — narrative diagnosis layer
+  const hiddenPct = Math.round((hiddenTotal / true_annual_cost_eur.mid) * 100);
+  const coverageMult = coverage.coverage_multiplier;
+  const isabella_observation =
+    `The strongest pattern in this profile is not the headline salary — it is the structure of the cost stack and the coverage gap underneath it. ` +
+    `Hidden costs (recruitment, training, turnover, sick cover, software) account for roughly ${hiddenPct}% of the true annual cost, a layer most owners do not see on payroll. ` +
+    `On the coverage side, a single human FTE delivers ~${coverage.human_productive_hours_per_year} productive hours per year against Isabella's ${coverage.isabella_hours_per_year} — a ${coverageMult}× delta that is structural, not behavioural. ` +
+    `Businesses with this shape typically recover the largest gains through availability and language coverage rather than headcount reduction; the salary saving is the second-order benefit, not the first.`;
+
   return {
     country, country_label: COUNTRY_LABEL[country] || country, role,
     role_label: ROLE_BASELINE[role]?.label || role,

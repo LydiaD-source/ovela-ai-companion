@@ -48,12 +48,51 @@ function pick<T>(o: Record<string, T>, k: string, fb: T): T {
   return o[k?.toUpperCase()] ?? fb;
 }
 
+// Country labels + country-specific commentary used in the v2 report.
+const COUNTRY_LABEL: Record<string, string> = {
+  ES:"Spain", PT:"Portugal", FR:"France", DE:"Germany", IT:"Italy",
+  NL:"Netherlands", BE:"Belgium", AD:"Andorra", CH:"Switzerland",
+  UK:"United Kingdom", IE:"Ireland",
+};
+const COUNTRY_NOTE: Record<string, string> = {
+  ES: "Spain: moderate gross salaries but ~32% employer social contributions. The true cost of a Spanish receptionist runs roughly one-third above the headline salary.",
+  PT: "Portugal: lowest gross salaries in Western Europe for this role, but turnover in tourism hubs often exceeds 30% per year — recruitment costs compound quickly.",
+  FR: "France: among the highest employer on-costs in the EU (~42% on top of gross). A €30k gross receptionist effectively costs ~€43k before hidden costs.",
+  DE: "Germany: high gross salaries plus strict labour protections. Hiring takes 9-12 weeks on average and notice periods limit operational flexibility.",
+  IT: "Italy: TFR severance accrual, 13th and often 14th-month salaries, and 26+ paid holiday days inflate the real cost well beyond the headline.",
+  NL: "Netherlands: 8% holiday allowance and a 13th-month bonus are standard. A compliant 24/7 desk typically needs 3.4 FTEs.",
+  BE: "Belgium: among the most heavily taxed labour markets in the EU. Multi-lingual desks (FR/NL/EN) command a 10-15% premium.",
+  AD: "Andorra: low social charges (~18%), but multilingual coverage (FR/ES/CA/EN) is near-universal and pushes gross salaries up.",
+  CH: "Switzerland: highest gross salaries in Europe, partially offset by low employer on-costs (~18%). Even so, ~3x the cost of a Spanish receptionist.",
+  UK: "United Kingdom: post-Brexit recruitment for multilingual roles is harder and slower; agency fees of 20-25% of first-year salary are common.",
+  IE: "Ireland: tight labour market in Dublin pushes salaries above the EU average and tech-sector competition makes retention difficult.",
+};
+
+function recommendIsabellaTier(shifts: string, languages: number, premium: boolean): "starter"|"pro"|"enterprise" {
+  if (shifts === "247" || languages >= 4 || premium) return "enterprise";
+  if (shifts === "extended" || languages >= 2) return "pro";
+  return "starter";
+}
+
+function pickArchetype(role: RoleKey, shifts: string, languages: number, _premium: boolean) {
+  if (role === "front_desk_clinic") return { id:"solo_clinic", label:"The Solo Clinic / Spa", description:"A small medical or wellness practice where the front desk is also the first point of trust. Missing a single call can mean a lost patient for the quarter." };
+  if (role === "hotel_concierge" && (shifts === "247" || languages >= 3)) return { id:"multi_language_concierge", label:"The Multilingual Hotel Concierge", description:"A hospitality property serving international guests around the clock. Language coverage and 24/7 responsiveness drive the entire guest experience." };
+  if (role === "hotel_concierge") return { id:"boutique_hotel", label:"The Boutique Hotel Desk", description:"A small property where the concierge handles bookings, recommendations and guest issues across business hours." };
+  if (role === "real_estate_junior_filter" && languages >= 3) return { id:"multilingual_real_estate", label:"The Multilingual Real-Estate Office", description:"Agency handling international buyers — every after-hours call missed is a deal handed to a competitor." };
+  if (role === "real_estate_junior_filter") return { id:"real_estate_filter", label:"The Real-Estate Filter Desk", description:"Junior staff qualifying inbound inquiries before passing serious leads to senior agents." };
+  if (role === "customer_support_agent" && shifts === "247") return { id:"support_247", label:"The 24/7 Support Center", description:"Customer-facing operation where coverage gaps translate directly to churn and bad reviews." };
+  if (role === "customer_support_agent") return { id:"tier1_support", label:"The Tier-1 Support Desk", description:"Inbound questions, order status, basic troubleshooting — high volume, repetitive." };
+  if (role === "executive_assistant") return { id:"executive_office", label:"The Executive Office", description:"Senior-level support — calendar, travel, gatekeeping. High trust, high cost, hard to replace." };
+  if (shifts === "247") return { id:"corporate_247", label:"The 24/7 Corporate Front Desk", description:"Large operation where the front desk runs continuously across multiple shifts." };
+  return { id:"standard_front_desk", label:"The Standard Front Desk", description:"Business-hours reception with a stable, predictable call and visitor flow." };
+}
+
 export function calcReceptionistCost(args: {
   country?: string;
   role?: RoleKey;
-  languages?: number;     // total languages required (1 = native only)
+  languages?: number;
   shifts?: "business" | "extended" | "247";
-  premium_skills?: boolean; // CRM/medical/legal vocab etc.
+  premium_skills?: boolean;
 }) {
   const country = (args.country || "ES").toUpperCase();
   const role: RoleKey = (args.role as RoleKey) || "receptionist";
@@ -65,8 +104,7 @@ export function calcReceptionistCost(args: {
   const band = table[role] || SALARY.ES.receptionist!;
   const [lo, mid, hi] = band;
 
-  // Bonuses (kept modest per user note — common positions don't scale wildly).
-  const languageBonus = (langs - 1) * 0.05; // +5% per extra language
+  const languageBonus = (langs - 1) * 0.05;
   const skillBonus = premium ? 0.07 : 0;
   const shiftMultiplier = shifts === "247" ? 3.2 : shifts === "extended" ? 1.6 : 1.0;
   const onCost = EMPLOYER_ONCOST[country] ?? 1.3;
@@ -82,29 +120,106 @@ export function calcReceptionistCost(args: {
     mid:   Math.round(baseGross.mid  * onCost),
     high:  Math.round(baseGross.high * onCost),
   };
-  // Isabella's published Ovela pricing tiers (annual EUR, multi-language built in, 24/7).
-  const isabellaTier = {
-    starter:    4788,   // €399/mo
-    pro:        9588,   // €799/mo
-    enterprise: 19188,  // €1599/mo
+
+  // Hidden costs (annualized) — derived from mid gross salary.
+  const recruitment   = Math.round(baseGross.mid * 0.075); // 15% one-off / 2yr avg tenure
+  const trainingRamp  = Math.round(baseGross.mid * 0.10);  // 6-week productivity loss
+  const turnoverRisk  = Math.round(baseGross.mid * 0.05);  // replacement frequency overhead
+  const sickCover     = Math.round(baseGross.mid * 0.045); // ~10 sick days covered
+  const softwarePhone = 600;                                // CRM seat + phone line
+  const hiddenTotal   = recruitment + trainingRamp + turnoverRisk + sickCover + softwarePhone;
+  const hidden_costs_eur = {
+    recruitment_annualized: recruitment,
+    training_ramp: trainingRamp,
+    turnover_risk: turnoverRisk,
+    sick_day_cover: sickCover,
+    software_and_phone: softwarePhone,
+    total: hiddenTotal,
   };
-  const savingsVsMid = totalEmployerCost.mid - isabellaTier.pro;
+
+  const true_annual_cost_eur = {
+    low:   totalEmployerCost.low  + hiddenTotal,
+    mid:   totalEmployerCost.mid  + hiddenTotal,
+    high:  totalEmployerCost.high + hiddenTotal,
+  };
+
+  // Coverage: 40h/wk × 44 productive weeks ≈ 1,760 hrs/yr for a human.
+  const coverage = {
+    human_productive_hours_per_year: 1760,
+    isabella_hours_per_year: 8760,
+    coverage_multiplier: Math.round((8760 / 1760) * 10) / 10,
+    human_languages: langs,
+    isabella_languages: 30,
+    sick_days_per_year: 10,
+  };
+
+  const isabella_tiers_eur_per_year = { starter: 4788, pro: 9588, enterprise: 19188 };
+  const recommended_tier = recommendIsabellaTier(shifts, langs, premium);
+  const isabellaCost = isabella_tiers_eur_per_year[recommended_tier];
+
+  const annualSavings  = true_annual_cost_eur.mid - isabellaCost;
+  const pctSavings     = Math.round((annualSavings / true_annual_cost_eur.mid) * 100);
+  const monthlySavings = annualSavings / 12;
+  const paybackMonths  = monthlySavings > 0
+    ? Math.max(1, Math.round(isabellaCost / Math.max(monthlySavings, 1)))
+    : null;
+
+  // 3- and 5-year TCO at 3.5% salary inflation; Isabella priced flat.
+  const inflateTCO = (annual: number, years: number, rate: number) => {
+    let total = 0;
+    for (let i = 0; i < years; i++) total += annual * Math.pow(1 + rate, i);
+    return Math.round(total);
+  };
+  const human3  = inflateTCO(true_annual_cost_eur.mid, 3, 0.035);
+  const human5  = inflateTCO(true_annual_cost_eur.mid, 5, 0.035);
+  const tco_3yr_eur = { human_mid: human3, isabella: isabellaCost * 3, savings: human3 - isabellaCost * 3 };
+  const tco_5yr_eur = { human_mid: human5, isabella: isabellaCost * 5, savings: human5 - isabellaCost * 5 };
+
+  const archetype = pickArchetype(role, shifts, langs, premium);
+
+  const recommendations: string[] = [
+    `Start with the ${recommended_tier.charAt(0).toUpperCase() + recommended_tier.slice(1)} tier — it matches a ${shifts === '247' ? '24/7' : shifts === 'extended' ? 'extended-hours' : 'business-hours'} ${langs > 1 ? `multilingual (${langs} languages)` : 'single-language'} operation.`,
+    `Keep one human owner on the team (manager or office lead) — Isabella handles inbound, the human handles escalations and in-person hospitality.`,
+    `Track 3 KPIs from day 1: percentage of inbound captured, average response time, leads converted to bookings. Most operations move from 60-70% capture to >95% in the first month.`,
+    paybackMonths && paybackMonths <= 12
+      ? `At your scale the deployment pays for itself in roughly ${paybackMonths} month${paybackMonths === 1 ? '' : 's'} — well inside a single budget cycle.`
+      : `Even before counting hidden costs, the salary delta alone justifies the switch within the first fiscal year.`,
+  ];
 
   return {
-    country, role,
+    country, country_label: COUNTRY_LABEL[country] || country, role,
     role_label: ROLE_BASELINE[role]?.label || role,
     inputs: { languages: langs, shifts, premium_skills: premium },
+    archetype,
     annual_gross_eur: baseGross,
+    employer_oncost_multiplier: onCost,
     annual_total_employer_cost_eur: totalEmployerCost,
-    isabella_tiers_eur_per_year: isabellaTier,
-    savings_vs_pro_tier_eur: savingsVsMid,
+    hidden_costs_eur,
+    true_annual_cost_eur,
+    coverage,
+    isabella_tiers_eur_per_year,
+    recommended_tier,
+    comparison: {
+      human_true_annual_mid: true_annual_cost_eur.mid,
+      isabella_recommended: isabellaCost,
+      annual_savings: annualSavings,
+      pct_savings: pctSavings,
+      payback_months: paybackMonths,
+      monthly_savings: Math.round(monthlySavings),
+    },
+    tco_3yr_eur,
+    tco_5yr_eur,
+    country_note: COUNTRY_NOTE[country] || "",
     notes: [
       "Salaries are approximate Eurostat-style mid-2025 ranges.",
-      "Total employer cost includes social charges, holiday, sick, and recruitment.",
+      "Employer on-cost includes social charges, paid holiday, statutory sick days, and recruitment overhead.",
+      "Hidden costs (recruitment, training ramp, turnover, sick cover, software) are annualized industry averages.",
       "Extended hours ≈ 1.6×, 24/7 coverage ≈ 3.2× single FTE.",
       langs > 1 ? `Multilingual bonus applied for ${langs} languages (+${Math.round(languageBonus*100)}%).` : "Single-language role assumed.",
+      "3-year and 5-year TCO assume 3.5% annual salary inflation and flat Isabella pricing.",
       "Isabella runs 24/7, every language, no sick days — published Ovela pricing shown for comparison.",
     ],
+    recommendations,
   };
 }
 

@@ -1236,6 +1236,7 @@ export function nutritionAssessment(args: {
       measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
     },
     executive_benchmark: executiveBenchmark,
+    executive_dashboard: executiveDashboard,
     protein_opportunity: proteinOpportunity,
     reassessment_projection: reassessmentProjection,
     success_preview: successPreview,

@@ -217,16 +217,19 @@ type NutritionGoal =
 type DietType = "omnivore" | "vegetarian" | "vegan";
 
 // Conservative executive-wellness protein g/kg of CALCULATION weight.
+// Aligned with WHO + ISSN ranges for regular adults (1.2–1.8 g/kg) and
+// athletes / muscle-building (1.6–2.2 g/kg). Executives are NOT bodybuilders —
+// targets are tuned for compliance and digestion (≤ 40 g per meal × 3 meals).
 const PROTEIN_RANGE: Record<NutritionGoal, [number, number]> = {
-  fat_loss:           [1.6, 2.0],
-  muscle_gain:        [1.8, 2.2],
-  performance:        [1.6, 2.0],
-  muscle_maintenance: [1.4, 1.8],
-  healthy_aging:      [1.2, 1.6],
+  fat_loss:           [1.75, 2.0],   // protect lean mass in deficit
+  muscle_gain:        [1.6, 2.2],    // ISSN upper range
+  performance:        [1.4, 1.8],
+  muscle_maintenance: [1.2, 1.6],
+  healthy_aging:      [1.0, 1.4],
   energy:             [1.0, 1.4],
-  longevity:          [1.2, 1.6],
-  recovery:           [1.4, 1.8],
-  maintenance:        [1.2, 1.6],
+  longevity:          [1.0, 1.4],
+  recovery:           [1.2, 1.6],
+  maintenance:        [1.0, 1.4],
 };
 
 // Carbs g/kg of calculation weight by goal.

@@ -1,7 +1,7 @@
 // ovela-chat index.ts - defensive, single-source of truth
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, biologicalAgeAssessment } from "./_tools.ts";
+import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, recoveryResilienceAssessment } from "./_tools.ts";
 
 /**
  * NOTE:

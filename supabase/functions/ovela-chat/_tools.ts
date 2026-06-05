@@ -282,39 +282,51 @@ const THIRTY_G_SWAPS: Record<DietType, string[]> = {
 
 const VEGETARIAN_ALTS = ["Greek yogurt", "Cottage cheese", "Eggs", "Tempeh", "Tofu", "Edamame", "Lentils", "Whey/casein protein"];
 
-function buildMealFramework(diet: DietType, dailyProteinG: number) {
-  // Cap each main meal at ~40 g protein (digestion / leucine threshold).
-  // For regular adults, 3 main meals × 30–40 g + 1 modest snack is optimal.
+function filterByDislikes<T extends string>(list: T[], dislikes: string[]): T[] {
+  if (!dislikes?.length) return list;
+  const dl = dislikes.map(d => d.toLowerCase());
+  const filtered = list.filter(item => !dl.some(d => item.toLowerCase().includes(d)));
+  return filtered.length ? filtered : list;
+}
+
+function buildMealFramework(diet: DietType, dailyProteinG: number, dislikes: string[] = [], preferred: string[] = []) {
   const meals = [
     { meal: "Breakfast", pct: 0.30, cap: 40 },
     { meal: "Lunch",     pct: 0.30, cap: 40 },
     { meal: "Snack",     pct: 0.15, cap: 25 },
     { meal: "Dinner",    pct: 0.30, cap: 40 },
   ];
-  const ex: Record<DietType, Record<string, string>> = {
+  const ex: Record<DietType, Record<string, string[]>> = {
     omnivore: {
-      Breakfast: "3 eggs + Greek yogurt + berries (~30–35 g)",
-      Lunch:     "Grilled chicken bowl, quinoa, vegetables, olive oil (~35–40 g)",
-      Snack:     "Cottage cheese + nuts, or a whey shake (~15–20 g)",
-      Dinner:    "Salmon or lean beef + sweet potato + greens (~35–40 g)",
+      Breakfast: ["3 eggs + Greek yogurt + berries (~30-35 g)", "Cottage cheese + oats + whey (~30 g)", "Smoked salmon + 2 eggs + rye toast (~30 g)"],
+      Lunch:     ["Grilled chicken bowl, quinoa, vegetables, olive oil (~35-40 g)", "Tuna and white-bean salad + greens (~35 g)", "Turkey wrap with hummus and vegetables (~35 g)"],
+      Snack:     ["Cottage cheese + nuts (~15-20 g)", "Whey shake + fruit (~20 g)", "Greek yogurt + seeds (~15 g)"],
+      Dinner:    ["Salmon + sweet potato + greens (~35-40 g)", "Lean beef stir-fry + brown rice (~40 g)", "Roast chicken thighs + roast vegetables (~40 g)"],
     },
     vegetarian: {
-      Breakfast: "Greek yogurt + oats + whey or seeds (~30 g)",
-      Lunch:     "Tofu or tempeh grain bowl + vegetables (~35 g)",
-      Snack:     "Cottage cheese + fruit, or a casein shake (~15–20 g)",
-      Dinner:    "Lentil and paneer stew + brown rice + salad (~35 g)",
+      Breakfast: ["Greek yogurt + oats + whey or seeds (~30 g)", "Cottage cheese + berries + nuts (~30 g)", "3-egg vegetable omelette + rye toast (~30 g)"],
+      Lunch:     ["Tofu or tempeh grain bowl + vegetables (~35 g)", "Halloumi + chickpea + grain salad (~35 g)", "Paneer + lentil curry + brown rice (~35 g)"],
+      Snack:     ["Cottage cheese + fruit (~15-20 g)", "Casein shake (~20 g)", "Greek yogurt + nuts (~15 g)"],
+      Dinner:    ["Lentil and paneer stew + brown rice + salad (~35 g)", "Tempeh stir-fry + quinoa + greens (~35 g)", "Bean and cheese enchiladas + salad (~35 g)"],
     },
     vegan: {
-      Breakfast: "Soy yogurt + oats + pea-protein shake (~30 g)",
-      Lunch:     "Tempeh or seitan grain bowl + edamame (~35 g)",
-      Snack:     "Roasted chickpeas + pea-protein shake (~15–20 g)",
-      Dinner:    "Tofu stir-fry + lentils + greens (~35 g)",
+      Breakfast: ["Soy yogurt + oats + pea-protein shake (~30 g)", "Tofu scramble + sourdough + avocado (~30 g)", "Overnight oats + soy milk + pea protein (~30 g)"],
+      Lunch:     ["Tempeh or seitan grain bowl + edamame (~35 g)", "Chickpea and quinoa salad + tahini (~30 g)", "Lentil + brown rice bowl + tofu (~35 g)"],
+      Snack:     ["Roasted chickpeas + pea-protein shake (~15-20 g)", "Soy yogurt + seeds (~15 g)", "Edamame + nuts (~15 g)"],
+      Dinner:    ["Tofu stir-fry + lentils + greens (~35 g)", "Seitan + roast vegetables + quinoa (~40 g)", "Tempeh chili + brown rice (~35 g)"],
     },
+  };
+  const dl = dislikes.map(d => d.toLowerCase());
+  const pl = preferred.map(p => p.toLowerCase());
+  const pick = (opts: string[]) => {
+    const ok = opts.filter(o => !dl.some(d => o.toLowerCase().includes(d)));
+    const pref = ok.find(o => pl.some(p => o.toLowerCase().includes(p)));
+    return pref || ok[0] || opts[0];
   };
   return meals.map(m => ({
     meal: m.meal,
     protein_g: Math.min(m.cap, Math.round(dailyProteinG * m.pct)),
-    example: ex[diet][m.meal],
+    example: pick(ex[diet][m.meal]),
   }));
 }
 

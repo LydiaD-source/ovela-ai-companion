@@ -322,6 +322,19 @@ export function calcReceptionistCost(args: {
     industry_benchmark,
     front_office_efficiency,
     cost_of_inaction,
+    staffing_recommendation: {
+      current: `1 ${ROLE_BASELINE[role]?.label || 'front-desk hire'} covering ${shifts === '247' ? '24/7' : shifts === 'extended' ? 'extended hours' : 'business hours'} in ${langs} language${langs > 1 ? 's' : ''}.`,
+      recommended: [
+        "Isabella handles 100% of inbound — calls, forms, chat, DMs — 24/7 in every language.",
+        "Keep your existing human(s) focused on VIP guests, in-person hospitality, and human escalations only.",
+        "Owner/manager receives a daily digest of captured leads, qualified bookings, and escalations needing a human reply.",
+      ],
+      expected_outcome: [
+        "Inbound capture moves from ~" + current_capture_pct + "% toward 95%+",
+        "Coverage extends from " + (shifts === '247' ? '24/7 (already covered)' : shifts === 'extended' ? '~14h/day to 24/7' : '~8h/day to 24/7'),
+        "Existing team's hours reallocated to higher-value, in-person work — no headcount cut required",
+      ],
+    },
     country_note: COUNTRY_NOTE[country] || "",
     notes: [
       "Salaries are approximate Eurostat-style mid-2025 ranges.",

@@ -1163,9 +1163,20 @@ After any tool call, present results conversationally (1 short paragraph + key b
             const summary = cleaned.length > 0
               ? cleaned
               : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
-            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`;
-            console.log("🧷 Injected valid assessment-report block for", payload.type);
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
+            console.log("🧷 Injected valid assessment-report block for", payload.type, { trialDaysUsed });
+          } else {
+            // Block already present — still ensure WellneSpirit footer appears once
+            if (!/wellnespirit\.com/i.test(finalMessage)) {
+              finalMessage = `${finalMessage}${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
+            }
           }
+        }
+
+        // If trial expired, override anything and deliver only the upsell
+        if (trialForceFinalMessage) {
+          finalMessage = trialForceFinalMessage;
+          assessmentReportResponse = null;
         }
 
         if (!assessmentReportResponse && /`{2,3}\s*assessment-report/i.test(finalMessage)) {

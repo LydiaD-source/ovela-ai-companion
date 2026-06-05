@@ -228,6 +228,7 @@ export function calcReceptionistCost(args: {
       "3-year and 5-year TCO assume 3.5% annual salary inflation and flat Isabella pricing.",
       "Isabella runs 24/7, every language, no sick days — published Ovela pricing shown for comparison.",
     ],
+    isabella_observation,
     recommendations,
   };
 }

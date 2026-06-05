@@ -461,9 +461,24 @@ function buildNutrition(doc: jsPDF, data: any) {
     }
   }
 
-  // 5. Daily meal framework
+  // 7. Daily meal framework — personalised when replacements are present
   const mf = data.daily_meal_framework;
-  if (mf) {
+  const mfr: Array<{ slot: string; current: string; upgrade: string }> = Array.isArray(data.meal_framework_replacements) ? data.meal_framework_replacements : [];
+  if (mfr.length) {
+    y = ensureSpace(doc, y, 60 + mfr.length * 48);
+    y = sectionTitle(doc, '7 · Personalised meal framework — based on your diary', y);
+    y = paragraph(doc, 'Replacements for the meals already in your week — not a generic plan.', y, { color: MUTED, size: 9 });
+    y += 4;
+    mfr.forEach((m) => {
+      y = ensureSpace(doc, y, 48);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(m.slot, 40, y); y += 14;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(MUTED);
+      y = paragraph(doc, `Current: ${m.current}`, y, { color: MUTED });
+      y = paragraph(doc, `Upgrade: ${m.upgrade}`, y, { color: '#2d8a5e' });
+      y += 4;
+    });
+  } else if (mf) {
     y = ensureSpace(doc, y, 160);
     y = sectionTitle(doc, `7 · Daily meal framework (~${mf.total_protein_g} g protein)`, y);
     (mf.meals || []).forEach((m: any) => {

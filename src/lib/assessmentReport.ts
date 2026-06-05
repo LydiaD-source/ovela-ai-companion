@@ -280,11 +280,11 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 90;
   }
 
-  // 3. Headline scores (Nutrition / Recovery / Muscle)
+  // 3. Headline scores (Nutrition / Recovery Support / Muscle)
   y = ensureSpace(doc, y, 110);
   y = sectionTitle(doc, '3 · Headline scores', y);
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
-  y = scoreRow(doc, 'Recovery capacity', s.recovery_capacity ?? 0, y);
+  y = scoreRow(doc, 'Recovery Support Score', s.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Muscle preservation', s.muscle_preservation ?? 0, y);
   y += 10;
 
@@ -317,9 +317,6 @@ function buildNutrition(doc: jsPDF, data: any) {
       y += 14;
     });
     y += 4;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(`Overall readiness ${eb.overall_readiness}/100 — ${eb.overall_position}`, 40, y);
-    y += 14;
     y = paragraph(doc, eb.note, y, { color: MUTED, size: 8 });
     y += 6;
   }
@@ -332,7 +329,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   y = scoreRow(doc, 'Carbohydrate quality', s.carbs ?? 0, y);
   y = scoreRow(doc, 'Fat quality', s.fat ?? 0, y);
   y = scoreRow(doc, 'Hydration', s.hydration ?? 0, y);
-  y = scoreRow(doc, 'Recovery support', s.recovery_support ?? 0, y);
+  y = scoreRow(doc, 'Recovery Support Score', s.recovery_support ?? 0, y);
   y += 10;
 
   // Why these scores (transparency)

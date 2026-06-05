@@ -922,13 +922,13 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     y += 8;
   }
 
-  // 2. Headline scores
+  // 2. Headline scores (simplified to the 4 core signals)
   y = ensureSpace(doc, y, 180);
-  y = sectionTitle(doc, '2 · Your scores', y);
+  y = sectionTitle(doc, '2 · Core scores', y);
   y = scoreRow(doc, 'Recovery capacity', sc.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Stress load (higher = heavier)', sc.stress_load ?? 0, y);
   y = scoreRow(doc, 'Resilience', sc.resilience ?? 0, y);
-  y = scoreRow(doc, 'Lifestyle recovery', sc.lifestyle_recovery ?? 0, y);
+  y = scoreRow(doc, 'Burnout risk score (lower = better)', sc.burnout_risk_score ?? 0, y);
   y += 4;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
@@ -940,7 +940,50 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
   doc.setTextColor(INK);
   y += 18;
   y = scoreRow(doc, 'OVERALL EXECUTIVE WELLNESS', sc.executive_wellness ?? 0, y);
-  y += 10;
+  y += 4;
+  y = paragraph(doc, 'Lifestyle recovery and the executive performance factors below feed into these core scores. The lowest score is your highest-leverage area.', y, { color: MUTED, size: 9 });
+  y += 6;
+
+  // 2b. Recovery Stage zone
+  if (data.recovery_stage) {
+    const rs = data.recovery_stage;
+    y = ensureSpace(doc, y, 110);
+    y = sectionTitle(doc, '2b · Your recovery stage', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(GOLD);
+    doc.text(`${rs.zone} (${rs.range})`, 40, y); y += 16;
+    y = paragraph(doc, rs.summary, y);
+    y += 8;
+  }
+
+  // 2c. Recovery Archetype
+  if (data.recovery_archetype) {
+    const a = data.recovery_archetype;
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '2c · Your Isabella recovery archetype', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(NAVY);
+    doc.text(a.name, 40, y); y += 16;
+    if (Array.isArray(a.characteristics)) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text('Characteristics:', 40, y); y += 13;
+      a.characteristics.forEach((c: string) => {
+        y = ensureSpace(doc, y, 14);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+        doc.text(`- ${c}`, 50, y); y += 12;
+      });
+      y += 4;
+    }
+    if (a.typical_risk) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text('Typical risk:', 40, y); y += 12;
+      y = paragraph(doc, a.typical_risk, y, { color: MUTED });
+    }
+    if (a.primary_focus) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text('Primary focus:', 40, y); y += 12;
+      y = paragraph(doc, a.primary_focus, y, { color: MUTED });
+    }
+    y += 6;
+  }
 
   // 3. Burnout note (never a diagnosis)
   if (data.burnout_note) {
@@ -949,6 +992,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     y = paragraph(doc, data.burnout_note, y, { color: MUTED });
     y += 6;
   }
+
 
   // 3b. Isabella's clinical observation
   if (data.isabella_observation) {
@@ -1004,6 +1048,42 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     });
     y += 8;
   }
+
+  // 3e. Recovery drivers (drains vs protectors)
+  if (data.recovery_drivers) {
+    const rd = data.recovery_drivers;
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '3e · Your recovery drivers', y);
+
+    if (Array.isArray(rd.drains) && rd.drains.length) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#c2553a');
+      doc.text('Biggest recovery drains:', 40, y); y += 14;
+      rd.drains.forEach((d: any, i: number) => {
+        y = ensureSpace(doc, y, 40);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+        doc.text(`${i + 1}. ${d.area}  (score impact ${d.score_impact})`, 40, y); y += 12;
+        y = paragraph(doc, d.detail, y, { color: MUTED });
+        y += 4;
+      });
+      y += 4;
+    }
+
+    if (Array.isArray(rd.protectors) && rd.protectors.length) {
+      y = ensureSpace(doc, y, 80);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#2d8a5e');
+      doc.text('Biggest recovery protectors:', 40, y); y += 14;
+      rd.protectors.forEach((p: any, i: number) => {
+        y = ensureSpace(doc, y, 40);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+        doc.text(`${i + 1}. ${p.area}  (score impact +${p.score_impact})`, 40, y); y += 12;
+        y = paragraph(doc, p.detail, y, { color: MUTED });
+        y += 4;
+      });
+      y += 6;
+    }
+  }
+
+
 
 
   // 4. Executive performance factors
@@ -1087,7 +1167,24 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     });
   }
 
+  // 6c. Executive Age Impact (educational estimate)
+  if (data.executive_age_impact) {
+    const ea = data.executive_age_impact;
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, '6c · Executive recovery-age estimate', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+    doc.text(`Chronological age: ${ea.chronological_age}`, 40, y); y += 14;
+    doc.setTextColor(GOLD);
+    doc.text(`Current recovery profile age: ${ea.current_profile_age}`, 40, y); y += 14;
+    doc.setTextColor('#2d8a5e');
+    doc.text(`Projected 90-day recovery profile age: ${ea.projected_profile_age_90d}`, 40, y); y += 16;
+    doc.setTextColor(INK);
+    if (ea.narrative) y = paragraph(doc, ea.narrative, y, { color: MUTED });
+    y += 6;
+  }
+
   // 7. Closing recommendation (WellneSpirit funnel — no €19 pitch)
+
   if (data.closing_recommendation) {
     y = ensureSpace(doc, y, 100);
     y = sectionTitle(doc, '7 · Next step', y);

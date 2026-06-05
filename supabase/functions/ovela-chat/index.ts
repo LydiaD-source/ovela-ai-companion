@@ -873,6 +873,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
       let nutritionReportPayload: any = null;
       let bioAgeReportPayload: any = null;
+      let receptionistReportPayload: any = null;
       let assessmentReportResponse: any = null;
 
       // 🛟 REPORT DELIVERY GUARD — if the model promised or referenced a completed

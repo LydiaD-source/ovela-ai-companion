@@ -260,10 +260,10 @@ async function checkAndRecordTrial(userKey: string): Promise<{ trial_expired: bo
 }
 
 const WELLNESPIRIT_PRE_EXPIRY_FOOTER =
-  "\n\nIf you'd like weekly tracking, progress comparisons and monthly reassessments, the full monthly programme lives at our clinical partner WellneSpirit (wellnespirit.com).";
+  "\n\n_This is your **free baseline assessment** — a one-time snapshot. Accuracy improves dramatically when changes are tracked weekly against a stable baseline. For monthly reassessments, score-vs-score progress comparisons (Month 1 → Month 2 → Month 6) and Isabella's ongoing support, the full programme lives at our clinical partner WellneSpirit (wellnespirit.com)._";
 
 const WELLNESPIRIT_EXPIRED_MESSAGE =
-  "Thank you for using your free 7-day Isabella assessment window.\n\nTo continue receiving weekly assessments, progress tracking and ongoing support from Isabella, please activate the full monthly programme at our clinical partner **WellneSpirit** — visit wellnespirit.com and register for the Executive Wellness subscription.\n\nYour previous assessment, scores and recommendations remain valid for the next 14 days.";
+  "Thank you for using your free 7-day Isabella baseline window.\n\nThe free version is designed as a **one-time baseline** — not a recurring assessment service. To continue with weekly tracking, monthly reassessments, **score-vs-score progress comparisons** (e.g. Nutrition 67 → 74, Protein 54 → 71) and ongoing support from Isabella, please activate the full monthly programme at our clinical partner **WellneSpirit** — visit wellnespirit.com and register for the Executive Wellness subscription.\n\nYour previous baseline report remains valid for the next 14 days.";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });

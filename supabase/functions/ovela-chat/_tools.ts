@@ -901,7 +901,22 @@ export function nutritionAssessment(args: {
       muscle_preservation: musclePres, metabolic_support: metabolicSupport,
       recovery_capacity: recoveryCapacity,
       overall_nutrition: overall,
+      executive_readiness: executiveReadiness,
     },
+    executive_readiness: {
+      score: executiveReadiness,
+      level: executiveReadinessLevel,
+      scale: [
+        "80-100 = Optimized",
+        "60-79 = Functional but leaking performance",
+        "40-59 = Recovery deficit",
+        "Below 40 = High risk of exhaustion",
+      ],
+      measures: ["Recovery", "Nutrition", "Muscle preservation", "Daily resilience"],
+    },
+    executive_benchmark: executiveBenchmark,
+    reassessment_projection: reassessmentProjection,
+    clinical_perspective: clinicalPerspective,
     executive_summary: executiveSummary,
     muscle_preservation: {
       current_protein_g: args.est_protein_g ?? null,

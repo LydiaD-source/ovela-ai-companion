@@ -833,7 +833,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
               followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
             }
             if (nutritionReportPayload || bioAgeReportPayload) {
-              const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'biological_age';
+              const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'recovery_resilience';
               followUpMessages.push({
                 role: "system",
                 content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download button. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add one short line offering to email it or discuss the improvements.`
@@ -875,7 +875,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
           if (!hasBlock && (nutritionReportPayload || bioAgeReportPayload)) {
             const payload = nutritionReportPayload
               ? { type: 'nutrition_assessment', title: 'Protein & Nutrition Assessment', data: nutritionReportPayload }
-              : { type: 'biological_age', title: 'Biological Age Assessment', data: bioAgeReportPayload };
+              : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
             const summary = finalMessage && finalMessage.trim().length > 0
               ? finalMessage.trim()
               : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";

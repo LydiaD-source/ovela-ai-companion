@@ -27,11 +27,8 @@ export function isMeaningfulAssessmentReport(report: AssessmentReport | null | u
   const data = report.data;
 
   if (report.type === 'nutrition_assessment') {
-    const scores = data.scores || {};
     const targets = data.targets || {};
     return Boolean(
-      typeof scores.overall_nutrition === 'number' ||
-      typeof scores.protein === 'number' ||
       typeof targets.daily_calories === 'number' ||
       typeof targets.protein_g?.low_g === 'number' ||
       typeof data.muscle_preservation?.recommended_protein_g === 'number' ||

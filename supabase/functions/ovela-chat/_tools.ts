@@ -733,7 +733,7 @@ export function nutritionAssessment(args: {
   )));
 
   // ── Long-term outlook (consultant conclusion) ───────────────────────
-  const rank = (s: number, hi = 75, mid = 55) => s >= hi ? "Strong" : s >= mid ? "Moderate" : "Below optimal";
+  const rank = (s: number, hi = 75, mid = 55) => s >= hi ? "Strong foundation" : s >= mid ? "Developing foundation" : "Needs reinforcement";
   const longTermOutlook = {
     muscle_preservation_risk: musclePres >= 75 ? "Low" : musclePres >= 55 ? "Moderate" : "High",
     recovery_capacity: rank(recoveryCapacity),
@@ -741,11 +741,119 @@ export function nutritionAssessment(args: {
       ? (proteinScore >= 60 && recoveryCapacity >= 55 ? "High" : "Moderate")
       : "Not the primary goal for this profile",
     longevity_support:
-      ((walk ?? 0) >= 20 && strength >= 2 && (alcohol ?? 0) <= 7 && sleepH >= 7)
-        ? "Strong"
-        : recoveryCapacity >= 60 ? "Moderate" : "Below optimal",
+      ((walk ?? 0) >= 20 && strength >= 2 && (alcohol ?? 0) <= 7 && sleepH >= 7 && proteinScore >= 65 && hydrationScore >= 65)
+        ? "Strong foundation"
+        : recoveryCapacity >= 60 ? "Developing foundation" : "Needs reinforcement",
     most_impactful_improvement: priorities[0]?.title || fastestWin.title,
   };
+
+  // ── Executive Readiness Score (headline number for retention) ───────
+  const sleepPenalty = sleepH < 7 ? (7 - sleepH) * 15 : 0;
+  const executiveReadiness = Math.max(20, Math.min(100, Math.round(
+    recoveryCapacity * 0.30 +
+    overall * 0.25 +
+    musclePres * 0.25 +
+    Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.20
+  )));
+  const executiveReadinessLevel =
+    executiveReadiness >= 80 ? "Optimized" :
+    executiveReadiness >= 60 ? "Functional but leaking performance" :
+    executiveReadiness >= 40 ? "Recovery deficit" :
+                               "High risk of exhaustion";
+
+  // ── Executive Benchmark (peer comparison — psychologically motivating) ─
+  const cohortLabel = (() => {
+    const g = gender === "female" ? "Women" : gender === "male" ? "Men" : "Adults";
+    const lo = Math.max(20, Math.floor(age / 5) * 5);
+    return `${g} aged ${lo}-${lo + 9}`;
+  })();
+  const posLabel = (s: number) =>
+    s >= 80 ? "Top 20%" :
+    s >= 65 ? "Top 40%" :
+    s >= 50 ? "Average" :
+    s >= 35 ? "Bottom 40%" :
+              "Bottom 25%";
+  const benchmarkItems = [
+    {
+      metric: "Protein intake",
+      current: args.est_protein_g != null ? `${args.est_protein_g} g/day` : "Not reported",
+      recommended: `${proteinTarget.low_g}-${proteinTarget.high_g} g/day`,
+      position: posLabel(proteinScore),
+    },
+    {
+      metric: "Resistance training",
+      current: `${strength} session${strength === 1 ? "" : "s"}/week`,
+      recommended: `${reco.strength_sessions_per_week}+ sessions/week`,
+      position: posLabel(strengthComp),
+    },
+    {
+      metric: "Walking activity",
+      current: walk != null ? `${walk} min/day` : "Not reported",
+      recommended: "30+ min/day",
+      position: posLabel(walkScore),
+    },
+    {
+      metric: "Hydration",
+      current: args.est_hydration_l != null ? `${args.est_hydration_l} L/day` : "Not reported",
+      recommended: `~${hydrationTargetL} L/day`,
+      position: posLabel(hydrationScore),
+    },
+    {
+      metric: "Sleep duration",
+      current: `${sleepH} h/night`,
+      recommended: "7-8 h/night",
+      position: posLabel(sleepComp),
+    },
+    {
+      metric: "Alcohol load",
+      current: alcohol != null ? `${alcohol} units/week` : "Not reported",
+      recommended: "<= 7 units/week",
+      position: alcohol == null ? "Average" : alcohol === 0 ? "Top 20%" : alcohol <= 7 ? "Top 40%" : alcohol <= 14 ? "Bottom 40%" : "Bottom 25%",
+    },
+  ];
+  const overallPosition =
+    executiveReadiness >= 75 ? "Above peer average" :
+    executiveReadiness >= 55 ? "Moderate vs peers" :
+                               "Below peer average";
+  const executiveBenchmark = {
+    cohort: cohortLabel,
+    items: benchmarkItems,
+    overall_readiness: executiveReadiness,
+    overall_position: overallPosition,
+    note: "Peer ranges are educational estimates drawn from European executive-wellness population data — not clinical benchmarks.",
+  };
+
+  // ── Reassessment projection (retention hook — "come back in 14 days") ─
+  const projectIf = (current: number, bump: number) => Math.min(100, current + bump);
+  const reassessmentProjection = {
+    reassess_in_days: 14,
+    if_you: [
+      proteinGap != null && proteinGap > 10 ? `Increase protein toward ${proteinMid} g/day` : "Maintain current protein intake",
+      hydrationGapL != null && hydrationGapL > 0.4 ? `Increase hydration by ~${hydrationGapL} L/day` : "Maintain hydration",
+      strength < reco.strength_sessions_per_week ? `Reach ${reco.strength_sessions_per_week} resistance sessions/week` : "Maintain resistance training",
+      (alcohol ?? 0) > 7 ? "Reduce alcohol toward <= 7 units/week" : "Keep alcohol in current range",
+    ],
+    expected_changes: [
+      { metric: "Executive readiness", from: executiveReadiness, to: projectIf(executiveReadiness, 6) },
+      { metric: "Muscle preservation", from: musclePres, to: projectIf(musclePres, 9) },
+      { metric: "Recovery capacity", from: recoveryCapacity, to: projectIf(recoveryCapacity, 6) },
+      { metric: "Nutrition quality", from: overall, to: projectIf(overall, 7) },
+    ],
+    note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
+  };
+
+  // ── Clinical Perspective (WellneSpirit authority layer) ─────────────
+  const clinicalOpportunities: string[] = [];
+  if (proteinScore < 70) clinicalOpportunities.push("increasing daily protein intake");
+  if (hydrationScore < 70) clinicalOpportunities.push("improving daily hydration");
+  if (strength < 2) clinicalOpportunities.push("adding consistent resistance training");
+  if ((alcohol ?? 0) > 7) clinicalOpportunities.push("reducing weekly alcohol load");
+  if (sleepH < 7) clinicalOpportunities.push("extending sleep duration");
+  if (clinicalOpportunities.length === 0) clinicalOpportunities.push("maintaining current habits while fine-tuning consistency");
+  const clinicalPerspective =
+    `Based on current habits, the strongest opportunities for improvement are ${clinicalOpportunities.slice(0, 3).join(", ")}. ` +
+    `These are commonly observed factors affecting energy, body composition, and long-term resilience in adults${age >= 45 ? " over 45" : ""}. ` +
+    `This perspective is consistent with the executive-wellness framework used by WellneSpirit's practitioners — it is educational, not diagnostic.`;
 
 
   return {
@@ -793,7 +901,22 @@ export function nutritionAssessment(args: {
       muscle_preservation: musclePres, metabolic_support: metabolicSupport,
       recovery_capacity: recoveryCapacity,
       overall_nutrition: overall,
+      executive_readiness: executiveReadiness,
     },
+    executive_readiness: {
+      score: executiveReadiness,
+      level: executiveReadinessLevel,
+      scale: [
+        "80-100 = Optimized",
+        "60-79 = Functional but leaking performance",
+        "40-59 = Recovery deficit",
+        "Below 40 = High risk of exhaustion",
+      ],
+      measures: ["Recovery", "Nutrition", "Muscle preservation", "Daily resilience"],
+    },
+    executive_benchmark: executiveBenchmark,
+    reassessment_projection: reassessmentProjection,
+    clinical_perspective: clinicalPerspective,
     executive_summary: executiveSummary,
     muscle_preservation: {
       current_protein_g: args.est_protein_g ?? null,

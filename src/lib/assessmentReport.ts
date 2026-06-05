@@ -242,13 +242,77 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 8;
   }
 
-  // 2. Headline scores (Nutrition / Recovery / Muscle)
+  // 2. Executive Readiness Score (headline)
+  const er = data.executive_readiness;
+  if (er) {
+    y = ensureSpace(doc, y, 140);
+    y = sectionTitle(doc, '2 · Executive Readiness Score', y);
+    // Big number block
+    doc.setFillColor('#f7f3e6');
+    doc.rect(40, y - 12, 515, 70, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(36);
+    doc.setTextColor(NAVY);
+    doc.text(`${er.score} / 100`, 56, y + 28);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(GOLD);
+    doc.text(er.level, 260, y + 12);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(MUTED);
+    doc.text(`Measures: ${(er.measures || []).join(' · ')}`, 260, y + 30);
+    doc.text('Scale:', 260, y + 44);
+    (er.scale || []).slice(0, 4).forEach((line: string, i: number) => {
+      doc.text(`• ${line}`, 300, y + 44 + (i + 1) * 10);
+    });
+    y += 90;
+  }
+
+  // 3. Headline scores (Nutrition / Recovery / Muscle)
   y = ensureSpace(doc, y, 110);
-  y = sectionTitle(doc, '2 · Headline scores', y);
+  y = sectionTitle(doc, '3 · Headline scores', y);
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
   y = scoreRow(doc, 'Executive recovery capacity', s.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Muscle preservation', s.muscle_preservation ?? 0, y);
   y += 10;
+
+  // 4. Executive Benchmark (peer comparison)
+  const eb = data.executive_benchmark;
+  if (eb) {
+    y = ensureSpace(doc, y, 200);
+    y = sectionTitle(doc, '4 · Executive benchmark', y);
+    y = paragraph(doc, `Compared with ${eb.cohort}:`, y, { color: MUTED, size: 9 });
+    y += 4;
+    // Column headers
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
+    doc.text('Metric', 40, y);
+    doc.text('Current', 200, y);
+    doc.text('Recommended', 330, y);
+    doc.text('Position', 470, y);
+    y += 6;
+    doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 8;
+    (eb.items || []).forEach((it: any) => {
+      y = ensureSpace(doc, y, 22);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+      doc.text(String(it.metric), 40, y);
+      doc.text(String(it.current), 200, y);
+      doc.text(String(it.recommended), 330, y);
+      const top = String(it.position).startsWith('Top');
+      const bot = String(it.position).startsWith('Bottom');
+      doc.setTextColor(top ? '#2d8a5e' : bot ? '#c2553a' : MUTED);
+      doc.setFont('helvetica', 'bold');
+      doc.text(String(it.position), 470, y);
+      y += 14;
+    });
+    y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text(`Overall readiness ${eb.overall_readiness}/100 — ${eb.overall_position}`, 40, y);
+    y += 14;
+    y = paragraph(doc, eb.note, y, { color: MUTED, size: 8 });
+    y += 6;
+  }
+
 
   // Nutrition snapshot (sub of executive view, no number)
   y = ensureSpace(doc, y, 180);
@@ -334,7 +398,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const mp = data.muscle_preservation;
   if (mp) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '3 · Muscle preservation & performance capacity', y);
+    y = sectionTitle(doc, '5 · Muscle preservation & performance capacity', y);
     y = paragraph(doc,
       `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
       `Recommended protein: ${mp.recommended_protein_g ?? '—'} g/day\n` +
@@ -354,7 +418,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ps = data.protein_strategy;
   if (ps) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, `4 · High-performance nutrition strategy (${ps.diet_type})`, y);
+    y = sectionTitle(doc, `6 · High-performance nutrition strategy (${ps.diet_type})`, y);
     y = paragraph(doc, 'Best protein sources:', y);
     (ps.best_sources || []).forEach((src: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${src}`, y); });
     y += 4;
@@ -390,7 +454,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const mf = data.daily_meal_framework;
   if (mf) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, `5 · Daily meal framework (~${mf.total_protein_g} g protein)`, y);
+    y = sectionTitle(doc, `7 · Daily meal framework (~${mf.total_protein_g} g protein)`, y);
     (mf.meals || []).forEach((m: any) => {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold');
@@ -407,7 +471,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ms = data.metabolic_support;
   if (ms) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '6 · Recovery & metabolic efficiency', y);
+    y = sectionTitle(doc, '8 · Recovery & metabolic efficiency', y);
     y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
     if ((ms.biggest_opportunities || []).length) {
       y += 4;
@@ -424,7 +488,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const rt = data.resistance_training;
   if (rt) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '7 · Resistance training recommendation', y);
+    y = sectionTitle(doc, '9 · Resistance training recommendation', y);
     y = paragraph(doc,
       `Age: ${rt.age}    Goal: ${rt.goal}\n` +
       `• ${rt.strength_sessions_per_week} resistance sessions per week\n` +
@@ -439,7 +503,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const bai = data.biological_age_impact;
   if ((lf && (lf.alcohol || lf.coffee || lf.walking)) || bai) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '8 · Recovery & lifestyle factors', y);
+    y = sectionTitle(doc, '10 · Recovery & lifestyle factors', y);
     if (lf?.alcohol) {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
@@ -484,7 +548,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const proj = data.weight_loss_projection;
   if (proj) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '9 · Expected progress', y);
+    y = sectionTitle(doc, '11 · Expected progress', y);
     y = paragraph(doc, proj.assumes, y, { color: MUTED, size: 9 });
     y += 4;
     y = paragraph(doc,
@@ -500,7 +564,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const epi = data.executive_performance_impact;
   if (epi) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '10 · Executive performance impact', y);
+    y = sectionTitle(doc, '12 · Executive performance impact', y);
     if ((epi.current_likely_influences || []).length) {
       y = paragraph(doc, 'Your current nutrition likely influences:', y);
       epi.current_likely_influences.forEach((p: string) => {
@@ -527,7 +591,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const lto = data.long_term_outlook;
   if (lto) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '11 · Long-term outlook', y);
+    y = sectionTitle(doc, '13 · Long-term outlook', y);
     y = paragraph(doc, 'Current trajectory:', y);
     y = paragraph(doc, `• Muscle preservation risk: ${lto.muscle_preservation_risk}`, y);
     y = paragraph(doc, `• Recovery capacity: ${lto.recovery_capacity}`, y);
@@ -545,7 +609,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   // 12. Three highest-impact improvements
   if ((data.improvement_priorities || []).length) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '12 · Three highest-impact improvements', y);
+    y = sectionTitle(doc, '14 · Three highest-impact improvements', y);
     data.improvement_priorities.forEach((p: any, i: number) => {
       y = ensureSpace(doc, y, 50);
       doc.setFont('helvetica', 'bold');
@@ -562,7 +626,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const wap = data.weekly_action_plan;
   if (wap) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, "13 · Isabella's weekly action plan", y);
+    y = sectionTitle(doc, "15 · Isabella's weekly action plan", y);
     y = paragraph(doc, 'Your priority focus this week:', y);
     (wap.priorities || []).forEach((p: string) => {
       y = ensureSpace(doc, y, 16);
@@ -584,6 +648,52 @@ function buildNutrition(doc: jsPDF, data: any) {
       y = ensureSpace(doc, y, 18);
       y = paragraph(doc, `• ${line}`, y);
     });
+  }
+
+  // 16. Clinical perspective (WellneSpirit authority layer)
+  if (data.clinical_perspective) {
+    y = ensureSpace(doc, y, 110);
+    y = sectionTitle(doc, '16 · Clinical perspective', y);
+    // Subtle institutional callout box
+    doc.setFillColor('#f4f1ea');
+    doc.setDrawColor(GOLD);
+    doc.setLineWidth(0.5);
+    doc.rect(40, y - 12, 515, 64, 'FD');
+    const lines = doc.splitTextToSize(data.clinical_perspective, 495);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10);
+    doc.setTextColor(NAVY);
+    doc.text(lines, 50, y + 2);
+    y += 70;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(MUTED);
+    y = paragraph(doc, 'Reviewed under the executive-wellness framework used by WellneSpirit practitioners.', y, { color: MUTED, size: 8 });
+    y += 6;
+  }
+
+  // 17. Reassess in 14 days (retention hook)
+  const rp = data.reassessment_projection;
+  if (rp) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, `17 · Reassess in ${rp.reassess_in_days} days`, y);
+    y = paragraph(doc, 'If you:', y);
+    (rp.if_you || []).forEach((it: string) => {
+      y = ensureSpace(doc, y, 14);
+      y = paragraph(doc, `+ ${it}`, y, { color: '#2d8a5e' });
+    });
+    y += 6;
+    y = paragraph(doc, 'You could expect:', y);
+    (rp.expected_changes || []).forEach((c: any) => {
+      y = ensureSpace(doc, y, 16);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(`${c.metric}`, 40, y);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
+      doc.text(`${c.from}  ->  ${c.to}`, 300, y);
+      y += 14;
+    });
+    y += 4;
+    y = paragraph(doc, rp.note, y, { color: MUTED, size: 9 });
   }
 }
 

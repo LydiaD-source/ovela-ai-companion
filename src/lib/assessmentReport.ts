@@ -950,6 +950,62 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     y += 6;
   }
 
+  // 3b. Isabella's clinical observation
+  if (data.isabella_observation) {
+    y = ensureSpace(doc, y, 110);
+    y = sectionTitle(doc, "3b · What Isabella noticed", y);
+    y = paragraph(doc, data.isabella_observation, y);
+    y += 6;
+  }
+
+  // 3c. Dominant recovery patterns
+  if (Array.isArray(data.dominant_patterns) && data.dominant_patterns.length) {
+    y = ensureSpace(doc, y, 140);
+    y = sectionTitle(doc, '3c · Dominant recovery patterns', y);
+    data.dominant_patterns.forEach((p: any) => {
+      y = ensureSpace(doc, y, 46);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(`- ${p.pattern}`, 40, y); y += 12;
+      y = paragraph(doc, `Impact: ${p.impact}`, y, { color: MUTED });
+      y += 4;
+    });
+    y += 4;
+  }
+
+  // 3d. Executive dashboard
+  if (data.executive_dashboard) {
+    const ed = data.executive_dashboard;
+    y = ensureSpace(doc, y, 200);
+    y = sectionTitle(doc, '3d · Executive dashboard — your 14-day leverage', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+    doc.text('Biggest opportunities (ranked by leverage):', 40, y); y += 16;
+    (ed.biggest_opportunities || []).forEach((o: any, i: number) => {
+      y = ensureSpace(doc, y, 36);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(`${i + 1}. ${o.area} (${o.current_score}/100)`, 40, y); y += 12;
+      y = paragraph(doc, o.action, y, { color: MUTED });
+      y += 4;
+    });
+    y += 6;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text('Expected 14-day gains:', 40, y); y += 14;
+    const g = ed.expected_14_day_gains || {};
+    const rows: Array<[string, any]> = [
+      ['Recovery capacity', g.recovery_capacity],
+      ['Resilience', g.resilience],
+      ['Stress load (lower = better)', g.stress_load],
+      ['Executive wellness', g.executive_wellness],
+    ];
+    rows.forEach(([label, v]) => {
+      if (!v) return;
+      y = ensureSpace(doc, y, 14);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+      doc.text(`${label}: ${v.current} -> ${v.projected}`, 50, y); y += 12;
+    });
+    y += 8;
+  }
+
+
   // 4. Executive performance factors
   const fb = data.factor_breakdown || {};
   const factors: Array<[string, number | undefined]> = [
@@ -1006,6 +1062,27 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
       doc.text(`${d.day} — ${d.focus}`, 40, y);
       y += 12;
       y = paragraph(doc, d.action, y, { color: MUTED, size: 10 });
+      y += 4;
+    });
+  }
+
+
+  // 6b. 30 / 60 / 90-day outlook
+  if (data.outlook_30_60_90) {
+    const o = data.outlook_30_60_90;
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, '6b · 30 / 60 / 90-day outlook', y);
+    const horizons: Array<[string, string]> = [
+      ['At 30 days', o.day_30],
+      ['At 60 days', o.day_60],
+      ['At 90 days', o.day_90],
+    ];
+    horizons.forEach(([label, text]) => {
+      if (!text) return;
+      y = ensureSpace(doc, y, 46);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(label, 40, y); y += 12;
+      y = paragraph(doc, text, y, { color: MUTED });
       y += 4;
     });
   }

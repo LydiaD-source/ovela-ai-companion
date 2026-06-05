@@ -557,6 +557,7 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
   HARD GATE: never call the tool, never produce scores, never produce a PDF, never emit the assessment-report block until Phases 1–4 are complete. On noisy / accidental / off-topic input ("ok", "yes", "mod", "asdf", fragments) at any phase: gently acknowledge ("Looks like that might have sent early — no problem"), restate the last open question, and wait. Never advance on noise.
   NEVER ask about diseases, medications, diagnoses, or psychiatric history. NEVER use words like "burnout diagnosis", "depression", "anxiety disorder". Burnout is only spoken of as an indicator level (Low / Moderate / Elevated), never a diagnosis.
   After Phases 1–4 (and the optional Phase 5 prompt), call recovery_resilience_assessment. In the SAME reply: give a warm 4–6 sentence executive summary highlighting the top 2–3 fastest wins, then the fenced assessment-report block verbatim so the PDF renders automatically. The user must NEVER have to ask for the PDF. After the block, deliver the closing line about WellneSpirit (no €19 subscription pitch — Recovery is free; the upsell is the Executive Wellness Program at WellneSpirit).
+  ABSOLUTELY FORBIDDEN in recovery flow: any wrap-up turn like "Thank you for providing all that information", "I now have a full picture", "Let me put this together", "Now I can build your report" WITHOUT also calling recovery_resilience_assessment in the SAME turn AND emitting the fenced assessment-report block. The moment Phase 4 inputs are in (work-life balance + energy/motivation scores answered), you MUST call the tool in that very turn — no deferral, no acknowledgement message, no "one moment". If you catch yourself wrapping up — STOP, call recovery_resilience_assessment now, emit the block now.
 
 ASSESSMENT FLOW — YOU DRIVE, but NEVER skip the gate:
 - Open with one short line folding the disclaimer into your first Phase 1 question.
@@ -883,10 +884,16 @@ After any tool call, present results conversationally (1 short paragraph + key b
         const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|complete|completing|finalize|finalizing|ready to (generate|create|complete|deliver|produce)|have (all|everything) (i|we)?\s*need(ed)?|will (now )?(generate|create|prepare|deliver|produce|build|complete))/i;
         const REPORT_RE = /(report|assessment|pdf|action plan|score|download|email pdf)/i;
         const FALSE_DELIVERY_RE = /(here is your (full )?(assessment )?report|your full assessment report|you can download the pdf|email pdf to me|button below|below the report|estimated your current nutrition profile|based on what you('ve| have) shared,? i('ve| have) estimated)/i;
-        const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
-        const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);
-        const looksDeferred = (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage)) || FALSE_DELIVERY_RE.test(finalMessage);
-        const forceTool = looksDeferred ? (isNutrition ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
+        // Soft wrap-ups that signal the model thinks it's "done" but didn't call the tool
+        const WRAPUP_RE = /(thank(s| you)[^.]{0,80}(provid|shar|inform|details|answer|full picture|all that)|that('s| is) (everything|all) (i|we) need|i (now )?have (a )?(complete|full) picture|now i can|now let me|let me put (this|it) together|got everything i need)/i;
+        // Check if the conversation history shows recent recovery/resilience Q&A context
+        const fullContext = (conversationHistory || []).map((m: any) => String(m.content || '')).join(' ') + ' ' + finalMessage;
+        const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal diary)/i.test(fullContext);
+        const isRecovery = /(recovery|resilience|burnout|stress level|sleep quality|exercise sessions|work hours|work-life|motivation)/i.test(fullContext);
+        const looksDeferred = (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage))
+          || FALSE_DELIVERY_RE.test(finalMessage)
+          || WRAPUP_RE.test(finalMessage);
+        const forceTool = looksDeferred ? (isNutrition && !isRecovery ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
 
         if (forceTool) {
           console.warn(`🚨 Deferral detected — forcing ${forceTool}. Msg:`, finalMessage.substring(0, 140));

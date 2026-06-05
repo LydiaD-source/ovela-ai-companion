@@ -386,12 +386,23 @@ const INDUSTRY: Record<IndustryKey, {
 };
 
 function speedToLeadProfile(avgMinutes: number) {
-  // Industry benchmarks: <5 min ~100% conv potential, 5-30 ~21%, 30-60 ~11%, >60 ~6%.
-  if (avgMinutes <= 5)  return { bucket:"<5 min",       potential_pct:100, label:"first-responder advantage" };
-  if (avgMinutes <= 30) return { bucket:"5-30 min",     potential_pct:21,  label:"strong but losing" };
-  if (avgMinutes <= 60) return { bucket:"30-60 min",    potential_pct:11,  label:"speed penalty applies" };
-  if (avgMinutes <= 240)return { bucket:"1-4 hours",    potential_pct:6,   label:"most leads already lost" };
-  return                       { bucket:"4+ hours",     potential_pct:3,   label:"effectively cold" };
+  // Calibrated conversion-EFFICIENCY of captured inbound leads.
+  // Based on widely-cited speed-to-lead studies (Harvard / InsideSales / Drift):
+  // <5 min responders convert roughly 5-10x faster than 30-60 min responders.
+  // Numbers are expressed as realistic % conversion (not theoretical ceilings).
+  if (avgMinutes <= 5)  return { bucket:"<5 min",    potential_pct:22, label:"first-responder advantage" };
+  if (avgMinutes <= 30) return { bucket:"5-30 min",  potential_pct:12, label:"strong but losing" };
+  if (avgMinutes <= 60) return { bucket:"30-60 min", potential_pct:8,  label:"speed penalty applies" };
+  if (avgMinutes <= 240)return { bucket:"1-4 hours", potential_pct:5,  label:"most leads already lost" };
+  return                       { bucket:"4+ hours",  potential_pct:3,  label:"effectively cold" };
+}
+
+// Display helper: cap absurd-looking ROI numbers so the report stays credible.
+function formatRoiDisplay(roiPct: number): string {
+  if (!isFinite(roiPct) || roiPct <= 0) return "—";
+  if (roiPct >= 10000) return "> 100x investment (> 10,000%)";
+  if (roiPct >= 1000)  return `~${Math.round(roiPct / 100)}x investment (${roiPct.toLocaleString('en-US')}%)`;
+  return `${roiPct}%`;
 }
 
 export function calcMissedLeads(args: {

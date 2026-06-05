@@ -22,6 +22,50 @@ export interface AssessmentReport {
   data: any;
 }
 
+function normalizeAssessmentReportPayload(parsed: any): AssessmentReport | null {
+  if (!parsed || typeof parsed !== 'object') return null;
+
+  const explicitType = parsed.type === 'biological_age' ? 'recovery_resilience' : parsed.type;
+  if ((explicitType === 'nutrition_assessment' || explicitType === 'recovery_resilience') && parsed.data) {
+    return { ...parsed, type: explicitType } as AssessmentReport;
+  }
+
+  if (parsed.nutrition_assessment_response) {
+    return {
+      type: 'nutrition_assessment',
+      title: 'Executive Nutrition & Muscle Preservation Assessment',
+      data: parsed.nutrition_assessment_response,
+    };
+  }
+
+  const recoveryPayload = parsed.recovery_resilience_response || parsed.recovery_resilience_assessment_response || parsed.biological_age_response;
+  if (recoveryPayload) {
+    return {
+      type: 'recovery_resilience',
+      title: 'Executive Recovery & Resilience Assessment',
+      data: recoveryPayload,
+    };
+  }
+
+  if (parsed.muscle_preservation || parsed.protein_strategy || parsed.daily_meal_framework) {
+    return {
+      type: 'nutrition_assessment',
+      title: 'Executive Nutrition & Muscle Preservation Assessment',
+      data: parsed,
+    };
+  }
+
+  if (parsed.scores?.burnout_risk || parsed.recovery_capacity || parsed.executive_wellness || parsed.resilience) {
+    return {
+      type: 'recovery_resilience',
+      title: 'Executive Recovery & Resilience Assessment',
+      data: parsed,
+    };
+  }
+
+  return null;
+}
+
 // Try to parse a fenced ```assessment-report ... ``` block.
 // Returns the report and the cleaned message (block removed) so chat UI stays clean.
 export function extractAssessmentReport(text: string): {
@@ -29,20 +73,15 @@ export function extractAssessmentReport(text: string): {
   cleaned: string;
 } {
   if (!text) return { report: null, cleaned: text };
-  const re = /```assessment-report\s*([\s\S]*?)```/i;
+  const re = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
   const m = text.match(re);
   if (!m) return { report: null, cleaned: text };
   try {
-    const parsed = JSON.parse(m[1].trim());
-    // Accept new + legacy report type names
-    if (parsed && parsed.data && (
-      parsed.type === 'nutrition_assessment' ||
-      parsed.type === 'recovery_resilience' ||
-      parsed.type === 'biological_age'
-    )) {
-      if (parsed.type === 'biological_age') parsed.type = 'recovery_resilience';
+    const parsed = JSON.parse(m[1].trim().replace(/^json\s*/i, ''));
+    const report = normalizeAssessmentReportPayload(parsed);
+    if (report) {
       return {
-        report: parsed as AssessmentReport,
+        report,
         cleaned: text.replace(re, '').trim(),
       };
     }

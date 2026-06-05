@@ -915,6 +915,54 @@ export function nutritionAssessment(args: {
     note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
   };
 
+  // ── Executive dashboard (page 1 "wow" panel — opportunities + expected gains) ─
+  const opportunitiesList: Array<{ label: string; delta: string; impact: string }> = [];
+  if (proteinGap != null && proteinGap >= 15) {
+    opportunitiesList.push({
+      label: "Protein intake",
+      delta: `+${proteinGap} g/day`,
+      impact: "Strongest lever for muscle preservation and satiety.",
+    });
+  }
+  if ((alcohol ?? 0) > 7) {
+    opportunitiesList.push({
+      label: "Alcohol reduction",
+      delta: `-${Math.max(0, (alcohol ?? 0) - 7)} units/week`,
+      impact: "Restores deep sleep and overnight recovery.",
+    });
+  }
+  if (hydrationGapL != null && hydrationGapL >= 0.4) {
+    opportunitiesList.push({
+      label: "Hydration",
+      delta: `+${hydrationGapL} L/day`,
+      impact: "Steadier afternoon energy and cognitive stamina.",
+    });
+  }
+  if (strength < (reco.strength_sessions_per_week ?? 2)) {
+    const gap = (reco.strength_sessions_per_week ?? 2) - strength;
+    opportunitiesList.push({
+      label: "Resistance training",
+      delta: `+${gap} session${gap === 1 ? "" : "s"}/week`,
+      impact: "Single strongest input for long-term muscle and metabolic health.",
+    });
+  }
+  if (args.low_protein_breakfast) {
+    opportunitiesList.push({
+      label: "Breakfast protein",
+      delta: "anchor at 30–40 g",
+      impact: "Levels morning hunger and starts muscle protein synthesis early.",
+    });
+  }
+  const executiveDashboard = {
+    biggest_opportunities: opportunitiesList.slice(0, 4),
+    expected_14_day_gains: reassessmentProjection.expected_changes.map((c) => ({
+      metric: c.metric,
+      gain: `+${Math.max(0, c.to - c.from)}`,
+    })),
+    note: "Top opportunities ranked by impact on your scores over the next 14 days.",
+  };
+
+
   // ── Dominant Nutrition Patterns (how a practitioner reads the diary) ─
   const dominantPatterns: Array<{ pattern: string; impact: string }> = [];
   if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60)) {

@@ -687,138 +687,223 @@ export function nutritionAssessment(args: {
   };
 }
 
-// ─── Biological Age Assessment (lifestyle-only, non-diagnostic) ──────────
-export function biologicalAgeAssessment(args: {
-  chronological_age: number;
+// ─── Executive Recovery & Resilience Assessment (lifestyle-only, non-diagnostic) ──────────
+export function recoveryResilienceAssessment(args: {
+  // Phase 1 — Personal Profile
+  age: number;
   gender?: "male" | "female" | "other";
   height_cm?: number;
   weight_kg?: number;
-  waist_cm?: number;
-  sleep_hours?: number;           // average per night
+  occupation?: string;
+  primary_goal?: "more_energy" | "better_recovery" | "reduce_stress" | "prevent_burnout" | "improve_performance" | "improve_longevity";
+
+  // Phase 2 — Workload & Stress
+  work_hours_per_week?: number;
+  focused_work_hours_per_day?: number;
+  meeting_hours_per_day?: number;
+  travel_hours_per_day?: number;
+  works_evenings?: boolean;
+  works_weekends?: boolean;
+  pressure_frequency?: number;     // 1–10
+  responsibility_level?: number;   // 1–10
+
+  // Phase 3 — Recovery
+  sleep_hours?: number;
+  sleep_quality?: number;          // 1–10
+  wakes_refreshed?: boolean;
   exercise_sessions_per_week?: number;
-  stress_level?: number;          // 1–10
+  exercise_type?: "resistance" | "cardio" | "walking" | "mixed" | "none";
+  takes_recovery_days?: boolean;
+  outdoor_hours_per_week?: number;
+
+  // Phase 4 — Lifestyle & Resilience
   alcohol_units_per_week?: number;
-  smoking?: "never" | "former" | "current";
-  energy_level?: number;          // 1–10 (self-reported)
-  recovery_speed?: number;        // 1–10
-  digestive_health?: number;      // 1–10
+  caffeine_per_day?: number;
+  water_liters_per_day?: number;
+  social_support?: number;          // 1–10
+  work_life_balance?: number;       // 1–10
+  stress_level?: number;            // 1–10
+  energy_level?: number;            // 1–10
+  motivation_level?: number;        // 1–10
+
+  // Phase 5 — Optional Nutrition Integration
+  nutrition?: {
+    protein_score?: number;
+    hydration_score?: number;
+    recovery_score?: number;
+    muscle_preservation_score?: number;
+  };
 }) {
-  const age = Math.max(18, Math.min(args.chronological_age || 40, 95));
-  const weight = args.weight_kg;
-  const height = args.height_cm;
-  const bmi = (weight && height) ? weight / Math.pow(height/100, 2) : null;
-  const waist = args.waist_cm;
-
-  // Per-category scoring (0–100; higher is better)
   const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
+  const inv = (s: number) => 110 - s * 10; // invert a 1–10 "bad-when-high" score to 0–100 (good-when-high)
 
-  // Movement
-  const ex = args.exercise_sessions_per_week ?? 2;
-  const movement = clamp(40 + Math.min(ex, 6) * 10); // 0→40, 6+→100
+  const age = Math.max(18, Math.min(args.age || 40, 95));
 
-  // Sleep (target ~7–8h)
+  // ── Recovery Capacity ────────────────────────────────────────
   const sl = args.sleep_hours ?? 6.5;
-  const sleep = clamp(100 - Math.abs(sl - 7.5) * 18);
+  const sleepDuration = clamp(100 - Math.abs(sl - 7.5) * 18);
+  const sleepQuality = clamp((args.sleep_quality ?? 6) * 10);
+  const refreshed = args.wakes_refreshed === true ? 100 : args.wakes_refreshed === false ? 40 : 60;
+  const ex = args.exercise_sessions_per_week ?? 2;
+  const movement = clamp(40 + Math.min(ex, 6) * 10);
+  const exerciseQuality =
+    args.exercise_type === "resistance" || args.exercise_type === "mixed" ? 100 :
+    args.exercise_type === "cardio" ? 80 :
+    args.exercise_type === "walking" ? 60 :
+    args.exercise_type === "none" ? 25 : 60;
+  const recoveryDays = args.takes_recovery_days === true ? 100 : args.takes_recovery_days === false ? 40 : 65;
+  const outdoor = clamp(Math.min(args.outdoor_hours_per_week ?? 3, 10) * 10);
 
-  // Stress (lower is better)
-  const st = args.stress_level ?? 5;
-  const stress = clamp(110 - st * 9);
+  const recoveryCapacity = clamp(
+    (sleepDuration * 1.3 + sleepQuality * 1.2 + refreshed * 0.8 +
+     movement * 1.0 + exerciseQuality * 0.7 + recoveryDays * 0.8 + outdoor * 0.5) / 7.3
+  );
 
-  // Recovery (energy + recovery speed + digestion → recovery score)
-  const recovery = clamp(((args.energy_level ?? 6) + (args.recovery_speed ?? 6) + (args.digestive_health ?? 6)) * (100/30));
+  // ── Stress Load (higher score = HEAVIER load, 0–100) ─────────
+  const workH = args.work_hours_per_week ?? 45;
+  const workHoursLoad = clamp(Math.max(0, (workH - 35)) * 3); // 35h baseline → 0, 60h → 75
+  const pressure = clamp((args.pressure_frequency ?? 5) * 10);
+  const responsibility = clamp((args.responsibility_level ?? 5) * 10);
+  const stressSelf = clamp((args.stress_level ?? 5) * 10);
+  const eveningsWeekends =
+    (args.works_evenings ? 50 : 0) + (args.works_weekends ? 50 : 0);
+  const meetingLoad = clamp(((args.meeting_hours_per_day ?? 2) + (args.travel_hours_per_day ?? 0)) * 12);
 
-  // Metabolic (BMI + waist)
-  let metabolic = 80;
-  if (bmi != null) {
-    if (bmi < 18.5 || bmi > 30) metabolic -= 25;
-    else if (bmi > 27) metabolic -= 15;
-    else if (bmi > 25) metabolic -= 8;
-  }
-  if (waist != null) {
-    const waistThreshold = args.gender === "female" ? 88 : 102;
-    if (waist > waistThreshold) metabolic -= 15;
-    else if (waist > waistThreshold - 8) metabolic -= 8;
-  }
-  metabolic = clamp(metabolic);
+  const stressLoad = clamp(
+    (workHoursLoad * 1.2 + pressure * 1.1 + responsibility * 0.9 +
+     stressSelf * 1.3 + eveningsWeekends * 0.8 + meetingLoad * 0.7) / 6.0
+  );
 
-  // Lifestyle (alcohol + smoking)
+  // ── Lifestyle Recovery (0–100, higher better) ────────────────
   let lifestyle = 90;
   const alc = args.alcohol_units_per_week ?? 4;
   if (alc > 21) lifestyle -= 30;
   else if (alc > 14) lifestyle -= 18;
   else if (alc > 7) lifestyle -= 8;
-  if (args.smoking === "current") lifestyle -= 30;
-  else if (args.smoking === "former") lifestyle -= 8;
-  lifestyle = clamp(lifestyle);
+  const caf = args.caffeine_per_day ?? 2;
+  if (caf > 5) lifestyle -= 15;
+  else if (caf > 3) lifestyle -= 6;
+  const water = args.water_liters_per_day ?? 1.5;
+  if (water < 1) lifestyle -= 15;
+  else if (water < 1.5) lifestyle -= 8;
+  const lifestyleRecovery = clamp(lifestyle);
 
-  // Nutrition placeholder (educational; user may not have done nutrition tool)
-  const nutrition = 67;
+  // ── Resilience Score (0–100) ─────────────────────────────────
+  const social = clamp((args.social_support ?? 5) * 10);
+  const wlb = clamp((args.work_life_balance ?? 5) * 10);
+  const energy = clamp((args.energy_level ?? 6) * 10);
+  const motivation = clamp((args.motivation_level ?? 6) * 10);
+  const stressInv = clamp(inv(args.stress_level ?? 5));
 
-  const longevityIndex = clamp(
-    (movement*1.1 + sleep*1.2 + stress*1.1 + recovery*1.0 + metabolic*1.0 + lifestyle*1.1 + nutrition*0.5) / 7.0
+  let nutritionResilienceBoost = 0;
+  let hasNutrition = false;
+  if (args.nutrition) {
+    hasNutrition = true;
+    const n = args.nutrition;
+    const nAvg = [(n.protein_score ?? 70), (n.hydration_score ?? 70), (n.recovery_score ?? 70), (n.muscle_preservation_score ?? 70)]
+      .reduce((a, b) => a + b, 0) / 4;
+    nutritionResilienceBoost = (nAvg - 70) * 0.3; // ±9 swing
+  }
+
+  const resilience = clamp(
+    (social * 1.0 + wlb * 1.1 + energy * 1.1 + motivation * 1.0 + stressInv * 1.2 + recoveryCapacity * 0.6) / 6.0
+    + nutritionResilienceBoost
   );
 
-  // Map longevity index → biological age delta.
-  // Index 50 ≈ same as chronological. Each 10 points away ≈ ±3 years (capped ±10).
-  const delta = Math.max(-10, Math.min(10, Math.round((50 - longevityIndex) / 10 * 3)));
-  const biologicalAge = age + delta;
+  // ── Burnout Risk Indicator (categorical, never a diagnosis) ──
+  const burnoutScore = clamp(stressLoad * 0.55 + (100 - recoveryCapacity) * 0.30 + (100 - resilience) * 0.15);
+  const burnoutRisk: "Low" | "Moderate" | "Elevated" =
+    burnoutScore >= 65 ? "Elevated" : burnoutScore >= 40 ? "Moderate" : "Low";
 
-  // Identify weakest contributors (lowest 3 scores).
-  const cats = [
-    { key: "Sleep", score: sleep },
-    { key: "Stress", score: stress },
-    { key: "Movement", score: movement },
-    { key: "Recovery", score: recovery },
-    { key: "Metabolic Health", score: metabolic },
-    { key: "Lifestyle (alcohol/smoking)", score: lifestyle },
+  // ── Overall Executive Wellness Score ─────────────────────────
+  const executiveWellness = clamp(
+    recoveryCapacity * 0.30 +
+    (100 - stressLoad) * 0.25 +
+    resilience * 0.25 +
+    lifestyleRecovery * 0.20
+  );
+
+  // ── Top contributors / weaknesses for "Fastest Wins" ─────────
+  const factorScores = [
+    { key: "Sleep duration", score: sleepDuration, win: "Anchor a fixed wake time and target 7.5 hours in bed for the next 14 nights." },
+    { key: "Sleep quality", score: sleepQuality, win: "Dim screens 60 minutes before bed and keep the bedroom under 19°C." },
+    { key: "Workload intensity", score: clamp(100 - workHoursLoad), win: "Protect two evenings per week as fully off-the-grid recovery time." },
+    { key: "Recovery consistency", score: recoveryDays, win: "Schedule one full rest day and one walk-only day every week." },
+    { key: "Movement", score: movement, win: "Add two resistance sessions per week — the largest single resilience lever for executives." },
+    { key: "Hydration & lifestyle", score: lifestyleRecovery, win: "Increase water by 500 ml per day and cap alcohol at 7 units per week." },
+    { key: "Stress regulation", score: stressInv, win: "Add a 10-minute slow-breathing block before lunch and before bed." },
+    { key: "Social support", score: social, win: "Schedule one meaningful non-work conversation per week." },
+    { key: "Work–life balance", score: wlb, win: "Block one full no-meeting half-day per week for deep recovery work." },
+    { key: "Outdoor exposure", score: outdoor, win: "Get 20 minutes of outdoor daylight within an hour of waking." },
   ].sort((a, b) => a.score - b.score);
 
-  const weakest = cats.slice(0, 3);
-  const priorities = weakest.map(w => {
-    switch (w.key) {
-      case "Sleep": return { title: "Increase sleep consistency", detail: "Anchor a fixed wake time and target 7.5 h in bed. The single biggest longevity lever for most adults." };
-      case "Stress": return { title: "Lower baseline stress load", detail: "Add 10 min/day of slow breathing or a daily walk. Reduces sympathetic load measurably within 2–3 weeks." };
-      case "Movement": return { title: "Add 2 movement sessions per week", detail: "Mix one strength session and one zone-2 cardio session. Strength is the most underused longevity input." };
-      case "Recovery": return { title: "Improve recovery scheduling", detail: "Protect one full rest day and one walk-only day per week. Recovery is where adaptation actually happens." };
-      case "Metabolic Health": return { title: "Tighten metabolic markers", detail: "Focus on waist circumference and post-meal walks. Metabolic flexibility tracks closely with biological age." };
-      case "Lifestyle (alcohol/smoking)": return { title: "Reduce alcohol load", detail: "Target ≤ 7 units/week. The fastest single lifestyle change for most reversible markers." };
-      default: return { title: w.key, detail: "Targeted improvement opportunity." };
-    }
-  });
+  const fastestWins = factorScores.slice(0, 3).map(f => ({ area: f.key, action: f.win }));
 
-  // Projections (gentle, motivational, capped)
-  const proj6 = Math.max(-5, Math.round(delta * 0.4));   // up to 40% of delta in 6 mo
-  const proj12 = Math.max(-7, Math.round(delta * 0.7));  // up to 70% in 12 mo
-  const projection6 = age + Math.min(delta, proj6);
-  const projection12 = age + Math.min(delta, proj12);
+  // ── 7-Day Recovery Plan (free version) ───────────────────────
+  const sevenDayPlan = [
+    { day: "Day 1", focus: "Sleep reset", action: "Fixed wake time. Lights down 60 min before bed. No alcohol." },
+    { day: "Day 2", focus: "Movement", action: "30–40 min resistance session. 1.5 L water minimum." },
+    { day: "Day 3", focus: "Stress regulation", action: "Two 10-min slow-breathing blocks. One screen-free evening." },
+    { day: "Day 4", focus: "Active recovery", action: "45-min outdoor walk. Cap caffeine at 2 cups before noon." },
+    { day: "Day 5", focus: "Strength + nutrition", action: "Resistance session. 30g protein at breakfast. 2 L water." },
+    { day: "Day 6", focus: "Full recovery day", action: "No meetings. 20 min daylight on waking. Early dinner." },
+    { day: "Day 7", focus: "Reflection", action: "Score sleep, energy, stress. Re-plan the next 7 days." },
+  ];
 
   return {
     inputs: {
-      chronological_age: age,
-      bmi: bmi ? Math.round(bmi * 10) / 10 : null,
-      waist_cm: waist ?? null,
+      age,
+      gender: args.gender ?? null,
+      occupation: args.occupation ?? null,
+      primary_goal: args.primary_goal ?? null,
+      has_nutrition_integration: hasNutrition,
     },
-    chronological_age: age,
-    estimated_biological_age: biologicalAge,
-    difference_years: delta,
     scores: {
-      recovery,
-      stress,
+      recovery_capacity: recoveryCapacity,
+      stress_load: stressLoad,
+      resilience,
+      lifestyle_recovery: lifestyleRecovery,
+      burnout_risk_score: burnoutScore,
+      burnout_risk: burnoutRisk,
+      executive_wellness: executiveWellness,
+    },
+    factor_breakdown: {
+      sleep_duration: sleepDuration,
+      sleep_quality: sleepQuality,
+      wakes_refreshed: refreshed,
       movement,
-      sleep,
-      metabolic,
-      lifestyle,
-      nutrition,
-      longevity_index: longevityIndex,
+      exercise_quality: exerciseQuality,
+      recovery_days: recoveryDays,
+      outdoor_exposure: outdoor,
+      workload_intensity: clamp(100 - workHoursLoad),
+      meeting_travel_load: clamp(100 - meetingLoad),
+      pressure: clamp(100 - pressure),
+      responsibility_carried: clamp(100 - responsibility),
+      social_support: social,
+      work_life_balance: wlb,
+      energy_level: energy,
+      motivation_level: motivation,
+      stress_regulation: stressInv,
+      hydration_alcohol_caffeine: lifestyleRecovery,
     },
-    strongest_contributors: weakest.map(w => w.key),
-    improvement_priorities: priorities,
-    projection: {
-      six_months_estimated_age: projection6,
-      twelve_months_estimated_age: projection12,
-      note: "Projections assume consistent application of the priorities above. Educational estimate only.",
-    },
+    executive_summary:
+      `Your current recovery capacity supports approximately ${recoveryCapacity}% of your performance demands. ` +
+      `The largest limiting factors appear to be ${factorScores.slice(0, 3).map(f => f.key.toLowerCase()).join(", ")}. ` +
+      `Small improvements in these areas may significantly improve resilience and energy over the next 30–90 days.`,
+    burnout_note:
+      burnoutRisk === "Elevated"
+        ? "Current indicators suggest elevated accumulated stress and reduced recovery reserves. This is not a diagnosis. If these patterns persist or affect quality of life, consider a comprehensive executive wellness evaluation through WellneSpirit."
+        : burnoutRisk === "Moderate"
+        ? "Indicators show a moderate stress load relative to current recovery capacity. This is not a diagnosis — it is a signal to protect recovery time over the next several weeks."
+        : "Current indicators show a healthy balance between stress load and recovery reserves. Maintain the routines that are working.",
+    fastest_wins: fastestWins,
+    seven_day_plan: sevenDayPlan,
+    closing_recommendation:
+      "Your recovery and resilience score suggests several opportunities to improve stress adaptation, energy management, and long-term performance. This assessment is educational only. If symptoms persist or are affecting your quality of life, consider a comprehensive executive wellness evaluation through WellneSpirit.",
     disclaimer:
-      "This assessment is educational and informational only. It is not a medical assessment, diagnosis, or substitute for laboratory testing. Please confirm with a qualified healthcare professional before changing routines.",
+      "This assessment is educational and informational only. It is not a medical diagnosis, psychological diagnosis, or burnout diagnosis. It should not replace consultation with a qualified healthcare professional.",
   };
 }
+
+// Backward-compat alias (legacy import name)
+export const biologicalAgeAssessment = recoveryResilienceAssessment;

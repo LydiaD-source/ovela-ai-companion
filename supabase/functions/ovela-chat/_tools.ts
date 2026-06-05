@@ -384,6 +384,8 @@ export function nutritionAssessment(args: {
   time_budget?: TimeBudget;
   habit_upgrades?: Array<{ existing_meal?: string; upgrade?: string; why?: string }>;
   nutrition_risk_flags?: Array<{ nutrient?: string; confidence?: "low" | "moderate" | "high"; reasoning?: string }>;
+  meal_framework_replacements?: Array<{ slot?: "Breakfast" | "Lunch" | "Snack" | "Dinner"; current?: string; upgrade?: string }>;
+  top_meals?: { strongest?: { meal?: string; why_it_works?: string[]; score?: number }; weakest?: { meal?: string; why_it_hurts?: string[]; score?: number } };
   oily_fish_per_week?: number;
   vegetable_servings_per_day?: number;
 }) {

@@ -83,15 +83,15 @@ function isMeaningfulReportPayload(payload: any) {
   const type = payload.type === "biological_age" ? "recovery_resilience" : payload.type;
   if (type === "nutrition_assessment" || payload.nutrition_assessment_response || data?.daily_meal_framework || data?.muscle_preservation) {
     return Boolean(
-      typeof data?.targets?.daily_calories === "number" ||
-      typeof data?.targets?.protein_g?.low_g === "number" ||
-      typeof data?.muscle_preservation?.recommended_protein_g === "number"
+      (typeof data?.targets?.daily_calories === "number" && data.targets.daily_calories > 500) ||
+      (typeof data?.targets?.protein_g?.low_g === "number" && data.targets.protein_g.low_g > 20) ||
+      (typeof data?.muscle_preservation?.recommended_protein_g === "number" && data.muscle_preservation.recommended_protein_g > 20)
     );
   }
   if (type === "recovery_resilience" || payload.recovery_resilience_response || payload.biological_age_response) {
     return Boolean(
-      typeof data?.scores?.executive_wellness === "number" ||
-      typeof data?.scores?.recovery_capacity === "number" ||
+      (typeof data?.scores?.executive_wellness === "number" && data.scores.executive_wellness > 0) ||
+      (typeof data?.scores?.recovery_capacity === "number" && data.scores.recovery_capacity > 0) ||
       typeof data?.scores?.burnout_risk === "string"
     );
   }

@@ -254,6 +254,7 @@ const WELLNESPIRIT_PRE_EXPIRY_FOOTER =
 const WELLNESPIRIT_EXPIRED_MESSAGE =
   "Thank you for using your free 7-day Isabella assessment window.\n\nTo continue receiving weekly assessments, progress tracking and ongoing support from Isabella, please activate the full monthly programme at our clinical partner **WellneSpirit** — visit wellnespirit.com and register for the Executive Wellness subscription.\n\nYour previous assessment, scores and recommendations remain valid for the next 14 days.";
 
+serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {

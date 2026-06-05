@@ -1035,6 +1035,28 @@ export function nutritionAssessment(args: {
     } : null,
   } : null;
 
+  // ── Protein Opportunity Analysis (meal × actual / target / gap) ─────
+  const perMealTarget = { Breakfast: 35, Lunch: 35, Snack: 20, Dinner: 35 };
+  const proteinOpportunity = (() => {
+    const rows = [
+      { meal: "Breakfast", actual_g: args.breakfast_protein_g ?? null, target_g: perMealTarget.Breakfast },
+      { meal: "Lunch",     actual_g: args.lunch_protein_g     ?? null, target_g: perMealTarget.Lunch },
+      { meal: "Snack",     actual_g: args.snack_protein_g     ?? null, target_g: perMealTarget.Snack },
+      { meal: "Dinner",    actual_g: args.dinner_protein_g    ?? null, target_g: perMealTarget.Dinner },
+    ];
+    if (!rows.some(r => r.actual_g != null)) return null;
+    const meals = rows.map(r => ({
+      meal: r.meal,
+      actual_g: r.actual_g,
+      target_g: r.target_g,
+      gap_g: r.actual_g == null ? null : Math.max(0, r.target_g - r.actual_g),
+    }));
+    const totalActual = meals.reduce((a, m) => a + (m.actual_g ?? 0), 0);
+    const totalTarget = meals.reduce((a, m) => a + m.target_g, 0);
+    const totalGap = Math.max(0, totalTarget - totalActual);
+    return { meals, total_actual_g: totalActual, total_target_g: totalTarget, total_gap_g: totalGap };
+  })();
+
 
 
   return {
@@ -1094,6 +1116,25 @@ export function nutritionAssessment(args: {
         "Below 40 = High nutritional risk",
       ],
       measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
+    },
+    executive_benchmark: executiveBenchmark,
+    protein_opportunity: proteinOpportunity,
+    reassessment_projection: reassessmentProjection,
+    success_preview: successPreview,
+    nutrition_risk_flags: nutritionRiskFlags,
+    habit_upgrades: habitUpgrades,
+    meal_framework_replacements: mealFrameworkReplacements,
+    top_meals: topMeals,
+    time_budget: timeBudgetBlock,
+    clinical_perspective: clinicalPerspective,
+    executive_summary: executiveSummary,
+    muscle_preservation: {
+      current_protein_g: args.est_protein_g ?? null,
+      recommended_protein_g: proteinMid,
+      score: musclePres,
+      status: muscleStatus,
+      reasons: muscleReasons,
+      note: "Adequate protein and consistent resistance training are the two strongest levers for preserving muscle through the next decade.",
     },
     executive_benchmark: executiveBenchmark,
     reassessment_projection: reassessmentProjection,

@@ -4,7 +4,9 @@
  *
  * Two report types:
  *   - nutrition_assessment
- *   - biological_age
+ *   - recovery_resilience  (Executive Recovery & Resilience Assessment)
+ *
+ * Legacy alias: 'biological_age' is still accepted on inbound payloads.
  *
  * Footer disclaimer is always included.
  */
@@ -15,7 +17,7 @@ const FOOTER_DISCLAIMER =
   'This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.';
 
 export interface AssessmentReport {
-  type: 'nutrition_assessment' | 'biological_age';
+  type: 'nutrition_assessment' | 'recovery_resilience';
   title?: string;
   data: any;
 }
@@ -32,7 +34,13 @@ export function extractAssessmentReport(text: string): {
   if (!m) return { report: null, cleaned: text };
   try {
     const parsed = JSON.parse(m[1].trim());
-    if (parsed && (parsed.type === 'nutrition_assessment' || parsed.type === 'biological_age') && parsed.data) {
+    // Accept new + legacy report type names
+    if (parsed && parsed.data && (
+      parsed.type === 'nutrition_assessment' ||
+      parsed.type === 'recovery_resilience' ||
+      parsed.type === 'biological_age'
+    )) {
+      if (parsed.type === 'biological_age') parsed.type = 'recovery_resilience';
       return {
         report: parsed as AssessmentReport,
         cleaned: text.replace(re, '').trim(),
@@ -365,80 +373,121 @@ function buildNutrition(doc: jsPDF, data: any) {
   }
 }
 
-// ── Biological age report ───────────────────────────────────────────────
-function buildBioAge(doc: jsPDF, data: any) {
-  header(doc, 'Biological Age Assessment');
+// ── Executive Recovery & Resilience report ──────────────────────────────
+function buildRecoveryResilience(doc: jsPDF, data: any) {
+  header(doc, 'Executive Recovery & Resilience Assessment');
   let y = 110;
 
-  // Big numbers
-  y = sectionTitle(doc, 'Your estimate', y);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
-  doc.setTextColor(INK);
-  doc.text(`Chronological age:`, 40, y);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(22);
-  doc.text(`${data.chronological_age}`, 220, y);
-  y += 28;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
-  doc.text(`Estimated biological age:`, 40, y);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(22);
-  const delta = data.difference_years || 0;
-  doc.setTextColor(delta <= 0 ? '#2d8a5e' : '#c2553a');
-  doc.text(`${data.estimated_biological_age}`, 220, y);
-  doc.setTextColor(INK);
-  y += 28;
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(11);
-  const sign = delta > 0 ? `+${delta}` : `${delta}`;
-  doc.text(`Difference: ${sign} years`, 40, y);
-  y += 24;
-
-  // Score breakdown
-  y = ensureSpace(doc, y, 180);
-  y = sectionTitle(doc, 'Score breakdown', y);
   const sc = data.scores || {};
-  y = scoreRow(doc, 'Sleep', sc.sleep ?? 0, y);
-  y = scoreRow(doc, 'Stress', sc.stress ?? 0, y);
-  y = scoreRow(doc, 'Movement', sc.movement ?? 0, y);
-  y = scoreRow(doc, 'Recovery', sc.recovery ?? 0, y);
-  y = scoreRow(doc, 'Metabolic health', sc.metabolic ?? 0, y);
-  y = scoreRow(doc, 'Lifestyle (alcohol/smoking)', sc.lifestyle ?? 0, y);
+
+  // 1. Executive summary
+  if (data.executive_summary) {
+    y = sectionTitle(doc, '1 · Executive summary', y);
+    y = paragraph(doc, data.executive_summary, y);
+    y += 8;
+  }
+
+  // 2. Headline scores
+  y = ensureSpace(doc, y, 180);
+  y = sectionTitle(doc, '2 · Your scores', y);
+  y = scoreRow(doc, 'Recovery capacity', sc.recovery_capacity ?? 0, y);
+  y = scoreRow(doc, 'Stress load (higher = heavier)', sc.stress_load ?? 0, y);
+  y = scoreRow(doc, 'Resilience', sc.resilience ?? 0, y);
+  y = scoreRow(doc, 'Lifestyle recovery', sc.lifestyle_recovery ?? 0, y);
+  y += 4;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(NAVY);
+  doc.text('Burnout risk indicator:', 40, y);
+  const riskColor = sc.burnout_risk === 'Elevated' ? '#c2553a' : sc.burnout_risk === 'Moderate' ? GOLD : '#2d8a5e';
+  doc.setTextColor(riskColor);
+  doc.text(String(sc.burnout_risk ?? '—'), 220, y);
+  doc.setTextColor(INK);
+  y += 18;
+  y = scoreRow(doc, 'OVERALL EXECUTIVE WELLNESS', sc.executive_wellness ?? 0, y);
+  y += 10;
+
+  // 3. Burnout note (never a diagnosis)
+  if (data.burnout_note) {
+    y = ensureSpace(doc, y, 90);
+    y = sectionTitle(doc, '3 · Burnout risk indicators', y);
+    y = paragraph(doc, data.burnout_note, y, { color: MUTED });
+    y += 6;
+  }
+
+  // 4. Executive performance factors
+  const fb = data.factor_breakdown || {};
+  const factors: Array<[string, number | undefined]> = [
+    ['Sleep duration', fb.sleep_duration],
+    ['Sleep quality', fb.sleep_quality],
+    ['Movement', fb.movement],
+    ['Exercise quality', fb.exercise_quality],
+    ['Recovery days', fb.recovery_days],
+    ['Outdoor exposure', fb.outdoor_exposure],
+    ['Workload intensity', fb.workload_intensity],
+    ['Meeting & travel load', fb.meeting_travel_load],
+    ['Stress regulation', fb.stress_regulation],
+    ['Social support', fb.social_support],
+    ['Work–life balance', fb.work_life_balance],
+    ['Energy level', fb.energy_level],
+    ['Motivation level', fb.motivation_level],
+    ['Hydration / alcohol / caffeine', fb.hydration_alcohol_caffeine],
+  ];
+  y = ensureSpace(doc, y, 200);
+  y = sectionTitle(doc, '4 · Executive performance factors', y);
+  for (const [label, val] of factors) {
+    if (typeof val === 'number') {
+      y = ensureSpace(doc, y, 24);
+      y = scoreRow(doc, label, val, y);
+    }
+  }
   y += 6;
-  y = scoreRow(doc, 'LONGEVITY INDEX', sc.longevity_index ?? 0, y);
-  y += 12;
 
-  // Priorities
-  y = ensureSpace(doc, y, 130);
-  y = sectionTitle(doc, 'Most important improvement opportunities', y);
-  (data.improvement_priorities || []).forEach((p: any, i: number) => {
-    y = ensureSpace(doc, y, 50);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(NAVY);
-    doc.text(`${i + 1}. ${p.title}`, 40, y);
-    y += 14;
-    y = paragraph(doc, p.detail, y, { color: MUTED });
-    y += 4;
-  });
+  // 5. Fastest wins
+  if (Array.isArray(data.fastest_wins) && data.fastest_wins.length) {
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, '5 · Fastest wins', y);
+    data.fastest_wins.forEach((w: any, i: number) => {
+      y = ensureSpace(doc, y, 50);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(NAVY);
+      doc.text(`${i + 1}. ${w.area}`, 40, y);
+      y += 14;
+      y = paragraph(doc, w.action, y, { color: MUTED });
+      y += 4;
+    });
+  }
 
-  // Projection
-  y = ensureSpace(doc, y, 100);
-  y = sectionTitle(doc, 'Biological age projection', y);
-  const pr = data.projection || {};
-  y = paragraph(doc,
-    `Estimated biological age in 6 months: ${pr.six_months_estimated_age ?? '—'}\n` +
-    `Estimated biological age in 12 months: ${pr.twelve_months_estimated_age ?? '—'}\n\n` +
-    (pr.note || ''), y);
+  // 6. 7-day recovery plan
+  if (Array.isArray(data.seven_day_plan) && data.seven_day_plan.length) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '6 · 7-day recovery plan', y);
+    data.seven_day_plan.forEach((d: any) => {
+      y = ensureSpace(doc, y, 38);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(NAVY);
+      doc.text(`${d.day} — ${d.focus}`, 40, y);
+      y += 12;
+      y = paragraph(doc, d.action, y, { color: MUTED, size: 10 });
+      y += 4;
+    });
+  }
+
+  // 7. Closing recommendation (WellneSpirit funnel — no €19 pitch)
+  if (data.closing_recommendation) {
+    y = ensureSpace(doc, y, 100);
+    y = sectionTitle(doc, '7 · Next step', y);
+    y = paragraph(doc, data.closing_recommendation, y);
+  }
 }
 
 /** Build the PDF and trigger the download. */
 export function downloadAssessmentReport(report: AssessmentReport) {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
-  else buildBioAge(doc, report.data);
+  else buildRecoveryResilience(doc, report.data);
 
   // Apply footer to every page
   const pages = doc.getNumberOfPages();
@@ -450,6 +499,6 @@ export function downloadAssessmentReport(report: AssessmentReport) {
   const stamp = new Date().toISOString().slice(0, 10);
   const name = report.type === 'nutrition_assessment'
     ? `isabella-nutrition-assessment-${stamp}.pdf`
-    : `isabella-biological-age-${stamp}.pdf`;
+    : `isabella-recovery-resilience-${stamp}.pdf`;
   doc.save(name);
 }

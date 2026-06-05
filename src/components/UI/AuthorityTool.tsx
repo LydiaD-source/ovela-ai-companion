@@ -15,7 +15,7 @@ export type ToolKind =
   | 'missed_leads'
   | 'wellness_assessment'
   | 'nutrition_assessment'
-  | 'biological_age';
+  | 'recovery_resilience';
 
 const TOOL_PRESETS: Record<ToolKind, {
   label: string;
@@ -56,13 +56,13 @@ const TOOL_PRESETS: Record<ToolKind, {
       "I'd like the Executive Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
     tool_context: 'nutrition_assessment',
   },
-  biological_age: {
-    label: 'Estimate my biological age',
-    sub: 'Lifestyle, recovery, sleep and activity — Isabella estimates how your body may be aging.',
+  recovery_resilience: {
+    label: 'Check my recovery capacity',
+    sub: 'Workload, sleep, stress, recovery and lifestyle — Isabella scores your resilience, burnout risk and executive performance factors.',
     icon: <Hourglass className="w-5 h-5" />,
     initialPrompt:
-      "I'd like the Biological Age Assessment. Please run it conversationally — lifestyle questions only, no medical history. Start with the disclaimer, then ask 2–3 questions at a time.",
-    tool_context: 'biological_age_assessment',
+      "I'd like the Executive Recovery & Resilience Assessment. Please run it conversationally in 5 short phases (personal profile, workload & stress, recovery, lifestyle & resilience, optional nutrition integration). Lifestyle questions only — no medical history, no diagnosis. Start with the disclaimer and ask 2–3 questions at a time.",
+    tool_context: 'recovery_resilience_assessment',
   },
 };
 

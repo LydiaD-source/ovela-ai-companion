@@ -1,7 +1,7 @@
 // ovela-chat index.ts - defensive, single-source of truth
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, biologicalAgeAssessment } from "./_tools.ts";
+import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, recoveryResilienceAssessment } from "./_tools.ts";
 
 /**
  * NOTE:
@@ -388,14 +388,22 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
     • In the SAME reply: warm 4–6 sentence verbal summary highlighting the "fastest win", THEN the fenced assessment-report block verbatim so the PDF renders automatically. User must NEVER have to ask for the PDF.
 
   KEY CALCULATION RULES the tool applies — explain naturally: (1) BMI > 28 with fat_loss → macros use TARGET weight (estimated at BMI 24 if none given). (2) Adults 45+ get a small protein boost; post-menopausal women +0.1 extra. (3) Carbs scale with goal. (4) Hydration = 33 ml/kg target weight. Educational only, never medical.
-- biological_age_assessment — Lifestyle-only, never medical. Ask: chronological_age, gender, height_cm, weight_kg, waist_cm, sleep_hours, exercise_sessions_per_week, stress_level (1–10), alcohol_units_per_week, smoking (never/former/current), energy_level (1–10), recovery_speed (1–10), digestive_health (1–10). Never ask about diseases, medications, or diagnoses. Ask 2–3 at a time. When you have enough, call the tool, present estimate + breakdown + top 3 contributors + 6/12-month projections, then offer the PDF.
+- recovery_resilience_assessment — Executive Recovery & Resilience Assessment. Lifestyle-only, never medical, never a diagnosis (not medical, not psychological, not a burnout diagnosis). Tone: calm, professional, executive-level, never alarmist. Estimated time: 3–5 minutes. Always announce progress like "Step 1 of 5", "Step 2 of 5"… Drive 5 mandatory phases in order, 2–3 questions per turn:
+    Phase 1 — Personal Profile: age, gender, height_cm, weight_kg, occupation, primary_goal (more_energy / better_recovery / reduce_stress / prevent_burnout / improve_performance / improve_longevity).
+    Phase 2 — Workload & Stress: work_hours_per_week, focused_work_hours_per_day, meeting_hours_per_day, travel_hours_per_day, works_evenings, works_weekends, pressure_frequency (1–10), responsibility_level (1–10).
+    Phase 3 — Recovery: sleep_hours, sleep_quality (1–10), wakes_refreshed (yes/no), exercise_sessions_per_week, exercise_type (resistance / cardio / walking / mixed / none), takes_recovery_days (yes/no), outdoor_hours_per_week.
+    Phase 4 — Lifestyle & Resilience: alcohol_units_per_week, caffeine_per_day (cups), water_liters_per_day, social_support (1–10), work_life_balance (1–10), stress_level (1–10), energy_level (1–10), motivation_level (1–10).
+    Phase 5 — Optional Nutrition Integration: ask "Would you like to include your nutrition profile? You can (a) upload a previous Isabella Nutrition Report, (b) run the Nutrition Assessment later, or (c) continue without nutrition data." If the user shares nutrition scores, pass them in the nutrition.{protein_score,hydration_score,recovery_score,muscle_preservation_score} fields.
+  HARD GATE: never call the tool, never produce scores, never produce a PDF, never emit the assessment-report block until Phases 1–4 are complete. On noisy / accidental / off-topic input ("ok", "yes", "mod", "asdf", fragments) at any phase: gently acknowledge ("Looks like that might have sent early — no problem"), restate the last open question, and wait. Never advance on noise.
+  NEVER ask about diseases, medications, diagnoses, or psychiatric history. NEVER use words like "burnout diagnosis", "depression", "anxiety disorder". Burnout is only spoken of as an indicator level (Low / Moderate / Elevated), never a diagnosis.
+  After Phases 1–4 (and the optional Phase 5 prompt), call recovery_resilience_assessment. In the SAME reply: give a warm 4–6 sentence executive summary highlighting the top 2–3 fastest wins, then the fenced assessment-report block verbatim so the PDF renders automatically. The user must NEVER have to ask for the PDF. After the block, deliver the closing line about WellneSpirit (no €19 subscription pitch — Recovery is free; the upsell is the Executive Wellness Program at WellneSpirit).
 
 ASSESSMENT FLOW — YOU DRIVE, but NEVER skip the gate:
 - Open with one short line folding the disclaimer into your first Phase 1 question.
-- Drive each phase with 2–3 questions per turn. Never produce a nutrition report before Phase 4 has delivered an actual food diary.
+- Drive each phase with 2–3 questions per turn. Never produce a nutrition report before Phase 4 has delivered an actual food diary. Never produce a recovery report before Phases 1–4 of that assessment are complete.
 - After the tool returns, output the fenced block exactly like this:
 \`\`\`assessment-report
-{ "type": "nutrition_assessment" | "biological_age", "title": "...", "data": <the tool result> }
+{ "type": "nutrition_assessment" | "recovery_resilience", "title": "...", "data": <the tool result> }
 \`\`\`
 Place the human summary BEFORE the fenced block. After the block, ask if they want it emailed.
 - Never store health details across conversations.
@@ -584,26 +592,56 @@ After any tool call, present results conversationally (1 short paragraph + key b
         {
           type: "function",
           function: {
-            name: "biological_age_assessment",
-            description: "Lifestyle-only biological age estimate. Educational, never medical. NEVER ask about diseases, diagnoses, or prescription medications. Call after collecting the lifestyle inputs conversationally (2–3 questions at a time).",
+            name: "recovery_resilience_assessment",
+            description: "Executive Recovery & Resilience Assessment. Lifestyle-only, never medical, never a diagnosis. Call ONLY after Phases 1–4 (personal profile, workload & stress, recovery, lifestyle & resilience) have been completed conversationally. Returns recovery_capacity, stress_load, resilience, lifestyle_recovery, burnout_risk (Low/Moderate/Elevated), executive_wellness scores, an executive summary, top 3 fastest wins, and a 7-day recovery plan.",
             parameters: {
               type: "object",
               properties: {
-                chronological_age: { type: "number" },
+                age: { type: "number" },
                 gender: { type: "string", enum: ["male","female","other"] },
                 height_cm: { type: "number" },
                 weight_kg: { type: "number" },
-                waist_cm: { type: "number" },
+                occupation: { type: "string" },
+                primary_goal: { type: "string", enum: ["more_energy","better_recovery","reduce_stress","prevent_burnout","improve_performance","improve_longevity"] },
+
+                work_hours_per_week: { type: "number" },
+                focused_work_hours_per_day: { type: "number" },
+                meeting_hours_per_day: { type: "number" },
+                travel_hours_per_day: { type: "number" },
+                works_evenings: { type: "boolean" },
+                works_weekends: { type: "boolean" },
+                pressure_frequency: { type: "number", description: "1–10" },
+                responsibility_level: { type: "number", description: "1–10" },
+
                 sleep_hours: { type: "number" },
+                sleep_quality: { type: "number", description: "1–10" },
+                wakes_refreshed: { type: "boolean" },
                 exercise_sessions_per_week: { type: "number" },
-                stress_level: { type: "number", description: "1–10" },
+                exercise_type: { type: "string", enum: ["resistance","cardio","walking","mixed","none"] },
+                takes_recovery_days: { type: "boolean" },
+                outdoor_hours_per_week: { type: "number" },
+
                 alcohol_units_per_week: { type: "number" },
-                smoking: { type: "string", enum: ["never","former","current"] },
+                caffeine_per_day: { type: "number" },
+                water_liters_per_day: { type: "number" },
+                social_support: { type: "number", description: "1–10" },
+                work_life_balance: { type: "number", description: "1–10" },
+                stress_level: { type: "number", description: "1–10" },
                 energy_level: { type: "number", description: "1–10" },
-                recovery_speed: { type: "number", description: "1–10" },
-                digestive_health: { type: "number", description: "1–10" }
+                motivation_level: { type: "number", description: "1–10" },
+
+                nutrition: {
+                  type: "object",
+                  description: "Optional. Passed only if the user shared a previous Isabella Nutrition Report.",
+                  properties: {
+                    protein_score: { type: "number" },
+                    hydration_score: { type: "number" },
+                    recovery_score: { type: "number" },
+                    muscle_preservation_score: { type: "number" }
+                  }
+                }
               },
-              required: ["chronological_age"]
+              required: ["age"]
             }
           }
         }
@@ -772,12 +810,14 @@ After any tool call, present results conversationally (1 short paragraph + key b
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
             }
-          } else if (toolCall.function?.name === 'biological_age_assessment') {
+          } else if (toolCall.function?.name === 'recovery_resilience_assessment' || toolCall.function?.name === 'biological_age_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
-              const result = biologicalAgeAssessment(args);
+              // Backward-compat: legacy callers may still send chronological_age
+              if (args.chronological_age && !args.age) args.age = args.chronological_age;
+              const result = recoveryResilienceAssessment(args);
               bioAgeReportPayload = result;
-              console.log('⏳ Bio-age assessment:', { delta: result.difference_years });
+              console.log('🛡️ Recovery & Resilience assessment:', { exec: result.scores.executive_wellness, burnout: result.scores.burnout_risk });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
@@ -793,7 +833,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
               followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
             }
             if (nutritionReportPayload || bioAgeReportPayload) {
-              const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'biological_age';
+              const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'recovery_resilience';
               followUpMessages.push({
                 role: "system",
                 content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download button. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add one short line offering to email it or discuss the improvements.`
@@ -835,7 +875,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
           if (!hasBlock && (nutritionReportPayload || bioAgeReportPayload)) {
             const payload = nutritionReportPayload
               ? { type: 'nutrition_assessment', title: 'Protein & Nutrition Assessment', data: nutritionReportPayload }
-              : { type: 'biological_age', title: 'Biological Age Assessment', data: bioAgeReportPayload };
+              : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
             const summary = finalMessage && finalMessage.trim().length > 0
               ? finalMessage.trim()
               : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";

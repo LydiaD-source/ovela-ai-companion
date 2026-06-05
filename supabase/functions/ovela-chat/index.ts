@@ -483,7 +483,7 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
   VALIDATION LAYER: If at Phase 4 the user writes anything that is not an actual food diary, respond: "I still need your weekly food intake before I can complete the assessment — please share what you typically eat across a full week (meals, snacks, drinks). You can type, paste, or upload it." Repeat until a real diary arrives. NEVER produce a report. NEVER call the tool.
 
   Phase 5 — ASSESSMENT GENERATION (only after a real diary has been received):
-    • Silently estimate est_calories / est_protein_g / est_carbs_g / est_fat_g / est_hydration_l plus breakfast_protein_g / lunch_protein_g / dinner_protein_g / snack_protein_g and qualitative flags. ALWAYS pass alcohol_units_per_week, coffee_cups_per_day and daily_walk_minutes from Phase 3.
+    • Silently estimate est_calories / est_protein_g / est_carbs_g / est_fat_g / est_hydration_l plus breakfast_protein_g / lunch_protein_g / dinner_protein_g / snack_protein_g and qualitative flags. ALWAYS pass alcohol_units_per_week, coffee_cups_per_day and daily_walk_minutes from Phase 3. ALWAYS pass meal_observations: 3-5 specific sentences quoting the actual foods/patterns the user wrote (e.g. "Breakfasts were toast, cereal and coffee with little protein."). ALWAYS pass disliked_foods (foods they avoid/dislike/are allergic to) and preferred_foods (foods they clearly enjoy) — extract these from the diary and earlier turns.
     • CALL nutrition_assessment IN THE SAME TURN as your acknowledgement of the diary. No deferrals, no "next message", no "in a moment".
     • In the SAME reply: warm 4–6 sentence verbal summary highlighting the "fastest win", THEN the fenced assessment-report block verbatim so the PDF renders automatically. User must NEVER have to ask for the PDF.
     • ABSOLUTELY FORBIDDEN: announcing a future report without producing it. Phrases like "I will now generate", "I'll create your report", "generating your assessment", "your report is being prepared", "based on this I've estimated…" are BANNED unless you are ALSO calling nutrition_assessment in the very same turn AND emitting the fenced assessment-report block. If you catch yourself about to defer — STOP, call the tool now, emit the block now.
@@ -686,7 +686,10 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 sugar_snacks: { type: "boolean" },
                 low_vegetables: { type: "boolean" },
                 high_processed: { type: "boolean" },
-                irregular_meals: { type: "boolean" }
+                irregular_meals: { type: "boolean" },
+                meal_observations: { type: "array", items: { type: "string" }, description: "REQUIRED. 3-5 SPECIFIC sentences quoting patterns from THIS user's diary. Examples: 'Breakfasts were primarily toast, cereal and coffee with minimal protein.' 'Dinner contained roughly 55% of total daily protein.' 'Vegetables appeared only at dinner.' Be concrete — reference foods the user actually mentioned." },
+                disliked_foods: { type: "array", items: { type: "string" }, description: "Foods the user dislikes, avoids, or is allergic to (e.g. 'chicken','dairy','eggs','fish'). Used to filter meal suggestions." },
+                preferred_foods: { type: "array", items: { type: "string" }, description: "Foods the user clearly enjoys and eats often (used to bias meal examples)." }
               },
               required: ["weight_kg","age","gender","height_cm","activity_level","goal","diet_type"]
             }

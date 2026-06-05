@@ -242,6 +242,17 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 8;
   }
 
+  // 1b. Observations from your diary (meal-log references — personalization)
+  if (Array.isArray(data.meal_observations) && data.meal_observations.length) {
+    y = ensureSpace(doc, y, 30 + data.meal_observations.length * 16);
+    y = sectionTitle(doc, 'What Isabella noticed in your diary', y);
+    data.meal_observations.forEach((obs: string) => {
+      y = ensureSpace(doc, y, 16);
+      y = paragraph(doc, `- ${obs}`, y, { color: INK });
+    });
+    y += 6;
+  }
+
   // 2. Executive Readiness Score (headline)
   const er = data.executive_readiness;
   if (er) {
@@ -531,14 +542,16 @@ function buildNutrition(doc: jsPDF, data: any) {
     if (bai) {
       if ((bai.positive || []).length) {
         y = ensureSpace(doc, y, 40);
-        y = paragraph(doc, 'Positive contributors:', y);
-        bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `✓ ${p}`, y); });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
+        doc.text('Strengths', 40, y); y += 14;
+        bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `+ ${p}`, y, { color: '#2d8a5e' }); });
         y += 4;
       }
       if ((bai.needs_improvement || []).length) {
         y = ensureSpace(doc, y, 40);
-        y = paragraph(doc, 'Needs improvement:', y);
-        bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `⚠ ${p}`, y); });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(GOLD);
+        doc.text('Needs improvement', 40, y); y += 14;
+        bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `! ${p}`, y, { color: '#a8801a' }); });
         y += 4;
       }
     }
@@ -560,31 +573,17 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
-  // 10. Executive performance impact
+  // 10. How your nutrition is affecting your results (renamed; no Fastest-win restatement)
   const epi = data.executive_performance_impact;
-  if (epi) {
-    y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '12 · Executive performance impact', y);
-    if ((epi.current_likely_influences || []).length) {
-      y = paragraph(doc, 'Your current nutrition likely influences:', y);
-      epi.current_likely_influences.forEach((p: string) => {
-        y = ensureSpace(doc, y, 14);
-        y = paragraph(doc, `- ${p}`, y);
-      });
-      y += 4;
-    }
-    if (epi.strongest_immediate_opportunity) {
-      const op = epi.strongest_immediate_opportunity;
-      y = ensureSpace(doc, y, 70);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-      doc.text('Strongest immediate opportunity', 40, y); y += 14;
-      y = paragraph(doc, op.title, y);
-      if (op.action) y = paragraph(doc, op.action, y, { color: MUTED, size: 9 });
-      if ((op.expected_effects || []).length) {
-        y = paragraph(doc, `Expected effects: ${op.expected_effects.join(', ')}.`, y, { color: MUTED, size: 9 });
-      }
-      y += 6;
-    }
+  if (epi && (epi.current_likely_influences || []).length) {
+    y = ensureSpace(doc, y, 120);
+    y = sectionTitle(doc, '12 · How your nutrition is affecting your results', y);
+    y = paragraph(doc, 'Right now, your nutrition pattern most likely shapes:', y);
+    epi.current_likely_influences.forEach((p: string) => {
+      y = ensureSpace(doc, y, 14);
+      y = paragraph(doc, `- ${p}`, y);
+    });
+    y += 6;
   }
 
   // 11. Long-term outlook
@@ -606,15 +605,15 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
-  // 12. Three highest-impact improvements
+  // 12. Three highest-impact improvements (RED — highest priority)
   if ((data.improvement_priorities || []).length) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '14 · Three highest-impact improvements', y);
+    y = sectionTitle(doc, '14 · Highest-priority improvements', y);
     data.improvement_priorities.forEach((p: any, i: number) => {
       y = ensureSpace(doc, y, 50);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(NAVY);
+      doc.setTextColor('#c2553a');
       doc.text(`${i + 1}. ${p.title}`, 40, y);
       y += 14;
       y = paragraph(doc, p.detail, y, { color: MUTED });

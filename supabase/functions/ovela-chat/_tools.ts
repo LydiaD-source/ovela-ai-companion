@@ -282,39 +282,51 @@ const THIRTY_G_SWAPS: Record<DietType, string[]> = {
 
 const VEGETARIAN_ALTS = ["Greek yogurt", "Cottage cheese", "Eggs", "Tempeh", "Tofu", "Edamame", "Lentils", "Whey/casein protein"];
 
-function buildMealFramework(diet: DietType, dailyProteinG: number) {
-  // Cap each main meal at ~40 g protein (digestion / leucine threshold).
-  // For regular adults, 3 main meals × 30–40 g + 1 modest snack is optimal.
+function filterByDislikes<T extends string>(list: T[], dislikes: string[]): T[] {
+  if (!dislikes?.length) return list;
+  const dl = dislikes.map(d => d.toLowerCase());
+  const filtered = list.filter(item => !dl.some(d => item.toLowerCase().includes(d)));
+  return filtered.length ? filtered : list;
+}
+
+function buildMealFramework(diet: DietType, dailyProteinG: number, dislikes: string[] = [], preferred: string[] = []) {
   const meals = [
     { meal: "Breakfast", pct: 0.30, cap: 40 },
     { meal: "Lunch",     pct: 0.30, cap: 40 },
     { meal: "Snack",     pct: 0.15, cap: 25 },
     { meal: "Dinner",    pct: 0.30, cap: 40 },
   ];
-  const ex: Record<DietType, Record<string, string>> = {
+  const ex: Record<DietType, Record<string, string[]>> = {
     omnivore: {
-      Breakfast: "3 eggs + Greek yogurt + berries (~30–35 g)",
-      Lunch:     "Grilled chicken bowl, quinoa, vegetables, olive oil (~35–40 g)",
-      Snack:     "Cottage cheese + nuts, or a whey shake (~15–20 g)",
-      Dinner:    "Salmon or lean beef + sweet potato + greens (~35–40 g)",
+      Breakfast: ["3 eggs + Greek yogurt + berries (~30-35 g)", "Cottage cheese + oats + whey (~30 g)", "Smoked salmon + 2 eggs + rye toast (~30 g)"],
+      Lunch:     ["Grilled chicken bowl, quinoa, vegetables, olive oil (~35-40 g)", "Tuna and white-bean salad + greens (~35 g)", "Turkey wrap with hummus and vegetables (~35 g)"],
+      Snack:     ["Cottage cheese + nuts (~15-20 g)", "Whey shake + fruit (~20 g)", "Greek yogurt + seeds (~15 g)"],
+      Dinner:    ["Salmon + sweet potato + greens (~35-40 g)", "Lean beef stir-fry + brown rice (~40 g)", "Roast chicken thighs + roast vegetables (~40 g)"],
     },
     vegetarian: {
-      Breakfast: "Greek yogurt + oats + whey or seeds (~30 g)",
-      Lunch:     "Tofu or tempeh grain bowl + vegetables (~35 g)",
-      Snack:     "Cottage cheese + fruit, or a casein shake (~15–20 g)",
-      Dinner:    "Lentil and paneer stew + brown rice + salad (~35 g)",
+      Breakfast: ["Greek yogurt + oats + whey or seeds (~30 g)", "Cottage cheese + berries + nuts (~30 g)", "3-egg vegetable omelette + rye toast (~30 g)"],
+      Lunch:     ["Tofu or tempeh grain bowl + vegetables (~35 g)", "Halloumi + chickpea + grain salad (~35 g)", "Paneer + lentil curry + brown rice (~35 g)"],
+      Snack:     ["Cottage cheese + fruit (~15-20 g)", "Casein shake (~20 g)", "Greek yogurt + nuts (~15 g)"],
+      Dinner:    ["Lentil and paneer stew + brown rice + salad (~35 g)", "Tempeh stir-fry + quinoa + greens (~35 g)", "Bean and cheese enchiladas + salad (~35 g)"],
     },
     vegan: {
-      Breakfast: "Soy yogurt + oats + pea-protein shake (~30 g)",
-      Lunch:     "Tempeh or seitan grain bowl + edamame (~35 g)",
-      Snack:     "Roasted chickpeas + pea-protein shake (~15–20 g)",
-      Dinner:    "Tofu stir-fry + lentils + greens (~35 g)",
+      Breakfast: ["Soy yogurt + oats + pea-protein shake (~30 g)", "Tofu scramble + sourdough + avocado (~30 g)", "Overnight oats + soy milk + pea protein (~30 g)"],
+      Lunch:     ["Tempeh or seitan grain bowl + edamame (~35 g)", "Chickpea and quinoa salad + tahini (~30 g)", "Lentil + brown rice bowl + tofu (~35 g)"],
+      Snack:     ["Roasted chickpeas + pea-protein shake (~15-20 g)", "Soy yogurt + seeds (~15 g)", "Edamame + nuts (~15 g)"],
+      Dinner:    ["Tofu stir-fry + lentils + greens (~35 g)", "Seitan + roast vegetables + quinoa (~40 g)", "Tempeh chili + brown rice (~35 g)"],
     },
+  };
+  const dl = dislikes.map(d => d.toLowerCase());
+  const pl = preferred.map(p => p.toLowerCase());
+  const pick = (opts: string[]) => {
+    const ok = opts.filter(o => !dl.some(d => o.toLowerCase().includes(d)));
+    const pref = ok.find(o => pl.some(p => o.toLowerCase().includes(p)));
+    return pref || ok[0] || opts[0];
   };
   return meals.map(m => ({
     meal: m.meal,
     protein_g: Math.min(m.cap, Math.round(dailyProteinG * m.pct)),
-    example: ex[diet][m.meal],
+    example: pick(ex[diet][m.meal]),
   }));
 }
 
@@ -350,6 +362,9 @@ export function nutritionAssessment(args: {
   low_vegetables?: boolean;
   high_processed?: boolean;
   irregular_meals?: boolean;
+  meal_observations?: string[];
+  disliked_foods?: string[];
+  preferred_foods?: string[];
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";
@@ -358,6 +373,9 @@ export function nutritionAssessment(args: {
   const age = args.age || 35;
   const height = args.height_cm || (gender === "female" ? 165 : 178);
   const diet: DietType = (args.diet_type as DietType) || "omnivore";
+  const dislikes = args.disliked_foods ?? [];
+  const preferred = args.preferred_foods ?? [];
+  const mealObservations = (args.meal_observations ?? []).filter(s => typeof s === 'string' && s.trim().length > 0).slice(0, 6);
 
   const bmi = Math.round((weight / Math.pow(height / 100, 2)) * 10) / 10;
 
@@ -517,14 +535,18 @@ export function nutritionAssessment(args: {
   if ((args.alcohol_units_per_week ?? 0) > 10) priorities.push({ title: "Reduce alcohol load", detail: "Target ≤ 7 units/week — fastest single change for sleep quality, recovery, and visceral fat." });
   while (priorities.length < 3) priorities.push({ title: "Maintain consistency for 7 days", detail: "Repeat the strongest two days from this week. Consistency beats perfection." });
 
+  // Personalized food sources (filtered by dietary dislikes)
+  const personalSources = filterByDislikes(PROTEIN_SOURCES[diet], dislikes);
+  const personalSwaps = filterByDislikes(THIRTY_G_SWAPS[diet], dislikes);
+
   // Fastest win — the single highest-impact change.
   const fastestWin = (() => {
     const benefits = ["Improved satiety", "Reduced cravings", "Better recovery", "Easier fat loss"];
     if (proteinGap != null && proteinGap > 15 && (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60))) {
       const closePct = Math.min(50, Math.round(35 / Math.max(proteinGap, 35) * 100));
       return {
-        title: "Add 30–35 g of protein at breakfast",
-        action: `Choose one: ${THIRTY_G_SWAPS[diet][0]}, or ${THIRTY_G_SWAPS[diet][1]}.`,
+        title: "Add 30-35 g of protein at breakfast",
+        action: `Choose one: ${personalSwaps[0]}, or ${personalSwaps[1] ?? personalSwaps[0]}.`,
         expected_benefits: benefits,
         closes_pct_of_weekly_gap: closePct,
       };
@@ -930,22 +952,24 @@ export function nutritionAssessment(args: {
     },
     protein_strategy: {
       diet_type: diet,
-      best_sources: PROTEIN_SOURCES[diet],
-      thirty_gram_options: THIRTY_G_SWAPS[diet],
-      vegetarian_alternatives: diet === "vegan" ? null : VEGETARIAN_ALTS,
+      best_sources: personalSources,
+      thirty_gram_options: personalSwaps,
+      vegetarian_alternatives: diet === "vegan" ? null : filterByDislikes(VEGETARIAN_ALTS, dislikes),
       distribution: hasDistribution ? {
         meals: distScores.map(d => ({ meal: d.meal, protein_g: d.g, score: d.score })),
-        target_per_main_meal_g: "30–40",
+        target_per_main_meal_g: "30-40",
         score: distributionScore,
         status: distributionStatus,
       } : {
         meals: null,
-        target_per_main_meal_g: "30–40",
+        target_per_main_meal_g: "30-40",
         score: null,
         status: distributionStatus,
       },
     },
-    daily_meal_framework: { diet_type: diet, total_protein_g: proteinMid, meals: buildMealFramework(diet, proteinMid) },
+    daily_meal_framework: { diet_type: diet, total_protein_g: proteinMid, meals: buildMealFramework(diet, proteinMid, dislikes, preferred) },
+    meal_observations: mealObservations,
+    personalization: { disliked_foods: dislikes, preferred_foods: preferred },
     metabolic_support: {
       score: metabolicSupport,
       biggest_opportunities: [
@@ -961,7 +985,7 @@ export function nutritionAssessment(args: {
       needs_improvement: needs,
       note: "Improving the items above may significantly improve energy, recovery, and long-term resilience. Educational estimate only.",
     },
-    improvement_priorities: priorities.slice(0, 3),
+    improvement_priorities: priorities.filter(p => p.title.toLowerCase() !== fastestWin.title.toLowerCase()).slice(0, 3),
     fastest_win: fastestWin,
     seven_day_plan: sevenDay,
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },

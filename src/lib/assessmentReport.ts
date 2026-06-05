@@ -242,6 +242,17 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 8;
   }
 
+  // 1b. Observations from your diary (meal-log references — personalization)
+  if (Array.isArray(data.meal_observations) && data.meal_observations.length) {
+    y = ensureSpace(doc, y, 30 + data.meal_observations.length * 16);
+    y = sectionTitle(doc, 'What Isabella noticed in your diary', y);
+    data.meal_observations.forEach((obs: string) => {
+      y = ensureSpace(doc, y, 16);
+      y = paragraph(doc, `- ${obs}`, y, { color: INK });
+    });
+    y += 6;
+  }
+
   // 2. Executive Readiness Score (headline)
   const er = data.executive_readiness;
   if (er) {

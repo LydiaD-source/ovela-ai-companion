@@ -1517,6 +1517,25 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
     y += 6;
   }
 
+  // 11b. Recommended staffing model (Human + Isabella, not pure replacement)
+  const staff = data.staffing_recommendation;
+  if (staff) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, '12 - Recommended staffing model (Human + Isabella)', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text('Today', 40, y); y += 14;
+    y = paragraph(doc, staff.current, y, { color: INK, size: 10 });
+    y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text('Recommended', 40, y); y += 14;
+    (staff.recommended || []).forEach((r: string) => { y = paragraph(doc, `- ${r}`, y); });
+    y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
+    doc.text('Expected outcome', 40, y); y += 14;
+    (staff.expected_outcome || []).forEach((r: string) => { y = paragraph(doc, `- ${r}`, y); });
+    y += 6;
+  }
+
   // 12. Country context
   if (data.country_note) {
     y = ensureSpace(doc, y, 60);

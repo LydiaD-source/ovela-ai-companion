@@ -67,6 +67,61 @@ function extractAssistantText(body: any) {
   }
 }
 
+function parseAssessmentReportBlock(text: string) {
+  const match = (text || "").match(/`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i);
+  if (!match) return null;
+  try {
+    return JSON.parse(match[1].trim().replace(/^json\s*/i, ""));
+  } catch {
+    return null;
+  }
+}
+
+function isMeaningfulReportPayload(payload: any) {
+  if (!payload || typeof payload !== "object") return false;
+  const data = payload.data || payload.nutrition_assessment_response || payload.recovery_resilience_response || payload.recovery_resilience_assessment_response || payload.biological_age_response || payload;
+  const type = payload.type === "biological_age" ? "recovery_resilience" : payload.type;
+  if (type === "nutrition_assessment" || payload.nutrition_assessment_response || data?.daily_meal_framework || data?.muscle_preservation) {
+    return Boolean(
+      typeof data?.targets?.daily_calories === "number" ||
+      typeof data?.targets?.protein_g?.low_g === "number" ||
+      typeof data?.muscle_preservation?.recommended_protein_g === "number"
+    );
+  }
+  if (type === "recovery_resilience" || payload.recovery_resilience_response || payload.biological_age_response) {
+    return Boolean(
+      typeof data?.scores?.executive_wellness === "number" ||
+      typeof data?.scores?.recovery_capacity === "number" ||
+      typeof data?.scores?.burnout_risk === "string"
+    );
+  }
+  return false;
+}
+
+function hasUsableNutritionArgs(args: any) {
+  return Boolean(
+    Number.isFinite(Number(args?.age)) &&
+    Number.isFinite(Number(args?.height_cm)) &&
+    Number.isFinite(Number(args?.weight_kg)) &&
+    ["male", "female", "other"].includes(args?.gender) &&
+    ["sedentary", "moderate", "active", "athlete"].includes(args?.activity_level) &&
+    ["fat_loss", "muscle_gain", "performance", "healthy_aging", "energy", "longevity", "recovery", "muscle_maintenance", "maintenance"].includes(args?.goal) &&
+    ["omnivore", "vegetarian", "vegan"].includes(args?.diet_type) &&
+    Number.isFinite(Number(args?.est_protein_g)) &&
+    Number.isFinite(Number(args?.est_hydration_l))
+  );
+}
+
+function hasUsableRecoveryArgs(args: any) {
+  return Boolean(
+    Number.isFinite(Number(args?.age)) &&
+    Number.isFinite(Number(args?.work_hours_per_week)) &&
+    Number.isFinite(Number(args?.sleep_hours)) &&
+    Number.isFinite(Number(args?.stress_level)) &&
+    Number.isFinite(Number(args?.energy_level))
+  );
+}
+
 const GUIDE_TTL_MS = 5 * 60 * 1000;
 let guideCache: { text: string; at: number; clientId: string } | null = null;
 

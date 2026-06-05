@@ -1130,8 +1130,59 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     });
   }
 
+  // 5b. Nutrition × Recovery integration (only when nutrition scores shared)
+  if (data.nutrition_integration) {
+    const ni = data.nutrition_integration;
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '5b · Nutrition × Recovery — combined view', y);
+    const ns = ni.nutrition_scores || {};
+    const rowsN: Array<[string, any]> = [
+      ['Protein', ns.protein],
+      ['Hydration', ns.hydration],
+      ['Recovery fuel', ns.recovery_fuel],
+      ['Muscle preservation', ns.muscle_preservation],
+    ];
+    rowsN.forEach(([label, v]) => {
+      if (typeof v !== 'number') return;
+      y = ensureSpace(doc, y, 22);
+      y = scoreRow(doc, label, v, y);
+    });
+    y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(GOLD);
+    doc.text(`Combined Resilience Score: ${ni.combined_resilience_score}/100`, 40, y); y += 16;
+    doc.setTextColor(INK);
+    if (ni.interpretation) y = paragraph(doc, ni.interpretation, y);
+    if (ni.note) y = paragraph(doc, ni.note, y, { color: MUTED, size: 9 });
+    y += 6;
+  }
+
+  // 5c. Trajectory — "If Nothing Changes" vs "If Recommendations Followed"
+  if (data.trajectory) {
+    const t = data.trajectory;
+    y = ensureSpace(doc, y, 240);
+    y = sectionTitle(doc, '5c · Your two trajectories', y);
+
+    const renderTrajectory = (block: any, color: string) => {
+      if (!block) return;
+      y = ensureSpace(doc, y, 100);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(color);
+      doc.text(block.headline, 40, y); y += 14;
+      if (block.timeframe) y = paragraph(doc, block.timeframe, y, { color: MUTED });
+      (block.outcomes || []).forEach((o: string) => {
+        y = ensureSpace(doc, y, 16);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+        const lines = doc.splitTextToSize(`- ${o}`, 495);
+        doc.text(lines, 50, y);
+        y += lines.length * 12;
+      });
+      if (block.note) { y += 2; y = paragraph(doc, block.note, y, { color: MUTED, size: 9 }); }
+      y += 6;
+    };
+    renderTrajectory(t.if_nothing_changes, '#c2553a');
+    renderTrajectory(t.if_recommendations_followed, '#2d8a5e');
+  }
+
   // 6. 7-day recovery plan
-  if (Array.isArray(data.seven_day_plan) && data.seven_day_plan.length) {
     y = ensureSpace(doc, y, 180);
     y = sectionTitle(doc, '6 · 7-day recovery plan', y);
     data.seven_day_plan.forEach((d: any) => {

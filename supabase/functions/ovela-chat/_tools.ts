@@ -223,34 +223,200 @@ export function calcReceptionistCost(args: {
   };
 }
 
+// ─── Missed Calls v2 — Revenue Leak Diagnostic ────────────────────────
+type IndustryKey =
+  | "clinic" | "hotel" | "real_estate" | "legal" | "trades"
+  | "support" | "professional_services" | "beauty_spa" | "other";
+
+const INDUSTRY: Record<IndustryKey, {
+  label: string;
+  default_miss_rate: number;       // % industry-benchmark missed
+  default_conv: number;            // % captured → customer
+  leak_split: { after_hours: number; busy_line: number; language: number }; // sums to 1
+  archetype: { id: string; label: string; description: string };
+  observation_hook: string;        // used inside Isabella Business Observation
+}> = {
+  clinic:               { label:"Clinic / medical practice", default_miss_rate:30, default_conv:35, leak_split:{after_hours:0.50,busy_line:0.30,language:0.20},
+    archetype:{ id:"busy_clinic", label:"The Busy Clinic", description:"Patient demand exceeds front-desk capacity; missed calls translate directly to lost recurring patients and downstream lifetime value." },
+    observation_hook:"In clinics, the most expensive missed call is rarely the first one — it is the patient who would have booked an annual follow-up." },
+  hotel:                { label:"Hotel / hospitality", default_miss_rate:25, default_conv:25, leak_split:{after_hours:0.60,busy_line:0.20,language:0.20},
+    archetype:{ id:"independent_hotel", label:"The Independent Hotel", description:"International guests calling outside CET hours, in multiple languages — every unanswered call is a direct OTA win for a competitor." },
+    observation_hook:"Hospitality bookings are won by the first response, not the best price." },
+  real_estate:          { label:"Real-estate agency", default_miss_rate:45, default_conv:15, leak_split:{after_hours:0.55,busy_line:0.25,language:0.20},
+    archetype:{ id:"growing_real_estate", label:"The Growing Real-Estate Office", description:"High call volume, low conversion, multilingual buyers. The first-to-respond agent wins ~78% of viewings." },
+    observation_hook:"In real estate, speed-to-lead is the single largest driver of commission revenue." },
+  legal:                { label:"Legal / professional services", default_miss_rate:50, default_conv:30, leak_split:{after_hours:0.45,busy_line:0.35,language:0.20},
+    archetype:{ id:"law_firm", label:"The Law Firm Under Pressure", description:"Inbound prospects are time-sensitive — missing a consultation request often means the client retains another firm by the next morning." },
+    observation_hook:"Legal prospects rarely call twice." },
+  trades:               { label:"Trades / home services", default_miss_rate:60, default_conv:40, leak_split:{after_hours:0.70,busy_line:0.25,language:0.05},
+    archetype:{ id:"trades_business", label:"The Field-Based Trades Business", description:"Owner is on a job, phone goes unanswered, urgent customer calls the next listing in Google." },
+    observation_hook:"In trades, an unanswered call is a customer awarded to a competitor in under 90 seconds." },
+  support:              { label:"Customer support operation", default_miss_rate:35, default_conv:60, leak_split:{after_hours:0.40,busy_line:0.40,language:0.20},
+    archetype:{ id:"support_247", label:"The 24/7 Support Center", description:"Coverage gaps create churn signals and 1-star reviews disproportionate to the actual issue." },
+    observation_hook:"Most churn starts with a single unanswered ticket." },
+  professional_services:{ label:"Professional services (consulting, agency)", default_miss_rate:40, default_conv:25, leak_split:{after_hours:0.50,busy_line:0.30,language:0.20},
+    archetype:{ id:"founder_overloaded", label:"The Founder Wearing Too Many Hats", description:"Sales, delivery, ops and inbound all funnel through one person — calls drop when that person is in a meeting." },
+    observation_hook:"Founder-led firms lose the most revenue not to bad sales calls, but to calls that never got answered." },
+  beauty_spa:           { label:"Beauty / spa / wellness", default_miss_rate:35, default_conv:50, leak_split:{after_hours:0.55,busy_line:0.30,language:0.15},
+    archetype:{ id:"boutique_spa", label:"The Boutique Spa", description:"Most bookings happen after the workday ends — exactly when the front desk is closed." },
+    observation_hook:"Wellness clients book in the evening; staff is paid in the morning." },
+  other:                { label:"Other / multi-location business", default_miss_rate:35, default_conv:20, leak_split:{after_hours:0.50,busy_line:0.30,language:0.20},
+    archetype:{ id:"multi_location", label:"The Multi-Location Business", description:"Inbound spread across sites and channels — no single number, no single owner of the customer experience." },
+    observation_hook:"When no one owns the inbound, no one owns the lost revenue either." },
+};
+
+function speedToLeadProfile(avgMinutes: number) {
+  // Industry benchmarks: <5 min ~100% conv potential, 5-30 ~21%, 30-60 ~11%, >60 ~6%.
+  if (avgMinutes <= 5)  return { bucket:"<5 min",       potential_pct:100, label:"first-responder advantage" };
+  if (avgMinutes <= 30) return { bucket:"5-30 min",     potential_pct:21,  label:"strong but losing" };
+  if (avgMinutes <= 60) return { bucket:"30-60 min",    potential_pct:11,  label:"speed penalty applies" };
+  if (avgMinutes <= 240)return { bucket:"1-4 hours",    potential_pct:6,   label:"most leads already lost" };
+  return                       { bucket:"4+ hours",     potential_pct:3,   label:"effectively cold" };
+}
+
 export function calcMissedLeads(args: {
   monthly_inbound: number;
-  miss_rate_pct?: number;       // % of inbounds missed (after hours, busy, language)
-  conversion_rate_pct?: number; // captured-lead → customer
+  industry?: IndustryKey;
+  country?: string;
+  miss_rate_pct?: number;
+  conversion_rate_pct?: number;
   avg_deal_value_eur?: number;
+  avg_response_minutes?: number;
+  business_hours_coverage?: "business" | "extended" | "247";
+  languages_served?: number;
+  // Optional cross-link with receptionist tool
+  human_true_annual_cost_eur?: number;
 }) {
-  const inbound = Math.max(0, Math.round(args.monthly_inbound || 0));
-  const missPct = Math.min(100, Math.max(0, args.miss_rate_pct ?? 35));
-  const convPct = Math.min(100, Math.max(0, args.conversion_rate_pct ?? 20));
-  const deal = Math.max(0, args.avg_deal_value_eur ?? 1500);
+  const inbound  = Math.max(0, Math.round(args.monthly_inbound || 0));
+  const industry: IndustryKey = (args.industry as IndustryKey) in INDUSTRY ? (args.industry as IndustryKey) : "other";
+  const cfg      = INDUSTRY[industry];
+  const missPct  = Math.min(100, Math.max(0, args.miss_rate_pct ?? cfg.default_miss_rate));
+  const convPct  = Math.min(100, Math.max(0, args.conversion_rate_pct ?? cfg.default_conv));
+  const deal     = Math.max(0, args.avg_deal_value_eur ?? 1500);
+  const respMin  = Math.max(0, args.avg_response_minutes ?? 45);
+  const coverage = args.business_hours_coverage || "business";
+  const langs    = Math.max(1, Math.min(args.languages_served ?? 1, 6));
+  const country  = (args.country || "ES").toUpperCase();
 
-  const missedPerMonth = Math.round(inbound * missPct / 100);
-  const recoverablePerMonth = Math.round(missedPerMonth * convPct / 100);
-  const monthlyRevenueLoss = Math.round(recoverablePerMonth * deal);
-  const annualRevenueLoss  = monthlyRevenueLoss * 12;
+  // Core loss math
+  const missedPerMonth        = Math.round(inbound * missPct / 100);
+  const recoverablePerMonth   = Math.round(missedPerMonth * convPct / 100);
+  const monthlyRevenueLoss    = Math.round(recoverablePerMonth * deal);
+  const annualRevenueLoss     = monthlyRevenueLoss * 12;
+
+  // Leak breakdown (Revenue Leak Map)
+  // If coverage is already 24/7, after-hours leak collapses to 0 and redistributes.
+  let split = { ...cfg.leak_split };
+  if (coverage === "247") {
+    const redistribute = split.after_hours;
+    split = { after_hours: 0, busy_line: split.busy_line + redistribute * 0.6, language: split.language + redistribute * 0.4 };
+  } else if (coverage === "extended") {
+    split = { after_hours: split.after_hours * 0.6, busy_line: split.busy_line + split.after_hours * 0.25, language: split.language + split.after_hours * 0.15 };
+  }
+  // If user already supports many languages, language leak collapses
+  if (langs >= 4) {
+    const drop = split.language * 0.7;
+    split = { ...split, language: split.language - drop, after_hours: split.after_hours + drop * 0.6, busy_line: split.busy_line + drop * 0.4 };
+  }
+  const leak_breakdown_eur = {
+    after_hours:       Math.round(annualRevenueLoss * split.after_hours),
+    busy_line:         Math.round(annualRevenueLoss * split.busy_line),
+    language_barrier:  Math.round(annualRevenueLoss * split.language),
+  };
+  const leak_breakdown_pct = {
+    after_hours:      Math.round(split.after_hours * 100),
+    busy_line:        Math.round(split.busy_line * 100),
+    language_barrier: Math.round(split.language * 100),
+  };
+
+  // Speed-to-Lead
+  const current = speedToLeadProfile(respMin);
+  const optimal = speedToLeadProfile(2); // Isabella responds <5s, model as <5 min bucket
+  const speed_uplift_ratio = optimal.potential_pct / Math.max(current.potential_pct, 1);
+  // Recoverable from speed alone: additional conversions on the CURRENTLY captured leads.
+  const capturedPerMonth     = inbound - missedPerMonth;
+  const currentConvPerMonth  = Math.round(capturedPerMonth * convPct / 100);
+  const speedExtraPerMonth   = Math.max(0, Math.round(currentConvPerMonth * (speed_uplift_ratio - 1)));
+  const speedRecoveryAnnual  = Math.min(annualRevenueLoss * 1.5, speedExtraPerMonth * deal * 12);
+
+  // Isabella pricing & ROI
+  const isabella_pro_tier_annual_eur = 9588;
+  const total_recoverable_annual_eur = annualRevenueLoss + speedRecoveryAnnual;
+  const net_annual_benefit_eur       = total_recoverable_annual_eur - isabella_pro_tier_annual_eur;
+  const roi_pct                      = Math.round((net_annual_benefit_eur / isabella_pro_tier_annual_eur) * 100);
+  const payback_months               = total_recoverable_annual_eur > 0
+    ? Math.max(1, Math.round(isabella_pro_tier_annual_eur / (total_recoverable_annual_eur / 12)))
+    : null;
+
+  // Combined Business Case (only if receptionist context provided)
+  const combined_business_case = args.human_true_annual_cost_eur && args.human_true_annual_cost_eur > 0
+    ? {
+        salary_savings_eur:    args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur,
+        recovered_revenue_eur: total_recoverable_annual_eur,
+        total_annual_upside_eur: (args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur) + total_recoverable_annual_eur,
+        isabella_annual_cost_eur: isabella_pro_tier_annual_eur,
+        combined_roi_pct: Math.round(
+          (((args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur) + total_recoverable_annual_eur) / isabella_pro_tier_annual_eur) * 100
+        ),
+      }
+    : null;
+
+  // Isabella Business Observation — narrative diagnosis, not spreadsheet
+  const biggestLeak = (Object.entries(leak_breakdown_eur).sort((a,b) => b[1]-a[1])[0] || [])[0] || "after_hours";
+  const leakLabel = biggestLeak === "after_hours" ? "after-hours availability"
+    : biggestLeak === "busy_line" ? "busy-line and overflow handling"
+    : "language coverage";
+  const isabella_observation =
+    `${cfg.observation_hook} The dominant pattern in this profile is ${leakLabel}: at the current response time of ${respMin} minutes, roughly ${current.potential_pct}% of inbound leads are converting on speed alone, against an industry ceiling near ${optimal.potential_pct}%. Businesses with a similar shape typically recover the largest gains not by adding headcount but by closing the availability gap — every additional hour of coverage compounds on the conversions already in the pipeline.`;
+
+  // Recommendations
+  const recommendations: string[] = [
+    `Move first-response time under 5 minutes — at ${respMin} min you are losing roughly ${Math.round((1 - current.potential_pct/optimal.potential_pct) * 100)}% of conversions on speed alone.`,
+    leak_breakdown_pct.after_hours >= 40
+      ? `Cover evenings and weekends first — ${leak_breakdown_pct.after_hours}% of your revenue leak happens outside business hours.`
+      : `Tighten the busy-line overflow — ${leak_breakdown_pct.busy_line}% of leaks happen while the line is engaged.`,
+    leak_breakdown_pct.language_barrier >= 15
+      ? `Add at least ${Math.max(2, langs+1)} language coverage — ${leak_breakdown_pct.language_barrier}% of lost revenue is language-blocked inbound.`
+      : `Maintain at least ${langs} language coverage and track captured-language ratios.`,
+    `Instrument 3 KPIs from week one: % inbound captured, median first-response, captured-lead conversion. Moving capture from ${100-missPct}% to >95% is the largest single lever.`,
+  ];
 
   return {
-    inputs: { monthly_inbound: inbound, miss_rate_pct: missPct, conversion_rate_pct: convPct, avg_deal_value_eur: deal },
+    industry, industry_label: cfg.label,
+    country,
+    archetype: cfg.archetype,
+    inputs: {
+      monthly_inbound: inbound, miss_rate_pct: missPct, conversion_rate_pct: convPct,
+      avg_deal_value_eur: deal, avg_response_minutes: respMin,
+      business_hours_coverage: coverage, languages_served: langs,
+    },
     missed_inquiries_per_month: missedPerMonth,
     recoverable_customers_per_month: recoverablePerMonth,
     monthly_revenue_loss_eur: monthlyRevenueLoss,
     annual_revenue_loss_eur: annualRevenueLoss,
-    isabella_pro_tier_annual_eur: 9588,
-    net_annual_benefit_eur: annualRevenueLoss - 9588,
+    leak_breakdown_eur,
+    leak_breakdown_pct,
+    speed_to_lead: {
+      current_bucket: current.bucket,
+      current_potential_pct: current.potential_pct,
+      current_label: current.label,
+      isabella_bucket: optimal.bucket,
+      isabella_potential_pct: optimal.potential_pct,
+      uplift_multiplier: Math.round(speed_uplift_ratio * 10) / 10,
+      recoverable_revenue_from_speed_eur: Math.round(speedRecoveryAnnual),
+    },
+    total_recoverable_annual_eur: Math.round(total_recoverable_annual_eur),
+    isabella_pro_tier_annual_eur,
+    net_annual_benefit_eur: Math.round(net_annual_benefit_eur),
+    roi_pct,
+    payback_months,
+    combined_business_case,
+    isabella_observation,
+    recommendations,
     notes: [
-      "Estimates assume Isabella captures 100% of after-hours / language-blocked inbounds.",
-      "Conversion rate is what your team already converts on captured leads.",
-      "Numbers are directional — actual results depend on follow-up speed.",
+      "Industry miss-rate, conversion and leak-split benchmarks are directional 2024-2025 averages.",
+      "Speed-to-Lead model uses widely-cited inbound benchmarks (<5 min ≈ 100% potential vs ~11% at 30-60 min).",
+      "All figures are educational; actual results depend on follow-up speed, CRM hygiene and offer quality.",
     ],
   };
 }

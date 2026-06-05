@@ -4,7 +4,9 @@
  *
  * Two report types:
  *   - nutrition_assessment
- *   - biological_age
+ *   - recovery_resilience  (Executive Recovery & Resilience Assessment)
+ *
+ * Legacy alias: 'biological_age' is still accepted on inbound payloads.
  *
  * Footer disclaimer is always included.
  */
@@ -15,7 +17,7 @@ const FOOTER_DISCLAIMER =
   'This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.';
 
 export interface AssessmentReport {
-  type: 'nutrition_assessment' | 'biological_age';
+  type: 'nutrition_assessment' | 'recovery_resilience';
   title?: string;
   data: any;
 }

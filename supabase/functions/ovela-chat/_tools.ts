@@ -991,6 +991,35 @@ export function nutritionAssessment(args: {
     note: TIME_BUDGET_NOTE[timeBudget],
   } : null;
 
+  // ── Personalised meal framework (current → upgrade, anchored to diary) ─
+  const allowedSlots = new Set(["Breakfast", "Lunch", "Snack", "Dinner"]);
+  const mealFrameworkReplacements = (args.meal_framework_replacements ?? [])
+    .filter(m => m && typeof m === "object")
+    .map(m => ({
+      slot: (m.slot ?? "").toString().trim(),
+      current: (m.current ?? "").toString().trim(),
+      upgrade: (m.upgrade ?? "").toString().trim(),
+    }))
+    .filter(m => allowedSlots.has(m.slot) && m.current && m.upgrade)
+    .slice(0, 4);
+
+  // ── Top meals from your week (strongest + weakest) ─────────────────
+  const cleanWhy = (arr?: unknown): string[] =>
+    Array.isArray(arr) ? arr.map(x => String(x ?? "").trim()).filter(Boolean).slice(0, 4) : [];
+  const tm = args.top_meals;
+  const topMeals = tm && (tm.strongest?.meal || tm.weakest?.meal) ? {
+    strongest: tm.strongest?.meal ? {
+      meal: String(tm.strongest.meal).trim(),
+      why_it_works: cleanWhy(tm.strongest.why_it_works),
+      score: typeof tm.strongest.score === "number" ? Math.max(0, Math.min(100, Math.round(tm.strongest.score))) : null,
+    } : null,
+    weakest: tm.weakest?.meal ? {
+      meal: String(tm.weakest.meal).trim(),
+      why_it_hurts: cleanWhy(tm.weakest.why_it_hurts),
+      score: typeof tm.weakest.score === "number" ? Math.max(0, Math.min(100, Math.round(tm.weakest.score))) : null,
+    } : null,
+  } : null;
+
 
 
   return {

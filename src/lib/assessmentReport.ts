@@ -253,11 +253,11 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
-  // 2. Executive Readiness Score (headline)
+  // 2. Nutrition Optimization Score (headline)
   const er = data.executive_readiness;
   if (er) {
     y = ensureSpace(doc, y, 140);
-    y = sectionTitle(doc, '2 · Executive Readiness Score', y);
+    y = sectionTitle(doc, '2 · Nutrition Optimization Score', y);
     // Big number block
     doc.setFillColor('#f7f3e6');
     doc.rect(40, y - 12, 515, 70, 'F');
@@ -284,15 +284,15 @@ function buildNutrition(doc: jsPDF, data: any) {
   y = ensureSpace(doc, y, 110);
   y = sectionTitle(doc, '3 · Headline scores', y);
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
-  y = scoreRow(doc, 'Executive recovery capacity', s.recovery_capacity ?? 0, y);
+  y = scoreRow(doc, 'Recovery capacity', s.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Muscle preservation', s.muscle_preservation ?? 0, y);
   y += 10;
 
-  // 4. Executive Benchmark (peer comparison)
+  // 4. Nutrition Benchmark (peer comparison)
   const eb = data.executive_benchmark;
   if (eb) {
     y = ensureSpace(doc, y, 200);
-    y = sectionTitle(doc, '4 · Executive benchmark', y);
+    y = sectionTitle(doc, '4 · Nutrition benchmark', y);
     y = paragraph(doc, `Compared with ${eb.cohort}:`, y, { color: MUTED, size: 9 });
     y += 4;
     // Column headers

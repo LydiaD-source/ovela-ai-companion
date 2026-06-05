@@ -28,6 +28,13 @@ export function isMeaningfulAssessmentReport(report: AssessmentReport | null | u
   const data = report.data;
 
   if (report.type === 'business_calculator') {
+    if (report.subtype === 'missed_calls') {
+      return Boolean(
+        data?.inputs?.monthly_inbound > 0 &&
+        typeof data?.annual_revenue_loss_eur === 'number' &&
+        data?.leak_breakdown_eur
+      );
+    }
     return Boolean(
       data.country &&
       data.true_annual_cost_eur?.mid > 0 &&

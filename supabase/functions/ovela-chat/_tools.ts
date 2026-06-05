@@ -803,7 +803,7 @@ export function nutritionAssessment(args: {
       ((walk ?? 0) >= 20 && strength >= 2 && (alcohol ?? 0) <= 7 && sleepH >= 7 && proteinScore >= 65 && hydrationScore >= 65)
         ? "Strong foundation"
         : recoveryCapacity >= 60 ? "Developing foundation" : "Needs reinforcement",
-    most_impactful_improvement: priorities[0]?.title || fastestWin.title,
+    most_impactful_improvement: `${primaryLimiter.short} — ${priorities[0]?.title || fastestWin.title}`,
   };
 
   // ── Executive Readiness Score (headline number for retention) ───────

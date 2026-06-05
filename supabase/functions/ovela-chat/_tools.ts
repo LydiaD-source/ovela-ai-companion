@@ -723,6 +723,31 @@ export function nutritionAssessment(args: {
     },
   };
 
+  // ── Executive Recovery Capacity (headline trio) ─────────────────────
+  const walkScore = walk == null ? 60 : walk >= 30 ? 90 : walk >= 15 ? 70 : 40;
+  const alcoholPenalty = alcohol == null ? 0 : alcohol > 14 ? 25 : alcohol > 7 ? 12 : 0;
+  const strengthComp = strength >= 3 ? 90 : strength >= 2 ? 75 : strength >= 1 ? 55 : 35;
+  const recoveryCapacity = Math.max(20, Math.min(100, Math.round(
+    recoveryScore * 0.30 + sleepComp * 0.25 + hydrationScore * 0.15
+    + walkScore * 0.15 + strengthComp * 0.15 - alcoholPenalty
+  )));
+
+  // ── Long-term outlook (consultant conclusion) ───────────────────────
+  const rank = (s: number, hi = 75, mid = 55) => s >= hi ? "Strong" : s >= mid ? "Moderate" : "Below optimal";
+  const longTermOutlook = {
+    muscle_preservation_risk: musclePres >= 75 ? "Low" : musclePres >= 55 ? "Moderate" : "High",
+    recovery_capacity: rank(recoveryCapacity),
+    fat_loss_potential: goal === "fat_loss"
+      ? (proteinScore >= 60 && recoveryCapacity >= 55 ? "High" : "Moderate")
+      : "Not the primary goal for this profile",
+    longevity_support:
+      ((walk ?? 0) >= 20 && strength >= 2 && (alcohol ?? 0) <= 7 && sleepH >= 7)
+        ? "Strong"
+        : recoveryCapacity >= 60 ? "Moderate" : "Below optimal",
+    most_impactful_improvement: priorities[0]?.title || fastestWin.title,
+  };
+
+
   return {
 
     inputs: {

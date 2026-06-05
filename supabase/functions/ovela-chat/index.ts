@@ -921,9 +921,14 @@ After any tool call, present results conversationally (1 short paragraph + key b
       }
 
 
+      // Trial state for this request (populated by nutrition tool branch)
+      let trialDaysUsed: number | null = null;
+      let trialForceFinalMessage: string | null = null;
+
       if (effectiveToolCalls && effectiveToolCalls.length > 0) {
         const toolCalls = effectiveToolCalls;
         const toolResults: any[] = [];
+
 
         for (const toolCall of toolCalls) {
           if (toolCall.function?.name === 'extract_contact_details') {

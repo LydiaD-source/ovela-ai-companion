@@ -197,7 +197,63 @@ async function submitLeadToCRM(leadData: any) {
   }
 }
 
-serve(async (req) => {
+// ── 7-day free trial gate for the nutrition assessment ─────────────────
+// Tracks first-assessment timestamp per user_key in public.assessment_trial.
+// After 7 days, returns trial_expired=true so the chat can replace the
+// PDF delivery with the WellneSpirit upsell.
+const TRIAL_WINDOW_DAYS = 7;
+async function checkAndRecordTrial(userKey: string): Promise<{ trial_expired: boolean; days_used: number; first_at: string | null }> {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey || !userKey) {
+      return { trial_expired: false, days_used: 0, first_at: null };
+    }
+    const headers = {
+      "apikey": serviceKey,
+      "Authorization": `Bearer ${serviceKey}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation",
+    };
+    // 1) Try to fetch existing record
+    const getRes = await fetch(`${supabaseUrl}/rest/v1/assessment_trial?user_key=eq.${encodeURIComponent(userKey)}&select=user_key,first_assessment_at,assessment_count`, { headers });
+    let row: any = null;
+    if (getRes.ok) {
+      const arr = await getRes.json();
+      row = Array.isArray(arr) && arr.length ? arr[0] : null;
+    }
+    const now = Date.now();
+    if (!row) {
+      // Insert new
+      await fetch(`${supabaseUrl}/rest/v1/assessment_trial`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ user_key: userKey, first_assessment_at: new Date().toISOString(), assessment_count: 1, last_assessment_at: new Date().toISOString() }),
+      });
+      return { trial_expired: false, days_used: 0, first_at: new Date().toISOString() };
+    }
+    const firstAt = new Date(row.first_assessment_at).getTime();
+    const daysUsed = Math.floor((now - firstAt) / (1000 * 60 * 60 * 24));
+    const expired = daysUsed > TRIAL_WINDOW_DAYS;
+    // Bump count + last seen (best-effort)
+    await fetch(`${supabaseUrl}/rest/v1/assessment_trial?user_key=eq.${encodeURIComponent(userKey)}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify({ assessment_count: (row.assessment_count ?? 0) + 1, last_assessment_at: new Date().toISOString() }),
+    });
+    return { trial_expired: expired, days_used: daysUsed, first_at: row.first_assessment_at };
+  } catch (e) {
+    console.warn("⚠️ Trial check failed (allowing assessment):", e);
+    return { trial_expired: false, days_used: 0, first_at: null };
+  }
+}
+
+const WELLNESPIRIT_PRE_EXPIRY_FOOTER =
+  "\n\nIf you'd like weekly tracking, progress comparisons and monthly reassessments, the full monthly programme lives at our clinical partner WellneSpirit (wellnespirit.com).";
+
+const WELLNESPIRIT_EXPIRED_MESSAGE =
+  "Thank you for using your free 7-day Isabella assessment window.\n\nTo continue receiving weekly assessments, progress tracking and ongoing support from Isabella, please activate the full monthly programme at our clinical partner **WellneSpirit** — visit wellnespirit.com and register for the Executive Wellness subscription.\n\nYour previous assessment, scores and recommendations remain valid for the next 14 days.";
+
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {

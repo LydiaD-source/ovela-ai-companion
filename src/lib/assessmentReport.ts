@@ -1539,7 +1539,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
   // 12. Country context
   if (data.country_note) {
     y = ensureSpace(doc, y, 60);
-    y = sectionTitle(doc, '12 - Country context', y);
+    y = sectionTitle(doc, '13 - Country context', y);
     y = paragraph(doc, data.country_note, y);
     y += 6;
   }
@@ -1547,7 +1547,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
   // 13. Recommendations
   if (Array.isArray(data.recommendations) && data.recommendations.length) {
     y = ensureSpace(doc, y, 40 + data.recommendations.length * 18);
-    y = sectionTitle(doc, '13 - Recommendations', y);
+    y = sectionTitle(doc, '14 - Recommendations', y);
     data.recommendations.forEach((r: string) => {
       y = ensureSpace(doc, y, 18);
       y = paragraph(doc, `- ${r}`, y);
@@ -1558,7 +1558,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
   // 14. Isabella Business Observation
   if (data.isabella_observation) {
     y = ensureSpace(doc, y, 90);
-    y = sectionTitle(doc, '14 - Isabella Business Observation', y);
+    y = sectionTitle(doc, '15 - Isabella Business Observation', y);
     doc.setFillColor('#f5f1e4'); doc.rect(40, y - 10, 515, 4, 'F');
     y = paragraph(doc, data.isabella_observation, y + 4, { color: INK, size: 10 });
     y += 8;
@@ -1566,7 +1566,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
 
   // 15. Next step
   y = ensureSpace(doc, y, 70);
-  y = sectionTitle(doc, '15 - Next step', y);
+  y = sectionTitle(doc, '16 - Next step', y);
   doc.setFillColor('#f7f3e6'); doc.rect(40, y - 10, 515, 56, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
   doc.text('Deploy Isabella in your front office', 56, y + 8);

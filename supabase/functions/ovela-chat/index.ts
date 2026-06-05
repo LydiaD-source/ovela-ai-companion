@@ -701,6 +701,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
       let nutritionReportPayload: any = null;
       let bioAgeReportPayload: any = null;
+      let assessmentReportResponse: any = null;
 
       // 🛟 DEFERRAL GUARD — if the model just promised a report but didn't call the tool,
       // force a second pass with tool_choice "required" so the user never sees
@@ -922,30 +923,33 @@ After any tool call, present results conversationally (1 short paragraph + key b
             }
           }
 
-          // Guarantee the fenced assessment-report block is valid so the frontend can render the PDF button.
-          if (nutritionReportPayload || bioAgeReportPayload) {
-            const payload = nutritionReportPayload
-              ? { type: 'nutrition_assessment', title: 'Executive Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
-              : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
-            const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
-            const existingReportBlock = finalMessage.match(reportBlockRe);
-            let hasValidBlock = false;
-            if (existingReportBlock) {
-              try {
-                const parsed = JSON.parse(existingReportBlock[1].trim());
-                hasValidBlock = Boolean(parsed?.data && (parsed.type === 'nutrition_assessment' || parsed.type === 'recovery_resilience' || parsed.type === 'biological_age'));
-              } catch (_) {
-                hasValidBlock = false;
-              }
+        }
+
+        // Guarantee the report is returned as structured data and, when needed,
+        // as a valid fenced block regardless of whether the model already wrote text.
+        if (nutritionReportPayload || bioAgeReportPayload) {
+          const payload = nutritionReportPayload
+            ? { type: 'nutrition_assessment', title: 'Executive Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
+            : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
+          assessmentReportResponse = payload;
+          const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
+          const existingReportBlock = finalMessage.match(reportBlockRe);
+          let hasValidBlock = false;
+          if (existingReportBlock) {
+            try {
+              const parsed = JSON.parse(existingReportBlock[1].trim());
+              hasValidBlock = Boolean(parsed?.data && (parsed.type === 'nutrition_assessment' || parsed.type === 'recovery_resilience' || parsed.type === 'biological_age'));
+            } catch (_) {
+              hasValidBlock = false;
             }
-            if (!hasValidBlock) {
-              const cleaned = finalMessage.replace(reportBlockRe, '').trim();
-              const summary = cleaned.length > 0
-                ? cleaned
-                : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
-              finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nWould you like me to email this to you, or shall we walk through the top improvements together?`;
-              console.log("🧷 Injected valid assessment-report block for", payload.type);
-            }
+          }
+          if (!hasValidBlock) {
+            const cleaned = finalMessage.replace(reportBlockRe, '').trim();
+            const summary = cleaned.length > 0
+              ? cleaned
+              : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nWould you like me to email this to you, or shall we walk through the top improvements together?`;
+            console.log("🧷 Injected valid assessment-report block for", payload.type);
           }
         }
       }
@@ -966,6 +970,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
         message: finalMessage, 
         data: { 
           crm_submitted: crmSubmitted,
+          ...(assessmentReportResponse ? { assessment_report: assessmentReportResponse } : {}),
           ...(videoSuggestion ? { video_suggestion: videoSuggestion } : {})
         } 
       }), {

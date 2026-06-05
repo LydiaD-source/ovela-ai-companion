@@ -56,7 +56,7 @@ function normalizeAssessmentReportPayload(parsed: any): AssessmentReport | null 
   if (!parsed || typeof parsed !== 'object') return null;
 
   const explicitType = parsed.type === 'biological_age' ? 'recovery_resilience' : parsed.type;
-  if ((explicitType === 'nutrition_assessment' || explicitType === 'recovery_resilience') && parsed.data) {
+  if ((explicitType === 'nutrition_assessment' || explicitType === 'recovery_resilience' || explicitType === 'business_calculator') && parsed.data) {
     const report = { ...parsed, type: explicitType } as AssessmentReport;
     return isMeaningfulAssessmentReport(report) ? report : null;
   }

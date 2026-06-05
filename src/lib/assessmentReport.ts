@@ -297,7 +297,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ps = data.protein_strategy;
   if (ps) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, `3 · Protein strategy (${ps.diet_type})`, y);
+    y = sectionTitle(doc, `3 · High-performance nutrition strategy (${ps.diet_type})`, y);
     y = paragraph(doc, 'Best protein sources:', y);
     (ps.best_sources || []).forEach((src: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${src}`, y); });
     y += 4;

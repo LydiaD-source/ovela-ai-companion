@@ -702,6 +702,56 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let nutritionReportPayload: any = null;
       let bioAgeReportPayload: any = null;
 
+      // 🛟 DEFERRAL GUARD — if the model just promised a report but didn't call the tool,
+      // force a second pass with tool_choice "required" so the user never sees
+      // "I will now generate…" without an actual PDF block.
+      let effectiveToolCalls = toolCalls;
+      const noToolCall = !effectiveToolCalls || effectiveToolCalls.length === 0;
+      if (noToolCall && finalMessage) {
+        const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|now creating|now generating|will (now )?(generate|create|prepare|deliver|produce|build))/i;
+        const REPORT_RE = /(report|assessment|pdf|action plan|score)/i;
+        const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
+        const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);
+        const looksDeferred = DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage);
+        const forceTool = looksDeferred ? (isNutrition ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
+
+        if (forceTool) {
+          console.warn(`🚨 Deferral detected — forcing ${forceTool}. Msg:`, finalMessage.substring(0, 140));
+          try {
+            const forced = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: "google/gemini-2.5-flash",
+                messages: [
+                  ...aiMessages,
+                  { role: "assistant", content: finalMessage },
+                  { role: "system", content: `You just told the user a report would be generated but DID NOT call the ${forceTool} tool. Call ${forceTool} NOW with your best estimates from the entire conversation. Emit only the tool call.` }
+                ],
+                tools,
+                tool_choice: { type: "function", function: { name: forceTool } },
+                stream: false
+              })
+            });
+            if (forced.ok) {
+              const forcedBody = await forced.json();
+              const forcedCalls = forcedBody?.choices?.[0]?.message?.tool_calls;
+              if (forcedCalls && forcedCalls.length > 0) {
+                aiBody.choices[0].message.tool_calls = forcedCalls;
+                effectiveToolCalls = forcedCalls;
+                finalMessage = "";
+                console.log(`✅ Forced ${forceTool} succeeded`);
+              } else {
+                console.warn("⚠️ Forced retry returned no tool calls");
+              }
+            }
+          } catch (e) {
+            console.error("🚨 Deferral retry failed:", e);
+          }
+        }
+      }
+
+
       if (toolCalls && toolCalls.length > 0) {
         const toolResults: any[] = [];
 

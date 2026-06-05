@@ -791,6 +791,7 @@ export function nutritionAssessment(args: {
       hydration: hydrationScore, recovery_support: recoveryScore,
       protein_distribution: distributionScore,
       muscle_preservation: musclePres, metabolic_support: metabolicSupport,
+      recovery_capacity: recoveryCapacity,
       overall_nutrition: overall,
     },
     executive_summary: executiveSummary,

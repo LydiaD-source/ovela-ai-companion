@@ -752,7 +752,8 @@ After any tool call, present results conversationally (1 short paragraph + key b
       }
 
 
-      if (toolCalls && toolCalls.length > 0) {
+      if (effectiveToolCalls && effectiveToolCalls.length > 0) {
+        const toolCalls = effectiveToolCalls;
         const toolResults: any[] = [];
 
         for (const toolCall of toolCalls) {

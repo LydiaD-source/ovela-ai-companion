@@ -1624,7 +1624,11 @@ function buildAssessmentDoc(report: AssessmentReport): jsPDF {
 export function assessmentReportFilename(report: AssessmentReport): string {
   const stamp = new Date().toISOString().slice(0, 10);
   if (report.type === 'nutrition_assessment') return `isabella-nutrition-assessment-${stamp}.pdf`;
-  if (report.type === 'business_calculator') return `isabella-receptionist-cost-${stamp}.pdf`;
+  if (report.type === 'business_calculator') {
+    return report.subtype === 'missed_calls'
+      ? `isabella-missed-calls-${stamp}.pdf`
+      : `isabella-receptionist-cost-${stamp}.pdf`;
+  }
   return `isabella-recovery-resilience-${stamp}.pdf`;
 }
 

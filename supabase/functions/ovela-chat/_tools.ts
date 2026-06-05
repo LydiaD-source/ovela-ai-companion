@@ -850,6 +850,7 @@ export function nutritionAssessment(args: {
       recovery_support: recoveryDrivers,
     },
     executive_performance_impact: executivePerformanceImpact,
+    long_term_outlook: longTermOutlook,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

@@ -605,15 +605,15 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
-  // 12. Three highest-impact improvements
+  // 12. Three highest-impact improvements (RED — highest priority)
   if ((data.improvement_priorities || []).length) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '14 · Three highest-impact improvements', y);
+    y = sectionTitle(doc, '14 · Highest-priority improvements', y);
     data.improvement_priorities.forEach((p: any, i: number) => {
       y = ensureSpace(doc, y, 50);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(NAVY);
+      doc.setTextColor('#c2553a');
       doc.text(`${i + 1}. ${p.title}`, 40, y);
       y += 14;
       y = paragraph(doc, p.detail, y, { color: MUTED });

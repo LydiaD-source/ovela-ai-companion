@@ -634,20 +634,25 @@ export function nutritionAssessment(args: {
   if (coffee != null && coffee <= 3) positives.push("Moderate coffee intake");
 
   // ── Weight-loss projection (only meaningful for fat_loss) ───────────
+  const round1 = (n: number) => Math.round(n * 10) / 10;
   const weightLossProjection = goal === "fat_loss" ? (() => {
     const deficit = Math.max(0, tdee - calorieTarget); // ~18% of TDEE
     // ~7700 kcal per kg of fat; project a sustainable 0.3–0.7 kg / week range.
-    const weeklyLow = Math.max(0.3, Math.round((deficit * 7 / 9000) * 10) / 10);
-    const weeklyHigh = Math.max(weeklyLow + 0.2, Math.round((deficit * 7 / 6500) * 10) / 10);
+    const weeklyLowRaw = Math.max(0.3, deficit * 7 / 9000);
+    const weeklyHighRaw = Math.max(weeklyLowRaw + 0.2, deficit * 7 / 6500);
+    const weeklyLow = round1(weeklyLowRaw);
+    const weeklyHigh = round1(Math.min(0.9, weeklyHighRaw));
+    const monthlyLow = round1(weeklyLow * 4);
+    const monthlyHigh = round1(weeklyHigh * 4);
     return {
       assumes: `Protein intake reaches ${proteinTarget.low_g}–${proteinTarget.high_g} g/day and current activity is maintained.`,
       satiety_within_days: "7–14",
       visible_change_weeks: "4–8",
       weekly_kg_low: weeklyLow,
-      weekly_kg_high: Math.min(0.9, weeklyHigh),
-      monthly_kg_low: Math.round(weeklyLow * 4 * 10) / 10,
-      monthly_kg_high: Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10,
-      note: `A sustainable fat-loss rate for this profile is approximately ${Math.round(weeklyLow * 4 * 10) / 10}-${Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10} kg per month when nutrition, activity and recovery remain consistent. Educational estimate only.`,
+      weekly_kg_high: weeklyHigh,
+      monthly_kg_low: monthlyLow,
+      monthly_kg_high: monthlyHigh,
+      note: `A sustainable fat-loss rate for this profile is approximately ${monthlyLow}–${monthlyHigh} kg per month when nutrition, activity and recovery remain consistent. Educational estimate only.`,
     };
   })() : null;
 

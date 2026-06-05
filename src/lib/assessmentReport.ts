@@ -649,6 +649,52 @@ function buildNutrition(doc: jsPDF, data: any) {
       y = paragraph(doc, `• ${line}`, y);
     });
   }
+
+  // 16. Clinical perspective (WellneSpirit authority layer)
+  if (data.clinical_perspective) {
+    y = ensureSpace(doc, y, 110);
+    y = sectionTitle(doc, '16 · Clinical perspective', y);
+    // Subtle institutional callout box
+    doc.setFillColor('#f4f1ea');
+    doc.setDrawColor(GOLD);
+    doc.setLineWidth(0.5);
+    doc.rect(40, y - 12, 515, 64, 'FD');
+    const lines = doc.splitTextToSize(data.clinical_perspective, 495);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(10);
+    doc.setTextColor(NAVY);
+    doc.text(lines, 50, y + 2);
+    y += 70;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(MUTED);
+    y = paragraph(doc, 'Reviewed under the executive-wellness framework used by WellneSpirit practitioners.', y, { color: MUTED, size: 8 });
+    y += 6;
+  }
+
+  // 17. Reassess in 14 days (retention hook)
+  const rp = data.reassessment_projection;
+  if (rp) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, `17 · Reassess in ${rp.reassess_in_days} days`, y);
+    y = paragraph(doc, 'If you:', y);
+    (rp.if_you || []).forEach((it: string) => {
+      y = ensureSpace(doc, y, 14);
+      y = paragraph(doc, `+ ${it}`, y, { color: '#2d8a5e' });
+    });
+    y += 6;
+    y = paragraph(doc, 'You could expect:', y);
+    (rp.expected_changes || []).forEach((c: any) => {
+      y = ensureSpace(doc, y, 16);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(`${c.metric}`, 40, y);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
+      doc.text(`${c.from}  ->  ${c.to}`, 300, y);
+      y += 14;
+    });
+    y += 4;
+    y = paragraph(doc, rp.note, y, { color: MUTED, size: 9 });
+  }
 }
 
 

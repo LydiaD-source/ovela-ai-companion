@@ -979,7 +979,8 @@ After any tool call, present results conversationally (1 short paragraph + key b
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
               const result = calcReceptionistCost(args);
-              console.log('💰 Receptionist cost calc:', { country: result.country, role: result.role });
+              console.log('💰 Receptionist cost calc:', { country: result.country, role: result.role, archetype: result.archetype?.id });
+              receptionistReportPayload = result;
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

@@ -805,17 +805,18 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let bioAgeReportPayload: any = null;
       let assessmentReportResponse: any = null;
 
-      // 🛟 DEFERRAL GUARD — if the model just promised a report but didn't call the tool,
-      // force a second pass with tool_choice "required" so the user never sees
-      // "I will now generate…" without an actual PDF block.
+      // 🛟 REPORT DELIVERY GUARD — if the model promised or referenced a completed
+      // report but didn't call the tool, force a second pass with tool_choice so the
+      // user never sees “download/email buttons” without an actual report object.
       let effectiveToolCalls = toolCalls;
       const noToolCall = !effectiveToolCalls || effectiveToolCalls.length === 0;
       if (noToolCall && finalMessage) {
         const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|complete|completing|finalize|finalizing|ready to (generate|create|complete|deliver|produce)|have (all|everything) (i|we)?\s*need(ed)?|will (now )?(generate|create|prepare|deliver|produce|build|complete))/i;
-        const REPORT_RE = /(report|assessment|pdf|action plan|score)/i;
+        const REPORT_RE = /(report|assessment|pdf|action plan|score|download|email pdf)/i;
+        const FALSE_DELIVERY_RE = /(here is your (full )?(assessment )?report|your full assessment report|you can download the pdf|email pdf to me|button below|below the report|estimated your current nutrition profile|based on what you('ve| have) shared,? i('ve| have) estimated)/i;
         const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
         const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);
-        const looksDeferred = DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage);
+        const looksDeferred = (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage)) || FALSE_DELIVERY_RE.test(finalMessage);
         const forceTool = looksDeferred ? (isNutrition ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
 
         if (forceTool) {
@@ -829,7 +830,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 messages: [
                   ...aiMessages,
                   { role: "assistant", content: finalMessage },
-                  { role: "system", content: `You just told the user a report would be generated but DID NOT call the ${forceTool} tool. Call ${forceTool} NOW with your best estimates from the entire conversation. Emit only the tool call.` }
+                  { role: "system", content: `You just told the user a report exists or can be downloaded/emailed but DID NOT call the ${forceTool} tool. Call ${forceTool} NOW with your best estimates from the entire conversation. Emit only the tool call. If essential inputs are truly missing, still emit the tool call with the best available fields so the server-side gate can decide what is missing.` }
                 ],
                 tools,
                 tool_choice: { type: "function", function: { name: forceTool } },
@@ -1085,6 +1086,17 @@ After any tool call, present results conversationally (1 short paragraph + key b
         }
       }
       
+      if (!assessmentReportResponse && /(here is your (full )?(assessment )?report|your full assessment report|you can download the pdf|email pdf to me|button below|below the report)/i.test(finalMessage)) {
+        finalMessage = finalMessage
+          .replace(/\n?\s*Here is your full assessment report:\s*/i, '')
+          .replace(/\n?\s*You can download the PDF or use the ['"]?Email PDF to me['"]? button below the report to have it sent to your inbox\.*/i, '')
+          .trim();
+        if (!finalMessage || /download|email pdf|button below/i.test(finalMessage)) {
+          finalMessage = "I have your food diary, but I still need to complete the calculation before I can show the PDF controls. Please send one short message saying 'complete my assessment' and I will generate the report directly.";
+        }
+        console.warn("🛡️ Removed report/download wording because no structured assessment payload was produced");
+      }
+
       console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50), hasVideos: !!videoSuggestion });
       console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
       

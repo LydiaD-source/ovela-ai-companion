@@ -629,8 +629,24 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
   }
 }
 
+function installSanitizer(doc: jsPDF) {
+  const anyDoc = doc as any;
+  const origText = anyDoc.text.bind(doc);
+  anyDoc.text = (text: any, ...rest: any[]) => {
+    if (typeof text === 'string') text = sanitize(text);
+    else if (Array.isArray(text)) text = text.map((t: any) => typeof t === 'string' ? sanitize(t) : t);
+    return origText(text, ...rest);
+  };
+  const origSplit = anyDoc.splitTextToSize.bind(doc);
+  anyDoc.splitTextToSize = (text: any, width: number, opts?: any) => {
+    if (typeof text === 'string') text = sanitize(text);
+    return origSplit(text, width, opts);
+  };
+}
+
 function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  installSanitizer(doc);
   if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
   else buildRecoveryResilience(doc, report.data);
   const pages = doc.getNumberOfPages();

@@ -9,6 +9,9 @@ verify_jwt = false
 [functions.crm-new-lead]
 verify_jwt = false
 
+[functions.email-assessment-report]
+verify_jwt = false
+
 [functions.speech-to-text]
 verify_jwt = false
 

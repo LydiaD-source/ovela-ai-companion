@@ -634,20 +634,25 @@ export function nutritionAssessment(args: {
   if (coffee != null && coffee <= 3) positives.push("Moderate coffee intake");
 
   // ── Weight-loss projection (only meaningful for fat_loss) ───────────
+  const round1 = (n: number) => Math.round(n * 10) / 10;
   const weightLossProjection = goal === "fat_loss" ? (() => {
     const deficit = Math.max(0, tdee - calorieTarget); // ~18% of TDEE
     // ~7700 kcal per kg of fat; project a sustainable 0.3–0.7 kg / week range.
-    const weeklyLow = Math.max(0.3, Math.round((deficit * 7 / 9000) * 10) / 10);
-    const weeklyHigh = Math.max(weeklyLow + 0.2, Math.round((deficit * 7 / 6500) * 10) / 10);
+    const weeklyLowRaw = Math.max(0.3, deficit * 7 / 9000);
+    const weeklyHighRaw = Math.max(weeklyLowRaw + 0.2, deficit * 7 / 6500);
+    const weeklyLow = round1(weeklyLowRaw);
+    const weeklyHigh = round1(Math.min(0.9, weeklyHighRaw));
+    const monthlyLow = round1(weeklyLow * 4);
+    const monthlyHigh = round1(weeklyHigh * 4);
     return {
       assumes: `Protein intake reaches ${proteinTarget.low_g}–${proteinTarget.high_g} g/day and current activity is maintained.`,
       satiety_within_days: "7–14",
       visible_change_weeks: "4–8",
       weekly_kg_low: weeklyLow,
-      weekly_kg_high: Math.min(0.9, weeklyHigh),
-      monthly_kg_low: Math.round(weeklyLow * 4 * 10) / 10,
-      monthly_kg_high: Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10,
-      note: `A sustainable fat-loss rate for this profile is approximately ${Math.round(weeklyLow * 4 * 10) / 10}-${Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10} kg per month when nutrition, activity and recovery remain consistent. Educational estimate only.`,
+      weekly_kg_high: weeklyHigh,
+      monthly_kg_low: monthlyLow,
+      monthly_kg_high: monthlyHigh,
+      note: `A sustainable fat-loss rate for this profile is approximately ${monthlyLow}–${monthlyHigh} kg per month when nutrition, activity and recovery remain consistent. Educational estimate only.`,
     };
   })() : null;
 
@@ -718,6 +723,31 @@ export function nutritionAssessment(args: {
     },
   };
 
+  // ── Executive Recovery Capacity (headline trio) ─────────────────────
+  const walkScore = walk == null ? 60 : walk >= 30 ? 90 : walk >= 15 ? 70 : 40;
+  const alcoholPenalty = alcohol == null ? 0 : alcohol > 14 ? 25 : alcohol > 7 ? 12 : 0;
+  const strengthComp = strength >= 3 ? 90 : strength >= 2 ? 75 : strength >= 1 ? 55 : 35;
+  const recoveryCapacity = Math.max(20, Math.min(100, Math.round(
+    recoveryScore * 0.30 + sleepComp * 0.25 + hydrationScore * 0.15
+    + walkScore * 0.15 + strengthComp * 0.15 - alcoholPenalty
+  )));
+
+  // ── Long-term outlook (consultant conclusion) ───────────────────────
+  const rank = (s: number, hi = 75, mid = 55) => s >= hi ? "Strong" : s >= mid ? "Moderate" : "Below optimal";
+  const longTermOutlook = {
+    muscle_preservation_risk: musclePres >= 75 ? "Low" : musclePres >= 55 ? "Moderate" : "High",
+    recovery_capacity: rank(recoveryCapacity),
+    fat_loss_potential: goal === "fat_loss"
+      ? (proteinScore >= 60 && recoveryCapacity >= 55 ? "High" : "Moderate")
+      : "Not the primary goal for this profile",
+    longevity_support:
+      ((walk ?? 0) >= 20 && strength >= 2 && (alcohol ?? 0) <= 7 && sleepH >= 7)
+        ? "Strong"
+        : recoveryCapacity >= 60 ? "Moderate" : "Below optimal",
+    most_impactful_improvement: priorities[0]?.title || fastestWin.title,
+  };
+
+
   return {
 
     inputs: {
@@ -761,6 +791,7 @@ export function nutritionAssessment(args: {
       hydration: hydrationScore, recovery_support: recoveryScore,
       protein_distribution: distributionScore,
       muscle_preservation: musclePres, metabolic_support: metabolicSupport,
+      recovery_capacity: recoveryCapacity,
       overall_nutrition: overall,
     },
     executive_summary: executiveSummary,
@@ -819,6 +850,7 @@ export function nutritionAssessment(args: {
       recovery_support: recoveryDrivers,
     },
     executive_performance_impact: executivePerformanceImpact,
+    long_term_outlook: longTermOutlook,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

@@ -31,7 +31,7 @@ const CARDS: Card[] = [
     tool: 'nutrition_assessment',
     icon: <Apple className="w-6 h-6" />,
     emoji: '🧬',
-    title: 'Protein & Nutrition Assessment',
+    title: 'Executive Nutrition & Muscle Preservation Assessment',
     blurb:
       'Upload a meal log, describe a typical week, or answer a few questions.',
     bullets: [

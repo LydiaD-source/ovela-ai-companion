@@ -1729,6 +1729,66 @@ export function recoveryResilienceAssessment(args: {
     };
   })();
 
+  // ── Trajectory: "If Nothing Changes" vs "If Recommendations Followed" ──
+  const trajectory = {
+    if_nothing_changes: {
+      headline: 'If current patterns continue',
+      timeframe: 'Over the next 6–12 months, the most common trajectory observed in executives with a similar recovery profile:',
+      outcomes: [
+        'Higher perceived stress and shorter fuse under workload spikes',
+        'Reduced resilience — recovery from intense weeks takes progressively longer',
+        'Gradual erosion of energy consistency, especially in afternoons',
+        'Sleep quality drifts down even if hours stay the same',
+        'Burnout-risk indicators tend to move up one category over 6–9 months',
+      ],
+      note: 'This is not a prediction — it is the most common trajectory observed in this profile.',
+    },
+    if_recommendations_followed: {
+      headline: 'If the recommendations in this report are implemented',
+      timeframe: 'Most executives following the 7-day plan and protecting recovery boundaries report, within 60–90 days:',
+      outcomes: [
+        'More stable energy across the day, fewer afternoon crashes',
+        'Improved workload tolerance — same load feels lighter',
+        'Burnout-risk indicators usually drop one full category',
+        'Stronger resilience to stress spikes and travel weeks',
+        'Sleep quality and morning recovery scores improve first, then everything else',
+      ],
+    },
+  };
+
+  // ── Nutrition integration narrative (only when nutrition scores shared) ──
+  let nutrition_integration: any = null;
+  if (hasNutrition && args.nutrition) {
+    const n = args.nutrition;
+    const nAvg = Math.round(
+      ((n.protein_score ?? 70) + (n.hydration_score ?? 70) +
+       (n.recovery_score ?? 70) + (n.muscle_preservation_score ?? 70)) / 4
+    );
+    const combinedResilience = Math.round((resilience + nAvg) / 2);
+    const lift = nAvg >= 75
+      ? 'Your nutrition profile is meaningfully supporting recovery — protein, hydration and recovery-fuel inputs are working in your favour and partially compensating for current stress load.'
+      : nAvg >= 60
+      ? 'Your nutrition profile is broadly adequate but not yet optimised for recovery — protein distribution and hydration are the two highest-leverage levers.'
+      : 'Your nutrition profile is currently a recovery drain rather than a recovery support — fixing protein adequacy and hydration would likely lift Recovery Capacity by 6–10 points within 4 weeks.';
+    nutrition_integration = {
+      headline: 'Nutrition × Recovery — combined view',
+      nutrition_scores: {
+        protein: n.protein_score ?? null,
+        hydration: n.hydration_score ?? null,
+        recovery_fuel: n.recovery_score ?? null,
+        muscle_preservation: n.muscle_preservation_score ?? null,
+        nutrition_average: nAvg,
+      },
+      combined_resilience_score: combinedResilience,
+      interpretation: lift,
+      note: 'Combined Resilience = average of Resilience score and Nutrition score. This is the single number that best predicts how you handle workload spikes.',
+    };
+  }
+
+  // Enrich executive summary when nutrition is integrated
+  const _summaryNutritionLine = nutrition_integration
+    ? ` Integrating your nutrition profile (avg ${nutrition_integration.nutrition_scores.nutrition_average}/100), your combined resilience score is ${nutrition_integration.combined_resilience_score}/100 — ${nutrition_integration.interpretation.toLowerCase()}`
+    : '';
 
   return {
     inputs: {

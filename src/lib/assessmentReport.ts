@@ -273,11 +273,11 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 8;
   }
 
-  // 2. Muscle preservation
+  // 2. Muscle preservation & performance capacity
   const mp = data.muscle_preservation;
   if (mp) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '2 · Muscle preservation', y);
+    y = sectionTitle(doc, '2 · Muscle preservation & performance capacity', y);
     y = paragraph(doc,
       `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
       `Recommended protein: ${mp.recommended_protein_g ?? '—'} g/day\n` +

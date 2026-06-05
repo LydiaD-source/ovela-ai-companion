@@ -1461,11 +1461,13 @@ export function recoveryResilienceAssessment(args: {
     burnoutScore >= 65 ? "Elevated" : burnoutScore >= 40 ? "Moderate" : "Low";
 
   // ── Overall Executive Wellness Score ─────────────────────────
+  // Recalibrated weights so the headline tracks the visible core scores
+  // (recovery + resilience + inverse stress) more intuitively.
   const executiveWellness = clamp(
-    recoveryCapacity * 0.30 +
-    (100 - stressLoad) * 0.25 +
-    resilience * 0.25 +
-    lifestyleRecovery * 0.20
+    recoveryCapacity * 0.32 +
+    (100 - stressLoad) * 0.22 +
+    resilience * 0.28 +
+    lifestyleRecovery * 0.18
   );
 
   // ── Top contributors / weaknesses for "Fastest Wins" ─────────

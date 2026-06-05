@@ -74,7 +74,7 @@ function normalizeAssessmentReportPayload(parsed: any): AssessmentReport | null 
   if (parsed.muscle_preservation || parsed.protein_strategy || parsed.daily_meal_framework) {
     const report: AssessmentReport = {
       type: 'nutrition_assessment',
-      title: 'Executive Nutrition & Muscle Preservation Assessment',
+      title: 'Nutrition & Muscle Preservation Assessment',
       data: parsed,
     };
     return isMeaningfulAssessmentReport(report) ? report : null;

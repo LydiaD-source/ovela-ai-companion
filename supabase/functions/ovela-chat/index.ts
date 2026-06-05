@@ -1219,6 +1219,19 @@ After any tool call, present results conversationally (1 short paragraph + key b
               finalMessage = `${finalMessage}${WELLNESPIRIT_PRE_EXPIRY_FOOTER}`;
             }
           }
+
+          // Dedup the "download the PDF / Email PDF" CTA line if it appears
+          // more than once (model sometimes echoes it on top of our injection).
+          const ctaRe = /You can download the PDF or use the ['"]?Email PDF to me['"]? button below the report to (?:send it to your inbox|have it sent to your inbox)\.?/gi;
+          const matches = finalMessage.match(ctaRe);
+          if (matches && matches.length > 1) {
+            let seen = false;
+            finalMessage = finalMessage.replace(ctaRe, () => {
+              if (seen) return '';
+              seen = true;
+              return 'You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.';
+            }).replace(/\n{3,}/g, '\n\n').trim();
+          }
         }
 
         // If trial expired, override anything and deliver only the upsell

@@ -1405,18 +1405,130 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
   y = paragraph(doc, 'Assumes 3.5% annual salary inflation on the human side and flat Isabella pricing.', y + 4, { color: MUTED, size: 8 });
   y += 6;
 
-  // 7. Country note
+  // 7. Front Office Efficiency Score
+  const foe = data.front_office_efficiency;
+  if (foe) {
+    y = ensureSpace(doc, y, 150);
+    y = sectionTitle(doc, '7 - Front Office Efficiency Score', y);
+    doc.setFillColor('#f7f3e6'); doc.rect(40, y - 10, 515, 110, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(36); doc.setTextColor(NAVY);
+    doc.text(`${foe.overall}`, 56, y + 40);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(MUTED);
+    doc.text('/ 100', 110, y + 40);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(GOLD);
+    doc.text(foe.band || '—', 56, y + 60);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+    const dr = foe.drivers || {};
+    doc.text(`Coverage: ${dr.coverage ?? '-'}`, 200, y + 16);
+    doc.text(`Cost efficiency: ${dr.cost_efficiency ?? '-'}`, 200, y + 32);
+    doc.text(`Language support: ${dr.language_support ?? '-'}`, 200, y + 48);
+    doc.text(`Scalability: ${dr.scalability ?? '-'}`, 200, y + 64);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
+    doc.text(foe.opportunity || '', 200, y + 84);
+    y += 120;
+  }
+
+  // 8. Revenue Protected
+  const rp = data.revenue_protected;
+  if (rp) {
+    y = ensureSpace(doc, y, 140);
+    y = sectionTitle(doc, '8 - Revenue protected (estimated)', y);
+    doc.setFillColor('#eef7ef'); doc.rect(40, y - 10, 515, 100, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor('#2d8a5e');
+    doc.text(fmtEUR(rp.annual_revenue_at_risk_eur), 56, y + 30);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+    doc.text('Annual revenue exposed to missed inbound at current capture rate', 56, y + 46);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+    doc.text(`Missed inquiries / month: ${rp.missed_inquiries_per_month}`, 56, y + 68);
+    doc.text(`Avg deal value: ${fmtEUR(rp.avg_deal_value_eur)}`, 240, y + 68);
+    doc.text(`Conversion assumed: ${rp.conversion_pct_assumed}%`, 56, y + 84);
+    doc.text(`Monthly inbound: ${rp.monthly_inbound_assumed}`, 240, y + 84);
+    y += 110;
+    if (!rp.user_provided_inputs) {
+      doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(MUTED);
+      y = paragraph(doc, 'Based on conservative industry defaults — share your real monthly inbound and average deal value for a sharper figure.', y, { color: MUTED, size: 8 });
+    }
+  }
+
+  // 9. Industry Benchmark
+  const ib = data.industry_benchmark;
+  if (ib) {
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, '9 - Industry benchmark', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text(ib.label, 40, y); y += 14;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+    const benchRow = (label: string, val: number, color: string) => {
+      y = ensureSpace(doc, y, 18);
+      doc.text(label, 40, y);
+      const barW = 200; const fill = Math.max(2, (val / 100) * barW);
+      doc.setFillColor('#eeeeee'); doc.rect(240, y - 8, barW, 8, 'F');
+      doc.setFillColor(color); doc.rect(240, y - 8, fill, 8, 'F');
+      doc.text(`${val}%`, 460, y);
+      y += 16;
+    };
+    benchRow('Average property captures', ib.average_capture_pct, '#999999');
+    benchRow('Top performers capture', ib.top_performer_capture_pct, '#2d8a5e');
+    benchRow('Your estimated capture', ib.your_estimated_capture_pct, '#c0392b');
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
+    y = paragraph(doc, `Gap to top performers: ${ib.gap_to_top_pct} points. Languages — you cover ${ib.your_languages} vs ${ib.languages_covered_avg} avg.`, y + 4, { color: MUTED, size: 9 });
+    y += 6;
+  }
+
+  // 10. Operational Risk Flags
+  const rf = data.risk_flags;
+  if (rf) {
+    y = ensureSpace(doc, y, 120);
+    y = sectionTitle(doc, '10 - Operational risk exposure', y);
+    const riskColor = (lvl: string) => lvl === 'High' ? '#c0392b' : lvl === 'Moderate' ? '#d68910' : '#2d8a5e';
+    const riskRow = (label: string, lvl: string) => {
+      y = ensureSpace(doc, y, 18);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+      doc.text(label, 40, y);
+      doc.setFillColor(riskColor(lvl)); doc.rect(420, y - 9, 80, 12, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor('#ffffff');
+      doc.text(lvl, 460, y - 1, { align: 'center' });
+      doc.setTextColor(INK);
+      y += 18;
+    };
+    riskRow('After-hours risk', rf.after_hours);
+    riskRow('Language risk', rf.language);
+    riskRow('Staff turnover risk', rf.staff_turnover);
+    riskRow('Coverage risk', rf.coverage);
+    y += 6;
+  }
+
+  // 11. Cost of Inaction
+  const coi = data.cost_of_inaction;
+  if (coi) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, '11 - If you do nothing — 12-month cost of inaction', y);
+    doc.setFillColor('#fff4f2'); doc.rect(40, y - 10, 515, 130, 'F');
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+    doc.text('Hidden staffing cost', 56, y + 8);    doc.text(fmtEUR(coi.hidden_staffing_cost_eur), 420, y + 8);
+    doc.text('Missed revenue (annual)', 56, y + 26); doc.text(fmtEUR(coi.missed_revenue_eur), 420, y + 26);
+    doc.text('Turnover exposure', 56, y + 44);     doc.text(fmtEUR(coi.turnover_exposure_eur), 420, y + 44);
+    doc.setDrawColor('#dddddd'); doc.line(56, y + 56, 499, y + 56);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor('#c0392b');
+    doc.text('Total opportunity cost', 56, y + 78);
+    doc.text(fmtEUR(coi.total_opportunity_cost_eur), 420, y + 78);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
+    y = paragraph(doc, coi.narrative || '', y + 96, { color: MUTED, size: 9 });
+    y += 6;
+  }
+
+  // 12. Country context
   if (data.country_note) {
     y = ensureSpace(doc, y, 60);
-    y = sectionTitle(doc, '7 - Country context', y);
+    y = sectionTitle(doc, '12 - Country context', y);
     y = paragraph(doc, data.country_note, y);
     y += 6;
   }
 
-  // 8. Recommendations
+  // 13. Recommendations
   if (Array.isArray(data.recommendations) && data.recommendations.length) {
     y = ensureSpace(doc, y, 40 + data.recommendations.length * 18);
-    y = sectionTitle(doc, '8 - Recommendations', y);
+    y = sectionTitle(doc, '13 - Recommendations', y);
     data.recommendations.forEach((r: string) => {
       y = ensureSpace(doc, y, 18);
       y = paragraph(doc, `- ${r}`, y);
@@ -1424,18 +1536,18 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
     y += 4;
   }
 
-  // 8b. Isabella Business Observation
+  // 14. Isabella Business Observation
   if (data.isabella_observation) {
     y = ensureSpace(doc, y, 90);
-    y = sectionTitle(doc, '9 - Isabella Business Observation', y);
+    y = sectionTitle(doc, '14 - Isabella Business Observation', y);
     doc.setFillColor('#f5f1e4'); doc.rect(40, y - 10, 515, 4, 'F');
     y = paragraph(doc, data.isabella_observation, y + 4, { color: INK, size: 10 });
     y += 8;
   }
 
-  // 9/10. Next step
+  // 15. Next step
   y = ensureSpace(doc, y, 70);
-  y = sectionTitle(doc, data.isabella_observation ? '10 - Next step' : '9 - Next step', y);
+  y = sectionTitle(doc, '15 - Next step', y);
   doc.setFillColor('#f7f3e6'); doc.rect(40, y - 10, 515, 56, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
   doc.text('Deploy Isabella in your front office', 56, y + 8);
@@ -1445,6 +1557,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any) {
   doc.text('www.ovelainteractive.com', 56, y + 40);
   y += 60;
 }
+
 
 function buildMissedCalls(doc: jsPDF, data: any) {
   header(doc, 'Missed Calls & Revenue Leak Diagnostic');

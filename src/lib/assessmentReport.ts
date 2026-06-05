@@ -88,7 +88,10 @@ export function extractAssessmentReport(text: string): {
   } catch {
     // fall through
   }
-  return { report: null, cleaned: text };
+  // If Isabella emitted a malformed assessment-report block, never show the
+  // raw JSON/code payload in chat. The backend now also sends a structured
+  // assessment_report field, which the UI can use as the download source.
+  return { report: null, cleaned: text.replace(re, '').trim() };
 }
 
 // ── PDF builder ─────────────────────────────────────────────────────────

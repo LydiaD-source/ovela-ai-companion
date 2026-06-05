@@ -700,10 +700,37 @@ function buildNutrition(doc: jsPDF, data: any) {
     });
   }
 
-  // 18. Clinical perspective (WellneSpirit authority layer)
+  // 18. Top meals from your week (strongest + weakest)
+  const tm = data.top_meals;
+  if (tm && (tm.strongest || tm.weakest)) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '18 · Top meals from your week', y);
+    const drawMeal = (label: string, color: string, m: any, reasonsKey: string) => {
+      if (!m || !m.meal) return;
+      y = ensureSpace(doc, y, 90);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(color);
+      doc.text(label, 40, y);
+      if (typeof m.score === 'number') {
+        doc.setTextColor(NAVY);
+        doc.text(`${m.score}/100`, 500, y);
+      }
+      y += 14;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+      y = paragraph(doc, m.meal, y, { color: INK });
+      (m[reasonsKey] || []).forEach((r: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `• ${r}`, y, { color: MUTED, size: 9 });
+      });
+      y += 6;
+    };
+    drawMeal('Strongest meal', '#2d8a5e', tm.strongest, 'why_it_works');
+    drawMeal('Weakest meal', '#c2553a', tm.weakest, 'why_it_hurts');
+  }
+
+  // 19. Clinical perspective
   if (data.clinical_perspective) {
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, '18 · Clinical perspective', y);
+    y = sectionTitle(doc, '19 · Clinical perspective', y);
     doc.setFillColor('#f4f1ea');
     doc.setDrawColor(GOLD);
     doc.setLineWidth(0.5);
@@ -713,20 +740,15 @@ function buildNutrition(doc: jsPDF, data: any) {
     doc.setFontSize(10);
     doc.setTextColor(NAVY);
     doc.text(lines, 50, y + 2);
-    y += 70;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(MUTED);
-    y = paragraph(doc, 'Reviewed under the executive-wellness framework used by WellneSpirit practitioners.', y, { color: MUTED, size: 8 });
-    y += 6;
+    y += 76;
   }
 
-  // 19. Reassess in 14 days (retention hook) + success preview
+  // 20. Reassess in 14 days (retention hook) + success preview
   const rp = data.reassessment_projection;
   const sp = data.success_preview;
   if (rp || sp) {
     y = ensureSpace(doc, y, 220);
-    y = sectionTitle(doc, `19 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
+    y = sectionTitle(doc, `20 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
     if (rp) {
       y = paragraph(doc, 'If you:', y);
       (rp.if_you || []).forEach((it: string) => {

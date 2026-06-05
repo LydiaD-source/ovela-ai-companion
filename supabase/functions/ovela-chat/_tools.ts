@@ -407,12 +407,13 @@ export function nutritionAssessment(args: {
   const hydrationGapL = args.est_hydration_l != null ? Math.round((hydrationTargetL - args.est_hydration_l) * 10) / 10 : null;
 
   const score = (val: number | null, target: number, tolerance = 0.25) => {
-    if (val == null) return 60;
+    if (val == null) return 50;
     const ratio = val / target;
-    if (ratio >= 1 - tolerance && ratio <= 1 + tolerance) return 95;
-    const dist = Math.abs(1 - ratio);
-    return Math.max(20, Math.round(100 - dist * 120));
+    if (ratio >= 1 - tolerance && ratio <= 1 + tolerance) return 92;
+    if (ratio < 1) return Math.max(20, Math.round(ratio * 95));
+    return Math.max(40, Math.round(100 - (ratio - 1) * 80));
   };
+
 
   const proteinScore   = score(args.est_protein_g ?? null, proteinMid, 0.2);
   const carbsScore     = args.high_processed ? 55 : score(args.est_carbs_g ?? null, (carbTargetRange.low_g + carbTargetRange.high_g) / 2, 0.3);

@@ -87,18 +87,31 @@ function pickArchetype(role: RoleKey, shifts: string, languages: number, _premiu
   return { id:"standard_front_desk", label:"The Standard Front Desk", description:"Business-hours reception with a stable, predictable call and visitor flow." };
 }
 
+// Role-level defaults for revenue modeling when caller doesn't pass them in.
+const ROLE_REVENUE_DEFAULTS: Record<RoleKey, { monthly_inbound: number; avg_deal_value_eur: number; conversion_pct: number; capture_avg: number; capture_top: number; benchmark_label: string }> = {
+  receptionist:              { monthly_inbound: 250, avg_deal_value_eur: 250,  conversion_pct: 25, capture_avg: 65, capture_top: 94, benchmark_label: "Front-desk benchmark" },
+  front_desk_clinic:         { monthly_inbound: 400, avg_deal_value_eur: 120,  conversion_pct: 40, capture_avg: 70, capture_top: 96, benchmark_label: "Medical clinic benchmark" },
+  hotel_concierge:           { monthly_inbound: 350, avg_deal_value_eur: 280,  conversion_pct: 30, capture_avg: 68, capture_top: 95, benchmark_label: "Hotel concierge benchmark" },
+  real_estate_junior_filter: { monthly_inbound: 200, avg_deal_value_eur: 1500, conversion_pct: 12, capture_avg: 55, capture_top: 92, benchmark_label: "Real-estate office benchmark" },
+  customer_support_agent:    { monthly_inbound: 600, avg_deal_value_eur: 200,  conversion_pct: 25, capture_avg: 75, capture_top: 97, benchmark_label: "Customer support benchmark" },
+  executive_assistant:       { monthly_inbound: 80,  avg_deal_value_eur: 300,  conversion_pct: 20, capture_avg: 80, capture_top: 98, benchmark_label: "Executive office benchmark" },
+};
+
 export function calcReceptionistCost(args: {
   country?: string;
   role?: RoleKey;
   languages?: number;
   shifts?: "business" | "extended" | "247";
   premium_skills?: boolean;
+  monthly_inbound?: number;
+  avg_deal_value_eur?: number;
 }) {
   const country = (args.country || "ES").toUpperCase();
   const role: RoleKey = (args.role as RoleKey) || "receptionist";
   const langs = Math.max(1, Math.min(args.languages ?? 1, 6));
   const shifts = args.shifts || "business";
   const premium = !!args.premium_skills;
+
 
   const table = SALARY[country] || SALARY.ES;
   const band = table[role] || SALARY.ES.receptionist!;

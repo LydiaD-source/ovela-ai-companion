@@ -811,7 +811,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let effectiveToolCalls = toolCalls;
       const noToolCall = !effectiveToolCalls || effectiveToolCalls.length === 0;
       if (noToolCall && finalMessage) {
-        const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|now creating|now generating|will (now )?(generate|create|prepare|deliver|produce|build))/i;
+        const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|complete|completing|finalize|finalizing|ready to (generate|create|complete|deliver|produce)|have (all|everything) (i|we)?\s*need(ed)?|will (now )?(generate|create|prepare|deliver|produce|build|complete))/i;
         const REPORT_RE = /(report|assessment|pdf|action plan|score)/i;
         const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
         const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);

@@ -27,6 +27,14 @@ export function isMeaningfulAssessmentReport(report: AssessmentReport | null | u
   if (!report?.data || typeof report.data !== 'object') return false;
   const data = report.data;
 
+  if (report.type === 'business_calculator') {
+    return Boolean(
+      data.country &&
+      data.true_annual_cost_eur?.mid > 0 &&
+      data.isabella_tiers_eur_per_year
+    );
+  }
+
   if (report.type === 'nutrition_assessment') {
     const targets = data.targets || {};
     return Boolean(

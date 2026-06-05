@@ -1086,6 +1086,17 @@ After any tool call, present results conversationally (1 short paragraph + key b
         }
       }
       
+      if (!assessmentReportResponse && /(here is your (full )?(assessment )?report|your full assessment report|you can download the pdf|email pdf to me|button below|below the report)/i.test(finalMessage)) {
+        finalMessage = finalMessage
+          .replace(/\n?\s*Here is your full assessment report:\s*/i, '')
+          .replace(/\n?\s*You can download the PDF or use the ['"]?Email PDF to me['"]? button below the report to have it sent to your inbox\.*/i, '')
+          .trim();
+        if (!finalMessage || /download|email pdf|button below/i.test(finalMessage)) {
+          finalMessage = "I have your food diary, but I still need to complete the calculation before I can show the PDF controls. Please send one short message saying 'complete my assessment' and I will generate the report directly.";
+        }
+        console.warn("🛡️ Removed report/download wording because no structured assessment payload was produced");
+      }
+
       console.log("💬 ovela-chat generated reply (Lovable)", { length: finalMessage.length, preview: finalMessage.substring(0, 50), hasVideos: !!videoSuggestion });
       console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
       

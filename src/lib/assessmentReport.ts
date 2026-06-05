@@ -494,6 +494,33 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
+  // 9b. Executive performance impact
+  const epi = data.executive_performance_impact;
+  if (epi) {
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, '10 · Executive performance impact', y);
+    if ((epi.current_likely_influences || []).length) {
+      y = paragraph(doc, 'Your current nutrition likely influences:', y);
+      epi.current_likely_influences.forEach((p: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `- ${p}`, y);
+      });
+      y += 4;
+    }
+    if (epi.strongest_immediate_opportunity) {
+      const op = epi.strongest_immediate_opportunity;
+      y = ensureSpace(doc, y, 70);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text('Strongest immediate opportunity', 40, y); y += 14;
+      y = paragraph(doc, op.title, y);
+      if (op.action) y = paragraph(doc, op.action, y, { color: MUTED, size: 9 });
+      if ((op.expected_effects || []).length) {
+        y = paragraph(doc, `Expected effects: ${op.expected_effects.join(', ')}.`, y, { color: MUTED, size: 9 });
+      }
+      y += 6;
+    }
+  }
+
 
   // Priorities
   if ((data.improvement_priorities || []).length) {

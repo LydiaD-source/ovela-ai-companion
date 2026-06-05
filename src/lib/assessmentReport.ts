@@ -1167,7 +1167,24 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     });
   }
 
+  // 6c. Executive Age Impact (educational estimate)
+  if (data.executive_age_impact) {
+    const ea = data.executive_age_impact;
+    y = ensureSpace(doc, y, 130);
+    y = sectionTitle(doc, '6c · Executive recovery-age estimate', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+    doc.text(`Chronological age: ${ea.chronological_age}`, 40, y); y += 14;
+    doc.setTextColor(GOLD);
+    doc.text(`Current recovery profile age: ${ea.current_profile_age}`, 40, y); y += 14;
+    doc.setTextColor('#2d8a5e');
+    doc.text(`Projected 90-day recovery profile age: ${ea.projected_profile_age_90d}`, 40, y); y += 16;
+    doc.setTextColor(INK);
+    if (ea.narrative) y = paragraph(doc, ea.narrative, y, { color: MUTED });
+    y += 6;
+  }
+
   // 7. Closing recommendation (WellneSpirit funnel — no €19 pitch)
+
   if (data.closing_recommendation) {
     y = ensureSpace(doc, y, 100);
     y = sectionTitle(doc, '7 · Next step', y);

@@ -8,7 +8,7 @@ import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI, type IsabellaAttachment } from '@/lib/isabellaAPI';
 import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
-import { extractAssessmentReport, downloadAssessmentReport, type AssessmentReport } from '@/lib/assessmentReport';
+import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, type AssessmentReport } from '@/lib/assessmentReport';
 import { humanizeForSpeech } from '@/lib/humanizeSpeech';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
@@ -176,7 +176,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       // Extract any structured assessment report and strip it from the visible text.
       const { report: embeddedReport, cleaned } = extractAssessmentReport(rawText);
-      const report = embeddedReport || isa.assessmentReport || null;
+      const report = isMeaningfulAssessmentReport(embeddedReport)
+        ? embeddedReport
+        : isMeaningfulAssessmentReport(isa.assessmentReport)
+          ? isa.assessmentReport
+          : null;
       const assistantText = cleaned || rawText;
 
       let selectedVideoIds: string[] | undefined;

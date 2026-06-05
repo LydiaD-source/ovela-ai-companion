@@ -67,6 +67,61 @@ function extractAssistantText(body: any) {
   }
 }
 
+function parseAssessmentReportBlock(text: string) {
+  const match = (text || "").match(/`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i);
+  if (!match) return null;
+  try {
+    return JSON.parse(match[1].trim().replace(/^json\s*/i, ""));
+  } catch {
+    return null;
+  }
+}
+
+function isMeaningfulReportPayload(payload: any) {
+  if (!payload || typeof payload !== "object") return false;
+  const data = payload.data || payload.nutrition_assessment_response || payload.recovery_resilience_response || payload.recovery_resilience_assessment_response || payload.biological_age_response || payload;
+  const type = payload.type === "biological_age" ? "recovery_resilience" : payload.type;
+  if (type === "nutrition_assessment" || payload.nutrition_assessment_response || data?.daily_meal_framework || data?.muscle_preservation) {
+    return Boolean(
+      (typeof data?.targets?.daily_calories === "number" && data.targets.daily_calories > 500) ||
+      (typeof data?.targets?.protein_g?.low_g === "number" && data.targets.protein_g.low_g > 20) ||
+      (typeof data?.muscle_preservation?.recommended_protein_g === "number" && data.muscle_preservation.recommended_protein_g > 20)
+    );
+  }
+  if (type === "recovery_resilience" || payload.recovery_resilience_response || payload.biological_age_response) {
+    return Boolean(
+      (typeof data?.scores?.executive_wellness === "number" && data.scores.executive_wellness > 0) ||
+      (typeof data?.scores?.recovery_capacity === "number" && data.scores.recovery_capacity > 0) ||
+      typeof data?.scores?.burnout_risk === "string"
+    );
+  }
+  return false;
+}
+
+function hasUsableNutritionArgs(args: any) {
+  return Boolean(
+    Number.isFinite(Number(args?.age)) &&
+    Number.isFinite(Number(args?.height_cm)) &&
+    Number.isFinite(Number(args?.weight_kg)) &&
+    ["male", "female", "other"].includes(args?.gender) &&
+    ["sedentary", "moderate", "active", "athlete"].includes(args?.activity_level) &&
+    ["fat_loss", "muscle_gain", "performance", "healthy_aging", "energy", "longevity", "recovery", "muscle_maintenance", "maintenance"].includes(args?.goal) &&
+    ["omnivore", "vegetarian", "vegan"].includes(args?.diet_type) &&
+    Number.isFinite(Number(args?.est_protein_g)) &&
+    Number.isFinite(Number(args?.est_hydration_l))
+  );
+}
+
+function hasUsableRecoveryArgs(args: any) {
+  return Boolean(
+    Number.isFinite(Number(args?.age)) &&
+    Number.isFinite(Number(args?.work_hours_per_week)) &&
+    Number.isFinite(Number(args?.sleep_hours)) &&
+    Number.isFinite(Number(args?.stress_level)) &&
+    Number.isFinite(Number(args?.energy_level))
+  );
+}
+
 const GUIDE_TTL_MS = 5 * 60 * 1000;
 let guideCache: { text: string; at: number; clientId: string } | null = null;
 
@@ -821,6 +876,18 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'nutrition_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
+              if (!hasUsableNutritionArgs(args)) {
+                console.warn('🛑 Nutrition tool blocked — incomplete usable inputs', { keys: Object.keys(args || {}) });
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "NUTRITION_INPUTS_INCOMPLETE",
+                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. Required profile data or diary estimates are missing. Ask only for the missing profile details or clarify the weekly food diary, then wait."
+                  })
+                });
+                continue;
+              }
 
               // HARD GATE: verify a real weekly food diary exists in the conversation history
               // or in the current message / attachments before allowing the assessment to run.
@@ -868,6 +935,18 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const args = JSON.parse(toolCall.function.arguments || "{}");
               // Backward-compat: legacy callers may still send chronological_age
               if (args.chronological_age && !args.age) args.age = args.chronological_age;
+              if (!hasUsableRecoveryArgs(args)) {
+                console.warn('🛑 Recovery tool blocked — incomplete usable inputs', { keys: Object.keys(args || {}) });
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "RECOVERY_INPUTS_INCOMPLETE",
+                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. Required recovery assessment details are missing. Ask the next missing phase questions and wait."
+                  })
+                });
+                continue;
+              }
               const result = recoveryResilienceAssessment(args);
               bioAgeReportPayload = result;
               console.log('🛡️ Recovery & Resilience assessment:', { exec: result.scores.executive_wellness, burnout: result.scores.burnout_risk });
@@ -936,12 +1015,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
           const existingReportBlock = finalMessage.match(reportBlockRe);
           let hasValidBlock = false;
           if (existingReportBlock) {
-            try {
-              const parsed = JSON.parse(existingReportBlock[1].trim());
-              hasValidBlock = Boolean(parsed?.data && (parsed.type === 'nutrition_assessment' || parsed.type === 'recovery_resilience' || parsed.type === 'biological_age'));
-            } catch (_) {
-              hasValidBlock = false;
-            }
+            hasValidBlock = isMeaningfulReportPayload(parseAssessmentReportBlock(finalMessage));
           }
           if (!hasValidBlock) {
             const cleaned = finalMessage.replace(reportBlockRe, '').trim();
@@ -951,6 +1025,13 @@ After any tool call, present results conversationally (1 short paragraph + key b
             finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nWould you like me to email this to you, or shall we walk through the top improvements together?`;
             console.log("🧷 Injected valid assessment-report block for", payload.type);
           }
+        }
+
+        if (!assessmentReportResponse && /`{2,3}\s*assessment-report/i.test(finalMessage)) {
+          const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
+          const cleaned = finalMessage.replace(reportBlockRe, '').trim();
+          finalMessage = cleaned || "I still need the missing assessment details before I can create a complete PDF report.";
+          console.warn("🧹 Removed assessment-report block that was not backed by a completed tool result");
         }
       }
       

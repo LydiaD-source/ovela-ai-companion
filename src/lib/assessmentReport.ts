@@ -22,45 +22,71 @@ export interface AssessmentReport {
   data: any;
 }
 
+export function isMeaningfulAssessmentReport(report: AssessmentReport | null | undefined): report is AssessmentReport {
+  if (!report?.data || typeof report.data !== 'object') return false;
+  const data = report.data;
+
+  if (report.type === 'nutrition_assessment') {
+    const targets = data.targets || {};
+    return Boolean(
+      (typeof targets.daily_calories === 'number' && targets.daily_calories > 500) ||
+      (typeof targets.protein_g?.low_g === 'number' && targets.protein_g.low_g > 20) ||
+      (typeof data.muscle_preservation?.recommended_protein_g === 'number' && data.muscle_preservation.recommended_protein_g > 20)
+    );
+  }
+
+  const scores = data.scores || {};
+  return Boolean(
+    (typeof scores.executive_wellness === 'number' && scores.executive_wellness > 0) ||
+    (typeof scores.recovery_capacity === 'number' && scores.recovery_capacity > 0) ||
+    typeof scores.burnout_risk === 'string'
+  );
+}
+
 function normalizeAssessmentReportPayload(parsed: any): AssessmentReport | null {
   if (!parsed || typeof parsed !== 'object') return null;
 
   const explicitType = parsed.type === 'biological_age' ? 'recovery_resilience' : parsed.type;
   if ((explicitType === 'nutrition_assessment' || explicitType === 'recovery_resilience') && parsed.data) {
-    return { ...parsed, type: explicitType } as AssessmentReport;
+    const report = { ...parsed, type: explicitType } as AssessmentReport;
+    return isMeaningfulAssessmentReport(report) ? report : null;
   }
 
   if (parsed.nutrition_assessment_response) {
-    return {
+    const report: AssessmentReport = {
       type: 'nutrition_assessment',
       title: 'Executive Nutrition & Muscle Preservation Assessment',
       data: parsed.nutrition_assessment_response,
     };
+    return isMeaningfulAssessmentReport(report) ? report : null;
   }
 
   const recoveryPayload = parsed.recovery_resilience_response || parsed.recovery_resilience_assessment_response || parsed.biological_age_response;
   if (recoveryPayload) {
-    return {
+    const report: AssessmentReport = {
       type: 'recovery_resilience',
       title: 'Executive Recovery & Resilience Assessment',
       data: recoveryPayload,
     };
+    return isMeaningfulAssessmentReport(report) ? report : null;
   }
 
   if (parsed.muscle_preservation || parsed.protein_strategy || parsed.daily_meal_framework) {
-    return {
+    const report: AssessmentReport = {
       type: 'nutrition_assessment',
       title: 'Executive Nutrition & Muscle Preservation Assessment',
       data: parsed,
     };
+    return isMeaningfulAssessmentReport(report) ? report : null;
   }
 
   if (parsed.scores?.burnout_risk || parsed.recovery_capacity || parsed.executive_wellness || parsed.resilience) {
-    return {
+    const report: AssessmentReport = {
       type: 'recovery_resilience',
       title: 'Executive Recovery & Resilience Assessment',
       data: parsed,
     };
+    return isMeaningfulAssessmentReport(report) ? report : null;
   }
 
   return null;

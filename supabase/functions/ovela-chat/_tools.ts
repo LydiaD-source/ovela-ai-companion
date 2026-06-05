@@ -898,6 +898,91 @@ export function nutritionAssessment(args: {
     `These are commonly observed factors affecting energy, body composition, and long-term resilience in adults${age >= 45 ? " over 45" : ""}. ` +
     `This perspective is consistent with the executive-wellness framework used by WellneSpirit's practitioners — it is educational, not diagnostic.`;
 
+  // ── Nutrition risk flags (observational micronutrient inference) ────
+  // Combines model-supplied flags with deterministic inferences from the diary.
+  const inferredFlags: Array<{ nutrient: string; confidence: "low" | "moderate" | "high"; reasoning: string }> = [];
+  const oilyFish = args.oily_fish_per_week ?? null;
+  const vegServ = args.vegetable_servings_per_day ?? null;
+  if (args.low_vegetables || (vegServ != null && vegServ < 2)) {
+    inferredFlags.push({ nutrient: "Fibre", confidence: "moderate", reasoning: "Low vegetable diversity reported across the week." });
+    inferredFlags.push({ nutrient: "Vegetable diversity", confidence: "moderate", reasoning: "Fewer than two vegetable servings/day on most days." });
+    inferredFlags.push({ nutrient: "Potassium", confidence: "low", reasoning: "Low vegetable + fruit intake reduces dietary potassium." });
+  }
+  if (oilyFish != null && oilyFish < 2) {
+    inferredFlags.push({ nutrient: "Omega-3 (EPA/DHA)", confidence: "moderate", reasoning: `Oily fish appears only ${oilyFish}×/week (target ≥ 2).` });
+  } else if (oilyFish == null && diet !== "vegan" && diet !== "vegetarian") {
+    inferredFlags.push({ nutrient: "Omega-3 (EPA/DHA)", confidence: "low", reasoning: "Oily fish intake not clearly visible in the diary." });
+  }
+  if (diet === "vegan" || diet === "vegetarian") {
+    inferredFlags.push({ nutrient: "Vitamin B12", confidence: diet === "vegan" ? "high" : "low", reasoning: diet === "vegan" ? "Plant-only diet — B12 supplementation typically required." : "Lower animal-product intake — worth monitoring." });
+    if (diet === "vegan") inferredFlags.push({ nutrient: "Iron", confidence: "moderate", reasoning: "Plant iron has lower bioavailability — pair with vitamin C." });
+  }
+  if (args.high_processed) {
+    inferredFlags.push({ nutrient: "Magnesium", confidence: "low", reasoning: "High processed-food share usually displaces whole-grain magnesium sources." });
+  }
+  if (age >= 50 || (gender === "female" && age >= 45)) {
+    inferredFlags.push({ nutrient: "Vitamin D", confidence: "low", reasoning: `Adults ${age >= 50 ? "50+" : "45+ women"} commonly run low without supplementation.` });
+  }
+  // Merge with model-supplied flags (model takes precedence on duplicates)
+  const modelFlags = (args.nutrition_risk_flags ?? [])
+    .filter(f => f && typeof f.nutrient === "string" && f.nutrient.trim().length > 0)
+    .map(f => ({
+      nutrient: f.nutrient!.trim(),
+      confidence: (f.confidence as "low" | "moderate" | "high") || "low",
+      reasoning: (f.reasoning ?? "").trim() || "Observed from your diary patterns.",
+    }));
+  const seenNutrients = new Set(modelFlags.map(f => f.nutrient.toLowerCase()));
+  const mergedFlags = [...modelFlags];
+  for (const f of inferredFlags) {
+    if (!seenNutrients.has(f.nutrient.toLowerCase())) {
+      mergedFlags.push(f);
+      seenNutrients.add(f.nutrient.toLowerCase());
+    }
+  }
+  const nutritionRiskFlags = mergedFlags.slice(0, 6);
+
+  // ── Habit upgrades ("foods you already eat") ────────────────────────
+  const habitUpgrades = (args.habit_upgrades ?? [])
+    .filter(h => h && typeof h === "object")
+    .map(h => ({
+      existing_meal: (h.existing_meal ?? "").toString().trim(),
+      upgrade: (h.upgrade ?? "").toString().trim(),
+      why: (h.why ?? "").toString().trim(),
+    }))
+    .filter(h => h.existing_meal && h.upgrade)
+    .slice(0, 5);
+
+  // ── Success preview ("what success looks like in 14 days") ──────────
+  const successPreview = {
+    if_completed: [
+      proteinGap != null && proteinGap > 10
+        ? `Hit ${proteinMid} g protein on at least 10 of the next 14 days`
+        : `Maintain ${proteinTarget.low_g}-${proteinTarget.high_g} g protein daily`,
+      strength < reco.strength_sessions_per_week
+        ? `${reco.strength_sessions_per_week} resistance sessions per week`
+        : `Maintain ${reco.strength_sessions_per_week} resistance sessions per week`,
+      hydrationGapL != null && hydrationGapL > 0.4
+        ? `Reach ~${hydrationTargetL} L hydration daily`
+        : `Maintain ~${hydrationTargetL} L hydration daily`,
+      (alcohol ?? 0) > 7 ? "Reduce alcohol toward ≤ 7 units/week" : "Keep alcohol within current range",
+    ],
+    you_should_notice: [
+      "Fewer afternoon energy crashes",
+      "Reduced cravings between meals",
+      "Improved recovery between training sessions",
+      "Improved satiety and steadier mood",
+    ],
+  };
+
+  // ── Time budget tag (used by PDF + chat tailoring) ──────────────────
+  const timeBudget = args.time_budget ?? null;
+  const timeBudgetBlock = timeBudget ? {
+    key: timeBudget,
+    label: TIME_BUDGET_LABEL[timeBudget],
+    note: TIME_BUDGET_NOTE[timeBudget],
+  } : null;
+
+
 
   return {
 

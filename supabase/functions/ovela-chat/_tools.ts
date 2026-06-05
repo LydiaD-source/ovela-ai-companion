@@ -892,13 +892,60 @@ export function nutritionAssessment(args: {
       (alcohol ?? 0) > 7 ? "Reduce alcohol toward <= 7 units/week" : "Keep alcohol in current range",
     ],
     expected_changes: [
-      { metric: "Executive readiness", from: executiveReadiness, to: projectIf(executiveReadiness, 6) },
-      { metric: "Muscle preservation", from: musclePres, to: projectIf(musclePres, 9) },
-      { metric: "Recovery capacity", from: recoveryCapacity, to: projectIf(recoveryCapacity, 6) },
-      { metric: "Nutrition quality", from: overall, to: projectIf(overall, 7) },
+      { metric: "Nutrition Optimization Score", from: executiveReadiness, to: projectIf(executiveReadiness, 6) },
+      { metric: "Muscle preservation",          from: musclePres,         to: projectIf(musclePres, 9) },
+      { metric: "Recovery Support Score",       from: recoveryCapacity,   to: projectIf(recoveryCapacity, 6) },
+      { metric: "Nutrition quality",            from: overall,            to: projectIf(overall, 7) },
     ],
     note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
   };
+
+  // ── Dominant Nutrition Patterns (how a practitioner reads the diary) ─
+  const dominantPatterns: Array<{ pattern: string; impact: string }> = [];
+  if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60)) {
+    dominantPatterns.push({
+      pattern: "Protein loaded into evening meals",
+      impact: "Reduced muscle protein synthesis across the day and higher morning hunger.",
+    });
+  }
+  if (args.low_protein_breakfast) {
+    dominantPatterns.push({
+      pattern: "Low breakfast protein",
+      impact: "Higher mid-morning cravings, lower satiety, weaker early-day recovery signal.",
+    });
+  }
+  if (args.low_vegetables || (args.vegetable_servings_per_day != null && args.vegetable_servings_per_day < 3)) {
+    dominantPatterns.push({
+      pattern: "Low vegetable diversity",
+      impact: "Reduced fibre and micronutrient intake; weaker gut and recovery support.",
+    });
+  }
+  if ((args.alcohol_units_per_week ?? 0) > 7) {
+    dominantPatterns.push({
+      pattern: "Frequent alcohol exposure",
+      impact: "Blunted deep sleep, slower overnight recovery, raised visceral-fat risk.",
+    });
+  }
+  if (args.sugar_snacks) {
+    dominantPatterns.push({
+      pattern: "Reliance on sugar-based snacks",
+      impact: "Energy volatility, weaker satiety, displaced protein and fibre opportunities.",
+    });
+  }
+  if (hydrationScore < 65) {
+    dominantPatterns.push({
+      pattern: "Under-hydration relative to body weight",
+      impact: "Blunted afternoon energy and reduced cognitive stamina.",
+    });
+  }
+  if (args.irregular_meals) {
+    dominantPatterns.push({
+      pattern: "Irregular meal timing",
+      impact: "Inconsistent satiety and harder-to-stabilise blood-glucose response.",
+    });
+  }
+  // keep top 4 patterns max
+  const dominantNutritionPatterns = dominantPatterns.slice(0, 4);
 
   // ── Isabella's Clinical Observation (synthesised pattern, not a list) ─
   const clinicalPatterns: string[] = [];

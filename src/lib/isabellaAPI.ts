@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import type { AssessmentReport } from "@/lib/assessmentReport";
 
 export interface IsabellaMessage {
   id: string;
@@ -19,6 +20,7 @@ export interface IsabellaResponse {
   videoUrl?: string;
   emotion?: string;
   videoSuggestion?: { category: string; count: number };
+  assessmentReport?: AssessmentReport | null;
 }
 
 export interface ConversationMessage {
@@ -87,6 +89,7 @@ class IsabellaAPI {
         videoUrl: data.videoUrl,
         emotion: data.emotion,
         videoSuggestion: data.data?.video_suggestion || undefined,
+        assessmentReport: data.data?.assessment_report || null,
       };
     } catch (error) {
       console.error('Error sending message to Isabella:', error);

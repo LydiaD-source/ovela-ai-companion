@@ -273,11 +273,11 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 8;
   }
 
-  // 2. Muscle preservation
+  // 2. Muscle preservation & performance capacity
   const mp = data.muscle_preservation;
   if (mp) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '2 · Muscle preservation', y);
+    y = sectionTitle(doc, '2 · Muscle preservation & performance capacity', y);
     y = paragraph(doc,
       `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
       `Recommended protein: ${mp.recommended_protein_g ?? '—'} g/day\n` +
@@ -297,7 +297,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ps = data.protein_strategy;
   if (ps) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, `3 · Protein strategy (${ps.diet_type})`, y);
+    y = sectionTitle(doc, `3 · High-performance nutrition strategy (${ps.diet_type})`, y);
     y = paragraph(doc, 'Best protein sources:', y);
     (ps.best_sources || []).forEach((src: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${src}`, y); });
     y += 4;
@@ -350,7 +350,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ms = data.metabolic_support;
   if (ms) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '5 · Metabolic support', y);
+    y = sectionTitle(doc, '5 · Recovery & metabolic efficiency', y);
     y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
     if ((ms.biggest_opportunities || []).length) {
       y += 4;
@@ -394,6 +394,54 @@ function buildNutrition(doc: jsPDF, data: any) {
     }
     if (bai.note) { y = paragraph(doc, bai.note, y, { color: MUTED, size: 9 }); y += 6; }
   }
+
+  // 7b. Recovery factors (alcohol, coffee, walking)
+  const lf = data.lifestyle_factors;
+  if (lf && (lf.alcohol || lf.coffee || lf.walking)) {
+    y = ensureSpace(doc, y, 140);
+    y = sectionTitle(doc, '8 · Recovery & lifestyle factors', y);
+    if (lf.alcohol) {
+      y = ensureSpace(doc, y, 36);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(`Alcohol — ${lf.alcohol.units_per_week} unit${lf.alcohol.units_per_week === 1 ? '' : 's'}/week`, 40, y);
+      y += 14;
+      y = paragraph(doc, lf.alcohol.status, y, { color: MUTED });
+      y += 4;
+    }
+    if (lf.coffee) {
+      y = ensureSpace(doc, y, 36);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(`Coffee — ${lf.coffee.cups_per_day} cup${lf.coffee.cups_per_day === 1 ? '' : 's'}/day`, 40, y);
+      y += 14;
+      y = paragraph(doc, lf.coffee.status, y, { color: MUTED });
+      y += 4;
+    }
+    if (lf.walking) {
+      y = ensureSpace(doc, y, 36);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(`Walking — ${lf.walking.minutes_per_day} min/day`, 40, y);
+      y += 14;
+      y = paragraph(doc, lf.walking.status, y, { color: MUTED });
+      y += 6;
+    }
+  }
+
+  // 7c. Expected progress projection (fat-loss only)
+  const proj = data.weight_loss_projection;
+  if (proj) {
+    y = ensureSpace(doc, y, 120);
+    y = sectionTitle(doc, '9 · Expected progress', y);
+    y = paragraph(doc, proj.assumes, y, { color: MUTED, size: 9 });
+    y += 4;
+    y = paragraph(doc,
+      `• Improved satiety within ${proj.satiety_within_days} days\n` +
+      `• Visible body composition changes within ${proj.visible_change_weeks} weeks\n` +
+      `• Potential weight reduction of ${proj.weekly_kg_low}–${proj.weekly_kg_high} kg per week (≈ ${proj.monthly_kg_low}–${proj.monthly_kg_high} kg per month)`, y);
+    y += 4;
+    y = paragraph(doc, proj.note, y, { color: MUTED, size: 9 });
+    y += 6;
+  }
+
 
   // Priorities
   if ((data.improvement_priorities || []).length) {

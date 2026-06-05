@@ -217,16 +217,19 @@ type NutritionGoal =
 type DietType = "omnivore" | "vegetarian" | "vegan";
 
 // Conservative executive-wellness protein g/kg of CALCULATION weight.
+// Aligned with WHO + ISSN ranges for regular adults (1.2–1.8 g/kg) and
+// athletes / muscle-building (1.6–2.2 g/kg). Executives are NOT bodybuilders —
+// targets are tuned for compliance and digestion (≤ 40 g per meal × 3 meals).
 const PROTEIN_RANGE: Record<NutritionGoal, [number, number]> = {
-  fat_loss:           [1.6, 2.0],
-  muscle_gain:        [1.8, 2.2],
-  performance:        [1.6, 2.0],
-  muscle_maintenance: [1.4, 1.8],
-  healthy_aging:      [1.2, 1.6],
+  fat_loss:           [1.75, 2.0],   // protect lean mass in deficit
+  muscle_gain:        [1.6, 2.2],    // ISSN upper range
+  performance:        [1.4, 1.8],
+  muscle_maintenance: [1.2, 1.6],
+  healthy_aging:      [1.0, 1.4],
   energy:             [1.0, 1.4],
-  longevity:          [1.2, 1.6],
-  recovery:           [1.4, 1.8],
-  maintenance:        [1.2, 1.6],
+  longevity:          [1.0, 1.4],
+  recovery:           [1.2, 1.6],
+  maintenance:        [1.0, 1.4],
 };
 
 // Carbs g/kg of calculation weight by goal.
@@ -280,35 +283,37 @@ const THIRTY_G_SWAPS: Record<DietType, string[]> = {
 const VEGETARIAN_ALTS = ["Greek yogurt", "Cottage cheese", "Eggs", "Tempeh", "Tofu", "Edamame", "Lentils", "Whey/casein protein"];
 
 function buildMealFramework(diet: DietType, dailyProteinG: number) {
+  // Cap each main meal at ~40 g protein (digestion / leucine threshold).
+  // For regular adults, 3 main meals × 30–40 g + 1 modest snack is optimal.
   const meals = [
-    { meal: "Breakfast", pct: 0.28 },
-    { meal: "Lunch",     pct: 0.30 },
-    { meal: "Snack",     pct: 0.12 },
-    { meal: "Dinner",    pct: 0.30 },
+    { meal: "Breakfast", pct: 0.30, cap: 40 },
+    { meal: "Lunch",     pct: 0.30, cap: 40 },
+    { meal: "Snack",     pct: 0.15, cap: 25 },
+    { meal: "Dinner",    pct: 0.30, cap: 40 },
   ];
   const ex: Record<DietType, Record<string, string>> = {
     omnivore: {
-      Breakfast: "3 eggs + Greek yogurt + berries",
-      Lunch:     "Grilled chicken bowl, quinoa, vegetables, olive oil",
-      Snack:     "Cottage cheese + nuts, or a whey shake",
-      Dinner:    "Salmon or lean beef + sweet potato + greens",
+      Breakfast: "3 eggs + Greek yogurt + berries (~30–35 g)",
+      Lunch:     "Grilled chicken bowl, quinoa, vegetables, olive oil (~35–40 g)",
+      Snack:     "Cottage cheese + nuts, or a whey shake (~15–20 g)",
+      Dinner:    "Salmon or lean beef + sweet potato + greens (~35–40 g)",
     },
     vegetarian: {
-      Breakfast: "Greek yogurt + oats + whey or seeds",
-      Lunch:     "Tofu or tempeh grain bowl + vegetables",
-      Snack:     "Cottage cheese + fruit, or a casein shake",
-      Dinner:    "Lentil and paneer stew + brown rice + salad",
+      Breakfast: "Greek yogurt + oats + whey or seeds (~30 g)",
+      Lunch:     "Tofu or tempeh grain bowl + vegetables (~35 g)",
+      Snack:     "Cottage cheese + fruit, or a casein shake (~15–20 g)",
+      Dinner:    "Lentil and paneer stew + brown rice + salad (~35 g)",
     },
     vegan: {
-      Breakfast: "Soy yogurt + oats + pea-protein shake",
-      Lunch:     "Tempeh or seitan grain bowl + edamame",
-      Snack:     "Roasted chickpeas + pea-protein shake",
-      Dinner:    "Tofu stir-fry + lentils + greens",
+      Breakfast: "Soy yogurt + oats + pea-protein shake (~30 g)",
+      Lunch:     "Tempeh or seitan grain bowl + edamame (~35 g)",
+      Snack:     "Roasted chickpeas + pea-protein shake (~15–20 g)",
+      Dinner:    "Tofu stir-fry + lentils + greens (~35 g)",
     },
   };
   return meals.map(m => ({
     meal: m.meal,
-    protein_g: Math.round(dailyProteinG * m.pct),
+    protein_g: Math.min(m.cap, Math.round(dailyProteinG * m.pct)),
     example: ex[diet][m.meal],
   }));
 }
@@ -327,6 +332,8 @@ export function nutritionAssessment(args: {
   diet_type?: DietType;
   sleep_hours?: number;
   alcohol_units_per_week?: number;
+  coffee_cups_per_day?: number;
+  daily_walk_minutes?: number;
   strength_sessions_per_week?: number;
   cardio_sessions_per_week?: number;
   est_calories?: number;
@@ -378,11 +385,10 @@ export function nutritionAssessment(args: {
   const tdee = Math.round(bmr * ACTIVITY_FACTOR[activity]);
   const calorieTarget = goal === "fat_loss" ? Math.round(tdee * 0.82) : tdee;
 
-  // Age / gender protein modifier (sarcopenia awareness).
+  // Age / gender protein modifier (sarcopenia awareness — kicks in at 50+).
   let ageBoost = 0;
-  if (age >= 65) ageBoost = 0.3;
-  else if (age >= 50) ageBoost = 0.2;
-  else if (age >= 45) ageBoost = 0.1;
+  if (age >= 65) ageBoost = 0.2;
+  else if (age >= 50) ageBoost = 0.1;
   if (gender === "female" && age >= 50) ageBoost += 0.1;
 
   const [pLoBase, pHiBase] = PROTEIN_RANGE[goal];
@@ -592,6 +598,59 @@ export function nutritionAssessment(args: {
     "Stronger long-term metabolic and muscular foundation",
   ];
 
+  // ── Lifestyle factors (alcohol, coffee, walking) ────────────────────
+  const alcohol = args.alcohol_units_per_week ?? null;
+  const coffee = args.coffee_cups_per_day ?? null;
+  const walk = args.daily_walk_minutes ?? null;
+  const lifestyleFactors = {
+    alcohol: alcohol == null ? null : {
+      units_per_week: alcohol,
+      status:
+        alcohol === 0 ? "None reported — optimal for recovery and body composition." :
+        alcohol <= 7 ? "Moderate intake. Reducing by 1–2 servings per week may further improve sleep efficiency, recovery quality, and fat-loss progress." :
+        alcohol <= 14 ? "Above the recommended weekly load. This range typically blunts sleep depth, protein synthesis, and visceral-fat loss. Aim for ≤ 7 units/week." :
+        "Elevated weekly load. Strongest single change for sleep quality, hormonal balance, and body composition is reducing toward ≤ 7 units/week.",
+    },
+    coffee: coffee == null ? null : {
+      cups_per_day: coffee,
+      status:
+        coffee <= 3 ? "Appropriate if consumed before midday. Avoid caffeine within 8 hours of bedtime if recovery or sleep quality become limiting factors." :
+        coffee <= 5 ? "On the higher side. Cap at ~400 mg/day (≈ 4 cups) and keep all intake before 2 pm." :
+        "High daily intake. Reduce gradually and shift all consumption to before noon to protect deep sleep.",
+    },
+    walking: walk == null ? null : {
+      minutes_per_day: walk,
+      status:
+        walk >= 30 ? "Consistent daily walking is one of the strongest longevity markers — keep this habit." :
+        walk >= 15 ? "Good base. Extending to 30 min/day adds meaningful cardiovascular and metabolic benefit." :
+        "Add a daily 20–30 min walk — one of the highest-ROI, lowest-effort longevity inputs.",
+    },
+  };
+
+  // Add walking & coffee to the positive/improvement lists when reported.
+  if (walk != null && walk >= 30) positives.push("Daily walking habit (≥ 30 min)");
+  if (walk != null && walk >= 15 && walk < 30) positives.push("Consistent low-intensity movement");
+  if (coffee != null && coffee <= 3) positives.push("Moderate coffee intake");
+
+  // ── Weight-loss projection (only meaningful for fat_loss) ───────────
+  const weightLossProjection = goal === "fat_loss" ? (() => {
+    const deficit = Math.max(0, tdee - calorieTarget); // ~18% of TDEE
+    // ~7700 kcal per kg of fat; project a sustainable 0.3–0.7 kg / week range.
+    const weeklyLow = Math.max(0.3, Math.round((deficit * 7 / 9000) * 10) / 10);
+    const weeklyHigh = Math.max(weeklyLow + 0.2, Math.round((deficit * 7 / 6500) * 10) / 10);
+    return {
+      assumes: `Protein intake reaches ${proteinTarget.low_g}–${proteinTarget.high_g} g/day and current activity is maintained.`,
+      satiety_within_days: "7–14",
+      visible_change_weeks: "4–8",
+      weekly_kg_low: weeklyLow,
+      weekly_kg_high: Math.min(0.9, weeklyHigh),
+      monthly_kg_low: Math.round(weeklyLow * 4 * 10) / 10,
+      monthly_kg_high: Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10,
+      note: "Educational estimate only. Real-world progress depends on adherence, sleep, stress and hormonal factors.",
+    };
+  })() : null;
+
+
   return {
     inputs: {
       weight_kg: weight, height_cm: height, bmi,
@@ -600,7 +659,9 @@ export function nutritionAssessment(args: {
       activity_level: activity, goal, gender, age,
       occupation: args.occupation ?? null, diet_type: diet,
       sleep_hours: args.sleep_hours ?? null,
-      alcohol_units_per_week: args.alcohol_units_per_week ?? null,
+      alcohol_units_per_week: alcohol,
+      coffee_cups_per_day: coffee,
+      daily_walk_minutes: walk,
       strength_sessions_per_week: strength,
       cardio_sessions_per_week: args.cardio_sessions_per_week ?? null,
     },
@@ -682,6 +743,8 @@ export function nutritionAssessment(args: {
     fastest_win: fastestWin,
     seven_day_plan: sevenDay,
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },
+    lifestyle_factors: lifestyleFactors,
+    weight_loss_projection: weightLossProjection,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

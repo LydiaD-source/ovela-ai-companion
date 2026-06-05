@@ -31,8 +31,7 @@ export function isMeaningfulAssessmentReport(report: AssessmentReport | null | u
     return Boolean(
       typeof targets.daily_calories === 'number' ||
       typeof targets.protein_g?.low_g === 'number' ||
-      typeof data.muscle_preservation?.recommended_protein_g === 'number' ||
-      typeof data.executive_summary === 'string'
+      typeof data.muscle_preservation?.recommended_protein_g === 'number'
     );
   }
 
@@ -40,9 +39,7 @@ export function isMeaningfulAssessmentReport(report: AssessmentReport | null | u
   return Boolean(
     typeof scores.executive_wellness === 'number' ||
     typeof scores.recovery_capacity === 'number' ||
-    typeof scores.burnout_risk === 'string' ||
-    typeof data.executive_summary === 'string' ||
-    Array.isArray(data.fastest_wins)
+    typeof scores.burnout_risk === 'string'
   );
 }
 

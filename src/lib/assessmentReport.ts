@@ -471,7 +471,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ms = data.metabolic_support;
   if (ms) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '8 · Recovery '6 · Recovery & metabolic metabolic efficiency', y);
+    y = sectionTitle(doc, '8 · Recovery & metabolic efficiency', y);
     y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
     if ((ms.biggest_opportunities || []).length) {
       y += 4;
@@ -503,7 +503,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const bai = data.biological_age_impact;
   if ((lf && (lf.alcohol || lf.coffee || lf.walking)) || bai) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '10 · Recovery '8 · Recovery & lifestyle lifestyle factors', y);
+    y = sectionTitle(doc, '10 · Recovery & lifestyle factors', y);
     if (lf?.alcohol) {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);

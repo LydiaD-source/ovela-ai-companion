@@ -1018,7 +1018,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'recovery_resilience';
               followUpMessages.push({
                 role: "system",
-                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download button. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add one short line offering to email it or discuss the improvements.`
+                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download and email buttons. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add exactly this line: You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`
               });
             }
 
@@ -1072,7 +1072,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             const summary = cleaned.length > 0
               ? cleaned
               : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
-            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nWould you like me to email this to you, or shall we walk through the top improvements together?`;
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`;
             console.log("🧷 Injected valid assessment-report block for", payload.type);
           }
         }

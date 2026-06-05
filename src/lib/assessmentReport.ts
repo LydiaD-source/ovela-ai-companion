@@ -649,11 +649,46 @@ function buildNutrition(doc: jsPDF, data: any) {
     });
   }
 
-  // 16. Clinical perspective (WellneSpirit authority layer)
+  // 16. Upgrade the meals you already eat (foods you currently consume)
+  const upgrades = Array.isArray(data.habit_upgrades) ? data.habit_upgrades : [];
+  if (upgrades.length) {
+    y = ensureSpace(doc, y, 60 + upgrades.length * 50);
+    y = sectionTitle(doc, '16 · Upgrade the meals you already eat', y);
+    y = paragraph(doc, "Each upgrade is anchored to a meal already in your week — small changes, not new routines.", y, { color: MUTED, size: 9 });
+    y += 4;
+    upgrades.forEach((u: any, i: number) => {
+      y = ensureSpace(doc, y, 50);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text(`${i + 1}. ${u.existing_meal}`, 40, y); y += 14;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
+      y = paragraph(doc, `+ ${u.upgrade}`, y, { color: '#2d8a5e' });
+      if (u.why) y = paragraph(doc, u.why, y, { color: MUTED, size: 9 });
+      y += 4;
+    });
+  }
+
+  // 17. Nutrition risk flags (observational micronutrient flags)
+  const flags = Array.isArray(data.nutrition_risk_flags) ? data.nutrition_risk_flags : [];
+  if (flags.length) {
+    y = ensureSpace(doc, y, 60 + flags.length * 28);
+    y = sectionTitle(doc, '17 · Nutrition risk flags (observational)', y);
+    y = paragraph(doc, "Observations from your diary — not a diagnosis. Confirm with a clinician if relevant.", y, { color: MUTED, size: 9 });
+    y += 4;
+    flags.forEach((f: any) => {
+      y = ensureSpace(doc, y, 28);
+      const conf = String(f.confidence || 'low').toLowerCase();
+      const color = conf === 'high' ? '#c2553a' : conf === 'moderate' ? GOLD : MUTED;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(color);
+      doc.text(`${f.nutrient}  [${conf}]`, 40, y); y += 12;
+      if (f.reasoning) y = paragraph(doc, f.reasoning, y, { color: MUTED, size: 9 });
+      y += 4;
+    });
+  }
+
+  // 18. Clinical perspective (WellneSpirit authority layer)
   if (data.clinical_perspective) {
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, '16 · Clinical perspective', y);
-    // Subtle institutional callout box
+    y = sectionTitle(doc, '18 · Clinical perspective', y);
     doc.setFillColor('#f4f1ea');
     doc.setDrawColor(GOLD);
     doc.setLineWidth(0.5);
@@ -671,29 +706,68 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
-  // 17. Reassess in 14 days (retention hook)
+  // 19. Reassess in 14 days (retention hook) + success preview
   const rp = data.reassessment_projection;
-  if (rp) {
-    y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, `17 · Reassess in ${rp.reassess_in_days} days`, y);
-    y = paragraph(doc, 'If you:', y);
-    (rp.if_you || []).forEach((it: string) => {
-      y = ensureSpace(doc, y, 14);
-      y = paragraph(doc, `+ ${it}`, y, { color: '#2d8a5e' });
-    });
-    y += 6;
-    y = paragraph(doc, 'You could expect:', y);
-    (rp.expected_changes || []).forEach((c: any) => {
-      y = ensureSpace(doc, y, 16);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text(`${c.metric}`, 40, y);
-      doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
-      doc.text(`${c.from}  ->  ${c.to}`, 300, y);
-      y += 14;
-    });
-    y += 4;
-    y = paragraph(doc, rp.note, y, { color: MUTED, size: 9 });
+  const sp = data.success_preview;
+  if (rp || sp) {
+    y = ensureSpace(doc, y, 220);
+    y = sectionTitle(doc, `19 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
+    if (rp) {
+      y = paragraph(doc, 'If you:', y);
+      (rp.if_you || []).forEach((it: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `+ ${it}`, y, { color: '#2d8a5e' });
+      });
+      y += 4;
+      y = paragraph(doc, 'You could expect:', y);
+      (rp.expected_changes || []).forEach((c: any) => {
+        y = ensureSpace(doc, y, 16);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+        doc.text(`${c.metric}`, 40, y);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
+        doc.text(`${c.from}  ->  ${c.to}`, 300, y);
+        y += 14;
+      });
+      y += 4;
+      y = paragraph(doc, rp.note, y, { color: MUTED, size: 9 });
+      y += 6;
+    }
+    if (sp) {
+      y = ensureSpace(doc, y, 140);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+      doc.text('What success looks like in 14 days', 40, y); y += 16;
+      y = paragraph(doc, 'If you complete:', y);
+      (sp.if_completed || []).forEach((line: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `+ ${line}`, y, { color: '#2d8a5e' });
+      });
+      y += 4;
+      y = paragraph(doc, 'You should notice:', y);
+      (sp.you_should_notice || []).forEach((line: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `- ${line}`, y, { color: INK });
+      });
+    }
   }
+
+  // 20. WellneSpirit — continue your progress (always last)
+  y = ensureSpace(doc, y, 130);
+  y = sectionTitle(doc, '20 · Continue your progress with WellneSpirit', y);
+  doc.setFillColor('#f7f3e6');
+  doc.setDrawColor(GOLD);
+  doc.setLineWidth(0.5);
+  doc.rect(40, y - 12, 515, 92, 'FD');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+  doc.text('This is your free Isabella assessment.', 50, y + 2);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+  const wsLines = doc.splitTextToSize(
+    "For weekly tracking, monthly reassessments, progress comparisons against this baseline, and ongoing executive-wellness support from Isabella, register for the full monthly programme at our clinical partner WellneSpirit.",
+    495
+  );
+  doc.text(wsLines, 50, y + 20);
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(GOLD);
+  doc.text('wellnespirit.com', 50, y + 70);
+  y += 100;
 }
 
 

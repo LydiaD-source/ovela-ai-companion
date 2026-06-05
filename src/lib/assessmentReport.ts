@@ -1608,7 +1608,10 @@ function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   installSanitizer(doc);
   if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
-  else if (report.type === 'business_calculator') buildBusinessCalculator(doc, report.data);
+  else if (report.type === 'business_calculator') {
+    if (report.subtype === 'missed_calls') buildMissedCalls(doc, report.data);
+    else buildBusinessCalculator(doc, report.data);
+  }
   else buildRecoveryResilience(doc, report.data);
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {

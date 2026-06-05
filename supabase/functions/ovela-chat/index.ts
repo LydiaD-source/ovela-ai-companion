@@ -883,10 +883,16 @@ After any tool call, present results conversationally (1 short paragraph + key b
         const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|complete|completing|finalize|finalizing|ready to (generate|create|complete|deliver|produce)|have (all|everything) (i|we)?\s*need(ed)?|will (now )?(generate|create|prepare|deliver|produce|build|complete))/i;
         const REPORT_RE = /(report|assessment|pdf|action plan|score|download|email pdf)/i;
         const FALSE_DELIVERY_RE = /(here is your (full )?(assessment )?report|your full assessment report|you can download the pdf|email pdf to me|button below|below the report|estimated your current nutrition profile|based on what you('ve| have) shared,? i('ve| have) estimated)/i;
-        const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
-        const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);
-        const looksDeferred = (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage)) || FALSE_DELIVERY_RE.test(finalMessage);
-        const forceTool = looksDeferred ? (isNutrition ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
+        // Soft wrap-ups that signal the model thinks it's "done" but didn't call the tool
+        const WRAPUP_RE = /(thank(s| you)[^.]{0,80}(provid|shar|inform|details|answer|full picture|all that)|that('s| is) (everything|all) (i|we) need|i (now )?have (a )?(complete|full) picture|now i can|now let me|let me put (this|it) together|got everything i need)/i;
+        // Check if the conversation history shows recent recovery/resilience Q&A context
+        const fullContext = (conversationHistory || []).map((m: any) => String(m.content || '')).join(' ') + ' ' + finalMessage;
+        const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal diary)/i.test(fullContext);
+        const isRecovery = /(recovery|resilience|burnout|stress level|sleep quality|exercise sessions|work hours|work-life|motivation)/i.test(fullContext);
+        const looksDeferred = (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage))
+          || FALSE_DELIVERY_RE.test(finalMessage)
+          || WRAPUP_RE.test(finalMessage);
+        const forceTool = looksDeferred ? (isNutrition && !isRecovery ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
 
         if (forceTool) {
           console.warn(`🚨 Deferral detected — forcing ${forceTool}. Msg:`, finalMessage.substring(0, 140));

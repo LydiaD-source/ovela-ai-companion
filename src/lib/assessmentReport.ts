@@ -1066,6 +1066,27 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     });
   }
 
+
+  // 6b. 30 / 60 / 90-day outlook
+  if (data.outlook_30_60_90) {
+    const o = data.outlook_30_60_90;
+    y = ensureSpace(doc, y, 160);
+    y = sectionTitle(doc, '6b · 30 / 60 / 90-day outlook', y);
+    const horizons: Array<[string, string]> = [
+      ['At 30 days', o.day_30],
+      ['At 60 days', o.day_60],
+      ['At 90 days', o.day_90],
+    ];
+    horizons.forEach(([label, text]) => {
+      if (!text) return;
+      y = ensureSpace(doc, y, 46);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(label, 40, y); y += 12;
+      y = paragraph(doc, text, y, { color: MUTED });
+      y += 4;
+    });
+  }
+
   // 7. Closing recommendation (WellneSpirit funnel — no €19 pitch)
   if (data.closing_recommendation) {
     y = ensureSpace(doc, y, 100);

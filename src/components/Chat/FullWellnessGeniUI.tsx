@@ -175,7 +175,8 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       });
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       // Extract any structured assessment report and strip it from the visible text.
-      const { report, cleaned } = extractAssessmentReport(rawText);
+      const { report: embeddedReport, cleaned } = extractAssessmentReport(rawText);
+      const report = embeddedReport || isa.assessmentReport || null;
       const assistantText = cleaned || rawText;
 
       let selectedVideoIds: string[] | undefined;

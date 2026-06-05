@@ -280,11 +280,11 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 90;
   }
 
-  // 3. Headline scores (Nutrition / Recovery / Muscle)
+  // 3. Headline scores (Nutrition / Recovery Support / Muscle)
   y = ensureSpace(doc, y, 110);
   y = sectionTitle(doc, '3 · Headline scores', y);
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
-  y = scoreRow(doc, 'Recovery capacity', s.recovery_capacity ?? 0, y);
+  y = scoreRow(doc, 'Recovery Support Score', s.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Muscle preservation', s.muscle_preservation ?? 0, y);
   y += 10;
 
@@ -317,9 +317,6 @@ function buildNutrition(doc: jsPDF, data: any) {
       y += 14;
     });
     y += 4;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(`Overall readiness ${eb.overall_readiness}/100 — ${eb.overall_position}`, 40, y);
-    y += 14;
     y = paragraph(doc, eb.note, y, { color: MUTED, size: 8 });
     y += 6;
   }
@@ -332,7 +329,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   y = scoreRow(doc, 'Carbohydrate quality', s.carbs ?? 0, y);
   y = scoreRow(doc, 'Fat quality', s.fat ?? 0, y);
   y = scoreRow(doc, 'Hydration', s.hydration ?? 0, y);
-  y = scoreRow(doc, 'Recovery support', s.recovery_support ?? 0, y);
+  y = scoreRow(doc, 'Recovery Support Score', s.recovery_support ?? 0, y);
   y += 10;
 
   // Why these scores (transparency)
@@ -422,6 +419,75 @@ function buildNutrition(doc: jsPDF, data: any) {
       mp.reasons.forEach((r: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${r}`, y, { color: MUTED, size: 9 }); });
     }
     if (mp.note) { y += 4; y = paragraph(doc, mp.note, y, { color: MUTED, size: 9 }); }
+    y += 6;
+  }
+
+  // 5b. Top meals from your week (moved up — what helped / what hurt)
+  const tmEarly = data.top_meals;
+  if (tmEarly && (tmEarly.strongest || tmEarly.weakest)) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, 'Top meals from your week', y);
+    const drawMeal = (label: string, color: string, m: any, reasonsKey: string) => {
+      if (!m || !m.meal) return;
+      y = ensureSpace(doc, y, 90);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(color);
+      doc.text(label, 40, y);
+      if (typeof m.score === 'number') {
+        doc.setTextColor(NAVY);
+        doc.text(`${m.score}/100`, 500, y);
+      }
+      y += 14;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+      y = paragraph(doc, m.meal, y, { color: INK });
+      (m[reasonsKey] || []).forEach((r: string) => {
+        y = ensureSpace(doc, y, 14);
+        y = paragraph(doc, `• ${r}`, y, { color: MUTED, size: 9 });
+      });
+      y += 6;
+    };
+    drawMeal('Strongest meal', '#2d8a5e', tmEarly.strongest, 'why_it_works');
+    drawMeal('Weakest meal', '#c2553a', tmEarly.weakest, 'why_it_hurts');
+  }
+
+  // 5c. Protein Opportunity Analysis (meal × actual / target / gap)
+  const po = data.protein_opportunity;
+  if (po && Array.isArray(po.meals)) {
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, 'Protein opportunity — where your protein is missing', y);
+    y = paragraph(doc, 'Meal-by-meal view of how much protein you ate vs. a practical target.', y, { color: MUTED, size: 9 });
+    y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
+    doc.text('Meal', 40, y);
+    doc.text('Actual', 240, y);
+    doc.text('Target', 340, y);
+    doc.text('Gap', 460, y);
+    y += 6;
+    doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
+    po.meals.forEach((m: any) => {
+      y = ensureSpace(doc, y, 18);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+      doc.text(String(m.meal), 40, y);
+      doc.text(m.actual_g == null ? '—' : `${m.actual_g} g`, 240, y);
+      doc.text(`${m.target_g} g`, 340, y);
+      if (m.gap_g != null && m.gap_g > 0) {
+        doc.setTextColor('#c2553a'); doc.setFont('helvetica', 'bold');
+        doc.text(`-${m.gap_g} g`, 460, y);
+      } else if (m.gap_g === 0) {
+        doc.setTextColor('#2d8a5e'); doc.setFont('helvetica', 'bold');
+        doc.text('on target', 460, y);
+      } else {
+        doc.setTextColor(MUTED);
+        doc.text('—', 460, y);
+      }
+      y += 16;
+    });
+    y += 4;
+    doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text(`Total daily gap: ${po.total_gap_g} g protein`, 40, y);
+    y += 16;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+    y = paragraph(doc, 'Closing the largest single gap is your fastest body-composition lever.', y, { color: MUTED, size: 9 });
     y += 6;
   }
 
@@ -700,37 +766,12 @@ function buildNutrition(doc: jsPDF, data: any) {
     });
   }
 
-  // 18. Top meals from your week (strongest + weakest)
-  const tm = data.top_meals;
-  if (tm && (tm.strongest || tm.weakest)) {
-    y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, '18 · Top meals from your week', y);
-    const drawMeal = (label: string, color: string, m: any, reasonsKey: string) => {
-      if (!m || !m.meal) return;
-      y = ensureSpace(doc, y, 90);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(color);
-      doc.text(label, 40, y);
-      if (typeof m.score === 'number') {
-        doc.setTextColor(NAVY);
-        doc.text(`${m.score}/100`, 500, y);
-      }
-      y += 14;
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
-      y = paragraph(doc, m.meal, y, { color: INK });
-      (m[reasonsKey] || []).forEach((r: string) => {
-        y = ensureSpace(doc, y, 14);
-        y = paragraph(doc, `• ${r}`, y, { color: MUTED, size: 9 });
-      });
-      y += 6;
-    };
-    drawMeal('Strongest meal', '#2d8a5e', tm.strongest, 'why_it_works');
-    drawMeal('Weakest meal', '#c2553a', tm.weakest, 'why_it_hurts');
-  }
+  // (Top meals moved earlier — section 5b)
 
-  // 19. Clinical perspective
+  // 18. Isabella's Clinical Observation
   if (data.clinical_perspective) {
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, '19 · Clinical perspective', y);
+    y = sectionTitle(doc, "18 · Isabella's Clinical Observation", y);
     doc.setFillColor('#f4f1ea');
     doc.setDrawColor(GOLD);
     doc.setLineWidth(0.5);
@@ -748,7 +789,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const sp = data.success_preview;
   if (rp || sp) {
     y = ensureSpace(doc, y, 220);
-    y = sectionTitle(doc, `20 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
+    y = sectionTitle(doc, `19 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
     if (rp) {
       y = paragraph(doc, 'If you:', y);
       (rp.if_you || []).forEach((it: string) => {
@@ -789,7 +830,7 @@ function buildNutrition(doc: jsPDF, data: any) {
 
   // 20. WellneSpirit — continue your progress (always last)
   y = ensureSpace(doc, y, 130);
-  y = sectionTitle(doc, '21 · Continue your progress with WellneSpirit', y);
+  y = sectionTitle(doc, '20 · Continue your progress with WellneSpirit', y);
   doc.setFillColor('#f7f3e6');
   doc.setDrawColor(GOLD);
   doc.setLineWidth(0.5);

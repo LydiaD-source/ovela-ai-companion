@@ -530,9 +530,7 @@ export function nutritionAssessment(args: {
       strength_sessions_per_week: goal === "muscle_gain" ? 4 : base,
       cardio_sessions_per_week: cardio,
       mobility_minutes_per_day: 10,
-      reason: age >= 45
-        ? "After 45, adults lose roughly 1% of muscle mass per year without resistance training. Two to three short strength sessions per week is the single strongest longevity input."
-        : "Resistance training builds the metabolic and structural foundation that protects energy, posture, and long-term health.",
+      reason: "Two to three short resistance sessions per week is the single strongest longevity input — it protects muscle, metabolic health, posture, and glucose control.",
     };
   })();
 
@@ -894,18 +892,35 @@ export function nutritionAssessment(args: {
     note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
   };
 
-  // ── Clinical Perspective (WellneSpirit authority layer) ─────────────
-  const clinicalOpportunities: string[] = [];
-  if (proteinScore < 70) clinicalOpportunities.push("increasing daily protein intake");
-  if (hydrationScore < 70) clinicalOpportunities.push("improving daily hydration");
-  if (strength < 2) clinicalOpportunities.push("adding consistent resistance training");
-  if ((alcohol ?? 0) > 7) clinicalOpportunities.push("reducing weekly alcohol load");
-  if (sleepH < 7) clinicalOpportunities.push("extending sleep duration");
-  if (clinicalOpportunities.length === 0) clinicalOpportunities.push("maintaining current habits while fine-tuning consistency");
+  // ── Isabella's Clinical Observation (synthesised pattern, not a list) ─
+  const clinicalPatterns: string[] = [];
+  if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60)) {
+    clinicalPatterns.push("inadequate protein earlier in the day");
+  }
+  if ((alcohol ?? 0) > 7) clinicalPatterns.push("frequent alcohol exposure");
+  if (args.low_vegetables) clinicalPatterns.push("low vegetable diversity");
+  if (args.sugar_snacks) clinicalPatterns.push("reliance on sugar-based snacks");
+  if (args.high_processed) clinicalPatterns.push("a high share of refined or processed foods");
+  if (hydrationScore < 65) clinicalPatterns.push("under-hydration relative to body weight");
+  if (sleepH < 7) clinicalPatterns.push("short sleep duration");
+  if (strength < 2) clinicalPatterns.push("limited resistance-training stimulus");
+
+  const consequences: string[] = [];
+  if (proteinScore < 70 || (distributionScore != null && distributionScore < 60)) consequences.push("unstable satiety");
+  if ((alcohol ?? 0) > 7 || sleepH < 7) consequences.push("slower overnight recovery");
+  if (musclePres < 70) consequences.push("reduced muscle-retention efficiency");
+  if (hydrationScore < 65) consequences.push("blunted afternoon energy");
+  if (consequences.length === 0) consequences.push("stable energy and good recovery support");
+
+  const patternLine = clinicalPatterns.length
+    ? `The strongest pattern visible across this diary is ${clinicalPatterns.slice(0, 3).join(", combined with ")}.`
+    : `The diary shows a balanced foundation with no single dominant weakness.`;
+  const consequenceLine = clinicalPatterns.length
+    ? `Together these likely contribute to ${consequences.slice(0, 3).join(", ")}.`
+    : `Current habits are supporting ${consequences.slice(0, 2).join(" and ")}.`;
   const clinicalPerspective =
-    `Based on current habits, the strongest opportunities for improvement are ${clinicalOpportunities.slice(0, 3).join(", ")}. ` +
-    `These are commonly observed factors affecting energy, body composition, and long-term resilience in adults${age >= 45 ? " over 45" : ""}. ` +
-    `This perspective is educational, not diagnostic — confirm with a qualified clinician if relevant.`;
+    `Isabella's Clinical Observation: ${patternLine} ${consequenceLine} ` +
+    `This is an educational reading of the diary patterns — not a clinical diagnosis.`;
 
   // ── Nutrition risk flags (observational micronutrient inference) ────
   // Combines model-supplied flags with deterministic inferences from the diary.
@@ -1020,6 +1035,28 @@ export function nutritionAssessment(args: {
     } : null,
   } : null;
 
+  // ── Protein Opportunity Analysis (meal × actual / target / gap) ─────
+  const perMealTarget = { Breakfast: 35, Lunch: 35, Snack: 20, Dinner: 35 };
+  const proteinOpportunity = (() => {
+    const rows = [
+      { meal: "Breakfast", actual_g: args.breakfast_protein_g ?? null, target_g: perMealTarget.Breakfast },
+      { meal: "Lunch",     actual_g: args.lunch_protein_g     ?? null, target_g: perMealTarget.Lunch },
+      { meal: "Snack",     actual_g: args.snack_protein_g     ?? null, target_g: perMealTarget.Snack },
+      { meal: "Dinner",    actual_g: args.dinner_protein_g    ?? null, target_g: perMealTarget.Dinner },
+    ];
+    if (!rows.some(r => r.actual_g != null)) return null;
+    const meals = rows.map(r => ({
+      meal: r.meal,
+      actual_g: r.actual_g,
+      target_g: r.target_g,
+      gap_g: r.actual_g == null ? null : Math.max(0, r.target_g - r.actual_g),
+    }));
+    const totalActual = meals.reduce((a, m) => a + (m.actual_g ?? 0), 0);
+    const totalTarget = meals.reduce((a, m) => a + m.target_g, 0);
+    const totalGap = Math.max(0, totalTarget - totalActual);
+    return { meals, total_actual_g: totalActual, total_target_g: totalTarget, total_gap_g: totalGap };
+  })();
+
 
 
   return {
@@ -1081,6 +1118,7 @@ export function nutritionAssessment(args: {
       measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
     },
     executive_benchmark: executiveBenchmark,
+    protein_opportunity: proteinOpportunity,
     reassessment_projection: reassessmentProjection,
     success_preview: successPreview,
     nutrition_risk_flags: nutritionRiskFlags,
@@ -1096,10 +1134,18 @@ export function nutritionAssessment(args: {
       score: musclePres,
       status: muscleStatus,
       reasons: muscleReasons,
-      note: age >= 45
-        ? "After approximately age 45, adults begin losing 1% of muscle mass per year unless resistance training and adequate protein are maintained."
-        : "Building muscle reserves now creates the strongest possible foundation for the decades ahead.",
+      note: "Adequate protein and consistent resistance training are the two strongest levers for preserving muscle through the next decade.",
     },
+    executive_benchmark: executiveBenchmark,
+    reassessment_projection: reassessmentProjection,
+    success_preview: successPreview,
+    nutrition_risk_flags: nutritionRiskFlags,
+    habit_upgrades: habitUpgrades,
+    meal_framework_replacements: mealFrameworkReplacements,
+    top_meals: topMeals,
+    time_budget: timeBudgetBlock,
+    clinical_perspective: clinicalPerspective,
+    executive_summary: executiveSummary,
     protein_strategy: {
       diet_type: diet,
       best_sources: personalSources,

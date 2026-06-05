@@ -1579,7 +1579,7 @@ function buildMissedCalls(doc: jsPDF, data: any) {
   doc.text(`${data.industry_label || 'Business'} — ${data.country || ''}`, 56, y + 8);
   // Big number = missed inquiries / yr (believable)
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor('#c0392b');
-  doc.text(`${(data.missed_inquiries_per_year ?? data.missed_inquiries_per_month * 12 ?? 0).toLocaleString('en-US')}`, 56, y + 42);
+  doc.text(`${(data.missed_inquiries_per_year ?? (data.missed_inquiries_per_month ?? 0) * 12).toLocaleString('en-US')}`, 56, y + 42);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
   doc.text('Missed inquiries / year', 56, y + 58);
   // Secondary: lost sales opportunities

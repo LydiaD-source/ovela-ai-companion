@@ -118,10 +118,11 @@ const Home = () => {
     };
   }, []);
 
-  // Handle URL params: open chat & optionally pre-seed (partner OR authority tool)
+  // Handle URL params: open chat & optionally pre-seed (partner OR authority tool OR ?tool=)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const partner = params.get('partner');
+    const toolParam = params.get('tool'); // shareable deep links e.g. ?tool=nutrition
     const partnerLabels: Record<string, string> = {
       wellnespirit: 'WellneSpirit',
       luxdeftec: 'LuxDefTec',
@@ -129,7 +130,32 @@ const Home = () => {
       general: 'the Ovela Network',
     };
 
-    // 1) Authority-tool launch from any TopicHub page
+    // Shareable deep-link presets — map ?tool=X to the same prompts as the
+    // assessment cards on the homepage. Keeps email/SMS links short.
+    const TOOL_DEEPLINKS: Record<string, { initialPrompt: string; tool_context: string; authority_topic: string }> = {
+      nutrition: {
+        initialPrompt: "I'd like the Executive Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
+        tool_context: 'nutrition_assessment',
+        authority_topic: 'protein_nutrition_assessment',
+      },
+      recovery: {
+        initialPrompt: "I'd like the Executive Recovery & Resilience Assessment. Please run it conversationally in 5 short phases (personal profile, workload & stress, recovery, lifestyle & resilience, optional nutrition integration). Lifestyle questions only — no medical history, no diagnosis. Start with the disclaimer and ask 2–3 questions at a time.",
+        tool_context: 'recovery_resilience_assessment',
+        authority_topic: 'recovery_resilience_assessment',
+      },
+      reception: {
+        initialPrompt: "I'd like to calculate what a human receptionist would actually cost in my country, and compare it to deploying you instead. Please ask me what you need.",
+        tool_context: 'receptionist_cost_calculator',
+        authority_topic: 'receptionist_cost',
+      },
+      missed: {
+        initialPrompt: "Help me estimate how much revenue I'm losing to missed calls, after-hours leads, and language barriers. Ask me whatever you need to run the numbers.",
+        tool_context: 'missed_leads_calculator',
+        authority_topic: 'missed_leads',
+      },
+    };
+
+    // 1) Authority-tool launch from any TopicHub page (sessionStorage)
     let toolSeed: { initialPrompt: string; tool_context?: string; authority_topic?: string } | null = null;
     try {
       const raw = sessionStorage.getItem('ovela:isabella:tool');
@@ -139,16 +165,19 @@ const Home = () => {
       }
     } catch {}
 
+    // 1b) URL-driven deep link — same effect as a card click
+    if (!toolSeed && toolParam && TOOL_DEEPLINKS[toolParam]) {
+      toolSeed = TOOL_DEEPLINKS[toolParam];
+    }
+
     // Defer to next tick so activateChatRef is populated by its sync effect.
     const fireActivate = () => setTimeout(() => activateChatRef.current?.(), 0);
 
     if (toolSeed?.initialPrompt) {
-      // Expose context to the chat so the next sendMessage carries it server-side
       (window as any).__ISABELLA_CTX__ = {
         tool_context: toolSeed.tool_context,
         authority_topic: toolSeed.authority_topic,
       };
-      // Also dispatch in case the chat is already mounted (open).
       window.dispatchEvent(new CustomEvent('isabella:tool-context', {
         detail: { tool_context: toolSeed.tool_context, authority_topic: toolSeed.authority_topic }
       }));
@@ -169,6 +198,7 @@ const Home = () => {
       window.history.replaceState({}, '', '/');
     }
   }, []);
+
 
 
   // Stable callback for AI responses - triggers D-ID animation

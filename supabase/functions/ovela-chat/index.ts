@@ -692,14 +692,20 @@ After any tool call, present results conversationally (1 short paragraph + key b
           type: "function",
           function: {
             name: "calculate_missed_leads",
-            description: "Compute revenue lost to missed inbound calls/messages (after-hours, busy lines, language barriers) and net benefit vs Isabella's Pro tier. Use when user mentions missed calls, after-hours, lost leads, slow response, or wants to quantify the cost of not capturing inbounds.",
+            description: "Missed Calls & Revenue Leak Diagnostic (v2). Quantifies revenue lost to missed inbound (after-hours / busy-line / language-blocked), models speed-to-lead recovery, picks an industry archetype, and produces an Isabella Business Observation + recommendations. Inputs: monthly_inbound (required), industry (required when known), avg_deal_value_eur, avg_response_minutes, business_hours_coverage, languages_served, miss_rate_pct, conversion_rate_pct, human_true_annual_cost_eur (optional — pass when the user already ran calculate_receptionist_cost in this session to unlock the Combined Business Case).",
             parameters: {
               type: "object",
               properties: {
                 monthly_inbound: { type: "number", description: "Total inbound inquiries per month (calls + forms + DMs)." },
-                miss_rate_pct: { type: "number", description: "% currently missed/unanswered (default 35)." },
-                conversion_rate_pct: { type: "number", description: "% of captured leads that become customers (default 20)." },
-                avg_deal_value_eur: { type: "number", description: "Average customer value in EUR (default 1500)." }
+                industry: { type: "string", enum: ["clinic","hotel","real_estate","legal","trades","support","professional_services","beauty_spa","other"], description: "Vertical — drives benchmark miss-rate and leak split." },
+                country: { type: "string", description: "ISO-style country code (ES, PT, FR, DE, IT, NL, BE, AD, CH, UK, IE)." },
+                miss_rate_pct: { type: "number", description: "% currently missed/unanswered (defaults to industry benchmark)." },
+                conversion_rate_pct: { type: "number", description: "% of captured leads that become customers (defaults to industry benchmark)." },
+                avg_deal_value_eur: { type: "number", description: "Average customer value in EUR." },
+                avg_response_minutes: { type: "number", description: "Current median first-response time in minutes." },
+                business_hours_coverage: { type: "string", enum: ["business","extended","247"], description: "Current human coverage profile." },
+                languages_served: { type: "number", description: "Number of languages currently handled by the front desk (1-6)." },
+                human_true_annual_cost_eur: { type: "number", description: "Optional: pass true_annual_cost_eur.mid from calculate_receptionist_cost to unlock the Combined Business Case section." }
               },
               required: ["monthly_inbound"]
             }

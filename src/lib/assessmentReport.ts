@@ -1183,6 +1183,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
   }
 
   // 6. 7-day recovery plan
+  if (Array.isArray(data.seven_day_plan) && data.seven_day_plan.length) {
     y = ensureSpace(doc, y, 180);
     y = sectionTitle(doc, '6 · 7-day recovery plan', y);
     data.seven_day_plan.forEach((d: any) => {

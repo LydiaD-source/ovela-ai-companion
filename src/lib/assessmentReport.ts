@@ -29,16 +29,16 @@ export function isMeaningfulAssessmentReport(report: AssessmentReport | null | u
   if (report.type === 'nutrition_assessment') {
     const targets = data.targets || {};
     return Boolean(
-      typeof targets.daily_calories === 'number' ||
-      typeof targets.protein_g?.low_g === 'number' ||
-      typeof data.muscle_preservation?.recommended_protein_g === 'number'
+      (typeof targets.daily_calories === 'number' && targets.daily_calories > 500) ||
+      (typeof targets.protein_g?.low_g === 'number' && targets.protein_g.low_g > 20) ||
+      (typeof data.muscle_preservation?.recommended_protein_g === 'number' && data.muscle_preservation.recommended_protein_g > 20)
     );
   }
 
   const scores = data.scores || {};
   return Boolean(
-    typeof scores.executive_wellness === 'number' ||
-    typeof scores.recovery_capacity === 'number' ||
+    (typeof scores.executive_wellness === 'number' && scores.executive_wellness > 0) ||
+    (typeof scores.recovery_capacity === 'number' && scores.recovery_capacity > 0) ||
     typeof scores.burnout_risk === 'string'
   );
 }

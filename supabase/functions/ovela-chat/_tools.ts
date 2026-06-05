@@ -458,7 +458,12 @@ export function nutritionAssessment(args: {
 
   const proteinScore   = score(args.est_protein_g ?? null, proteinMid, 0.2);
   const carbsScore     = args.high_processed ? 55 : score(args.est_carbs_g ?? null, (carbTargetRange.low_g + carbTargetRange.high_g) / 2, 0.3);
-  const fatScore       = score(args.est_fat_g ?? null, (fatTargetRange.low_g + fatTargetRange.high_g) / 2, 0.3);
+  let fatScore         = score(args.est_fat_g ?? null, (fatTargetRange.low_g + fatTargetRange.high_g) / 2, 0.2);
+  // Penalise fat-quality when diary signals point to processed/saturated sources or low veg diversity.
+  if (args.high_processed) fatScore = Math.min(fatScore, 65);
+  if (args.sugar_snacks)   fatScore = Math.min(fatScore, 72);
+  if (args.low_vegetables) fatScore = Math.max(40, fatScore - 8);
+  fatScore = Math.max(35, Math.min(100, fatScore));
   const hydrationScore = score(args.est_hydration_l ?? null, hydrationTargetL, 0.2);
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)

@@ -283,35 +283,37 @@ const THIRTY_G_SWAPS: Record<DietType, string[]> = {
 const VEGETARIAN_ALTS = ["Greek yogurt", "Cottage cheese", "Eggs", "Tempeh", "Tofu", "Edamame", "Lentils", "Whey/casein protein"];
 
 function buildMealFramework(diet: DietType, dailyProteinG: number) {
+  // Cap each main meal at ~40 g protein (digestion / leucine threshold).
+  // For regular adults, 3 main meals × 30–40 g + 1 modest snack is optimal.
   const meals = [
-    { meal: "Breakfast", pct: 0.28 },
-    { meal: "Lunch",     pct: 0.30 },
-    { meal: "Snack",     pct: 0.12 },
-    { meal: "Dinner",    pct: 0.30 },
+    { meal: "Breakfast", pct: 0.30, cap: 40 },
+    { meal: "Lunch",     pct: 0.30, cap: 40 },
+    { meal: "Snack",     pct: 0.15, cap: 25 },
+    { meal: "Dinner",    pct: 0.30, cap: 40 },
   ];
   const ex: Record<DietType, Record<string, string>> = {
     omnivore: {
-      Breakfast: "3 eggs + Greek yogurt + berries",
-      Lunch:     "Grilled chicken bowl, quinoa, vegetables, olive oil",
-      Snack:     "Cottage cheese + nuts, or a whey shake",
-      Dinner:    "Salmon or lean beef + sweet potato + greens",
+      Breakfast: "3 eggs + Greek yogurt + berries (~30–35 g)",
+      Lunch:     "Grilled chicken bowl, quinoa, vegetables, olive oil (~35–40 g)",
+      Snack:     "Cottage cheese + nuts, or a whey shake (~15–20 g)",
+      Dinner:    "Salmon or lean beef + sweet potato + greens (~35–40 g)",
     },
     vegetarian: {
-      Breakfast: "Greek yogurt + oats + whey or seeds",
-      Lunch:     "Tofu or tempeh grain bowl + vegetables",
-      Snack:     "Cottage cheese + fruit, or a casein shake",
-      Dinner:    "Lentil and paneer stew + brown rice + salad",
+      Breakfast: "Greek yogurt + oats + whey or seeds (~30 g)",
+      Lunch:     "Tofu or tempeh grain bowl + vegetables (~35 g)",
+      Snack:     "Cottage cheese + fruit, or a casein shake (~15–20 g)",
+      Dinner:    "Lentil and paneer stew + brown rice + salad (~35 g)",
     },
     vegan: {
-      Breakfast: "Soy yogurt + oats + pea-protein shake",
-      Lunch:     "Tempeh or seitan grain bowl + edamame",
-      Snack:     "Roasted chickpeas + pea-protein shake",
-      Dinner:    "Tofu stir-fry + lentils + greens",
+      Breakfast: "Soy yogurt + oats + pea-protein shake (~30 g)",
+      Lunch:     "Tempeh or seitan grain bowl + edamame (~35 g)",
+      Snack:     "Roasted chickpeas + pea-protein shake (~15–20 g)",
+      Dinner:    "Tofu stir-fry + lentils + greens (~35 g)",
     },
   };
   return meals.map(m => ({
     meal: m.meal,
-    protein_g: Math.round(dailyProteinG * m.pct),
+    protein_g: Math.min(m.cap, Math.round(dailyProteinG * m.pct)),
     example: ex[diet][m.meal],
   }));
 }

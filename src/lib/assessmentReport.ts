@@ -253,6 +253,42 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 6;
   }
 
+  // 1c. Executive dashboard — biggest opportunities + expected 14-day gains
+  const ed = data.executive_dashboard;
+  if (ed && ((ed.biggest_opportunities || []).length || (ed.expected_14_day_gains || []).length)) {
+    const opps = ed.biggest_opportunities || [];
+    const gains = ed.expected_14_day_gains || [];
+    const panelH = 40 + Math.max(opps.length, gains.length) * 16;
+    y = ensureSpace(doc, y, panelH + 30);
+    y = sectionTitle(doc, 'Your biggest opportunities', y);
+    doc.setFillColor('#f7f3e6');
+    doc.rect(40, y - 10, 515, panelH, 'F');
+    // Left column header
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text('Top changes', 56, y + 6);
+    doc.text('Expected 14-day gains', 320, y + 6);
+    let oy = y + 22;
+    opps.forEach((o: any) => {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
+      doc.text(`• ${o.label}`, 56, oy);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(GOLD);
+      doc.text(o.delta, 200, oy);
+      oy += 14;
+    });
+    let gy = y + 22;
+    gains.forEach((g: any) => {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+      doc.text(g.metric, 320, gy);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor('#2d8a5e');
+      doc.text(g.gain, 520, gy);
+      gy += 14;
+    });
+    y += panelH;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(MUTED);
+    y = paragraph(doc, ed.note, y + 4, { color: MUTED, size: 8 });
+    y += 6;
+  }
+
   // 2. Nutrition Optimization Score (headline)
   const er = data.executive_readiness;
   if (er) {
@@ -281,8 +317,10 @@ function buildNutrition(doc: jsPDF, data: any) {
   }
 
   // 3. Headline scores (Nutrition / Recovery Support / Muscle)
-  y = ensureSpace(doc, y, 110);
+  y = ensureSpace(doc, y, 130);
   y = sectionTitle(doc, '3 · Headline scores', y);
+  y = paragraph(doc, 'These three scores feed into your Nutrition Optimization Score above. Lowest score = biggest leverage point.', y, { color: MUTED, size: 9 });
+  y += 4;
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
   y = scoreRow(doc, 'Recovery Support Score', s.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Muscle preservation', s.muscle_preservation ?? 0, y);

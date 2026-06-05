@@ -458,7 +458,12 @@ export function nutritionAssessment(args: {
 
   const proteinScore   = score(args.est_protein_g ?? null, proteinMid, 0.2);
   const carbsScore     = args.high_processed ? 55 : score(args.est_carbs_g ?? null, (carbTargetRange.low_g + carbTargetRange.high_g) / 2, 0.3);
-  const fatScore       = score(args.est_fat_g ?? null, (fatTargetRange.low_g + fatTargetRange.high_g) / 2, 0.3);
+  let fatScore         = score(args.est_fat_g ?? null, (fatTargetRange.low_g + fatTargetRange.high_g) / 2, 0.2);
+  // Penalise fat-quality when diary signals point to processed/saturated sources or low veg diversity.
+  if (args.high_processed) fatScore = Math.min(fatScore, 65);
+  if (args.sugar_snacks)   fatScore = Math.min(fatScore, 72);
+  if (args.low_vegetables) fatScore = Math.max(40, fatScore - 8);
+  fatScore = Math.max(35, Math.min(100, fatScore));
   const hydrationScore = score(args.est_hydration_l ?? null, hydrationTargetL, 0.2);
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
@@ -490,8 +495,18 @@ export function nutritionAssessment(args: {
         return Math.round(avg * 0.75 + minScore * 0.25);
       })()
     : null;
+  // Inferred fallback when per-meal grams weren't captured — still gives a meaningful narrative.
+  const inferredDistributionStatus = (() => {
+    if (args.low_protein_breakfast && (proteinGap ?? 0) > 20)
+      return "Poor — protein is concentrated in evening meals; breakfast is significantly under target.";
+    if (args.low_protein_breakfast)
+      return "Moderate — breakfast remains below target while later meals carry most of the day's protein.";
+    if ((proteinGap ?? 0) > 25)
+      return "Moderate — total daily protein is below target; even distribution across meals would help.";
+    return "Likely even — no obvious meal is leaving a major protein gap based on the diary.";
+  })();
   const distributionStatus = distributionScore == null
-    ? "Add per-meal protein amounts to score distribution."
+    ? inferredDistributionStatus
     : distributionScore >= 80 ? "Excellent — protein spread evenly across the day."
     : distributionScore >= 55 ? "Moderate — one or two meals are protein-light."
     : "Poor — protein is concentrated at one meal. Anchoring breakfast is your biggest win.";
@@ -900,6 +915,54 @@ export function nutritionAssessment(args: {
     note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
   };
 
+  // ── Executive dashboard (page 1 "wow" panel — opportunities + expected gains) ─
+  const opportunitiesList: Array<{ label: string; delta: string; impact: string }> = [];
+  if (proteinGap != null && proteinGap >= 15) {
+    opportunitiesList.push({
+      label: "Protein intake",
+      delta: `+${proteinGap} g/day`,
+      impact: "Strongest lever for muscle preservation and satiety.",
+    });
+  }
+  if ((alcohol ?? 0) > 7) {
+    opportunitiesList.push({
+      label: "Alcohol reduction",
+      delta: `-${Math.max(0, (alcohol ?? 0) - 7)} units/week`,
+      impact: "Restores deep sleep and overnight recovery.",
+    });
+  }
+  if (hydrationGapL != null && hydrationGapL >= 0.4) {
+    opportunitiesList.push({
+      label: "Hydration",
+      delta: `+${hydrationGapL} L/day`,
+      impact: "Steadier afternoon energy and cognitive stamina.",
+    });
+  }
+  if (strength < (reco.strength_sessions_per_week ?? 2)) {
+    const gap = (reco.strength_sessions_per_week ?? 2) - strength;
+    opportunitiesList.push({
+      label: "Resistance training",
+      delta: `+${gap} session${gap === 1 ? "" : "s"}/week`,
+      impact: "Single strongest input for long-term muscle and metabolic health.",
+    });
+  }
+  if (args.low_protein_breakfast) {
+    opportunitiesList.push({
+      label: "Breakfast protein",
+      delta: "anchor at 30–40 g",
+      impact: "Levels morning hunger and starts muscle protein synthesis early.",
+    });
+  }
+  const executiveDashboard = {
+    biggest_opportunities: opportunitiesList.slice(0, 4),
+    expected_14_day_gains: reassessmentProjection.expected_changes.map((c) => ({
+      metric: c.metric,
+      gain: `+${Math.max(0, c.to - c.from)}`,
+    })),
+    note: "Top opportunities ranked by impact on your scores over the next 14 days.",
+  };
+
+
   // ── Dominant Nutrition Patterns (how a practitioner reads the diary) ─
   const dominantPatterns: Array<{ pattern: string; impact: string }> = [];
   if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60)) {
@@ -1173,6 +1236,7 @@ export function nutritionAssessment(args: {
       measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
     },
     executive_benchmark: executiveBenchmark,
+    executive_dashboard: executiveDashboard,
     protein_opportunity: proteinOpportunity,
     reassessment_projection: reassessmentProjection,
     success_preview: successPreview,

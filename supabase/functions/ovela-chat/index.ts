@@ -1141,13 +1141,15 @@ After any tool call, present results conversationally (1 short paragraph + key b
             for (const tr of toolResults) {
               followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
             }
-            if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload) {
+            if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload || missedLeadsReportPayload) {
+              const isBusiness = Boolean(receptionistReportPayload || missedLeadsReportPayload);
+              const businessSubtype = missedLeadsReportPayload ? 'missed_calls' : 'receptionist_cost';
               const reportType = nutritionReportPayload
                 ? 'nutrition_assessment'
-                : (receptionistReportPayload ? 'business_calculator' : 'recovery_resilience');
+                : (isBusiness ? 'business_calculator' : 'recovery_resilience');
               followUpMessages.push({
                 role: "system",
-                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download and email buttons. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}",${receptionistReportPayload ? '"subtype":"receptionist_cost",' : ''}"title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add exactly this line: You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`
+                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download and email buttons. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}",${isBusiness ? `"subtype":"${businessSubtype}",` : ''}"title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add exactly this line: You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`
               });
             }
 

@@ -551,22 +551,36 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
   }
 }
 
-/** Build the PDF and trigger the download. */
-export function downloadAssessmentReport(report: AssessmentReport) {
+function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
   else buildRecoveryResilience(doc, report.data);
-
-  // Apply footer to every page
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
     footer(doc, i, pages);
   }
+  return doc;
+}
 
+export function assessmentReportFilename(report: AssessmentReport): string {
   const stamp = new Date().toISOString().slice(0, 10);
-  const name = report.type === 'nutrition_assessment'
+  return report.type === 'nutrition_assessment'
     ? `isabella-nutrition-assessment-${stamp}.pdf`
     : `isabella-recovery-resilience-${stamp}.pdf`;
-  doc.save(name);
 }
+
+/** Build the PDF and trigger the download. */
+export function downloadAssessmentReport(report: AssessmentReport) {
+  const doc = buildAssessmentDoc(report);
+  doc.save(assessmentReportFilename(report));
+}
+
+/** Build the PDF and return as base64 (without data URL prefix) for emailing. */
+export function assessmentReportToBase64(report: AssessmentReport): string {
+  const doc = buildAssessmentDoc(report);
+  const dataUri = doc.output('datauristring');
+  const idx = dataUri.indexOf(',');
+  return idx >= 0 ? dataUri.slice(idx + 1) : dataUri;
+}
+

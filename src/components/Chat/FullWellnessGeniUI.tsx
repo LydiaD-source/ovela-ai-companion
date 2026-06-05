@@ -8,7 +8,8 @@ import { textToSpeechService } from '@/lib/textToSpeech';
 import { isabellaAPI, type IsabellaAttachment } from '@/lib/isabellaAPI';
 import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
-import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, type AssessmentReport } from '@/lib/assessmentReport';
+import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, assessmentReportToBase64, assessmentReportFilename, type AssessmentReport } from '@/lib/assessmentReport';
+import { supabase } from '@/integrations/supabase/client';
 import { humanizeForSpeech } from '@/lib/humanizeSpeech';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
@@ -445,13 +446,41 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
                 </div>
               )}
               {message.report && (
-                <button
-                  onClick={() => downloadAssessmentReport(message.report!)}
-                  className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-champagne-gold text-charcoal text-xs font-medium hover:bg-champagne-gold/90 transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Download PDF report
-                </button>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => downloadAssessmentReport(message.report!)}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-champagne-gold text-charcoal text-xs font-medium hover:bg-champagne-gold/90 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Download PDF report
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const email = window.prompt('Enter your email and I will send the PDF report:');
+                      if (!email) return;
+                      try {
+                        const pdf_base64 = assessmentReportToBase64(message.report!);
+                        const filename = assessmentReportFilename(message.report!);
+                        const { data, error } = await supabase.functions.invoke('email-assessment-report', {
+                          body: {
+                            email: email.trim(),
+                            report_type: message.report!.type,
+                            pdf_base64,
+                            filename,
+                          },
+                        });
+                        if (error || !(data as any)?.success) throw new Error((data as any)?.error || error?.message || 'Send failed');
+                        toast({ title: 'Sent', description: `PDF emailed to ${email.trim()}.` });
+                      } catch (e: any) {
+                        toast({ title: 'Email failed', description: e?.message || 'Could not send the report.', variant: 'destructive' });
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-white/10 text-soft-white text-xs font-medium hover:bg-soft-white/20 transition-colors"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    Email PDF to me
+                  </button>
+                </div>
               )}
               {/* Video cards — show pre-selected clips to avoid repeats */}
               {message.selectedVideoIds && message.selectedVideoIds.length > 0 && (

@@ -876,6 +876,18 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'nutrition_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
+              if (!hasUsableNutritionArgs(args)) {
+                console.warn('🛑 Nutrition tool blocked — incomplete usable inputs', { keys: Object.keys(args || {}) });
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "NUTRITION_INPUTS_INCOMPLETE",
+                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. Required profile data or diary estimates are missing. Ask only for the missing profile details or clarify the weekly food diary, then wait."
+                  })
+                });
+                continue;
+              }
 
               // HARD GATE: verify a real weekly food diary exists in the conversation history
               // or in the current message / attachments before allowing the assessment to run.
@@ -923,6 +935,18 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const args = JSON.parse(toolCall.function.arguments || "{}");
               // Backward-compat: legacy callers may still send chronological_age
               if (args.chronological_age && !args.age) args.age = args.chronological_age;
+              if (!hasUsableRecoveryArgs(args)) {
+                console.warn('🛑 Recovery tool blocked — incomplete usable inputs', { keys: Object.keys(args || {}) });
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "RECOVERY_INPUTS_INCOMPLETE",
+                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. Required recovery assessment details are missing. Ask the next missing phase questions and wait."
+                  })
+                });
+                continue;
+              }
               const result = recoveryResilienceAssessment(args);
               bioAgeReportPayload = result;
               console.log('🛡️ Recovery & Resilience assessment:', { exec: result.scores.executive_wellness, burnout: result.scores.burnout_risk });

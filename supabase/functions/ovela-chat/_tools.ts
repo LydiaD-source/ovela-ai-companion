@@ -480,7 +480,14 @@ export function nutritionAssessment(args: {
   };
   const distScores = distMeals.map(m => ({ ...m, score: scoreMeal(m.g, m.meal === "Snack") }));
   const valid = distScores.filter(d => d.score != null) as { meal: string; g: number; score: number }[];
-  const distributionScore = valid.length ? Math.round(valid.reduce((a, b) => a + b.score, 0) / valid.length) : null;
+  // Weighted blend of average + worst meal — penalises a single under-target meal.
+  const distributionScore = valid.length
+    ? (() => {
+        const avg = valid.reduce((a, b) => a + b.score, 0) / valid.length;
+        const minScore = Math.min(...valid.map(v => v.score));
+        return Math.round(avg * 0.75 + minScore * 0.25);
+      })()
+    : null;
   const distributionStatus = distributionScore == null
     ? "Add per-meal protein amounts to score distribution."
     : distributionScore >= 80 ? "Excellent — protein spread evenly across the day."

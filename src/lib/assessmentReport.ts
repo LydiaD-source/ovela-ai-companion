@@ -17,7 +17,8 @@ const FOOTER_DISCLAIMER =
   'This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.';
 
 export interface AssessmentReport {
-  type: 'nutrition_assessment' | 'recovery_resilience';
+  type: 'nutrition_assessment' | 'recovery_resilience' | 'business_calculator';
+  subtype?: string;
   title?: string;
   data: any;
 }

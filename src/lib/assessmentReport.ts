@@ -1268,6 +1268,170 @@ function installSanitizer(doc: jsPDF) {
   };
 }
 
+// ── Receptionist Cost & ROI report ──────────────────────────────────────
+function fmtEUR(n: number | undefined | null): string {
+  if (typeof n !== 'number' || !isFinite(n)) return '—';
+  return `EUR ${Math.round(n).toLocaleString('en-US').replace(/,/g, ' ')}`;
+}
+
+function buildBusinessCalculator(doc: jsPDF, data: any) {
+  header(doc, 'Receptionist Cost & ROI Assessment');
+  let y = 110;
+
+  // 1. Executive snapshot
+  y = sectionTitle(doc, '1 - Executive snapshot', y);
+  doc.setFillColor('#f7f3e6');
+  doc.rect(40, y - 10, 515, 86, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
+  doc.text(`${data.role_label || 'Front-desk role'} - ${data.country_label || data.country}`, 56, y + 8);
+  doc.setFontSize(9); doc.setTextColor(MUTED);
+  doc.text(`Shifts: ${data.inputs?.shifts || 'business'}  -  Languages: ${data.inputs?.languages || 1}  -  Premium skills: ${data.inputs?.premium_skills ? 'yes' : 'no'}`, 56, y + 24);
+  // headline numbers
+  const cmp = data.comparison || {};
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(NAVY);
+  doc.text(fmtEUR(cmp.annual_savings), 56, y + 56);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  doc.text('Estimated annual savings vs human (mid)', 56, y + 70);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(GOLD);
+  doc.text(`${cmp.pct_savings ?? 0}%`, 300, y + 56);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  doc.text('Cost reduction vs full human TCO', 300, y + 70);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(NAVY);
+  doc.text(cmp.payback_months ? `${cmp.payback_months} mo` : '—', 460, y + 56);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  doc.text('Payback period', 460, y + 70);
+  y += 96;
+
+  // 2. Archetype
+  if (data.archetype) {
+    y = ensureSpace(doc, y, 70);
+    y = sectionTitle(doc, '2 - Your archetype', y);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(GOLD);
+    doc.text(data.archetype.label, 40, y); y += 14;
+    y = paragraph(doc, data.archetype.description, y);
+    y += 6;
+  }
+
+  // 3. Annual cost breakdown
+  y = ensureSpace(doc, y, 200);
+  y = sectionTitle(doc, '3 - True annual cost of a human (mid estimate)', y);
+  const totalEmp = data.annual_total_employer_cost_eur?.mid ?? 0;
+  const gross = data.annual_gross_eur?.mid ?? 0;
+  const onCost = totalEmp - gross;
+  const hidden = data.hidden_costs_eur || {};
+  const rows: Array<[string, number]> = [
+    ['Gross salary (mid)', gross],
+    [`Employer on-costs (x${data.employer_oncost_multiplier ?? 1.3})`, onCost],
+    ['Recruitment (annualized)', hidden.recruitment_annualized ?? 0],
+    ['Training & ramp-up loss', hidden.training_ramp ?? 0],
+    ['Turnover risk', hidden.turnover_risk ?? 0],
+    ['Sick-day cover', hidden.sick_day_cover ?? 0],
+    ['Software & phone seat', hidden.software_and_phone ?? 0],
+  ];
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
+  doc.text('Cost component', 40, y); doc.text('Amount per year', 420, y); y += 6;
+  doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+  rows.forEach(([label, val]) => {
+    y = ensureSpace(doc, y, 16);
+    doc.text(label, 40, y);
+    doc.text(fmtEUR(val), 420, y);
+    y += 14;
+  });
+  doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 14;
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(NAVY);
+  doc.text('True annual cost (mid)', 40, y);
+  doc.text(fmtEUR(data.true_annual_cost_eur?.mid), 420, y);
+  y += 18;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  doc.text(`Range across the band: ${fmtEUR(data.true_annual_cost_eur?.low)} - ${fmtEUR(data.true_annual_cost_eur?.high)}`, 40, y);
+  y += 18;
+
+  // 4. Coverage gap
+  const cov = data.coverage || {};
+  y = ensureSpace(doc, y, 110);
+  y = sectionTitle(doc, '4 - Coverage gap', y);
+  doc.setFillColor('#f5f5f5'); doc.rect(40, y - 10, 515, 80, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+  doc.text('Human (single FTE)', 56, y + 6);
+  doc.text('Isabella', 320, y + 6);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+  doc.text(`${cov.human_productive_hours_per_year ?? 1760} productive hours / year`, 56, y + 24);
+  doc.text(`${cov.human_languages ?? 1} language${(cov.human_languages ?? 1) > 1 ? 's' : ''}`, 56, y + 38);
+  doc.text(`${cov.sick_days_per_year ?? 10} statutory sick days`, 56, y + 52);
+  doc.setTextColor('#2d8a5e');
+  doc.text(`${cov.isabella_hours_per_year ?? 8760} hours / year (24/7)`, 320, y + 24);
+  doc.text(`${cov.isabella_languages ?? 30}+ languages built-in`, 320, y + 38);
+  doc.text(`0 sick days, 0 turnover`, 320, y + 52);
+  y += 90;
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  y = paragraph(doc, `Effective coverage multiplier: ${cov.coverage_multiplier ?? 5}x more hours than a single human FTE.`, y, { color: MUTED, size: 9 });
+  y += 6;
+
+  // 5. Isabella vs Human side-by-side (annual)
+  y = ensureSpace(doc, y, 110);
+  y = sectionTitle(doc, '5 - Annual cost: human vs Isabella', y);
+  const isabella = data.comparison?.isabella_recommended ?? 0;
+  y = scoreRow(doc, `Human (true cost, mid)`, Math.min(100, Math.round((data.true_annual_cost_eur?.mid / Math.max(data.true_annual_cost_eur?.mid, 1)) * 100)), y);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  doc.text(fmtEUR(data.true_annual_cost_eur?.mid), 40, y); y += 14;
+  const ratio = data.true_annual_cost_eur?.mid > 0 ? Math.round((isabella / data.true_annual_cost_eur.mid) * 100) : 0;
+  y = scoreRow(doc, `Isabella (${data.recommended_tier || 'pro'} tier)`, ratio, y);
+  doc.text(fmtEUR(isabella), 40, y); y += 14;
+  doc.setFont('helvetica', 'bold'); doc.setTextColor('#2d8a5e');
+  doc.text(`Annual delta: ${fmtEUR(data.comparison?.annual_savings)} (${data.comparison?.pct_savings ?? 0}% reduction)`, 40, y);
+  y += 18;
+
+  // 6. 3-year / 5-year TCO
+  y = ensureSpace(doc, y, 140);
+  y = sectionTitle(doc, '6 - Total cost of ownership (3 and 5 years)', y);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
+  doc.text('Horizon', 40, y); doc.text('Human (mid)', 200, y); doc.text('Isabella', 340, y); doc.text('Savings', 470, y);
+  y += 6; doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 12;
+  const tco3 = data.tco_3yr_eur || {}; const tco5 = data.tco_5yr_eur || {};
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
+  doc.text('3 years', 40, y); doc.text(fmtEUR(tco3.human_mid), 200, y); doc.text(fmtEUR(tco3.isabella), 340, y);
+  doc.setTextColor('#2d8a5e'); doc.text(fmtEUR(tco3.savings), 470, y); doc.setTextColor(INK); y += 16;
+  doc.text('5 years', 40, y); doc.text(fmtEUR(tco5.human_mid), 200, y); doc.text(fmtEUR(tco5.isabella), 340, y);
+  doc.setTextColor('#2d8a5e'); doc.text(fmtEUR(tco5.savings), 470, y); doc.setTextColor(INK); y += 16;
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(MUTED);
+  y = paragraph(doc, 'Assumes 3.5% annual salary inflation on the human side and flat Isabella pricing.', y + 4, { color: MUTED, size: 8 });
+  y += 6;
+
+  // 7. Country note
+  if (data.country_note) {
+    y = ensureSpace(doc, y, 60);
+    y = sectionTitle(doc, '7 - Country context', y);
+    y = paragraph(doc, data.country_note, y);
+    y += 6;
+  }
+
+  // 8. Recommendations
+  if (Array.isArray(data.recommendations) && data.recommendations.length) {
+    y = ensureSpace(doc, y, 40 + data.recommendations.length * 18);
+    y = sectionTitle(doc, '8 - Recommendations', y);
+    data.recommendations.forEach((r: string) => {
+      y = ensureSpace(doc, y, 18);
+      y = paragraph(doc, `- ${r}`, y);
+    });
+    y += 4;
+  }
+
+  // 9. Next step
+  y = ensureSpace(doc, y, 70);
+  y = sectionTitle(doc, '9 - Next step', y);
+  doc.setFillColor('#f7f3e6'); doc.rect(40, y - 10, 515, 56, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+  doc.text('Deploy Isabella in your front office', 56, y + 8);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+  doc.text('Talk to the Ovela team for a tailored deployment plan in your country and language.', 56, y + 24);
+  doc.setTextColor(GOLD);
+  doc.text('www.ovelainteractive.com', 56, y + 40);
+  y += 60;
+}
+
+
+
 function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   installSanitizer(doc);

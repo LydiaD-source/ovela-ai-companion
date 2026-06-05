@@ -807,10 +807,10 @@ export function nutritionAssessment(args: {
     Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.20
   )));
   const executiveReadinessLevel =
-    executiveReadiness >= 80 ? "Optimized" :
-    executiveReadiness >= 60 ? "Functional but leaking performance" :
-    executiveReadiness >= 40 ? "Recovery deficit" :
-                               "High risk of exhaustion";
+    executiveReadiness >= 80 ? "Optimized nutrition" :
+    executiveReadiness >= 60 ? "Functional — clear room to improve" :
+    executiveReadiness >= 40 ? "Nutrition deficit" :
+                               "High nutritional risk";
 
   // ── Executive Benchmark (peer comparison — psychologically motivating) ─
   const cohortLabel = (() => {

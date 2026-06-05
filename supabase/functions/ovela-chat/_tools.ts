@@ -494,14 +494,15 @@ export function nutritionAssessment(args: {
     : distributionScore >= 55 ? "Moderate — one or two meals are protein-light."
     : "Poor — protein is concentrated at one meal. Anchoring breakfast is your biggest win.";
 
-  // Muscle preservation with explicit reasons.
+  // Muscle preservation with explicit reasons (tightened — clinician-grade weighting).
   const strength = args.strength_sessions_per_week ?? 0;
   let musclePres = 50;
   if (args.est_protein_g != null) {
     const r = args.est_protein_g / proteinMid;
-    musclePres = Math.round(20 + Math.min(1, r) * 60);
+    // non-linear penalty when below target; flat once at/above target
+    musclePres = Math.round(20 + Math.min(1, r) ** 1.2 * 55);
   }
-  musclePres += Math.min(strength, 4) * 6;
+  musclePres += Math.min(strength, 4) * 5;
   if (age >= 50) musclePres -= 10; else if (age >= 40) musclePres -= 6;
   if (gender === "female" && age >= 50) musclePres -= 4;
   musclePres = Math.max(10, Math.min(100, musclePres));

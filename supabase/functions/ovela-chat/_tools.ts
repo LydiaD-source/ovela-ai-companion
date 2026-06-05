@@ -1044,6 +1044,10 @@ export function nutritionAssessment(args: {
     },
     executive_benchmark: executiveBenchmark,
     reassessment_projection: reassessmentProjection,
+    success_preview: successPreview,
+    nutrition_risk_flags: nutritionRiskFlags,
+    habit_upgrades: habitUpgrades,
+    time_budget: timeBudgetBlock,
     clinical_perspective: clinicalPerspective,
     executive_summary: executiveSummary,
     muscle_preservation: {

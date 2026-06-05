@@ -615,11 +615,19 @@ export function nutritionAssessment(args: {
   ];
 
   const supportPct = Math.round(overall * 0.95);
-  const limiting =
-    proteinScore < carbsScore && proteinScore < hydrationScore ? "protein intake (and how it is distributed across the day)" :
-    hydrationScore < carbsScore ? "hydration" :
-    recoveryScore < 60 ? "recovery support (sleep, meal timing, vegetables)" :
-    "overall consistency";
+
+  // ── Single prioritization engine (one source of truth) ──────────────
+  // Lowest weighted score across the core nutrition pillars determines
+  // the "largest limiting factor" used everywhere in the report.
+  const pillarRanking = [
+    { key: "protein",       label: "protein intake (and how it is distributed across the day)", short: "Protein adequacy",       score: proteinScore },
+    { key: "distribution",  label: "protein distribution across the day",                       short: "Protein distribution",   score: distributionScore ?? proteinScore },
+    { key: "hydration",     label: "hydration",                                                 short: "Hydration",              score: hydrationScore },
+    { key: "recovery",      label: "recovery support (sleep, meal timing, vegetables)",         short: "Recovery support",       score: recoveryScore },
+    { key: "muscle",        label: "muscle-preservation inputs (protein + resistance training)",short: "Muscle preservation",    score: musclePres },
+  ].sort((a, b) => a.score - b.score);
+  const primaryLimiter = pillarRanking[0];
+  const limiting = primaryLimiter.label;
   const summaryRisks: string[] = [];
   if (proteinScore < 70) summaryRisks.push("reduced muscle mass and slower recovery");
   if (hydrationScore < 70) summaryRisks.push("lower energy stability");
@@ -795,7 +803,7 @@ export function nutritionAssessment(args: {
       ((walk ?? 0) >= 20 && strength >= 2 && (alcohol ?? 0) <= 7 && sleepH >= 7 && proteinScore >= 65 && hydrationScore >= 65)
         ? "Strong foundation"
         : recoveryCapacity >= 60 ? "Developing foundation" : "Needs reinforcement",
-    most_impactful_improvement: priorities[0]?.title || fastestWin.title,
+    most_impactful_improvement: `${primaryLimiter.short} — ${priorities[0]?.title || fastestWin.title}`,
   };
 
   // ── Executive Readiness Score (headline number for retention) ───────
@@ -884,13 +892,60 @@ export function nutritionAssessment(args: {
       (alcohol ?? 0) > 7 ? "Reduce alcohol toward <= 7 units/week" : "Keep alcohol in current range",
     ],
     expected_changes: [
-      { metric: "Executive readiness", from: executiveReadiness, to: projectIf(executiveReadiness, 6) },
-      { metric: "Muscle preservation", from: musclePres, to: projectIf(musclePres, 9) },
-      { metric: "Recovery capacity", from: recoveryCapacity, to: projectIf(recoveryCapacity, 6) },
-      { metric: "Nutrition quality", from: overall, to: projectIf(overall, 7) },
+      { metric: "Nutrition Optimization Score", from: executiveReadiness, to: projectIf(executiveReadiness, 6) },
+      { metric: "Muscle preservation",          from: musclePres,         to: projectIf(musclePres, 9) },
+      { metric: "Recovery Support Score",       from: recoveryCapacity,   to: projectIf(recoveryCapacity, 6) },
+      { metric: "Nutrition quality",            from: overall,            to: projectIf(overall, 7) },
     ],
     note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
   };
+
+  // ── Dominant Nutrition Patterns (how a practitioner reads the diary) ─
+  const dominantPatterns: Array<{ pattern: string; impact: string }> = [];
+  if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60)) {
+    dominantPatterns.push({
+      pattern: "Protein loaded into evening meals",
+      impact: "Reduced muscle protein synthesis across the day and higher morning hunger.",
+    });
+  }
+  if (args.low_protein_breakfast) {
+    dominantPatterns.push({
+      pattern: "Low breakfast protein",
+      impact: "Higher mid-morning cravings, lower satiety, weaker early-day recovery signal.",
+    });
+  }
+  if (args.low_vegetables || (args.vegetable_servings_per_day != null && args.vegetable_servings_per_day < 3)) {
+    dominantPatterns.push({
+      pattern: "Low vegetable diversity",
+      impact: "Reduced fibre and micronutrient intake; weaker gut and recovery support.",
+    });
+  }
+  if ((args.alcohol_units_per_week ?? 0) > 7) {
+    dominantPatterns.push({
+      pattern: "Frequent alcohol exposure",
+      impact: "Blunted deep sleep, slower overnight recovery, raised visceral-fat risk.",
+    });
+  }
+  if (args.sugar_snacks) {
+    dominantPatterns.push({
+      pattern: "Reliance on sugar-based snacks",
+      impact: "Energy volatility, weaker satiety, displaced protein and fibre opportunities.",
+    });
+  }
+  if (hydrationScore < 65) {
+    dominantPatterns.push({
+      pattern: "Under-hydration relative to body weight",
+      impact: "Blunted afternoon energy and reduced cognitive stamina.",
+    });
+  }
+  if (args.irregular_meals) {
+    dominantPatterns.push({
+      pattern: "Irregular meal timing",
+      impact: "Inconsistent satiety and harder-to-stabilise blood-glucose response.",
+    });
+  }
+  // keep top 4 patterns max
+  const dominantNutritionPatterns = dominantPatterns.slice(0, 4);
 
   // ── Isabella's Clinical Observation (synthesised pattern, not a list) ─
   const clinicalPatterns: string[] = [];
@@ -1139,6 +1194,7 @@ export function nutritionAssessment(args: {
     executive_benchmark: executiveBenchmark,
     reassessment_projection: reassessmentProjection,
     success_preview: successPreview,
+    dominant_nutrition_patterns: dominantNutritionPatterns,
     nutrition_risk_flags: nutritionRiskFlags,
     habit_upgrades: habitUpgrades,
     meal_framework_replacements: mealFrameworkReplacements,

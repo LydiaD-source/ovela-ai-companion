@@ -398,7 +398,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const mp = data.muscle_preservation;
   if (mp) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '3 · Muscle preservation & performance capacity', y);
+    y = sectionTitle(doc, '5 · Muscle preservation & performance capacity', y);
     y = paragraph(doc,
       `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
       `Recommended protein: ${mp.recommended_protein_g ?? '—'} g/day\n` +
@@ -418,7 +418,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ps = data.protein_strategy;
   if (ps) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, `4 · High-performance nutrition strategy (${ps.diet_type})`, y);
+    y = sectionTitle(doc, `6 · High-performance nutrition strategy (${ps.diet_type})`, y);
     y = paragraph(doc, 'Best protein sources:', y);
     (ps.best_sources || []).forEach((src: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `• ${src}`, y); });
     y += 4;
@@ -454,7 +454,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const mf = data.daily_meal_framework;
   if (mf) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, `5 · Daily meal framework (~${mf.total_protein_g} g protein)`, y);
+    y = sectionTitle(doc, `7 · Daily meal framework (~${mf.total_protein_g} g protein)`, y);
     (mf.meals || []).forEach((m: any) => {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold');
@@ -471,7 +471,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ms = data.metabolic_support;
   if (ms) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '6 · Recovery & metabolic efficiency', y);
+    y = sectionTitle(doc, '8 · Recovery '6 · Recovery & metabolic metabolic efficiency', y);
     y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
     if ((ms.biggest_opportunities || []).length) {
       y += 4;
@@ -488,7 +488,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const rt = data.resistance_training;
   if (rt) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '7 · Resistance training recommendation', y);
+    y = sectionTitle(doc, '9 · Resistance training recommendation', y);
     y = paragraph(doc,
       `Age: ${rt.age}    Goal: ${rt.goal}\n` +
       `• ${rt.strength_sessions_per_week} resistance sessions per week\n` +
@@ -503,7 +503,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const bai = data.biological_age_impact;
   if ((lf && (lf.alcohol || lf.coffee || lf.walking)) || bai) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '8 · Recovery & lifestyle factors', y);
+    y = sectionTitle(doc, '10 · Recovery '8 · Recovery & lifestyle lifestyle factors', y);
     if (lf?.alcohol) {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
@@ -548,7 +548,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const proj = data.weight_loss_projection;
   if (proj) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '9 · Expected progress', y);
+    y = sectionTitle(doc, '11 · Expected progress', y);
     y = paragraph(doc, proj.assumes, y, { color: MUTED, size: 9 });
     y += 4;
     y = paragraph(doc,
@@ -564,7 +564,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const epi = data.executive_performance_impact;
   if (epi) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '10 · Executive performance impact', y);
+    y = sectionTitle(doc, '12 · Executive performance impact', y);
     if ((epi.current_likely_influences || []).length) {
       y = paragraph(doc, 'Your current nutrition likely influences:', y);
       epi.current_likely_influences.forEach((p: string) => {
@@ -591,7 +591,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const lto = data.long_term_outlook;
   if (lto) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '11 · Long-term outlook', y);
+    y = sectionTitle(doc, '13 · Long-term outlook', y);
     y = paragraph(doc, 'Current trajectory:', y);
     y = paragraph(doc, `• Muscle preservation risk: ${lto.muscle_preservation_risk}`, y);
     y = paragraph(doc, `• Recovery capacity: ${lto.recovery_capacity}`, y);
@@ -609,7 +609,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   // 12. Three highest-impact improvements
   if ((data.improvement_priorities || []).length) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '12 · Three highest-impact improvements', y);
+    y = sectionTitle(doc, '14 · Three highest-impact improvements', y);
     data.improvement_priorities.forEach((p: any, i: number) => {
       y = ensureSpace(doc, y, 50);
       doc.setFont('helvetica', 'bold');
@@ -626,7 +626,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const wap = data.weekly_action_plan;
   if (wap) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, "13 · Isabella's weekly action plan", y);
+    y = sectionTitle(doc, "15 · Isabella's weekly action plan", y);
     y = paragraph(doc, 'Your priority focus this week:', y);
     (wap.priorities || []).forEach((p: string) => {
       y = ensureSpace(doc, y, 16);

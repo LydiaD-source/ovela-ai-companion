@@ -1146,16 +1146,6 @@ export function nutritionAssessment(args: {
     time_budget: timeBudgetBlock,
     clinical_perspective: clinicalPerspective,
     executive_summary: executiveSummary,
-    muscle_preservation: {
-      current_protein_g: args.est_protein_g ?? null,
-      recommended_protein_g: proteinMid,
-      score: musclePres,
-      status: muscleStatus,
-      reasons: muscleReasons,
-      note: age >= 45
-        ? "After approximately age 45, adults begin losing 1% of muscle mass per year unless resistance training and adequate protein are maintained."
-        : "Building muscle reserves now creates the strongest possible foundation for the decades ahead.",
-    },
     protein_strategy: {
       diet_type: diet,
       best_sources: personalSources,

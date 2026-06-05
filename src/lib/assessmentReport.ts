@@ -674,7 +674,7 @@ function buildNutrition(doc: jsPDF, data: any) {
     y = sectionTitle(doc, '13 · Long-term outlook', y);
     y = paragraph(doc, 'Current trajectory:', y);
     y = paragraph(doc, `• Muscle preservation risk: ${lto.muscle_preservation_risk}`, y);
-    y = paragraph(doc, `• Recovery capacity: ${lto.recovery_capacity}`, y);
+    y = paragraph(doc, `• Recovery Support Score: ${lto.recovery_capacity}`, y);
     y = paragraph(doc, `• Fat-loss potential: ${lto.fat_loss_potential}`, y);
     y = paragraph(doc, `• Longevity support: ${lto.longevity_support}`, y);
     y += 4;

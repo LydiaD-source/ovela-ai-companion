@@ -31,7 +31,7 @@ const CARDS: Card[] = [
     tool: 'nutrition_assessment',
     icon: <Apple className="w-6 h-6" />,
     emoji: '🧬',
-    title: 'Protein & Nutrition Assessment',
+    title: 'Executive Nutrition & Muscle Preservation Assessment',
     blurb:
       'Upload a meal log, describe a typical week, or answer a few questions.',
     bullets: [
@@ -45,7 +45,7 @@ const CARDS: Card[] = [
     cta: 'Start Free Assessment',
     status: 'live',
     initialPrompt:
-      "I'd like the Protein & Nutrition Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
+      "I'd like the Executive Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
     tool_context: 'nutrition_assessment',
     authority_topic: 'protein_nutrition_assessment',
   },

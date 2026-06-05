@@ -53,7 +53,7 @@ const TOOL_PRESETS: Record<ToolKind, {
     sub: 'Upload, paste, type or describe a typical week — Isabella analyses protein, balance and improvement opportunities.',
     icon: <Apple className="w-5 h-5" />,
     initialPrompt:
-      "I'd like the Protein & Nutrition Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
+      "I'd like the Executive Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
     tool_context: 'nutrition_assessment',
   },
   biological_age: {

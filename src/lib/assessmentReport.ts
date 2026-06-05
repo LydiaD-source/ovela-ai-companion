@@ -125,7 +125,7 @@ function ensureSpace(doc: jsPDF, y: number, needed: number) {
 
 // ── Nutrition report (8-section enriched) ───────────────────────────────
 function buildNutrition(doc: jsPDF, data: any) {
-  header(doc, 'Protein & Nutrition Assessment');
+  header(doc, 'Executive Nutrition & Muscle Preservation Assessment');
   let y = 110;
 
   // 1. Executive summary

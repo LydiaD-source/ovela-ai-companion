@@ -1629,12 +1629,15 @@ export function recoveryResilienceAssessment(args: {
   const archetype = (() => {
     const highLoad = workH >= 55 || (args.pressure_frequency ?? 0) >= 7;
     const trains = (args.exercise_sessions_per_week ?? 0) >= 2 && (args.exercise_type === 'resistance' || args.exercise_type === 'mixed');
-    const sleepShort = (args.sleep_hours ?? 7) < 6.5 || (args.sleep_quality ?? 6) <= 5;
+    // Tightened: "sleep-deprived" requires genuinely short OR poor sleep,
+    // not just "below 7 hours". Otherwise the archetype was overstating.
+    const sleepSevere = (args.sleep_hours ?? 7) < 6 || (args.sleep_quality ?? 6) <= 4;
+    const sleepShort  = (args.sleep_hours ?? 7) < 6.5 || (args.sleep_quality ?? 6) <= 5;
     const highStress = (args.stress_level ?? 5) >= 7;
     const lowEnergy = (args.energy_level ?? 6) <= 4;
     const goodBalance = (args.work_life_balance ?? 5) >= 7 && (args.stress_level ?? 5) <= 5;
 
-    if (burnoutRisk === 'Elevated' || (sleepShort && lowEnergy && highStress)) {
+    if (burnoutRisk === 'Elevated' || (sleepSevere && lowEnergy && highStress)) {
       return {
         name: 'The Burnout Rebuilder',
         characteristics: ['Recovery debt has accumulated', 'Energy and motivation under pressure', 'Sleep no longer fully restorative', 'Discipline still present but harder to sustain'],
@@ -1642,12 +1645,20 @@ export function recoveryResilienceAssessment(args: {
         primary_focus: 'Rebuild sleep, nervous-system regulation and recovery boundaries before adding any new training load.',
       };
     }
-    if (sleepShort && highLoad) {
+    if (sleepSevere && highLoad) {
       return {
         name: 'The Sleep-Deprived Operator',
         characteristics: ['High output sustained on insufficient sleep', 'Cognitive sharpness masking physiological cost', 'Reliance on caffeine to bridge afternoons', 'Recovery treated as optional'],
         typical_risk: 'Cumulative cognitive and cardiovascular cost that only becomes visible after months or years.',
         primary_focus: 'Treat sleep as a non-negotiable performance input — fix duration first, quality second.',
+      };
+    }
+    if (highStress && highLoad) {
+      return {
+        name: 'The High-Stress Operator',
+        characteristics: ['Stress load consistently exceeds recovery inputs', 'Strong delivery focus', 'Limited true downtime', 'Energy still functional but reserves narrowing'],
+        typical_risk: 'Sustained sympathetic activation that quietly erodes resilience over months.',
+        primary_focus: 'Add nervous-system regulation (breathing, daylight, off-grid windows) before stress load rises further.',
       };
     }
     if (highStress && trains) {
@@ -1656,6 +1667,14 @@ export function recoveryResilienceAssessment(args: {
         characteristics: ['Trains hard to manage stress', 'High self-imposed standards', 'Strong physical baseline', 'Stress regulation tools underused'],
         typical_risk: 'Training becomes the only recovery channel — when it slips, stress has nowhere to discharge.',
         primary_focus: 'Add nervous-system regulation (breathing, daylight, true rest days) alongside training.',
+      };
+    }
+    if (highLoad && trains && !sleepShort) {
+      return {
+        name: 'The Overextended Performer',
+        characteristics: ['Good underlying capacity and training pattern', 'Workload pushing into evenings/weekends', 'Recovery windows shrinking', 'Performance still strong, reserves quietly thinning'],
+        typical_risk: 'Burnout through accumulation — reserves erode before symptoms appear.',
+        primary_focus: 'Protect two genuinely off-grid evenings per week and one full recovery day.',
       };
     }
     if (highLoad && !trains) {

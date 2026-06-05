@@ -923,21 +923,6 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'nutrition_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
-              if (!hasUsableNutritionArgs(args)) {
-                console.warn('🛑 Nutrition tool blocked — incomplete usable inputs', { keys: Object.keys(args || {}) });
-                toolResults.push({
-                  id: toolCall.id,
-                  content: JSON.stringify({
-                    blocked: true,
-                    reason: "NUTRITION_INPUTS_INCOMPLETE",
-                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. Required profile data or diary estimates are missing. Ask only for the missing profile details or clarify the weekly food diary, then wait."
-                  })
-                });
-                continue;
-              }
-
-              // HARD GATE: verify a real weekly food diary exists in the conversation history
-              // or in the current message / attachments before allowing the assessment to run.
               const FOOD_KEYWORDS = /\b(breakfast|lunch|dinner|snack|brunch|supper|meal|eggs?|chicken|beef|fish|salmon|tuna|rice|pasta|bread|toast|oat|yog(h)?urt|cheese|salad|veg|fruit|banana|apple|coffee|tea|milk|protein|shake|wine|beer|water|almond|nuts?|potato|tomato|avocado|sandwich|soup|steak|pork|turkey|tofu|beans?|lentils?|quinoa|cereal|smoothie|monday|tuesday|wednesday|thursday|friday|saturday|sunday|petit[- ]?d[ée]jeuner|d[ée]jeuner|d[íi]ner|desayuno|comida|cena|frühstück|mittag|abendessen|colazione|pranzo|cena)\b/i;
               const collectFoodText = () => {
                 const parts: string[] = [];
@@ -952,6 +937,24 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 return parts.join("\n");
               };
               const corpus = collectFoodText();
+              const normalizedArgs = normalizeNutritionArgs(args, corpus);
+              const missingCore = missingCoreNutritionFields(normalizedArgs);
+              if (!hasUsableNutritionArgs(normalizedArgs)) {
+                console.warn('🛑 Nutrition tool blocked — incomplete core inputs', { missing: missingCore, keys: Object.keys(args || {}) });
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "NUTRITION_INPUTS_INCOMPLETE",
+                    missing: missingCore,
+                    instruction: `Do NOT generate a report, PDF, score, or assessment-report block. Ask only for these missing core details: ${missingCore.join(", ")}. Then wait.`
+                  })
+                });
+                continue;
+              }
+
+              // HARD GATE: verify a real weekly food diary exists in the conversation history
+              // or in the current message / attachments before allowing the assessment to run.
               const matches = corpus.match(new RegExp(FOOD_KEYWORDS, 'gi')) || [];
               const hasImageAttachment = attachments.some(a => /^image\//i.test(a.mime_type || ""));
               const hasDocAttachment = attachments.some(a => a.text && a.text.length > 200);
@@ -969,7 +972,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
                   })
                 });
               } else {
-                const result = nutritionAssessment(args);
+                const result = nutritionAssessment(normalizedArgs);
                 nutritionReportPayload = result;
                 console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
                 toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });

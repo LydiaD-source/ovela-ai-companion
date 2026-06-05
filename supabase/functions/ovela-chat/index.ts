@@ -98,17 +98,62 @@ function isMeaningfulReportPayload(payload: any) {
   return false;
 }
 
+const ACTIVITY_LEVELS = ["sedentary", "moderate", "active", "athlete"];
+const NUTRITION_GOALS = ["fat_loss", "muscle_gain", "performance", "healthy_aging", "energy", "longevity", "recovery", "muscle_maintenance", "maintenance"];
+const DIET_TYPES = ["omnivore", "vegetarian", "vegan"];
+
+function normalizeNutritionArgs(args: any, corpus = "") {
+  const out = { ...(args || {}) };
+  const text = `${corpus || ""}\n${out.occupation || ""}`.toLowerCase();
+  const strength = Number(out.strength_sessions_per_week);
+  const cardio = Number(out.cardio_sessions_per_week);
+  const walk = Number(out.daily_walk_minutes);
+
+  if (!ACTIVITY_LEVELS.includes(out.activity_level)) {
+    const sessions = (Number.isFinite(strength) ? strength : 0) + (Number.isFinite(cardio) ? cardio : 0);
+    if (/athlete|competitive|bodybuilder|triathlon|marathon/.test(text)) out.activity_level = "athlete";
+    else if (/physical|construction|manual|standing|trainer|very active/.test(text) || sessions >= 5 || walk >= 75) out.activity_level = "active";
+    else if (/desk|office|sedentary|sitting/.test(text) && sessions <= 1 && (!Number.isFinite(walk) || walk < 30)) out.activity_level = "sedentary";
+    else out.activity_level = "moderate";
+  }
+
+  if (!DIET_TYPES.includes(out.diet_type)) {
+    if (/\bvegan\b|plant[- ]?based/.test(text)) out.diet_type = "vegan";
+    else if (/\bvegetarian\b/.test(text) && !/chicken|beef|fish|salmon|tuna|turkey|pork|ham|seafood/.test(text)) out.diet_type = "vegetarian";
+    else out.diet_type = "omnivore";
+  }
+
+  if (!Number.isFinite(Number(out.est_protein_g))) {
+    const mealProtein = [out.breakfast_protein_g, out.lunch_protein_g, out.dinner_protein_g, out.snack_protein_g]
+      .map(Number)
+      .filter(Number.isFinite)
+      .reduce((sum, value) => sum + value, 0);
+    if (mealProtein > 0) out.est_protein_g = Math.round(mealProtein);
+  }
+
+  if (!Number.isFinite(Number(out.est_hydration_l)) && Number.isFinite(Number(out.water_liters_per_day))) {
+    out.est_hydration_l = Number(out.water_liters_per_day);
+  }
+
+  return out;
+}
+
+function missingCoreNutritionFields(args: any) {
+  const missing: string[] = [];
+  if (!Number.isFinite(Number(args?.age))) missing.push("age");
+  if (!Number.isFinite(Number(args?.height_cm))) missing.push("height");
+  if (!Number.isFinite(Number(args?.weight_kg))) missing.push("weight");
+  if (!["male", "female", "other"].includes(args?.gender)) missing.push("gender");
+  if (!ACTIVITY_LEVELS.includes(args?.activity_level)) missing.push("activity level");
+  if (!NUTRITION_GOALS.includes(args?.goal)) missing.push("primary goal");
+  if (!DIET_TYPES.includes(args?.diet_type)) missing.push("diet type");
+  return missing;
+}
+
 function hasUsableNutritionArgs(args: any) {
+  const normalized = normalizeNutritionArgs(args);
   return Boolean(
-    Number.isFinite(Number(args?.age)) &&
-    Number.isFinite(Number(args?.height_cm)) &&
-    Number.isFinite(Number(args?.weight_kg)) &&
-    ["male", "female", "other"].includes(args?.gender) &&
-    ["sedentary", "moderate", "active", "athlete"].includes(args?.activity_level) &&
-    ["fat_loss", "muscle_gain", "performance", "healthy_aging", "energy", "longevity", "recovery", "muscle_maintenance", "maintenance"].includes(args?.goal) &&
-    ["omnivore", "vegetarian", "vegan"].includes(args?.diet_type) &&
-    Number.isFinite(Number(args?.est_protein_g)) &&
-    Number.isFinite(Number(args?.est_hydration_l))
+    missingCoreNutritionFields(normalized).length === 0
   );
 }
 

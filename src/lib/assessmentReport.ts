@@ -789,7 +789,7 @@ function buildNutrition(doc: jsPDF, data: any) {
 
   // 20. WellneSpirit — continue your progress (always last)
   y = ensureSpace(doc, y, 130);
-  y = sectionTitle(doc, '20 · Continue your progress with WellneSpirit', y);
+  y = sectionTitle(doc, '21 · Continue your progress with WellneSpirit', y);
   doc.setFillColor('#f7f3e6');
   doc.setDrawColor(GOLD);
   doc.setLineWidth(0.5);

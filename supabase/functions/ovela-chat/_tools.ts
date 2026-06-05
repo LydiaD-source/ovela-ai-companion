@@ -276,15 +276,6 @@ export function calcReceptionistCost(args: {
 
 
 
-  const recommendations: string[] = [
-    `Start with the ${recommended_tier.charAt(0).toUpperCase() + recommended_tier.slice(1)} tier — it matches a ${shifts === '247' ? '24/7' : shifts === 'extended' ? 'extended-hours' : 'business-hours'} ${langs > 1 ? `multilingual (${langs} languages)` : 'single-language'} operation.`,
-    `Keep one human owner on the team (manager or office lead) — Isabella handles inbound, the human handles escalations and in-person hospitality.`,
-    `Track 3 KPIs from day 1: percentage of inbound captured, average response time, leads converted to bookings. Most operations move from 60-70% capture to >95% in the first month.`,
-    paybackMonths && paybackMonths <= 12
-      ? `At your scale the deployment pays for itself in roughly ${paybackMonths} month${paybackMonths === 1 ? '' : 's'} — well inside a single budget cycle.`
-      : `Even before counting hidden costs, the salary delta alone justifies the switch within the first fiscal year.`,
-  ];
-
   // Isabella Business Observation — narrative diagnosis layer
   const hiddenPct = Math.round((hiddenTotal / true_annual_cost_eur.mid) * 100);
   const coverageMult = coverage.coverage_multiplier;

@@ -15,7 +15,7 @@ export type ToolKind =
   | 'missed_leads'
   | 'wellness_assessment'
   | 'nutrition_assessment'
-  | 'biological_age';
+  | 'recovery_resilience';
 
 const TOOL_PRESETS: Record<ToolKind, {
   label: string;

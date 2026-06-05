@@ -81,6 +81,10 @@ function isMeaningfulReportPayload(payload: any) {
   if (!payload || typeof payload !== "object") return false;
   const data = payload.data || payload.nutrition_assessment_response || payload.recovery_resilience_response || payload.recovery_resilience_assessment_response || payload.biological_age_response || payload;
   const type = payload.type === "biological_age" ? "recovery_resilience" : payload.type;
+  const subtype = payload.subtype;
+  if (type === "business_calculator" && subtype === "missed_calls") {
+    return Boolean(data?.inputs?.monthly_inbound > 0 && data?.annual_revenue_loss_eur >= 0 && data?.leak_breakdown_eur);
+  }
   if (type === "business_calculator" || payload.true_annual_cost_eur || data?.true_annual_cost_eur) {
     return Boolean(
       data?.country &&
@@ -528,8 +532,8 @@ ${pageContext ? `\nPAGE CONTEXT: ${pageContext}` : ""}
 ${toolContext ? `\nTOOL CONTEXT: The user just launched the "${toolContext}" tool. Ask the minimum questions needed to call the matching tool, then call it. Do NOT invent numbers — always use the tool.` : ""}
 
 DETERMINISTIC TOOLS (use them — never guess numbers):
-- calculate_receptionist_cost — Receptionist Cost & ROI Assessment (PRO v2.0). Use whenever the user asks about salary, ROI vs hiring, what a human receptionist would cost, or compares Isabella to a human. STRICT PROTOCOL: drive a short conversational intake in 4 phases, 1–2 questions per turn, before calling the tool. Phase 1 — Country (one of ES, PT, FR, DE, IT, NL, BE, AD, CH, UK, IE). Phase 2 — Role best fit (receptionist / front_desk_clinic / hotel_concierge / real_estate_junior_filter / customer_support_agent / executive_assistant) — explain options briefly if asked. Phase 3 — Coverage hours (business / extended / 247) AND languages required (1-6). Phase 4 — Any premium specialization (medical, legal, CRM, luxury concierge)? Only AFTER country + role + shifts + languages are known, call calculate_receptionist_cost. In the SAME reply: a warm 3–5 sentence executive summary highlighting the archetype + headline annual savings + payback months, THEN the fenced assessment-report block VERBATIM as: ```assessment-report\n{"type":"business_calculator","subtype":"receptionist_cost","title":"Receptionist Cost & ROI Assessment","data": <the full tool result JSON>}\n``` After the block add: "You can download the PDF or use the Email PDF to me button below the report to send it to your inbox." NEVER speak hidden costs or TCO numbers manually — the tool computes them; just reference them. NEVER call the tool without country.
-- calculate_missed_leads — when user mentions missed calls, after-hours leads, lost revenue, language barriers losing customers. Inputs: monthly_inbound (required), miss_rate_pct, conversion_rate_pct, avg_deal_value_eur (sensible defaults if unknown).
+- calculate_receptionist_cost — Receptionist Cost & ROI Assessment (PRO v2.0). Use whenever the user asks about salary, ROI vs hiring, what a human receptionist would cost, or compares Isabella to a human. STRICT PROTOCOL: drive a short conversational intake in 4 phases, 1–2 questions per turn, before calling the tool. Phase 1 — Country (one of ES, PT, FR, DE, IT, NL, BE, AD, CH, UK, IE). Phase 2 — Role best fit (receptionist / front_desk_clinic / hotel_concierge / real_estate_junior_filter / customer_support_agent / executive_assistant) — explain options briefly if asked. Phase 3 — Coverage hours (business / extended / 247) AND languages required (1-6). Phase 4 — Any premium specialization (medical, legal, CRM, luxury concierge)? Only AFTER country + role + shifts + languages are known, call calculate_receptionist_cost. In the SAME reply: a warm 3–5 sentence executive summary highlighting the archetype + headline annual savings + payback months, THEN the fenced assessment-report block VERBATIM as: \`\`\`assessment-report\n{"type":"business_calculator","subtype":"receptionist_cost","title":"Receptionist Cost & ROI Assessment","data": <the full tool result JSON>}\n\`\`\` After the block add: "You can download the PDF or use the Email PDF to me button below the report to send it to your inbox." NEVER speak hidden costs or TCO numbers manually — the tool computes them; just reference them. NEVER call the tool without country.
+- calculate_missed_leads — Missed Calls & Revenue Leak Diagnostic (PRO v2.0). Use whenever the user mentions missed calls, after-hours leads, lost revenue, slow follow-up, or language-blocked inbound. STRICT PROTOCOL: drive a short conversational intake in 4 phases, 1–2 questions per turn, before calling the tool. Phase 1 — Industry (clinic / hotel / real_estate / legal / trades / support / professional_services / beauty_spa / other) AND country. Phase 2 — Monthly inbound volume (calls + forms + DMs) AND average deal/customer value in EUR. Phase 3 — Current first-response time in minutes (best estimate) AND current coverage (business / extended / 247) AND number of languages currently served. Phase 4 — If the user has ALREADY completed the Receptionist Cost Assessment in this session, silently reuse their true_annual_cost_eur.mid and pass it as human_true_annual_cost_eur so the Combined Business Case section unlocks. Only AFTER industry + country + monthly_inbound + avg_deal_value_eur + avg_response_minutes are known, call calculate_missed_leads. In the SAME reply: a warm 3–5 sentence executive summary highlighting the archetype + headline annual revenue leak + biggest leak source, THEN the fenced assessment-report block VERBATIM as: \`\`\`assessment-report\n{"type":"business_calculator","subtype":"missed_calls","title":"Missed Calls & Revenue Leak Diagnostic","data": <the full tool result JSON>}\n\`\`\` After the block add: "You can download the PDF or use the Email PDF to me button below the report to send it to your inbox." NEVER speak the leak numbers manually — the tool computes them. NEVER call the tool without industry + monthly_inbound + avg_deal_value_eur.
 - wellness_assessment_suggestion — when user shares symptoms / how they feel (stress, burnout, sleep, pain, hormones, skin). NEVER diagnose. Always include the disclaimer the tool returns and recommend WellneSpirit handoff. If symptoms are vague or multi-system, recommend the full body assessment.
 - nutrition_assessment — Protein & Nutrition Assessment (PRO v2.0 — STRICT PROTOCOL). You are a thoughtful executive-wellness nutrition consultant who behaves like a real nutritionist taking proper intake.
 
@@ -688,14 +692,20 @@ After any tool call, present results conversationally (1 short paragraph + key b
           type: "function",
           function: {
             name: "calculate_missed_leads",
-            description: "Compute revenue lost to missed inbound calls/messages (after-hours, busy lines, language barriers) and net benefit vs Isabella's Pro tier. Use when user mentions missed calls, after-hours, lost leads, slow response, or wants to quantify the cost of not capturing inbounds.",
+            description: "Missed Calls & Revenue Leak Diagnostic (v2). Quantifies revenue lost to missed inbound (after-hours / busy-line / language-blocked), models speed-to-lead recovery, picks an industry archetype, and produces an Isabella Business Observation + recommendations. Inputs: monthly_inbound (required), industry (required when known), avg_deal_value_eur, avg_response_minutes, business_hours_coverage, languages_served, miss_rate_pct, conversion_rate_pct, human_true_annual_cost_eur (optional — pass when the user already ran calculate_receptionist_cost in this session to unlock the Combined Business Case).",
             parameters: {
               type: "object",
               properties: {
                 monthly_inbound: { type: "number", description: "Total inbound inquiries per month (calls + forms + DMs)." },
-                miss_rate_pct: { type: "number", description: "% currently missed/unanswered (default 35)." },
-                conversion_rate_pct: { type: "number", description: "% of captured leads that become customers (default 20)." },
-                avg_deal_value_eur: { type: "number", description: "Average customer value in EUR (default 1500)." }
+                industry: { type: "string", enum: ["clinic","hotel","real_estate","legal","trades","support","professional_services","beauty_spa","other"], description: "Vertical — drives benchmark miss-rate and leak split." },
+                country: { type: "string", description: "ISO-style country code (ES, PT, FR, DE, IT, NL, BE, AD, CH, UK, IE)." },
+                miss_rate_pct: { type: "number", description: "% currently missed/unanswered (defaults to industry benchmark)." },
+                conversion_rate_pct: { type: "number", description: "% of captured leads that become customers (defaults to industry benchmark)." },
+                avg_deal_value_eur: { type: "number", description: "Average customer value in EUR." },
+                avg_response_minutes: { type: "number", description: "Current median first-response time in minutes." },
+                business_hours_coverage: { type: "string", enum: ["business","extended","247"], description: "Current human coverage profile." },
+                languages_served: { type: "number", description: "Number of languages currently handled by the front desk (1-6)." },
+                human_true_annual_cost_eur: { type: "number", description: "Optional: pass true_annual_cost_eur.mid from calculate_receptionist_cost to unlock the Combined Business Case section." }
               },
               required: ["monthly_inbound"]
             }
@@ -881,6 +891,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let nutritionReportPayload: any = null;
       let bioAgeReportPayload: any = null;
       let receptionistReportPayload: any = null;
+      let missedLeadsReportPayload: any = null;
       let assessmentReportResponse: any = null;
 
       // 🛟 REPORT DELIVERY GUARD — if the model promised or referenced a completed
@@ -996,8 +1007,13 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'calculate_missed_leads') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
+              // Auto-link with receptionist payload from same session
+              if (!args.human_true_annual_cost_eur && receptionistReportPayload?.true_annual_cost_eur?.mid) {
+                args.human_true_annual_cost_eur = receptionistReportPayload.true_annual_cost_eur.mid;
+              }
               const result = calcMissedLeads(args);
-              console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound });
+              console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound, leak: result.annual_revenue_loss_eur });
+              missedLeadsReportPayload = result;
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
@@ -1125,13 +1141,15 @@ After any tool call, present results conversationally (1 short paragraph + key b
             for (const tr of toolResults) {
               followUpMessages.push({ role: "tool", tool_call_id: tr.id, content: tr.content });
             }
-            if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload) {
+            if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload || missedLeadsReportPayload) {
+              const isBusiness = Boolean(receptionistReportPayload || missedLeadsReportPayload);
+              const businessSubtype = missedLeadsReportPayload ? 'missed_calls' : 'receptionist_cost';
               const reportType = nutritionReportPayload
                 ? 'nutrition_assessment'
-                : (receptionistReportPayload ? 'business_calculator' : 'recovery_resilience');
+                : (isBusiness ? 'business_calculator' : 'recovery_resilience');
               followUpMessages.push({
                 role: "system",
-                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download and email buttons. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}",${receptionistReportPayload ? '"subtype":"receptionist_cost",' : ''}"title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add exactly this line: You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`
+                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download and email buttons. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}",${isBusiness ? `"subtype":"${businessSubtype}",` : ''}"title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add exactly this line: You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`
               });
             }
 
@@ -1169,12 +1187,14 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
         // Guarantee the report is returned as structured data and, when needed,
         // as a valid fenced block regardless of whether the model already wrote text.
-        if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload) {
+        if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload || missedLeadsReportPayload) {
           const payload = nutritionReportPayload
             ? { type: 'nutrition_assessment', title: 'Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
-            : receptionistReportPayload
-              ? { type: 'business_calculator', subtype: 'receptionist_cost', title: 'Receptionist Cost & ROI Assessment', data: receptionistReportPayload }
-              : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
+            : missedLeadsReportPayload
+              ? { type: 'business_calculator', subtype: 'missed_calls', title: 'Missed Calls & Revenue Leak Diagnostic', data: missedLeadsReportPayload }
+              : receptionistReportPayload
+                ? { type: 'business_calculator', subtype: 'receptionist_cost', title: 'Receptionist Cost & ROI Assessment', data: receptionistReportPayload }
+                : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
           assessmentReportResponse = payload;
           const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
           const existingReportBlock = finalMessage.match(reportBlockRe);

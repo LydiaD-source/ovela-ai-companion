@@ -81,6 +81,13 @@ function isMeaningfulReportPayload(payload: any) {
   if (!payload || typeof payload !== "object") return false;
   const data = payload.data || payload.nutrition_assessment_response || payload.recovery_resilience_response || payload.recovery_resilience_assessment_response || payload.biological_age_response || payload;
   const type = payload.type === "biological_age" ? "recovery_resilience" : payload.type;
+  if (type === "business_calculator" || payload.true_annual_cost_eur || data?.true_annual_cost_eur) {
+    return Boolean(
+      data?.country &&
+      data?.true_annual_cost_eur?.mid > 0 &&
+      data?.isabella_tiers_eur_per_year
+    );
+  }
   if (type === "nutrition_assessment" || payload.nutrition_assessment_response || data?.daily_meal_framework || data?.muscle_preservation) {
     return Boolean(
       (typeof data?.targets?.daily_calories === "number" && data.targets.daily_calories > 500) ||

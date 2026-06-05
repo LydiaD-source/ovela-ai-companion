@@ -1383,8 +1383,21 @@ export function recoveryResilienceAssessment(args: {
     args.exercise_type === "cardio" ? 80 :
     args.exercise_type === "walking" ? 60 :
     args.exercise_type === "none" ? 25 : 60;
-  const recoveryDays = args.takes_recovery_days === true ? 100 : args.takes_recovery_days === false ? 40 : 65;
-  const outdoor = clamp(Math.min(args.outdoor_hours_per_week ?? 3, 10) * 10);
+  // Cap recovery-day consistency at 85 unless the user shows truly excellent
+  // recovery context (real rest days AND a manageable workload AND strong sleep).
+  const _excellentRecoveryContext =
+    args.takes_recovery_days === true &&
+    (args.work_hours_per_week ?? 45) <= 45 &&
+    (args.sleep_quality ?? 6) >= 8 &&
+    (args.sleep_hours ?? 7) >= 7;
+  const recoveryDays = args.takes_recovery_days === true
+    ? (_excellentRecoveryContext ? 95 : 82)
+    : args.takes_recovery_days === false ? 40 : 60;
+  // Cap outdoor exposure at 90 unless genuinely exceptional (10+ h/week outdoors).
+  const _outdoorHrs = args.outdoor_hours_per_week ?? 3;
+  const outdoor = _outdoorHrs >= 10
+    ? 100
+    : clamp(Math.min(_outdoorHrs, 9) * 10); // max 90 below the 10h threshold
 
   const recoveryCapacity = clamp(
     (sleepDuration * 1.3 + sleepQuality * 1.2 + refreshed * 0.8 +
@@ -1448,11 +1461,13 @@ export function recoveryResilienceAssessment(args: {
     burnoutScore >= 65 ? "Elevated" : burnoutScore >= 40 ? "Moderate" : "Low";
 
   // ── Overall Executive Wellness Score ─────────────────────────
+  // Recalibrated weights so the headline tracks the visible core scores
+  // (recovery + resilience + inverse stress) more intuitively.
   const executiveWellness = clamp(
-    recoveryCapacity * 0.30 +
-    (100 - stressLoad) * 0.25 +
-    resilience * 0.25 +
-    lifestyleRecovery * 0.20
+    recoveryCapacity * 0.32 +
+    (100 - stressLoad) * 0.22 +
+    resilience * 0.28 +
+    lifestyleRecovery * 0.18
   );
 
   // ── Top contributors / weaknesses for "Fastest Wins" ─────────
@@ -1614,12 +1629,15 @@ export function recoveryResilienceAssessment(args: {
   const archetype = (() => {
     const highLoad = workH >= 55 || (args.pressure_frequency ?? 0) >= 7;
     const trains = (args.exercise_sessions_per_week ?? 0) >= 2 && (args.exercise_type === 'resistance' || args.exercise_type === 'mixed');
-    const sleepShort = (args.sleep_hours ?? 7) < 6.5 || (args.sleep_quality ?? 6) <= 5;
+    // Tightened: "sleep-deprived" requires genuinely short OR poor sleep,
+    // not just "below 7 hours". Otherwise the archetype was overstating.
+    const sleepSevere = (args.sleep_hours ?? 7) < 6 || (args.sleep_quality ?? 6) <= 4;
+    const sleepShort  = (args.sleep_hours ?? 7) < 6.5 || (args.sleep_quality ?? 6) <= 5;
     const highStress = (args.stress_level ?? 5) >= 7;
     const lowEnergy = (args.energy_level ?? 6) <= 4;
     const goodBalance = (args.work_life_balance ?? 5) >= 7 && (args.stress_level ?? 5) <= 5;
 
-    if (burnoutRisk === 'Elevated' || (sleepShort && lowEnergy && highStress)) {
+    if (burnoutRisk === 'Elevated' || (sleepSevere && lowEnergy && highStress)) {
       return {
         name: 'The Burnout Rebuilder',
         characteristics: ['Recovery debt has accumulated', 'Energy and motivation under pressure', 'Sleep no longer fully restorative', 'Discipline still present but harder to sustain'],
@@ -1627,12 +1645,20 @@ export function recoveryResilienceAssessment(args: {
         primary_focus: 'Rebuild sleep, nervous-system regulation and recovery boundaries before adding any new training load.',
       };
     }
-    if (sleepShort && highLoad) {
+    if (sleepSevere && highLoad) {
       return {
         name: 'The Sleep-Deprived Operator',
         characteristics: ['High output sustained on insufficient sleep', 'Cognitive sharpness masking physiological cost', 'Reliance on caffeine to bridge afternoons', 'Recovery treated as optional'],
         typical_risk: 'Cumulative cognitive and cardiovascular cost that only becomes visible after months or years.',
         primary_focus: 'Treat sleep as a non-negotiable performance input — fix duration first, quality second.',
+      };
+    }
+    if (highStress && highLoad) {
+      return {
+        name: 'The High-Stress Operator',
+        characteristics: ['Stress load consistently exceeds recovery inputs', 'Strong delivery focus', 'Limited true downtime', 'Energy still functional but reserves narrowing'],
+        typical_risk: 'Sustained sympathetic activation that quietly erodes resilience over months.',
+        primary_focus: 'Add nervous-system regulation (breathing, daylight, off-grid windows) before stress load rises further.',
       };
     }
     if (highStress && trains) {
@@ -1641,6 +1667,14 @@ export function recoveryResilienceAssessment(args: {
         characteristics: ['Trains hard to manage stress', 'High self-imposed standards', 'Strong physical baseline', 'Stress regulation tools underused'],
         typical_risk: 'Training becomes the only recovery channel — when it slips, stress has nowhere to discharge.',
         primary_focus: 'Add nervous-system regulation (breathing, daylight, true rest days) alongside training.',
+      };
+    }
+    if (highLoad && trains && !sleepShort) {
+      return {
+        name: 'The Overextended Performer',
+        characteristics: ['Good underlying capacity and training pattern', 'Workload pushing into evenings/weekends', 'Recovery windows shrinking', 'Performance still strong, reserves quietly thinning'],
+        typical_risk: 'Burnout through accumulation — reserves erode before symptoms appear.',
+        primary_focus: 'Protect two genuinely off-grid evenings per week and one full recovery day.',
       };
     }
     if (highLoad && !trains) {
@@ -1695,6 +1729,66 @@ export function recoveryResilienceAssessment(args: {
     };
   })();
 
+  // ── Trajectory: "If Nothing Changes" vs "If Recommendations Followed" ──
+  const trajectory = {
+    if_nothing_changes: {
+      headline: 'If current patterns continue',
+      timeframe: 'Over the next 6–12 months, the most common trajectory observed in executives with a similar recovery profile:',
+      outcomes: [
+        'Higher perceived stress and shorter fuse under workload spikes',
+        'Reduced resilience — recovery from intense weeks takes progressively longer',
+        'Gradual erosion of energy consistency, especially in afternoons',
+        'Sleep quality drifts down even if hours stay the same',
+        'Burnout-risk indicators tend to move up one category over 6–9 months',
+      ],
+      note: 'This is not a prediction — it is the most common trajectory observed in this profile.',
+    },
+    if_recommendations_followed: {
+      headline: 'If the recommendations in this report are implemented',
+      timeframe: 'Most executives following the 7-day plan and protecting recovery boundaries report, within 60–90 days:',
+      outcomes: [
+        'More stable energy across the day, fewer afternoon crashes',
+        'Improved workload tolerance — same load feels lighter',
+        'Burnout-risk indicators usually drop one full category',
+        'Stronger resilience to stress spikes and travel weeks',
+        'Sleep quality and morning recovery scores improve first, then everything else',
+      ],
+    },
+  };
+
+  // ── Nutrition integration narrative (only when nutrition scores shared) ──
+  let nutrition_integration: any = null;
+  if (hasNutrition && args.nutrition) {
+    const n = args.nutrition;
+    const nAvg = Math.round(
+      ((n.protein_score ?? 70) + (n.hydration_score ?? 70) +
+       (n.recovery_score ?? 70) + (n.muscle_preservation_score ?? 70)) / 4
+    );
+    const combinedResilience = Math.round((resilience + nAvg) / 2);
+    const lift = nAvg >= 75
+      ? 'Your nutrition profile is meaningfully supporting recovery — protein, hydration and recovery-fuel inputs are working in your favour and partially compensating for current stress load.'
+      : nAvg >= 60
+      ? 'Your nutrition profile is broadly adequate but not yet optimised for recovery — protein distribution and hydration are the two highest-leverage levers.'
+      : 'Your nutrition profile is currently a recovery drain rather than a recovery support — fixing protein adequacy and hydration would likely lift Recovery Capacity by 6–10 points within 4 weeks.';
+    nutrition_integration = {
+      headline: 'Nutrition × Recovery — combined view',
+      nutrition_scores: {
+        protein: n.protein_score ?? null,
+        hydration: n.hydration_score ?? null,
+        recovery_fuel: n.recovery_score ?? null,
+        muscle_preservation: n.muscle_preservation_score ?? null,
+        nutrition_average: nAvg,
+      },
+      combined_resilience_score: combinedResilience,
+      interpretation: lift,
+      note: 'Combined Resilience = average of Resilience score and Nutrition score. This is the single number that best predicts how you handle workload spikes.',
+    };
+  }
+
+  // Enrich executive summary when nutrition is integrated
+  const _summaryNutritionLine = nutrition_integration
+    ? ` Integrating your nutrition profile (avg ${nutrition_integration.nutrition_scores.nutrition_average}/100), your combined resilience score is ${nutrition_integration.combined_resilience_score}/100 — ${nutrition_integration.interpretation.toLowerCase()}`
+    : '';
 
   return {
     inputs: {
@@ -1740,11 +1834,14 @@ export function recoveryResilienceAssessment(args: {
     executive_dashboard,
     outlook_30_60_90,
     executive_age_impact,
+    trajectory,
+    nutrition_integration,
 
     executive_summary:
       `Your current recovery capacity supports approximately ${recoveryCapacity}% of your performance demands. ` +
       `The largest limiting factors appear to be ${factorScores.slice(0, 3).map(f => f.key.toLowerCase()).join(", ")}. ` +
-      `Small improvements in these areas may significantly improve resilience and energy over the next 30–90 days.`,
+      `Small improvements in these areas may significantly improve resilience and energy over the next 30–90 days.` +
+      _summaryNutritionLine,
     burnout_note:
       burnoutRisk === "Elevated"
         ? "Current indicators suggest elevated accumulated stress and reduced recovery reserves. This is not a diagnosis. If these patterns persist or affect quality of life, consider a comprehensive executive wellness evaluation through WellneSpirit."

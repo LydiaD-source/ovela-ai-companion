@@ -789,7 +789,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const sp = data.success_preview;
   if (rp || sp) {
     y = ensureSpace(doc, y, 220);
-    y = sectionTitle(doc, `20 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
+    y = sectionTitle(doc, `19 · Reassess in ${rp?.reassess_in_days ?? 14} days`, y);
     if (rp) {
       y = paragraph(doc, 'If you:', y);
       (rp.if_you || []).forEach((it: string) => {
@@ -830,7 +830,7 @@ function buildNutrition(doc: jsPDF, data: any) {
 
   // 20. WellneSpirit — continue your progress (always last)
   y = ensureSpace(doc, y, 130);
-  y = sectionTitle(doc, '21 · Continue your progress with WellneSpirit', y);
+  y = sectionTitle(doc, '20 · Continue your progress with WellneSpirit', y);
   doc.setFillColor('#f7f3e6');
   doc.setDrawColor(GOLD);
   doc.setLineWidth(0.5);

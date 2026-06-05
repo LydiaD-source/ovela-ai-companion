@@ -535,14 +535,18 @@ export function nutritionAssessment(args: {
   if ((args.alcohol_units_per_week ?? 0) > 10) priorities.push({ title: "Reduce alcohol load", detail: "Target ≤ 7 units/week — fastest single change for sleep quality, recovery, and visceral fat." });
   while (priorities.length < 3) priorities.push({ title: "Maintain consistency for 7 days", detail: "Repeat the strongest two days from this week. Consistency beats perfection." });
 
+  // Personalized food sources (filtered by dietary dislikes)
+  const personalSources = filterByDislikes(PROTEIN_SOURCES[diet], dislikes);
+  const personalSwaps = filterByDislikes(THIRTY_G_SWAPS[diet], dislikes);
+
   // Fastest win — the single highest-impact change.
   const fastestWin = (() => {
     const benefits = ["Improved satiety", "Reduced cravings", "Better recovery", "Easier fat loss"];
     if (proteinGap != null && proteinGap > 15 && (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60))) {
       const closePct = Math.min(50, Math.round(35 / Math.max(proteinGap, 35) * 100));
       return {
-        title: "Add 30–35 g of protein at breakfast",
-        action: `Choose one: ${THIRTY_G_SWAPS[diet][0]}, or ${THIRTY_G_SWAPS[diet][1]}.`,
+        title: "Add 30-35 g of protein at breakfast",
+        action: `Choose one: ${personalSwaps[0]}, or ${personalSwaps[1] ?? personalSwaps[0]}.`,
         expected_benefits: benefits,
         closes_pct_of_weekly_gap: closePct,
       };

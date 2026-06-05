@@ -985,7 +985,7 @@ export function nutritionAssessment(args: {
       needs_improvement: needs,
       note: "Improving the items above may significantly improve energy, recovery, and long-term resilience. Educational estimate only.",
     },
-    improvement_priorities: priorities.slice(0, 3),
+    improvement_priorities: priorities.filter(p => p.title.toLowerCase() !== fastestWin.title.toLowerCase()).slice(0, 3),
     fastest_win: fastestWin,
     seven_day_plan: sevenDay,
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },

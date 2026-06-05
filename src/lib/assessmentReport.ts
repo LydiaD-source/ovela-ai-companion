@@ -242,13 +242,77 @@ function buildNutrition(doc: jsPDF, data: any) {
     y += 8;
   }
 
-  // 2. Headline scores (Nutrition / Recovery / Muscle)
+  // 2. Executive Readiness Score (headline)
+  const er = data.executive_readiness;
+  if (er) {
+    y = ensureSpace(doc, y, 140);
+    y = sectionTitle(doc, '2 · Executive Readiness Score', y);
+    // Big number block
+    doc.setFillColor('#f7f3e6');
+    doc.rect(40, y - 12, 515, 70, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(36);
+    doc.setTextColor(NAVY);
+    doc.text(`${er.score} / 100`, 56, y + 28);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(GOLD);
+    doc.text(er.level, 260, y + 12);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(MUTED);
+    doc.text(`Measures: ${(er.measures || []).join(' · ')}`, 260, y + 30);
+    doc.text('Scale:', 260, y + 44);
+    (er.scale || []).slice(0, 4).forEach((line: string, i: number) => {
+      doc.text(`• ${line}`, 300, y + 44 + (i + 1) * 10);
+    });
+    y += 90;
+  }
+
+  // 3. Headline scores (Nutrition / Recovery / Muscle)
   y = ensureSpace(doc, y, 110);
-  y = sectionTitle(doc, '2 · Headline scores', y);
+  y = sectionTitle(doc, '3 · Headline scores', y);
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
   y = scoreRow(doc, 'Executive recovery capacity', s.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Muscle preservation', s.muscle_preservation ?? 0, y);
   y += 10;
+
+  // 4. Executive Benchmark (peer comparison)
+  const eb = data.executive_benchmark;
+  if (eb) {
+    y = ensureSpace(doc, y, 200);
+    y = sectionTitle(doc, '4 · Executive benchmark', y);
+    y = paragraph(doc, `Compared with ${eb.cohort}:`, y, { color: MUTED, size: 9 });
+    y += 4;
+    // Column headers
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
+    doc.text('Metric', 40, y);
+    doc.text('Current', 200, y);
+    doc.text('Recommended', 330, y);
+    doc.text('Position', 470, y);
+    y += 6;
+    doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 8;
+    (eb.items || []).forEach((it: any) => {
+      y = ensureSpace(doc, y, 22);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+      doc.text(String(it.metric), 40, y);
+      doc.text(String(it.current), 200, y);
+      doc.text(String(it.recommended), 330, y);
+      const top = String(it.position).startsWith('Top');
+      const bot = String(it.position).startsWith('Bottom');
+      doc.setTextColor(top ? '#2d8a5e' : bot ? '#c2553a' : MUTED);
+      doc.setFont('helvetica', 'bold');
+      doc.text(String(it.position), 470, y);
+      y += 14;
+    });
+    y += 4;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+    doc.text(`Overall readiness ${eb.overall_readiness}/100 — ${eb.overall_position}`, 40, y);
+    y += 14;
+    y = paragraph(doc, eb.note, y, { color: MUTED, size: 8 });
+    y += 6;
+  }
+
 
   // Nutrition snapshot (sub of executive view, no number)
   y = ensureSpace(doc, y, 180);

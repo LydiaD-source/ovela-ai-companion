@@ -362,6 +362,9 @@ export function nutritionAssessment(args: {
   low_vegetables?: boolean;
   high_processed?: boolean;
   irregular_meals?: boolean;
+  meal_observations?: string[];
+  disliked_foods?: string[];
+  preferred_foods?: string[];
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";
@@ -370,6 +373,9 @@ export function nutritionAssessment(args: {
   const age = args.age || 35;
   const height = args.height_cm || (gender === "female" ? 165 : 178);
   const diet: DietType = (args.diet_type as DietType) || "omnivore";
+  const dislikes = args.disliked_foods ?? [];
+  const preferred = args.preferred_foods ?? [];
+  const mealObservations = (args.meal_observations ?? []).filter(s => typeof s === 'string' && s.trim().length > 0).slice(0, 6);
 
   const bmi = Math.round((weight / Math.pow(height / 100, 2)) * 10) / 10;
 

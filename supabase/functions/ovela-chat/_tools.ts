@@ -273,7 +273,8 @@ export function calcReceptionistCost(args: {
     narrative: "Twelve months of unchanged front-office structure compounds hidden staffing waste, unrecovered missed revenue, and a likely turnover cycle.",
   };
 
-  const archetype = pickArchetype(role, shifts, langs, premium);
+
+
 
   const recommendations: string[] = [
     `Start with the ${recommended_tier.charAt(0).toUpperCase() + recommended_tier.slice(1)} tier — it matches a ${shifts === '247' ? '24/7' : shifts === 'extended' ? 'extended-hours' : 'business-hours'} ${langs > 1 ? `multilingual (${langs} languages)` : 'single-language'} operation.`,

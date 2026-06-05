@@ -86,7 +86,7 @@ const CARDS: Card[] = [
       'Potential annual savings',
     ],
     cta: 'Run Comparison',
-    status: 'beta',
+    status: 'live',
     initialPrompt:
       "I'd like to calculate what a human receptionist would actually cost in my country, and compare it to deploying you instead. Please ask me what you need.",
     tool_context: 'receptionist_cost_calculator',
@@ -107,7 +107,7 @@ const CARDS: Card[] = [
       'Suggested implementation strategy',
     ],
     cta: 'Assess My Business',
-    status: 'beta',
+    status: 'live',
     initialPrompt:
       "Help me estimate how much revenue I'm losing to missed calls, after-hours leads, and language barriers. Ask me whatever you need to run the numbers.",
     tool_context: 'missed_leads_calculator',

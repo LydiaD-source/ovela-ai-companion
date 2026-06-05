@@ -542,14 +542,16 @@ function buildNutrition(doc: jsPDF, data: any) {
     if (bai) {
       if ((bai.positive || []).length) {
         y = ensureSpace(doc, y, 40);
-        y = paragraph(doc, 'Positive contributors:', y);
-        bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `✓ ${p}`, y); });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
+        doc.text('Strengths', 40, y); y += 14;
+        bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `+ ${p}`, y, { color: '#2d8a5e' }); });
         y += 4;
       }
       if ((bai.needs_improvement || []).length) {
         y = ensureSpace(doc, y, 40);
-        y = paragraph(doc, 'Needs improvement:', y);
-        bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `⚠ ${p}`, y); });
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(GOLD);
+        doc.text('Needs improvement', 40, y); y += 14;
+        bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `! ${p}`, y, { color: '#a8801a' }); });
         y += 4;
       }
     }

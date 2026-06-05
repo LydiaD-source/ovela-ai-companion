@@ -1383,8 +1383,21 @@ export function recoveryResilienceAssessment(args: {
     args.exercise_type === "cardio" ? 80 :
     args.exercise_type === "walking" ? 60 :
     args.exercise_type === "none" ? 25 : 60;
-  const recoveryDays = args.takes_recovery_days === true ? 100 : args.takes_recovery_days === false ? 40 : 65;
-  const outdoor = clamp(Math.min(args.outdoor_hours_per_week ?? 3, 10) * 10);
+  // Cap recovery-day consistency at 85 unless the user shows truly excellent
+  // recovery context (real rest days AND a manageable workload AND strong sleep).
+  const _excellentRecoveryContext =
+    args.takes_recovery_days === true &&
+    (args.work_hours_per_week ?? 45) <= 45 &&
+    (args.sleep_quality ?? 6) >= 8 &&
+    (args.sleep_hours ?? 7) >= 7;
+  const recoveryDays = args.takes_recovery_days === true
+    ? (_excellentRecoveryContext ? 95 : 82)
+    : args.takes_recovery_days === false ? 40 : 60;
+  // Cap outdoor exposure at 90 unless genuinely exceptional (10+ h/week outdoors).
+  const _outdoorHrs = args.outdoor_hours_per_week ?? 3;
+  const outdoor = _outdoorHrs >= 10
+    ? 100
+    : clamp(Math.min(_outdoorHrs, 9) * 10); // max 90 below the 10h threshold
 
   const recoveryCapacity = clamp(
     (sleepDuration * 1.3 + sleepQuality * 1.2 + refreshed * 0.8 +

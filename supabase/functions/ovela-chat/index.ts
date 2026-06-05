@@ -98,17 +98,62 @@ function isMeaningfulReportPayload(payload: any) {
   return false;
 }
 
+const ACTIVITY_LEVELS = ["sedentary", "moderate", "active", "athlete"];
+const NUTRITION_GOALS = ["fat_loss", "muscle_gain", "performance", "healthy_aging", "energy", "longevity", "recovery", "muscle_maintenance", "maintenance"];
+const DIET_TYPES = ["omnivore", "vegetarian", "vegan"];
+
+function normalizeNutritionArgs(args: any, corpus = "") {
+  const out = { ...(args || {}) };
+  const text = `${corpus || ""}\n${out.occupation || ""}`.toLowerCase();
+  const strength = Number(out.strength_sessions_per_week);
+  const cardio = Number(out.cardio_sessions_per_week);
+  const walk = Number(out.daily_walk_minutes);
+
+  if (!ACTIVITY_LEVELS.includes(out.activity_level)) {
+    const sessions = (Number.isFinite(strength) ? strength : 0) + (Number.isFinite(cardio) ? cardio : 0);
+    if (/athlete|competitive|bodybuilder|triathlon|marathon/.test(text)) out.activity_level = "athlete";
+    else if (/physical|construction|manual|standing|trainer|very active/.test(text) || sessions >= 5 || walk >= 75) out.activity_level = "active";
+    else if (/desk|office|sedentary|sitting/.test(text) && sessions <= 1 && (!Number.isFinite(walk) || walk < 30)) out.activity_level = "sedentary";
+    else out.activity_level = "moderate";
+  }
+
+  if (!DIET_TYPES.includes(out.diet_type)) {
+    if (/\bvegan\b|plant[- ]?based/.test(text)) out.diet_type = "vegan";
+    else if (/\bvegetarian\b/.test(text) && !/chicken|beef|fish|salmon|tuna|turkey|pork|ham|seafood/.test(text)) out.diet_type = "vegetarian";
+    else out.diet_type = "omnivore";
+  }
+
+  if (!Number.isFinite(Number(out.est_protein_g))) {
+    const mealProtein = [out.breakfast_protein_g, out.lunch_protein_g, out.dinner_protein_g, out.snack_protein_g]
+      .map(Number)
+      .filter(Number.isFinite)
+      .reduce((sum, value) => sum + value, 0);
+    if (mealProtein > 0) out.est_protein_g = Math.round(mealProtein);
+  }
+
+  if (!Number.isFinite(Number(out.est_hydration_l)) && Number.isFinite(Number(out.water_liters_per_day))) {
+    out.est_hydration_l = Number(out.water_liters_per_day);
+  }
+
+  return out;
+}
+
+function missingCoreNutritionFields(args: any) {
+  const missing: string[] = [];
+  if (!Number.isFinite(Number(args?.age))) missing.push("age");
+  if (!Number.isFinite(Number(args?.height_cm))) missing.push("height");
+  if (!Number.isFinite(Number(args?.weight_kg))) missing.push("weight");
+  if (!["male", "female", "other"].includes(args?.gender)) missing.push("gender");
+  if (!ACTIVITY_LEVELS.includes(args?.activity_level)) missing.push("activity level");
+  if (!NUTRITION_GOALS.includes(args?.goal)) missing.push("primary goal");
+  if (!DIET_TYPES.includes(args?.diet_type)) missing.push("diet type");
+  return missing;
+}
+
 function hasUsableNutritionArgs(args: any) {
+  const normalized = normalizeNutritionArgs(args);
   return Boolean(
-    Number.isFinite(Number(args?.age)) &&
-    Number.isFinite(Number(args?.height_cm)) &&
-    Number.isFinite(Number(args?.weight_kg)) &&
-    ["male", "female", "other"].includes(args?.gender) &&
-    ["sedentary", "moderate", "active", "athlete"].includes(args?.activity_level) &&
-    ["fat_loss", "muscle_gain", "performance", "healthy_aging", "energy", "longevity", "recovery", "muscle_maintenance", "maintenance"].includes(args?.goal) &&
-    ["omnivore", "vegetarian", "vegan"].includes(args?.diet_type) &&
-    Number.isFinite(Number(args?.est_protein_g)) &&
-    Number.isFinite(Number(args?.est_hydration_l))
+    missingCoreNutritionFields(normalized).length === 0
   );
 }
 
@@ -766,7 +811,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let effectiveToolCalls = toolCalls;
       const noToolCall = !effectiveToolCalls || effectiveToolCalls.length === 0;
       if (noToolCall && finalMessage) {
-        const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|now creating|now generating|will (now )?(generate|create|prepare|deliver|produce|build))/i;
+        const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|complete|completing|finalize|finalizing|ready to (generate|create|complete|deliver|produce)|have (all|everything) (i|we)?\s*need(ed)?|will (now )?(generate|create|prepare|deliver|produce|build|complete))/i;
         const REPORT_RE = /(report|assessment|pdf|action plan|score)/i;
         const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
         const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);
@@ -878,21 +923,6 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'nutrition_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
-              if (!hasUsableNutritionArgs(args)) {
-                console.warn('🛑 Nutrition tool blocked — incomplete usable inputs', { keys: Object.keys(args || {}) });
-                toolResults.push({
-                  id: toolCall.id,
-                  content: JSON.stringify({
-                    blocked: true,
-                    reason: "NUTRITION_INPUTS_INCOMPLETE",
-                    instruction: "Do NOT generate a report, PDF, score, or assessment-report block. Required profile data or diary estimates are missing. Ask only for the missing profile details or clarify the weekly food diary, then wait."
-                  })
-                });
-                continue;
-              }
-
-              // HARD GATE: verify a real weekly food diary exists in the conversation history
-              // or in the current message / attachments before allowing the assessment to run.
               const FOOD_KEYWORDS = /\b(breakfast|lunch|dinner|snack|brunch|supper|meal|eggs?|chicken|beef|fish|salmon|tuna|rice|pasta|bread|toast|oat|yog(h)?urt|cheese|salad|veg|fruit|banana|apple|coffee|tea|milk|protein|shake|wine|beer|water|almond|nuts?|potato|tomato|avocado|sandwich|soup|steak|pork|turkey|tofu|beans?|lentils?|quinoa|cereal|smoothie|monday|tuesday|wednesday|thursday|friday|saturday|sunday|petit[- ]?d[ée]jeuner|d[ée]jeuner|d[íi]ner|desayuno|comida|cena|frühstück|mittag|abendessen|colazione|pranzo|cena)\b/i;
               const collectFoodText = () => {
                 const parts: string[] = [];
@@ -907,6 +937,24 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 return parts.join("\n");
               };
               const corpus = collectFoodText();
+              const normalizedArgs = normalizeNutritionArgs(args, corpus);
+              const missingCore = missingCoreNutritionFields(normalizedArgs);
+              if (!hasUsableNutritionArgs(normalizedArgs)) {
+                console.warn('🛑 Nutrition tool blocked — incomplete core inputs', { missing: missingCore, keys: Object.keys(args || {}) });
+                toolResults.push({
+                  id: toolCall.id,
+                  content: JSON.stringify({
+                    blocked: true,
+                    reason: "NUTRITION_INPUTS_INCOMPLETE",
+                    missing: missingCore,
+                    instruction: `Do NOT generate a report, PDF, score, or assessment-report block. Ask only for these missing core details: ${missingCore.join(", ")}. Then wait.`
+                  })
+                });
+                continue;
+              }
+
+              // HARD GATE: verify a real weekly food diary exists in the conversation history
+              // or in the current message / attachments before allowing the assessment to run.
               const matches = corpus.match(new RegExp(FOOD_KEYWORDS, 'gi')) || [];
               const hasImageAttachment = attachments.some(a => /^image\//i.test(a.mime_type || ""));
               const hasDocAttachment = attachments.some(a => a.text && a.text.length > 200);
@@ -924,7 +972,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
                   })
                 });
               } else {
-                const result = nutritionAssessment(args);
+                const result = nutritionAssessment(normalizedArgs);
                 nutritionReportPayload = result;
                 console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
                 toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
@@ -970,7 +1018,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const reportType = nutritionReportPayload ? 'nutrition_assessment' : 'recovery_resilience';
               followUpMessages.push({
                 role: "system",
-                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download button. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add one short line offering to email it or discuss the improvements.`
+                content: `The ${reportType} tool just returned. You MUST now reply in ONE message containing BOTH: (1) a short warm conversational summary (3–6 sentences) of the key findings and top 2–3 recommendations, then (2) on a new line the EXACT fenced block below so the page can render the PDF download and email buttons. Do NOT ask the user if they want a report — just deliver it. Do NOT ask for confirmation to continue.\n\n\`\`\`assessment-report\n{"type":"${reportType}","title":"...","data": <the full tool result JSON verbatim>}\n\`\`\`\n\nAfter the block, add exactly this line: You can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`
               });
             }
 
@@ -1024,7 +1072,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
             const summary = cleaned.length > 0
               ? cleaned
               : "Here's your personalized assessment — I've outlined your scores, the biggest improvement opportunities, and a weekly action plan.";
-            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nWould you like me to email this to you, or shall we walk through the top improvements together?`;
+            finalMessage = `${summary}\n\n\`\`\`assessment-report\n${JSON.stringify(payload)}\n\`\`\`\n\nYou can download the PDF or use the Email PDF to me button below the report to send it to your inbox.`;
             console.log("🧷 Injected valid assessment-report block for", payload.type);
           }
         }

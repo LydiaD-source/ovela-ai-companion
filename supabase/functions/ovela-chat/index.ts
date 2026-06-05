@@ -1038,10 +1038,30 @@ After any tool call, present results conversationally (1 short paragraph + key b
                   })
                 });
               } else {
-                const result = nutritionAssessment(normalizedArgs);
-                nutritionReportPayload = result;
-                console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition });
-                toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+                // 7-day free trial gate (Ovela / WellneSpirit free version)
+                const trialKey = `${clientId || 'ovela'}::${userId || 'guest'}`;
+                const trial = await checkAndRecordTrial(trialKey);
+                if (trial.trial_expired) {
+                  console.warn('⏳ Trial expired — blocking PDF, sending WellneSpirit upsell', { trialKey, daysUsed: trial.days_used });
+                  nutritionReportPayload = null;
+                  toolResults.push({
+                    id: toolCall.id,
+                    content: JSON.stringify({
+                      blocked: true,
+                      reason: "TRIAL_EXPIRED",
+                      days_used: trial.days_used,
+                      instruction: "Do NOT generate a report, PDF, score, or assessment-report block. The user's 7-day free assessment window has ended. Reply with ONLY this message verbatim: " + JSON.stringify(WELLNESPIRIT_EXPIRED_MESSAGE)
+                    })
+                  });
+                  // Pre-fill the final message in case the model ignores the instruction
+                  (globalThis as any).__OVELA_FORCE_FINAL_MESSAGE__ = WELLNESPIRIT_EXPIRED_MESSAGE;
+                } else {
+                  const result = nutritionAssessment(normalizedArgs);
+                  nutritionReportPayload = result;
+                  console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition, daysUsed: trial.days_used });
+                  toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
+                  (globalThis as any).__OVELA_TRIAL_DAYS_USED__ = trial.days_used;
+                }
               }
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

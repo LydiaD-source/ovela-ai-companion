@@ -231,13 +231,13 @@ function ensureSpace(doc: jsPDF, y: number, needed: number) {
 
 // ── Nutrition report (clean sequential numbering) ───────────────────────
 function buildNutrition(doc: jsPDF, data: any) {
-  header(doc, 'Executive Nutrition & Muscle Preservation Assessment');
+  header(doc, 'Nutrition & Muscle Preservation Assessment');
   let y = 110;
   const s = data.scores || {};
 
-  // 1. Executive summary
+  // 1. Summary
   if (data.executive_summary) {
-    y = sectionTitle(doc, '1 · Executive summary', y);
+    y = sectionTitle(doc, '1 · Summary', y);
     y = paragraph(doc, data.executive_summary, y);
     y += 8;
   }

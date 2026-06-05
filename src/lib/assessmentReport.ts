@@ -350,7 +350,7 @@ function buildNutrition(doc: jsPDF, data: any) {
   const ms = data.metabolic_support;
   if (ms) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '5 · Metabolic support', y);
+    y = sectionTitle(doc, '5 · Recovery & metabolic efficiency', y);
     y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
     if ((ms.biggest_opportunities || []).length) {
       y += 4;

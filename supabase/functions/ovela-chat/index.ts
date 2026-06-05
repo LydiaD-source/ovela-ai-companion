@@ -810,12 +810,14 @@ After any tool call, present results conversationally (1 short paragraph + key b
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
             }
-          } else if (toolCall.function?.name === 'biological_age_assessment') {
+          } else if (toolCall.function?.name === 'recovery_resilience_assessment' || toolCall.function?.name === 'biological_age_assessment') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
-              const result = biologicalAgeAssessment(args);
+              // Backward-compat: legacy callers may still send chronological_age
+              if (args.chronological_age && !args.age) args.age = args.chronological_age;
+              const result = recoveryResilienceAssessment(args);
               bioAgeReportPayload = result;
-              console.log('⏳ Bio-age assessment:', { delta: result.difference_years });
+              console.log('🛡️ Recovery & Resilience assessment:', { exec: result.scores.executive_wellness, burnout: result.scores.burnout_risk });
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

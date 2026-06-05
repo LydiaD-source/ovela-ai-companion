@@ -952,22 +952,24 @@ export function nutritionAssessment(args: {
     },
     protein_strategy: {
       diet_type: diet,
-      best_sources: PROTEIN_SOURCES[diet],
-      thirty_gram_options: THIRTY_G_SWAPS[diet],
-      vegetarian_alternatives: diet === "vegan" ? null : VEGETARIAN_ALTS,
+      best_sources: personalSources,
+      thirty_gram_options: personalSwaps,
+      vegetarian_alternatives: diet === "vegan" ? null : filterByDislikes(VEGETARIAN_ALTS, dislikes),
       distribution: hasDistribution ? {
         meals: distScores.map(d => ({ meal: d.meal, protein_g: d.g, score: d.score })),
-        target_per_main_meal_g: "30–40",
+        target_per_main_meal_g: "30-40",
         score: distributionScore,
         status: distributionStatus,
       } : {
         meals: null,
-        target_per_main_meal_g: "30–40",
+        target_per_main_meal_g: "30-40",
         score: null,
         status: distributionStatus,
       },
     },
-    daily_meal_framework: { diet_type: diet, total_protein_g: proteinMid, meals: buildMealFramework(diet, proteinMid) },
+    daily_meal_framework: { diet_type: diet, total_protein_g: proteinMid, meals: buildMealFramework(diet, proteinMid, dislikes, preferred) },
+    meal_observations: mealObservations,
+    personalization: { disliked_foods: dislikes, preferred_foods: preferred },
     metabolic_support: {
       score: metabolicSupport,
       biggest_opportunities: [

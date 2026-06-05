@@ -743,6 +743,8 @@ export function nutritionAssessment(args: {
     fastest_win: fastestWin,
     seven_day_plan: sevenDay,
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },
+    lifestyle_factors: lifestyleFactors,
+    weight_loss_projection: weightLossProjection,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

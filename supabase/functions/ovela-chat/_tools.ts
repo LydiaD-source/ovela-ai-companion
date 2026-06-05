@@ -530,9 +530,7 @@ export function nutritionAssessment(args: {
       strength_sessions_per_week: goal === "muscle_gain" ? 4 : base,
       cardio_sessions_per_week: cardio,
       mobility_minutes_per_day: 10,
-      reason: age >= 45
-        ? "After 45, adults lose roughly 1% of muscle mass per year without resistance training. Two to three short strength sessions per week is the single strongest longevity input."
-        : "Resistance training builds the metabolic and structural foundation that protects energy, posture, and long-term health.",
+      reason: "Two to three short resistance sessions per week is the single strongest longevity input — it protects muscle, metabolic health, posture, and glucose control.",
     };
   })();
 
@@ -894,18 +892,35 @@ export function nutritionAssessment(args: {
     note: "Projected ranges assume the actions above are sustained for 14 consecutive days. Educational estimate only.",
   };
 
-  // ── Clinical Perspective (WellneSpirit authority layer) ─────────────
-  const clinicalOpportunities: string[] = [];
-  if (proteinScore < 70) clinicalOpportunities.push("increasing daily protein intake");
-  if (hydrationScore < 70) clinicalOpportunities.push("improving daily hydration");
-  if (strength < 2) clinicalOpportunities.push("adding consistent resistance training");
-  if ((alcohol ?? 0) > 7) clinicalOpportunities.push("reducing weekly alcohol load");
-  if (sleepH < 7) clinicalOpportunities.push("extending sleep duration");
-  if (clinicalOpportunities.length === 0) clinicalOpportunities.push("maintaining current habits while fine-tuning consistency");
+  // ── Isabella's Clinical Observation (synthesised pattern, not a list) ─
+  const clinicalPatterns: string[] = [];
+  if (args.low_protein_breakfast || (distributionScore != null && distributionScore < 60)) {
+    clinicalPatterns.push("inadequate protein earlier in the day");
+  }
+  if ((alcohol ?? 0) > 7) clinicalPatterns.push("frequent alcohol exposure");
+  if (args.low_vegetables) clinicalPatterns.push("low vegetable diversity");
+  if (args.sugar_snacks) clinicalPatterns.push("reliance on sugar-based snacks");
+  if (args.high_processed) clinicalPatterns.push("a high share of refined or processed foods");
+  if (hydrationScore < 65) clinicalPatterns.push("under-hydration relative to body weight");
+  if (sleepH < 7) clinicalPatterns.push("short sleep duration");
+  if (strength < 2) clinicalPatterns.push("limited resistance-training stimulus");
+
+  const consequences: string[] = [];
+  if (proteinScore < 70 || (distributionScore != null && distributionScore < 60)) consequences.push("unstable satiety");
+  if ((alcohol ?? 0) > 7 || sleepH < 7) consequences.push("slower overnight recovery");
+  if (musclePres < 70) consequences.push("reduced muscle-retention efficiency");
+  if (hydrationScore < 65) consequences.push("blunted afternoon energy");
+  if (consequences.length === 0) consequences.push("stable energy and good recovery support");
+
+  const patternLine = clinicalPatterns.length
+    ? `The strongest pattern visible across this diary is ${clinicalPatterns.slice(0, 3).join(", combined with ")}.`
+    : `The diary shows a balanced foundation with no single dominant weakness.`;
+  const consequenceLine = clinicalPatterns.length
+    ? `Together these likely contribute to ${consequences.slice(0, 3).join(", ")}.`
+    : `Current habits are supporting ${consequences.slice(0, 2).join(" and ")}.`;
   const clinicalPerspective =
-    `Based on current habits, the strongest opportunities for improvement are ${clinicalOpportunities.slice(0, 3).join(", ")}. ` +
-    `These are commonly observed factors affecting energy, body composition, and long-term resilience in adults${age >= 45 ? " over 45" : ""}. ` +
-    `This perspective is educational, not diagnostic — confirm with a qualified clinician if relevant.`;
+    `Isabella's Clinical Observation: ${patternLine} ${consequenceLine} ` +
+    `This is an educational reading of the diary patterns — not a clinical diagnosis.`;
 
   // ── Nutrition risk flags (observational micronutrient inference) ────
   // Combines model-supplied flags with deterministic inferences from the diary.

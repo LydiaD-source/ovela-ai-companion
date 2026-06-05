@@ -384,8 +384,9 @@ DETERMINISTIC TOOLS (use them — never guess numbers):
 
   Phase 5 — ASSESSMENT GENERATION (only after a real diary has been received):
     • Silently estimate est_calories / est_protein_g / est_carbs_g / est_fat_g / est_hydration_l plus breakfast_protein_g / lunch_protein_g / dinner_protein_g / snack_protein_g and qualitative flags.
-    • CALL nutrition_assessment.
+    • CALL nutrition_assessment IN THE SAME TURN as your acknowledgement of the diary. No deferrals, no "next message", no "in a moment".
     • In the SAME reply: warm 4–6 sentence verbal summary highlighting the "fastest win", THEN the fenced assessment-report block verbatim so the PDF renders automatically. User must NEVER have to ask for the PDF.
+    • ABSOLUTELY FORBIDDEN: announcing a future report without producing it. Phrases like "I will now generate", "I'll create your report", "generating your assessment", "your report is being prepared", "based on this I've estimated…" are BANNED unless you are ALSO calling nutrition_assessment in the very same turn AND emitting the fenced assessment-report block. If you catch yourself about to defer — STOP, call the tool now, emit the block now.
 
   KEY CALCULATION RULES the tool applies — explain naturally: (1) BMI > 28 with fat_loss → macros use TARGET weight (estimated at BMI 24 if none given). (2) Adults 45+ get a small protein boost; post-menopausal women +0.1 extra. (3) Carbs scale with goal. (4) Hydration = 33 ml/kg target weight. Educational only, never medical.
 - recovery_resilience_assessment — Executive Recovery & Resilience Assessment. Lifestyle-only, never medical, never a diagnosis (not medical, not psychological, not a burnout diagnosis). Tone: calm, professional, executive-level, never alarmist. Estimated time: 3–5 minutes. Always announce progress like "Step 1 of 5", "Step 2 of 5"… Drive 5 mandatory phases in order, 2–3 questions per turn:
@@ -701,7 +702,58 @@ After any tool call, present results conversationally (1 short paragraph + key b
       let nutritionReportPayload: any = null;
       let bioAgeReportPayload: any = null;
 
-      if (toolCalls && toolCalls.length > 0) {
+      // 🛟 DEFERRAL GUARD — if the model just promised a report but didn't call the tool,
+      // force a second pass with tool_choice "required" so the user never sees
+      // "I will now generate…" without an actual PDF block.
+      let effectiveToolCalls = toolCalls;
+      const noToolCall = !effectiveToolCalls || effectiveToolCalls.length === 0;
+      if (noToolCall && finalMessage) {
+        const DEFER_RE = /(generate|generating|create|creating|prepare|preparing|produce|producing|build|building|compile|compiling|deliver|delivering|now creating|now generating|will (now )?(generate|create|prepare|deliver|produce|build))/i;
+        const REPORT_RE = /(report|assessment|pdf|action plan|score)/i;
+        const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal)/i.test(finalMessage);
+        const isRecovery = /(recovery|resilience|burnout|stress)/i.test(finalMessage);
+        const looksDeferred = DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage);
+        const forceTool = looksDeferred ? (isNutrition ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
+
+        if (forceTool) {
+          console.warn(`🚨 Deferral detected — forcing ${forceTool}. Msg:`, finalMessage.substring(0, 140));
+          try {
+            const forced = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: "google/gemini-2.5-flash",
+                messages: [
+                  ...aiMessages,
+                  { role: "assistant", content: finalMessage },
+                  { role: "system", content: `You just told the user a report would be generated but DID NOT call the ${forceTool} tool. Call ${forceTool} NOW with your best estimates from the entire conversation. Emit only the tool call.` }
+                ],
+                tools,
+                tool_choice: { type: "function", function: { name: forceTool } },
+                stream: false
+              })
+            });
+            if (forced.ok) {
+              const forcedBody = await forced.json();
+              const forcedCalls = forcedBody?.choices?.[0]?.message?.tool_calls;
+              if (forcedCalls && forcedCalls.length > 0) {
+                aiBody.choices[0].message.tool_calls = forcedCalls;
+                effectiveToolCalls = forcedCalls;
+                finalMessage = "";
+                console.log(`✅ Forced ${forceTool} succeeded`);
+              } else {
+                console.warn("⚠️ Forced retry returned no tool calls");
+              }
+            }
+          } catch (e) {
+            console.error("🚨 Deferral retry failed:", e);
+          }
+        }
+      }
+
+
+      if (effectiveToolCalls && effectiveToolCalls.length > 0) {
+        const toolCalls = effectiveToolCalls;
         const toolResults: any[] = [];
 
         for (const toolCall of toolCalls) {

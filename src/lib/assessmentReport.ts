@@ -126,6 +126,36 @@ const NAVY = '#0d1b2a';
 const INK = '#1a1a1a';
 const MUTED = '#666666';
 
+// jsPDF's built-in Helvetica uses WinAnsi encoding and cannot render most
+// Unicode glyphs (emoji, ≤ ≥ – — · ✓ ✗ ☐ ⚡ €, curly quotes, etc.).
+// When it encounters one, the output is corrupted ("&¡ F a s t e s t w i n").
+// We sanitize ALL text passed to the document before it reaches the encoder.
+const UNICODE_MAP: Record<string, string> = {
+  '⚡': '*', '★': '*', '✦': '*', '✱': '*',
+  '✓': '+', '✔': '+',
+  '✗': 'x', '✘': 'x', '×': 'x', '✕': 'x',
+  '☐': '[ ]', '☑': '[x]', '☒': '[x]',
+  '≤': '<=', '≥': '>=', '≠': '!=', '≈': '~',
+  '–': '-', '—': '-', '−': '-',
+  '·': '-', '•': '-', '●': '-', '◦': '-', '▪': '-', '■': '-',
+  '€': 'EUR', '£': 'GBP', '¥': 'JPY',
+  '°': ' deg',
+  '“': '"', '”': '"', '„': '"', '«': '"', '»': '"',
+  '‘': "'", '’': "'", '‚': "'",
+  '…': '...',
+  '\u00a0': ' ', '\u2009': ' ', '\u202f': ' ', '\u200b': '',
+};
+function sanitize(text: string): string {
+  if (!text) return text;
+  let out = '';
+  for (const ch of text) {
+    if (ch in UNICODE_MAP) out += UNICODE_MAP[ch];
+    else if (ch.charCodeAt(0) < 256) out += ch;
+    else out += '?'; // any other non-WinAnsi char → safe placeholder
+  }
+  return out;
+}
+
 function header(doc: jsPDF, title: string) {
   doc.setFillColor(NAVY);
   doc.rect(0, 0, 595, 70, 'F');

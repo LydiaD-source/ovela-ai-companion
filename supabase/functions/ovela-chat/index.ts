@@ -81,6 +81,10 @@ function isMeaningfulReportPayload(payload: any) {
   if (!payload || typeof payload !== "object") return false;
   const data = payload.data || payload.nutrition_assessment_response || payload.recovery_resilience_response || payload.recovery_resilience_assessment_response || payload.biological_age_response || payload;
   const type = payload.type === "biological_age" ? "recovery_resilience" : payload.type;
+  const subtype = payload.subtype;
+  if (type === "business_calculator" && subtype === "missed_calls") {
+    return Boolean(data?.inputs?.monthly_inbound > 0 && data?.annual_revenue_loss_eur >= 0 && data?.leak_breakdown_eur);
+  }
   if (type === "business_calculator" || payload.true_annual_cost_eur || data?.true_annual_cost_eur) {
     return Boolean(
       data?.country &&

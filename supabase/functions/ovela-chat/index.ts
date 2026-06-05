@@ -1187,12 +1187,14 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
         // Guarantee the report is returned as structured data and, when needed,
         // as a valid fenced block regardless of whether the model already wrote text.
-        if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload) {
+        if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload || missedLeadsReportPayload) {
           const payload = nutritionReportPayload
             ? { type: 'nutrition_assessment', title: 'Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
-            : receptionistReportPayload
-              ? { type: 'business_calculator', subtype: 'receptionist_cost', title: 'Receptionist Cost & ROI Assessment', data: receptionistReportPayload }
-              : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
+            : missedLeadsReportPayload
+              ? { type: 'business_calculator', subtype: 'missed_calls', title: 'Missed Calls & Revenue Leak Diagnostic', data: missedLeadsReportPayload }
+              : receptionistReportPayload
+                ? { type: 'business_calculator', subtype: 'receptionist_cost', title: 'Receptionist Cost & ROI Assessment', data: receptionistReportPayload }
+                : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
           assessmentReportResponse = payload;
           const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
           const existingReportBlock = finalMessage.match(reportBlockRe);

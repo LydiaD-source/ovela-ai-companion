@@ -1049,6 +1049,42 @@ function buildRecoveryResilience(doc: jsPDF, data: any) {
     y += 8;
   }
 
+  // 3e. Recovery drivers (drains vs protectors)
+  if (data.recovery_drivers) {
+    const rd = data.recovery_drivers;
+    y = ensureSpace(doc, y, 180);
+    y = sectionTitle(doc, '3e · Your recovery drivers', y);
+
+    if (Array.isArray(rd.drains) && rd.drains.length) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#c2553a');
+      doc.text('Biggest recovery drains:', 40, y); y += 14;
+      rd.drains.forEach((d: any, i: number) => {
+        y = ensureSpace(doc, y, 40);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+        doc.text(`${i + 1}. ${d.area}  (score impact ${d.score_impact})`, 40, y); y += 12;
+        y = paragraph(doc, d.detail, y, { color: MUTED });
+        y += 4;
+      });
+      y += 4;
+    }
+
+    if (Array.isArray(rd.protectors) && rd.protectors.length) {
+      y = ensureSpace(doc, y, 80);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#2d8a5e');
+      doc.text('Biggest recovery protectors:', 40, y); y += 14;
+      rd.protectors.forEach((p: any, i: number) => {
+        y = ensureSpace(doc, y, 40);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+        doc.text(`${i + 1}. ${p.area}  (score impact +${p.score_impact})`, 40, y); y += 12;
+        y = paragraph(doc, p.detail, y, { color: MUTED });
+        y += 4;
+      });
+      y += 6;
+    }
+  }
+
+
+
 
   // 4. Executive performance factors
   const fb = data.factor_breakdown || {};

@@ -1085,6 +1085,8 @@ export function nutritionAssessment(args: {
     success_preview: successPreview,
     nutrition_risk_flags: nutritionRiskFlags,
     habit_upgrades: habitUpgrades,
+    meal_framework_replacements: mealFrameworkReplacements,
+    top_meals: topMeals,
     time_budget: timeBudgetBlock,
     clinical_perspective: clinicalPerspective,
     executive_summary: executiveSummary,

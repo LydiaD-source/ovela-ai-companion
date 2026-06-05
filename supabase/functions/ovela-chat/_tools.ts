@@ -870,7 +870,7 @@ export function nutritionAssessment(args: {
     items: benchmarkItems,
     overall_readiness: executiveReadiness,
     overall_position: overallPosition,
-    note: "Peer ranges are educational estimates drawn from European executive-wellness population data — not clinical benchmarks.",
+    note: "Peer ranges are educational estimates drawn from European adult-wellness population data — not clinical benchmarks.",
   };
 
   // ── Reassessment projection (retention hook — "come back in 14 days") ─

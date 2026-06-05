@@ -1059,13 +1059,13 @@ After any tool call, present results conversationally (1 short paragraph + key b
                     })
                   });
                   // Pre-fill the final message in case the model ignores the instruction
-                  (globalThis as any).__OVELA_FORCE_FINAL_MESSAGE__ = WELLNESPIRIT_EXPIRED_MESSAGE;
+                  trialForceFinalMessage = WELLNESPIRIT_EXPIRED_MESSAGE;
                 } else {
                   const result = nutritionAssessment(normalizedArgs);
                   nutritionReportPayload = result;
                   console.log('🥗 Nutrition assessment:', { overall: result.scores.overall_nutrition, daysUsed: trial.days_used });
                   toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
-                  (globalThis as any).__OVELA_TRIAL_DAYS_USED__ = trial.days_used;
+                  trialDaysUsed = trial.days_used;
                 }
               }
             } catch (e) {

@@ -322,6 +322,19 @@ export function calcReceptionistCost(args: {
     industry_benchmark,
     front_office_efficiency,
     cost_of_inaction,
+    staffing_recommendation: {
+      current: `1 ${ROLE_BASELINE[role]?.label || 'front-desk hire'} covering ${shifts === '247' ? '24/7' : shifts === 'extended' ? 'extended hours' : 'business hours'} in ${langs} language${langs > 1 ? 's' : ''}.`,
+      recommended: [
+        "Isabella handles 100% of inbound — calls, forms, chat, DMs — 24/7 in every language.",
+        "Keep your existing human(s) focused on VIP guests, in-person hospitality, and human escalations only.",
+        "Owner/manager receives a daily digest of captured leads, qualified bookings, and escalations needing a human reply.",
+      ],
+      expected_outcome: [
+        "Inbound capture moves from ~" + current_capture_pct + "% toward 95%+",
+        "Coverage extends from " + (shifts === '247' ? '24/7 (already covered)' : shifts === 'extended' ? '~14h/day to 24/7' : '~8h/day to 24/7'),
+        "Existing team's hours reallocated to higher-value, in-person work — no headcount cut required",
+      ],
+    },
     country_note: COUNTRY_NOTE[country] || "",
     notes: [
       "Salaries are approximate Eurostat-style mid-2025 ranges.",
@@ -386,12 +399,23 @@ const INDUSTRY: Record<IndustryKey, {
 };
 
 function speedToLeadProfile(avgMinutes: number) {
-  // Industry benchmarks: <5 min ~100% conv potential, 5-30 ~21%, 30-60 ~11%, >60 ~6%.
-  if (avgMinutes <= 5)  return { bucket:"<5 min",       potential_pct:100, label:"first-responder advantage" };
-  if (avgMinutes <= 30) return { bucket:"5-30 min",     potential_pct:21,  label:"strong but losing" };
-  if (avgMinutes <= 60) return { bucket:"30-60 min",    potential_pct:11,  label:"speed penalty applies" };
-  if (avgMinutes <= 240)return { bucket:"1-4 hours",    potential_pct:6,   label:"most leads already lost" };
-  return                       { bucket:"4+ hours",     potential_pct:3,   label:"effectively cold" };
+  // Calibrated conversion-EFFICIENCY of captured inbound leads.
+  // Based on widely-cited speed-to-lead studies (Harvard / InsideSales / Drift):
+  // <5 min responders convert roughly 5-10x faster than 30-60 min responders.
+  // Numbers are expressed as realistic % conversion (not theoretical ceilings).
+  if (avgMinutes <= 5)  return { bucket:"<5 min",    potential_pct:22, label:"first-responder advantage" };
+  if (avgMinutes <= 30) return { bucket:"5-30 min",  potential_pct:12, label:"strong but losing" };
+  if (avgMinutes <= 60) return { bucket:"30-60 min", potential_pct:8,  label:"speed penalty applies" };
+  if (avgMinutes <= 240)return { bucket:"1-4 hours", potential_pct:5,  label:"most leads already lost" };
+  return                       { bucket:"4+ hours",  potential_pct:3,  label:"effectively cold" };
+}
+
+// Display helper: cap absurd-looking ROI numbers so the report stays credible.
+function formatRoiDisplay(roiPct: number): string {
+  if (!isFinite(roiPct) || roiPct <= 0) return "—";
+  if (roiPct >= 10000) return "> 100x investment (> 10,000%)";
+  if (roiPct >= 1000)  return `~${Math.round(roiPct / 100)}x investment (${roiPct.toLocaleString('en-US')}%)`;
+  return `${roiPct}%`;
 }
 
 export function calcMissedLeads(args: {
@@ -453,41 +477,78 @@ export function calcMissedLeads(args: {
   const current = speedToLeadProfile(respMin);
   const optimal = speedToLeadProfile(2); // Isabella responds <5s, model as <5 min bucket
   const speed_uplift_ratio = optimal.potential_pct / Math.max(current.potential_pct, 1);
-  // Recoverable from speed alone: additional conversions on the CURRENTLY captured leads.
+  // Recoverable from speed alone: additional conversions on CURRENTLY captured leads.
+  // Cap at 0.8x annualRevenueLoss to avoid the "too good to be true" trap.
   const capturedPerMonth     = inbound - missedPerMonth;
   const currentConvPerMonth  = Math.round(capturedPerMonth * convPct / 100);
   const speedExtraPerMonth   = Math.max(0, Math.round(currentConvPerMonth * (speed_uplift_ratio - 1)));
-  const speedRecoveryAnnual  = Math.min(annualRevenueLoss * 1.5, speedExtraPerMonth * deal * 12);
+  const speedRecoveryAnnual  = Math.min(annualRevenueLoss * 0.8, speedExtraPerMonth * deal * 12);
+
+  // Lead-first framing — what business owners actually relate to.
+  const missed_inquiries_per_year     = missedPerMonth * 12;
+  const lost_opportunities_per_year   = recoverablePerMonth * 12;
 
   // Isabella pricing & ROI
   const isabella_pro_tier_annual_eur = 9588;
   const total_recoverable_annual_eur = annualRevenueLoss + speedRecoveryAnnual;
   const net_annual_benefit_eur       = total_recoverable_annual_eur - isabella_pro_tier_annual_eur;
   const roi_pct                      = Math.round((net_annual_benefit_eur / isabella_pro_tier_annual_eur) * 100);
+  const roi_display                  = formatRoiDisplay(roi_pct);
   const payback_months               = total_recoverable_annual_eur > 0
     ? Math.max(1, Math.round(isabella_pro_tier_annual_eur / (total_recoverable_annual_eur / 12)))
     : null;
 
   // Combined Business Case (only if receptionist context provided)
+  const combinedRoi = args.human_true_annual_cost_eur && args.human_true_annual_cost_eur > 0
+    ? Math.round((((args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur) + total_recoverable_annual_eur) / isabella_pro_tier_annual_eur) * 100)
+    : 0;
   const combined_business_case = args.human_true_annual_cost_eur && args.human_true_annual_cost_eur > 0
     ? {
         salary_savings_eur:    args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur,
         recovered_revenue_eur: total_recoverable_annual_eur,
         total_annual_upside_eur: (args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur) + total_recoverable_annual_eur,
         isabella_annual_cost_eur: isabella_pro_tier_annual_eur,
-        combined_roi_pct: Math.round(
-          (((args.human_true_annual_cost_eur - isabella_pro_tier_annual_eur) + total_recoverable_annual_eur) / isabella_pro_tier_annual_eur) * 100
-        ),
+        combined_roi_pct: combinedRoi,
+        combined_roi_display: formatRoiDisplay(combinedRoi),
       }
     : null;
 
-  // Isabella Business Observation — narrative diagnosis, not spreadsheet
+  // Revenue Leakage Profile — diagnosis-style narrative header
   const biggestLeak = (Object.entries(leak_breakdown_eur).sort((a,b) => b[1]-a[1])[0] || [])[0] || "after_hours";
   const leakLabel = biggestLeak === "after_hours" ? "after-hours availability"
     : biggestLeak === "busy_line" ? "busy-line and overflow handling"
     : "language coverage";
+  const profileName = biggestLeak === "after_hours" ? "After-Hours Dependency"
+    : biggestLeak === "busy_line" ? "Overflow Saturation"
+    : "Language Mismatch";
+  const diagnosis_profile = {
+    name: `Revenue Leakage Profile: ${profileName}`,
+    narrative:
+      `Your business loses most opportunities to ${leakLabel}. This pattern is common in ${cfg.label.toLowerCase()} operations where ` +
+      `lead generation has scaled faster than response capacity. Businesses with this profile typically recover revenue first ` +
+      `through coverage expansion, then through faster response times — not through hiring more staff.`,
+  };
+
+  // Recommended hybrid staffing — Human + Isabella, not pure replacement
+  const staffing_recommendation = {
+    current: `Inbound flows through ${coverage === "247" ? "a 24/7 team" : coverage === "extended" ? "extended-hours staff" : "business-hours staff"} with ${langs} language${langs > 1 ? "s" : ""} covered.`,
+    recommended: [
+      "Isabella handles 100% of inbound — calls, forms, chat, DMs — 24/7 in every language.",
+      "Existing staff focus on VIP relationships, on-site handling, and human escalations only.",
+      "Owner/manager receives a daily digest: captured leads, qualified opportunities, escalations needing a human reply.",
+    ],
+    expected_outcome: [
+      "Inbound capture moves from ~" + (100 - missPct) + "% toward 95%+",
+      "First-response time drops from " + respMin + " min to under 5 seconds",
+      "Existing team's hours are reallocated to higher-value, in-person work",
+    ],
+  };
+
   const isabella_observation =
-    `${cfg.observation_hook} The dominant pattern in this profile is ${leakLabel}: at the current response time of ${respMin} minutes, roughly ${current.potential_pct}% of inbound leads are converting on speed alone, against an industry ceiling near ${optimal.potential_pct}%. Businesses with a similar shape typically recover the largest gains not by adding headcount but by closing the availability gap — every additional hour of coverage compounds on the conversions already in the pipeline.`;
+    `${cfg.observation_hook} The dominant pattern in this profile is ${leakLabel}: at the current response time of ${respMin} minutes, ` +
+    `roughly ${current.potential_pct}% of captured leads convert today, compared with an industry ceiling near ${optimal.potential_pct}% for sub-5-minute responders. ` +
+    `Businesses with a similar shape recover the largest gains not by adding headcount but by closing the availability gap — ` +
+    `every additional hour of coverage compounds on the conversions already in the pipeline.`;
 
   // Recommendations
   const recommendations: string[] = [
@@ -505,13 +566,16 @@ export function calcMissedLeads(args: {
     industry, industry_label: cfg.label,
     country,
     archetype: cfg.archetype,
+    diagnosis_profile,
     inputs: {
       monthly_inbound: inbound, miss_rate_pct: missPct, conversion_rate_pct: convPct,
       avg_deal_value_eur: deal, avg_response_minutes: respMin,
       business_hours_coverage: coverage, languages_served: langs,
     },
     missed_inquiries_per_month: missedPerMonth,
+    missed_inquiries_per_year,
     recoverable_customers_per_month: recoverablePerMonth,
+    lost_opportunities_per_year,
     monthly_revenue_loss_eur: monthlyRevenueLoss,
     annual_revenue_loss_eur: annualRevenueLoss,
     leak_breakdown_eur,
@@ -529,13 +593,16 @@ export function calcMissedLeads(args: {
     isabella_pro_tier_annual_eur,
     net_annual_benefit_eur: Math.round(net_annual_benefit_eur),
     roi_pct,
+    roi_display,
     payback_months,
     combined_business_case,
+    staffing_recommendation,
     isabella_observation,
     recommendations,
     notes: [
       "Industry miss-rate, conversion and leak-split benchmarks are directional 2024-2025 averages.",
-      "Speed-to-Lead model uses widely-cited inbound benchmarks (<5 min ≈ 100% potential vs ~11% at 30-60 min).",
+      "Speed-to-Lead model uses calibrated inbound benchmarks (~22% conversion at <5 min vs ~3% at 4+ hours — roughly a 5-10x speed advantage, in line with Harvard/InsideSales research).",
+      "Recoverable revenue from speed is capped at 80% of the headline leak to avoid double-counting.",
       "All figures are educational; actual results depend on follow-up speed, CRM hygiene and offer quality.",
     ],
   };

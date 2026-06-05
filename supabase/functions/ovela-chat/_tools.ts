@@ -615,11 +615,19 @@ export function nutritionAssessment(args: {
   ];
 
   const supportPct = Math.round(overall * 0.95);
-  const limiting =
-    proteinScore < carbsScore && proteinScore < hydrationScore ? "protein intake (and how it is distributed across the day)" :
-    hydrationScore < carbsScore ? "hydration" :
-    recoveryScore < 60 ? "recovery support (sleep, meal timing, vegetables)" :
-    "overall consistency";
+
+  // ── Single prioritization engine (one source of truth) ──────────────
+  // Lowest weighted score across the core nutrition pillars determines
+  // the "largest limiting factor" used everywhere in the report.
+  const pillarRanking = [
+    { key: "protein",       label: "protein intake (and how it is distributed across the day)", short: "Protein adequacy",       score: proteinScore },
+    { key: "distribution",  label: "protein distribution across the day",                       short: "Protein distribution",   score: distributionScore ?? proteinScore },
+    { key: "hydration",     label: "hydration",                                                 short: "Hydration",              score: hydrationScore },
+    { key: "recovery",      label: "recovery support (sleep, meal timing, vegetables)",         short: "Recovery support",       score: recoveryScore },
+    { key: "muscle",        label: "muscle-preservation inputs (protein + resistance training)",short: "Muscle preservation",    score: musclePres },
+  ].sort((a, b) => a.score - b.score);
+  const primaryLimiter = pillarRanking[0];
+  const limiting = primaryLimiter.label;
   const summaryRisks: string[] = [];
   if (proteinScore < 70) summaryRisks.push("reduced muscle mass and slower recovery");
   if (hydrationScore < 70) summaryRisks.push("lower energy stability");

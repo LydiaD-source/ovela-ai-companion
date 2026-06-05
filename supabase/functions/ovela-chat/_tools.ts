@@ -495,8 +495,18 @@ export function nutritionAssessment(args: {
         return Math.round(avg * 0.75 + minScore * 0.25);
       })()
     : null;
+  // Inferred fallback when per-meal grams weren't captured — still gives a meaningful narrative.
+  const inferredDistributionStatus = (() => {
+    if (args.low_protein_breakfast && (proteinGap ?? 0) > 20)
+      return "Poor — protein is concentrated in evening meals; breakfast is significantly under target.";
+    if (args.low_protein_breakfast)
+      return "Moderate — breakfast remains below target while later meals carry most of the day's protein.";
+    if ((proteinGap ?? 0) > 25)
+      return "Moderate — total daily protein is below target; even distribution across meals would help.";
+    return "Likely even — no obvious meal is leaving a major protein gap based on the diary.";
+  })();
   const distributionStatus = distributionScore == null
-    ? "Add per-meal protein amounts to score distribution."
+    ? inferredDistributionStatus
     : distributionScore >= 80 ? "Excellent — protein spread evenly across the day."
     : distributionScore >= 55 ? "Moderate — one or two meals are protein-light."
     : "Poor — protein is concentrated at one meal. Anchoring breakfast is your biggest win.";

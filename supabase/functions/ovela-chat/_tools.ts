@@ -647,7 +647,7 @@ export function nutritionAssessment(args: {
       weekly_kg_high: Math.min(0.9, weeklyHigh),
       monthly_kg_low: Math.round(weeklyLow * 4 * 10) / 10,
       monthly_kg_high: Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10,
-      note: "Educational estimate only. Real-world progress depends on adherence, sleep, stress and hormonal factors.",
+      note: `A sustainable fat-loss rate for this profile is approximately ${Math.round(weeklyLow * 4 * 10) / 10}-${Math.round(Math.min(0.9, weeklyHigh) * 4 * 10) / 10} kg per month when nutrition, activity and recovery remain consistent. Educational estimate only.`,
     };
   })() : null;
 

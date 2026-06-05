@@ -384,6 +384,8 @@ export function nutritionAssessment(args: {
   time_budget?: TimeBudget;
   habit_upgrades?: Array<{ existing_meal?: string; upgrade?: string; why?: string }>;
   nutrition_risk_flags?: Array<{ nutrient?: string; confidence?: "low" | "moderate" | "high"; reasoning?: string }>;
+  meal_framework_replacements?: Array<{ slot?: "Breakfast" | "Lunch" | "Snack" | "Dinner"; current?: string; upgrade?: string }>;
+  top_meals?: { strongest?: { meal?: string; why_it_works?: string[]; score?: number }; weakest?: { meal?: string; why_it_hurts?: string[]; score?: number } };
   oily_fish_per_week?: number;
   vegetable_servings_per_day?: number;
 }) {
@@ -480,21 +482,29 @@ export function nutritionAssessment(args: {
   };
   const distScores = distMeals.map(m => ({ ...m, score: scoreMeal(m.g, m.meal === "Snack") }));
   const valid = distScores.filter(d => d.score != null) as { meal: string; g: number; score: number }[];
-  const distributionScore = valid.length ? Math.round(valid.reduce((a, b) => a + b.score, 0) / valid.length) : null;
+  // Weighted blend of average + worst meal — penalises a single under-target meal.
+  const distributionScore = valid.length
+    ? (() => {
+        const avg = valid.reduce((a, b) => a + b.score, 0) / valid.length;
+        const minScore = Math.min(...valid.map(v => v.score));
+        return Math.round(avg * 0.75 + minScore * 0.25);
+      })()
+    : null;
   const distributionStatus = distributionScore == null
     ? "Add per-meal protein amounts to score distribution."
     : distributionScore >= 80 ? "Excellent — protein spread evenly across the day."
     : distributionScore >= 55 ? "Moderate — one or two meals are protein-light."
     : "Poor — protein is concentrated at one meal. Anchoring breakfast is your biggest win.";
 
-  // Muscle preservation with explicit reasons.
+  // Muscle preservation with explicit reasons (tightened — clinician-grade weighting).
   const strength = args.strength_sessions_per_week ?? 0;
   let musclePres = 50;
   if (args.est_protein_g != null) {
     const r = args.est_protein_g / proteinMid;
-    musclePres = Math.round(20 + Math.min(1, r) * 60);
+    // non-linear penalty when below target; flat once at/above target
+    musclePres = Math.round(20 + Math.min(1, r) ** 1.2 * 55);
   }
-  musclePres += Math.min(strength, 4) * 6;
+  musclePres += Math.min(strength, 4) * 5;
   if (age >= 50) musclePres -= 10; else if (age >= 40) musclePres -= 6;
   if (gender === "female" && age >= 50) musclePres -= 4;
   musclePres = Math.max(10, Math.min(100, musclePres));
@@ -799,16 +809,15 @@ export function nutritionAssessment(args: {
     Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.20
   )));
   const executiveReadinessLevel =
-    executiveReadiness >= 80 ? "Optimized" :
-    executiveReadiness >= 60 ? "Functional but leaking performance" :
-    executiveReadiness >= 40 ? "Recovery deficit" :
-                               "High risk of exhaustion";
+    executiveReadiness >= 80 ? "Optimized nutrition" :
+    executiveReadiness >= 60 ? "Functional — clear room to improve" :
+    executiveReadiness >= 40 ? "Nutrition deficit" :
+                               "High nutritional risk";
 
   // ── Executive Benchmark (peer comparison — psychologically motivating) ─
   const cohortLabel = (() => {
-    const g = gender === "female" ? "Women" : gender === "male" ? "Men" : "Adults";
     const lo = Math.max(20, Math.floor(age / 5) * 5);
-    return `${g} aged ${lo}-${lo + 9}`;
+    return `Adults aged ${lo}-${lo + 9}`;
   })();
   const posLabel = (s: number) =>
     s >= 80 ? "Top 20%" :
@@ -863,7 +872,7 @@ export function nutritionAssessment(args: {
     items: benchmarkItems,
     overall_readiness: executiveReadiness,
     overall_position: overallPosition,
-    note: "Peer ranges are educational estimates drawn from European executive-wellness population data — not clinical benchmarks.",
+    note: "Peer ranges are educational estimates drawn from European adult-wellness population data — not clinical benchmarks.",
   };
 
   // ── Reassessment projection (retention hook — "come back in 14 days") ─
@@ -896,7 +905,7 @@ export function nutritionAssessment(args: {
   const clinicalPerspective =
     `Based on current habits, the strongest opportunities for improvement are ${clinicalOpportunities.slice(0, 3).join(", ")}. ` +
     `These are commonly observed factors affecting energy, body composition, and long-term resilience in adults${age >= 45 ? " over 45" : ""}. ` +
-    `This perspective is consistent with the executive-wellness framework used by WellneSpirit's practitioners — it is educational, not diagnostic.`;
+    `This perspective is educational, not diagnostic — confirm with a qualified clinician if relevant.`;
 
   // ── Nutrition risk flags (observational micronutrient inference) ────
   // Combines model-supplied flags with deterministic inferences from the diary.
@@ -982,6 +991,35 @@ export function nutritionAssessment(args: {
     note: TIME_BUDGET_NOTE[timeBudget],
   } : null;
 
+  // ── Personalised meal framework (current → upgrade, anchored to diary) ─
+  const allowedSlots = new Set(["Breakfast", "Lunch", "Snack", "Dinner"]);
+  const mealFrameworkReplacements = (args.meal_framework_replacements ?? [])
+    .filter(m => m && typeof m === "object")
+    .map(m => ({
+      slot: (m.slot ?? "").toString().trim(),
+      current: (m.current ?? "").toString().trim(),
+      upgrade: (m.upgrade ?? "").toString().trim(),
+    }))
+    .filter(m => allowedSlots.has(m.slot) && m.current && m.upgrade)
+    .slice(0, 4);
+
+  // ── Top meals from your week (strongest + weakest) ─────────────────
+  const cleanWhy = (arr?: unknown): string[] =>
+    Array.isArray(arr) ? arr.map(x => String(x ?? "").trim()).filter(Boolean).slice(0, 4) : [];
+  const tm = args.top_meals;
+  const topMeals = tm && (tm.strongest?.meal || tm.weakest?.meal) ? {
+    strongest: tm.strongest?.meal ? {
+      meal: String(tm.strongest.meal).trim(),
+      why_it_works: cleanWhy(tm.strongest.why_it_works),
+      score: typeof tm.strongest.score === "number" ? Math.max(0, Math.min(100, Math.round(tm.strongest.score))) : null,
+    } : null,
+    weakest: tm.weakest?.meal ? {
+      meal: String(tm.weakest.meal).trim(),
+      why_it_hurts: cleanWhy(tm.weakest.why_it_hurts),
+      score: typeof tm.weakest.score === "number" ? Math.max(0, Math.min(100, Math.round(tm.weakest.score))) : null,
+    } : null,
+  } : null;
+
 
 
   return {
@@ -1035,18 +1073,20 @@ export function nutritionAssessment(args: {
       score: executiveReadiness,
       level: executiveReadinessLevel,
       scale: [
-        "80-100 = Optimized",
-        "60-79 = Functional but leaking performance",
-        "40-59 = Recovery deficit",
-        "Below 40 = High risk of exhaustion",
+        "80-100 = Optimized nutrition",
+        "60-79 = Functional — clear room to improve",
+        "40-59 = Nutrition deficit",
+        "Below 40 = High nutritional risk",
       ],
-      measures: ["Recovery", "Nutrition", "Muscle preservation", "Daily resilience"],
+      measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
     },
     executive_benchmark: executiveBenchmark,
     reassessment_projection: reassessmentProjection,
     success_preview: successPreview,
     nutrition_risk_flags: nutritionRiskFlags,
     habit_upgrades: habitUpgrades,
+    meal_framework_replacements: mealFrameworkReplacements,
+    top_meals: topMeals,
     time_budget: timeBudgetBlock,
     clinical_perspective: clinicalPerspective,
     executive_summary: executiveSummary,

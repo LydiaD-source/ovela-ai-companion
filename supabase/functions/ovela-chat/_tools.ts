@@ -813,6 +813,12 @@ export function nutritionAssessment(args: {
     weekly_action_plan: { priorities: weeklyActions, expected_benefits: expectedBenefits },
     lifestyle_factors: lifestyleFactors,
     weight_loss_projection: weightLossProjection,
+    score_drivers: {
+      hydration: hydrationDrivers,
+      carbs: carbsDrivers,
+      recovery_support: recoveryDrivers,
+    },
+    executive_performance_impact: executivePerformanceImpact,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

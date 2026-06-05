@@ -34,7 +34,13 @@ export function extractAssessmentReport(text: string): {
   if (!m) return { report: null, cleaned: text };
   try {
     const parsed = JSON.parse(m[1].trim());
-    if (parsed && (parsed.type === 'nutrition_assessment' || parsed.type === 'biological_age') && parsed.data) {
+    // Accept new + legacy report type names
+    if (parsed && parsed.data && (
+      parsed.type === 'nutrition_assessment' ||
+      parsed.type === 'recovery_resilience' ||
+      parsed.type === 'biological_age'
+    )) {
+      if (parsed.type === 'biological_age') parsed.type = 'recovery_resilience';
       return {
         report: parsed as AssessmentReport,
         cleaned: text.replace(re, '').trim(),

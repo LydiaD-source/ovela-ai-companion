@@ -1007,8 +1007,13 @@ After any tool call, present results conversationally (1 short paragraph + key b
           } else if (toolCall.function?.name === 'calculate_missed_leads') {
             try {
               const args = JSON.parse(toolCall.function.arguments || "{}");
+              // Auto-link with receptionist payload from same session
+              if (!args.human_true_annual_cost_eur && receptionistReportPayload?.true_annual_cost_eur?.mid) {
+                args.human_true_annual_cost_eur = receptionistReportPayload.true_annual_cost_eur.mid;
+              }
               const result = calcMissedLeads(args);
-              console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound });
+              console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound, leak: result.annual_revenue_loss_eur });
+              missedLeadsReportPayload = result;
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

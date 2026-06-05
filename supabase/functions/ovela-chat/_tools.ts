@@ -903,7 +903,7 @@ export function nutritionAssessment(args: {
   const clinicalPerspective =
     `Based on current habits, the strongest opportunities for improvement are ${clinicalOpportunities.slice(0, 3).join(", ")}. ` +
     `These are commonly observed factors affecting energy, body composition, and long-term resilience in adults${age >= 45 ? " over 45" : ""}. ` +
-    `This perspective is consistent with the executive-wellness framework used by WellneSpirit's practitioners — it is educational, not diagnostic.`;
+    `This perspective is educational, not diagnostic — confirm with a qualified clinician if relevant.`;
 
   // ── Nutrition risk flags (observational micronutrient inference) ────
   // Combines model-supplied flags with deterministic inferences from the diary.

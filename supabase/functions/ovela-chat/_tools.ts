@@ -87,18 +87,31 @@ function pickArchetype(role: RoleKey, shifts: string, languages: number, _premiu
   return { id:"standard_front_desk", label:"The Standard Front Desk", description:"Business-hours reception with a stable, predictable call and visitor flow." };
 }
 
+// Role-level defaults for revenue modeling when caller doesn't pass them in.
+const ROLE_REVENUE_DEFAULTS: Record<RoleKey, { monthly_inbound: number; avg_deal_value_eur: number; conversion_pct: number; capture_avg: number; capture_top: number; benchmark_label: string }> = {
+  receptionist:              { monthly_inbound: 250, avg_deal_value_eur: 250,  conversion_pct: 25, capture_avg: 65, capture_top: 94, benchmark_label: "Front-desk benchmark" },
+  front_desk_clinic:         { monthly_inbound: 400, avg_deal_value_eur: 120,  conversion_pct: 40, capture_avg: 70, capture_top: 96, benchmark_label: "Medical clinic benchmark" },
+  hotel_concierge:           { monthly_inbound: 350, avg_deal_value_eur: 280,  conversion_pct: 30, capture_avg: 68, capture_top: 95, benchmark_label: "Hotel concierge benchmark" },
+  real_estate_junior_filter: { monthly_inbound: 200, avg_deal_value_eur: 1500, conversion_pct: 12, capture_avg: 55, capture_top: 92, benchmark_label: "Real-estate office benchmark" },
+  customer_support_agent:    { monthly_inbound: 600, avg_deal_value_eur: 200,  conversion_pct: 25, capture_avg: 75, capture_top: 97, benchmark_label: "Customer support benchmark" },
+  executive_assistant:       { monthly_inbound: 80,  avg_deal_value_eur: 300,  conversion_pct: 20, capture_avg: 80, capture_top: 98, benchmark_label: "Executive office benchmark" },
+};
+
 export function calcReceptionistCost(args: {
   country?: string;
   role?: RoleKey;
   languages?: number;
   shifts?: "business" | "extended" | "247";
   premium_skills?: boolean;
+  monthly_inbound?: number;
+  avg_deal_value_eur?: number;
 }) {
   const country = (args.country || "ES").toUpperCase();
   const role: RoleKey = (args.role as RoleKey) || "receptionist";
   const langs = Math.max(1, Math.min(args.languages ?? 1, 6));
   const shifts = args.shifts || "business";
   const premium = !!args.premium_skills;
+
 
   const table = SALARY[country] || SALARY.ES;
   const band = table[role] || SALARY.ES.receptionist!;
@@ -186,6 +199,91 @@ export function calcReceptionistCost(args: {
       : `Even before counting hidden costs, the salary delta alone justifies the switch within the first fiscal year.`,
   ];
 
+  // ─── Revenue Protected (estimated) ─────────────────────────────────
+  const rd = ROLE_REVENUE_DEFAULTS[role] || ROLE_REVENUE_DEFAULTS.receptionist;
+  const monthlyInbound = Math.max(0, args.monthly_inbound ?? rd.monthly_inbound);
+  const dealValue = Math.max(0, args.avg_deal_value_eur ?? rd.avg_deal_value_eur);
+  // Baseline miss rate by coverage, softened by multilingual support.
+  const baseMissRate = shifts === "247" ? 0.12 : shifts === "extended" ? 0.22 : 0.35;
+  const langMissAdjust = langs >= 3 ? -0.05 : langs === 2 ? -0.02 : 0;
+  const currentMissRate = Math.max(0.05, baseMissRate + langMissAdjust);
+  const missedPerMonth = Math.round(monthlyInbound * currentMissRate);
+  const monthlyRevenueLost = missedPerMonth * (rd.conversion_pct / 100) * dealValue;
+  const annual_revenue_protected_eur = Math.round(monthlyRevenueLost * 12);
+  const revenue_protected = {
+    monthly_inbound_assumed: monthlyInbound,
+    avg_deal_value_eur: dealValue,
+    conversion_pct_assumed: rd.conversion_pct,
+    current_miss_rate_pct: Math.round(currentMissRate * 100),
+    missed_inquiries_per_month: missedPerMonth,
+    annual_revenue_at_risk_eur: annual_revenue_protected_eur,
+    user_provided_inputs: !!(args.monthly_inbound || args.avg_deal_value_eur),
+  };
+
+  // ─── Operational Risk Flags ───────────────────────────────────────
+  const tier = (lvl: "Low" | "Moderate" | "High") => lvl;
+  const after_hours_risk = shifts === "business" ? "High" : shifts === "extended" ? "Moderate" : "Low";
+  const language_risk = langs <= 1 ? "High" : langs === 2 ? "Moderate" : "Low";
+  const turnover_risk = (country === "ES" || country === "PT" || country === "IT") ? "High" : "Moderate";
+  const coverage_risk = shifts === "business" ? "High" : shifts === "extended" ? "Moderate" : "Low";
+  const risk_flags = {
+    after_hours: tier(after_hours_risk as any),
+    language: tier(language_risk as any),
+    staff_turnover: tier(turnover_risk as any),
+    coverage: tier(coverage_risk as any),
+  };
+
+  // ─── Industry Benchmark ───────────────────────────────────────────
+  const current_capture_pct = Math.max(0, Math.round((1 - currentMissRate) * 100));
+  const industry_benchmark = {
+    label: rd.benchmark_label,
+    average_capture_pct: rd.capture_avg,
+    top_performer_capture_pct: rd.capture_top,
+    your_estimated_capture_pct: current_capture_pct,
+    gap_to_top_pct: Math.max(0, rd.capture_top - current_capture_pct),
+    languages_covered_avg: 2,
+    your_languages: langs,
+  };
+
+  // ─── Front Office Efficiency Score (0-100) ────────────────────────
+  const coverage_score   = shifts === "247" ? 95 : shifts === "extended" ? 70 : 40;
+  const cost_efficiency  = Math.max(20, Math.min(100, 50 + Math.round(pctSavings / 2)));
+  const language_score   = Math.min(100, 30 + langs * 15) + (premium ? 5 : 0);
+  const scalability      = shifts === "247" ? 90 : shifts === "extended" ? 65 : 35;
+  const fo_overall = Math.round((coverage_score + cost_efficiency + Math.min(100, language_score) + scalability) / 4);
+  const front_office_efficiency = {
+    overall: fo_overall,
+    drivers: {
+      coverage: coverage_score,
+      cost_efficiency: cost_efficiency,
+      language_support: Math.min(100, language_score),
+      scalability: scalability,
+    },
+    band: fo_overall >= 85 ? "Excellent" : fo_overall >= 70 ? "Strong" : fo_overall >= 55 ? "Adequate" : "At risk",
+    opportunity: `Move to 90+ by closing the coverage and language gaps automatically.`,
+  };
+
+  // ─── 12-Month Cost of Inaction ────────────────────────────────────
+  const turnover_exposure_12mo = Math.round(turnoverRisk * 2);
+  const cost_of_inaction = {
+    hidden_staffing_cost_eur: hiddenTotal,
+    missed_revenue_eur: annual_revenue_protected_eur,
+    turnover_exposure_eur: turnover_exposure_12mo,
+    total_opportunity_cost_eur: hiddenTotal + annual_revenue_protected_eur + turnover_exposure_12mo,
+    narrative: "Twelve months of unchanged front-office structure compounds hidden staffing waste, unrecovered missed revenue, and a likely turnover cycle.",
+  };
+
+  const archetype = pickArchetype(role, shifts, langs, premium);
+
+  const recommendations: string[] = [
+    `Start with the ${recommended_tier.charAt(0).toUpperCase() + recommended_tier.slice(1)} tier — it matches a ${shifts === '247' ? '24/7' : shifts === 'extended' ? 'extended-hours' : 'business-hours'} ${langs > 1 ? `multilingual (${langs} languages)` : 'single-language'} operation.`,
+    `Keep one human owner on the team (manager or office lead) — Isabella handles inbound, the human handles escalations and in-person hospitality.`,
+    `Track 3 KPIs from day 1: percentage of inbound captured, average response time, leads converted to bookings. Most operations move from 60-70% capture to >95% in the first month.`,
+    paybackMonths && paybackMonths <= 12
+      ? `At your scale the deployment pays for itself in roughly ${paybackMonths} month${paybackMonths === 1 ? '' : 's'} — well inside a single budget cycle.`
+      : `Even before counting hidden costs, the salary delta alone justifies the switch within the first fiscal year.`,
+  ];
+
   // Isabella Business Observation — narrative diagnosis layer
   const hiddenPct = Math.round((hiddenTotal / true_annual_cost_eur.mid) * 100);
   const coverageMult = coverage.coverage_multiplier;
@@ -193,12 +291,13 @@ export function calcReceptionistCost(args: {
     `The strongest pattern in this profile is not the headline salary — it is the structure of the cost stack and the coverage gap underneath it. ` +
     `Hidden costs (recruitment, training, turnover, sick cover, software) account for roughly ${hiddenPct}% of the true annual cost, a layer most owners do not see on payroll. ` +
     `On the coverage side, a single human FTE delivers ~${coverage.human_productive_hours_per_year} productive hours per year against Isabella's ${coverage.isabella_hours_per_year} — a ${coverageMult}× delta that is structural, not behavioural. ` +
-    `Businesses with this shape typically recover the largest gains through availability and language coverage rather than headcount reduction; the salary saving is the second-order benefit, not the first.`;
+    `Equally important, an estimated ${fmtRound(annual_revenue_protected_eur)} EUR of revenue per year is exposed to missed inbound at the current capture rate (${current_capture_pct}% vs a top-performer benchmark of ${rd.capture_top}%). ` +
+    `Businesses with this shape recover the largest gains through availability, language coverage and revenue protection — the salary saving is a second-order benefit, not the first.`;
 
   return {
     country, country_label: COUNTRY_LABEL[country] || country, role,
     role_label: ROLE_BASELINE[role]?.label || role,
-    inputs: { languages: langs, shifts, premium_skills: premium },
+    inputs: { languages: langs, shifts, premium_skills: premium, monthly_inbound: monthlyInbound, avg_deal_value_eur: dealValue },
     archetype,
     annual_gross_eur: baseGross,
     employer_oncost_multiplier: onCost,
@@ -218,6 +317,11 @@ export function calcReceptionistCost(args: {
     },
     tco_3yr_eur,
     tco_5yr_eur,
+    revenue_protected,
+    risk_flags,
+    industry_benchmark,
+    front_office_efficiency,
+    cost_of_inaction,
     country_note: COUNTRY_NOTE[country] || "",
     notes: [
       "Salaries are approximate Eurostat-style mid-2025 ranges.",
@@ -226,12 +330,18 @@ export function calcReceptionistCost(args: {
       "Extended hours ≈ 1.6×, 24/7 coverage ≈ 3.2× single FTE.",
       langs > 1 ? `Multilingual bonus applied for ${langs} languages (+${Math.round(languageBonus*100)}%).` : "Single-language role assumed.",
       "3-year and 5-year TCO assume 3.5% annual salary inflation and flat Isabella pricing.",
+      revenue_protected.user_provided_inputs
+        ? "Revenue Protected uses your stated inbound volume and deal value."
+        : "Revenue Protected uses conservative industry defaults; share your actual inbound volume and deal value for a sharper estimate.",
       "Isabella runs 24/7, every language, no sick days — published Ovela pricing shown for comparison.",
     ],
     isabella_observation,
     recommendations,
   };
 }
+
+function fmtRound(n: number) { return Math.round(n).toLocaleString('en-US'); }
+
 
 // ─── Missed Calls v2 — Revenue Leak Diagnostic ────────────────────────
 type IndustryKey =

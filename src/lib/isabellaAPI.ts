@@ -54,7 +54,18 @@ class IsabellaAPI {
   ): Promise<IsabellaResponse> {
     try {
       const { data: userInfo } = await supabase.auth.getUser();
-      const uid = userInfo?.user?.id ?? 'ovela-guest';
+      // Stable per-browser guest id so the 7-day free trial gate tracks the
+      // actual person, not the shared "ovela-guest" placeholder. Logged-in
+      // users always use their real auth id.
+      let guestId = '';
+      try {
+        guestId = localStorage.getItem('ovela_guest_id') || '';
+        if (!guestId) {
+          guestId = (crypto?.randomUUID?.() ?? `g_${Date.now()}_${Math.random().toString(36).slice(2)}`);
+          localStorage.setItem('ovela_guest_id', guestId);
+        }
+      } catch { /* storage unavailable */ }
+      const uid = userInfo?.user?.id ?? (guestId ? `guest:${guestId}` : 'ovela-guest');
 
       // Keep only last 10 messages for efficiency
       const recentHistory = conversationHistory?.slice(-10) || [];

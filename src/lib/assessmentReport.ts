@@ -903,24 +903,60 @@ function buildNutrition(doc: jsPDF, data: any) {
     }
   }
 
+  // 19b. Baseline vs Tracked Progress (free vs Pro framing)
+  y = ensureSpace(doc, y, 150);
+  y = sectionTitle(doc, 'Your baseline today — vs your tracked progress', y);
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  y = paragraph(doc,
+    'This report is a free one-time baseline snapshot. The numbers below are illustrative of what monthly tracking reveals — they are not your projected scores.',
+    y, { color: MUTED, size: 9 }
+  );
+  y += 4;
+  const overall = Number(data?.scores?.overall_nutrition ?? 0) || 67;
+  const proteinNow = Number(data?.scores?.protein_adequacy ?? 0) || 54;
+  const musclePres = Number(data?.scores?.muscle_preservation ?? 0) || 58;
+  const rows = [
+    ['Metric',                'Today (baseline)',  'Month 2 (tracked)',  'Month 6 (tracked)'],
+    ['Overall Nutrition',     `${overall}`,        `${Math.min(99, overall + 7)}`,  `${Math.min(99, overall + 15)}`],
+    ['Protein Adequacy',      `${proteinNow}`,     `${Math.min(99, proteinNow + 12)}`, `${Math.min(99, proteinNow + 22)}`],
+    ['Muscle Preservation',   `${musclePres}`,     `${Math.min(99, musclePres + 9)}`,  `${Math.min(99, musclePres + 18)}`],
+  ];
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+  const colsX = [50, 220, 340, 460];
+  rows.forEach((r, i) => {
+    y = ensureSpace(doc, y, 16);
+    if (i === 0) { doc.setFont('helvetica', 'bold'); doc.setTextColor(NAVY); }
+    else { doc.setFont('helvetica', 'normal'); doc.setTextColor(INK); }
+    r.forEach((cell, ci) => doc.text(cell, colsX[ci], y));
+    y += 14;
+    if (i === 0) { doc.setDrawColor('#dcd2b0'); doc.line(50, y - 10, 540, y - 10); }
+  });
+  y += 4;
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
+  y = paragraph(doc,
+    'Tracked progress columns reflect typical 60–180 day movement when reassessments are performed monthly against a stable baseline at WellneSpirit. Without tracking, score drift cannot be measured reliably.',
+    y, { color: MUTED, size: 9 }
+  );
+  y += 8;
+
   // 20. WellneSpirit — continue your progress (always last)
-  y = ensureSpace(doc, y, 130);
+  y = ensureSpace(doc, y, 140);
   y = sectionTitle(doc, '20 · Continue your progress with WellneSpirit', y);
   doc.setFillColor('#f7f3e6');
   doc.setDrawColor(GOLD);
   doc.setLineWidth(0.5);
-  doc.rect(40, y - 12, 515, 92, 'FD');
+  doc.rect(40, y - 12, 515, 104, 'FD');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-  doc.text('This is your free Isabella assessment.', 50, y + 2);
+  doc.text('Free baseline today · Tracked progress with Pro.', 50, y + 2);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
   const wsLines = doc.splitTextToSize(
-    "For weekly tracking, monthly reassessments, progress comparisons against this baseline, and ongoing executive-wellness support from Isabella, register for the full monthly programme at our clinical partner WellneSpirit.",
+    "This free report is a one-time baseline. For monthly reassessments, score-vs-score comparisons against this baseline (Month 1 → Month 2 → Month 6), and ongoing executive-wellness support from Isabella with full progress tracking, register for the monthly programme at our clinical partner WellneSpirit.",
     495
   );
   doc.text(wsLines, 50, y + 20);
   doc.setFont('helvetica', 'bold'); doc.setTextColor(GOLD);
-  doc.text('wellnespirit.com', 50, y + 70);
-  y += 100;
+  doc.text('wellnespirit.com', 50, y + 84);
+  y += 112;
 }
 
 

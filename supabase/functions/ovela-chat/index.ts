@@ -682,9 +682,12 @@ After any tool call, present results conversationally (1 short paragraph + key b
                 role: { type: "string", enum: ["receptionist","front_desk_clinic","hotel_concierge","real_estate_junior_filter","customer_support_agent","executive_assistant"] },
                 languages: { type: "number", description: "Total languages required (1 = native only). +5% per extra language." },
                 shifts: { type: "string", enum: ["business","extended","247"], description: "business ≈ 1× FTE, extended ≈ 1.6×, 247 ≈ 3.2× FTE for full coverage" },
-                premium_skills: { type: "boolean", description: "True for medical/legal/CRM specialist vocabulary." }
+                premium_skills: { type: "boolean", description: "True for medical/legal/CRM specialist vocabulary." },
+                monthly_inbound: { type: "number", description: "Optional: monthly inbound inquiries (calls + forms + DMs). Used to estimate Revenue Protected and Cost of Inaction. If omitted, role-based defaults apply." },
+                avg_deal_value_eur: { type: "number", description: "Optional: average customer / booking / case value in EUR. Used with monthly_inbound to size revenue at risk." }
               },
               required: ["country"]
+
             }
           }
         },

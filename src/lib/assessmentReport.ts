@@ -203,6 +203,17 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
     page_x_of_y: (p: any, n: any) => `pagina ${p} de ${n}`,
     disclaimer: 'Esta avaliacao e apenas educativa e informativa. Nao e um diagnostico medico e nao deve substituir a consulta com um profissional de saude qualificado.',
   },
+  it: {
+    brand: 'OVELA INTERACTIVE  ·  ISABELLA',
+    nutrition_title: 'Valutazione Nutrizione e Preservazione Muscolare',
+    recovery_title: 'Valutazione Esecutiva di Recupero e Resilienza',
+    receptionist_title: 'Costo della Reception e Valutazione del ROI',
+    missed_title: 'Diagnosi Chiamate Perse e Perdita di Ricavi',
+    summary: 'Riepilogo',
+    footer_attrib: 'Generato da Isabella · ovelainteractive.com',
+    page_x_of_y: (p: any, n: any) => `pagina ${p} di ${n}`,
+    disclaimer: 'Questa valutazione è solo a scopo educativo e informativo. Non è una diagnosi medica e non deve sostituire la consulenza di un professionista sanitario qualificato.',
+  },
 };
 function tr(lang: AssessmentLang, key: string): string {
   const v = PDF_STRINGS[lang]?.[key] ?? PDF_STRINGS.en[key];

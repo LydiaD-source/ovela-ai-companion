@@ -73,8 +73,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
       const p = JSON.parse(raw);
-      // Expire stale sessions after 24h to avoid showing yesterday's chat.
-      if (p?.savedAt && Date.now() - p.savedAt > 24 * 60 * 60 * 1000) return null;
+      // Expire stale sessions after 30 minutes — long enough to switch apps/upload
+      // photos, short enough that reopening the site later feels like a fresh start.
+      if (p?.savedAt && Date.now() - p.savedAt > 30 * 60 * 1000) return null;
       return p;
     } catch { return null; }
   };
@@ -95,24 +96,34 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header
+  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header.
+  // Once the stream is attached we keep it visible at full opacity so the user sees Isabella's face
+  // (idle + lip-sync) continuously without depending on per-speech-cycle fade events. This is the
+  // primary "she is here" cue on mobile where the hero full-body avatar is hidden.
   const headerVideoRef = useRef<HTMLVideoElement>(null);
+  const [hasHeaderStream, setHasHeaderStream] = useState(false);
   const [headerIsSpeaking, setHeaderIsSpeaking] = useState(false);
   useEffect(() => {
     const attach = () => {
       const stream = (window as any).__AVATAR_VIDEO_STREAM__ as MediaStream | undefined;
-      if (stream && headerVideoRef.current && headerVideoRef.current.srcObject !== stream) {
-        headerVideoRef.current.srcObject = stream;
-        headerVideoRef.current.play().catch(() => {});
+      const el = headerVideoRef.current;
+      if (stream && el && el.srcObject !== stream) {
+        el.srcObject = stream;
+        el.play().catch(() => {});
+        setHasHeaderStream(true);
       }
     };
     attach();
+    // Retry attach for a few seconds in case the chat header mounts before the D-ID stream resolves
+    const retry = window.setInterval(attach, 500);
+    window.setTimeout(() => window.clearInterval(retry), 8000);
     window.addEventListener('avatar-stream-ready', attach);
     const onStart = () => setHeaderIsSpeaking(true);
     const onEnd = () => setHeaderIsSpeaking(false);
     window.addEventListener('avatar-frame-ready', onStart);
     window.addEventListener('avatar-speech-end', onEnd);
     return () => {
+      window.clearInterval(retry);
       window.removeEventListener('avatar-stream-ready', attach);
       window.removeEventListener('avatar-frame-ready', onStart);
       window.removeEventListener('avatar-speech-end', onEnd);
@@ -403,26 +414,28 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       <div className="flex items-center justify-between p-3 border-b border-soft-white/10">
         <div className="flex items-center space-x-3">
           <div
-            className={`relative w-12 h-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+            className={`relative w-16 h-16 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
               headerIsSpeaking
-                ? 'border-champagne-gold shadow-[0_0_18px_rgba(212,175,55,0.6)]'
-                : 'border-champagne-gold/40'
+                ? 'border-champagne-gold shadow-[0_0_22px_rgba(212,175,55,0.7)]'
+                : 'border-champagne-gold/50'
             }`}
             style={{ background: '#0A0E27', flex: '0 0 auto' }}
           >
+            {/* Still photo fallback — only visible until the live D-ID stream attaches */}
             <img
               src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png"
               alt="Isabella"
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 12%',
-                transform: 'scale(1.6) translateY(6%)',
+                objectPosition: 'center 10%',
+                transform: 'scale(1.8) translateY(4%)',
                 transformOrigin: 'center top',
-                opacity: headerIsSpeaking ? 0 : 1,
-                transition: 'opacity 0.25s ease-in-out',
+                opacity: hasHeaderStream ? 0 : 1,
+                transition: 'opacity 0.4s ease-in-out',
               }}
             />
+            {/* Live animated head — mirrors the D-ID WebRTC stream, head-cropped */}
             <video
               ref={headerVideoRef}
               autoPlay
@@ -431,11 +444,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 12%',
-                transform: 'scale(1.6) translateY(6%)',
+                objectPosition: 'center 10%',
+                transform: 'scale(1.8) translateY(4%)',
                 transformOrigin: 'center top',
-                opacity: headerIsSpeaking ? 1 : 0,
-                transition: 'opacity 0.25s ease-in-out',
+                opacity: hasHeaderStream ? 1 : 0,
+                transition: 'opacity 0.4s ease-in-out',
                 background: '#0A0E27',
               }}
             />
@@ -447,8 +460,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         </div>
         
         <div className="flex items-center gap-2">
-          <button onClick={handleReset} className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title="Reset">
+          <button onClick={handleReset} className="px-3 py-1.5 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors flex items-center gap-1.5" title="Start a fresh conversation">
             <RotateCcw className="w-4 h-4 text-soft-white" />
+            <span className="text-xs text-soft-white font-medium">New</span>
           </button>
           
           {/* Custom Language Selector */}

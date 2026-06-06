@@ -413,26 +413,28 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       <div className="flex items-center justify-between p-3 border-b border-soft-white/10">
         <div className="flex items-center space-x-3">
           <div
-            className={`relative w-12 h-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+            className={`relative w-16 h-16 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
               headerIsSpeaking
-                ? 'border-champagne-gold shadow-[0_0_18px_rgba(212,175,55,0.6)]'
-                : 'border-champagne-gold/40'
+                ? 'border-champagne-gold shadow-[0_0_22px_rgba(212,175,55,0.7)]'
+                : 'border-champagne-gold/50'
             }`}
             style={{ background: '#0A0E27', flex: '0 0 auto' }}
           >
+            {/* Still photo fallback — only visible until the live D-ID stream attaches */}
             <img
               src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png"
               alt="Isabella"
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 12%',
-                transform: 'scale(1.6) translateY(6%)',
+                objectPosition: 'center 10%',
+                transform: 'scale(1.8) translateY(4%)',
                 transformOrigin: 'center top',
-                opacity: headerIsSpeaking ? 0 : 1,
-                transition: 'opacity 0.25s ease-in-out',
+                opacity: hasHeaderStream ? 0 : 1,
+                transition: 'opacity 0.4s ease-in-out',
               }}
             />
+            {/* Live animated head — mirrors the D-ID WebRTC stream, head-cropped */}
             <video
               ref={headerVideoRef}
               autoPlay
@@ -441,11 +443,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 12%',
-                transform: 'scale(1.6) translateY(6%)',
+                objectPosition: 'center 10%',
+                transform: 'scale(1.8) translateY(4%)',
                 transformOrigin: 'center top',
-                opacity: headerIsSpeaking ? 1 : 0,
-                transition: 'opacity 0.25s ease-in-out',
+                opacity: hasHeaderStream ? 1 : 0,
+                transition: 'opacity 0.4s ease-in-out',
                 background: '#0A0E27',
               }}
             />

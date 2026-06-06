@@ -280,19 +280,25 @@ export type Database = {
       assessment_trial: {
         Row: {
           assessment_count: number
+          assessment_type: string | null
           first_assessment_at: string
+          language: string | null
           last_assessment_at: string
           user_key: string
         }
         Insert: {
           assessment_count?: number
+          assessment_type?: string | null
           first_assessment_at?: string
+          language?: string | null
           last_assessment_at?: string
           user_key: string
         }
         Update: {
           assessment_count?: number
+          assessment_type?: string | null
           first_assessment_at?: string
+          language?: string | null
           last_assessment_at?: string
           user_key?: string
         }

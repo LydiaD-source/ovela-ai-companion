@@ -261,11 +261,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       // Extract any structured assessment report and strip it from the visible text.
       const { report: embeddedReport, cleaned } = extractAssessmentReport(rawText);
-      const report = isMeaningfulAssessmentReport(embeddedReport)
+      const baseReport = isMeaningfulAssessmentReport(embeddedReport)
         ? embeddedReport
         : isMeaningfulAssessmentReport(isa.assessmentReport)
           ? isa.assessmentReport
           : null;
+      // Stamp the user's chat language onto the report so the PDF chrome
+      // (header, section titles, footer) renders in their language.
+      const report: AssessmentReport | null = baseReport
+        ? { ...baseReport, language: selectedLanguage || baseReport.language || 'en' }
+        : null;
       const assistantText = cleaned || rawText;
 
       let selectedVideoIds: string[] | undefined;

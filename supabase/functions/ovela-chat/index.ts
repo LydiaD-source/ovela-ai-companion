@@ -1105,7 +1105,7 @@ After any tool call, present results conversationally (1 short paragraph + key b
               } else {
                 // 7-day free trial gate (Ovela / WellneSpirit free version)
                 const trialKey = `${clientId || 'ovela'}::${userId || 'guest'}`;
-                const trial = await checkAndRecordTrial(trialKey);
+                const trial = await recordAssessment(trialKey, 'nutrition_assessment', language);
                 if (trial.trial_expired) {
                   console.warn('⏳ Trial expired — blocking PDF, sending WellneSpirit upsell', { trialKey, daysUsed: trial.days_used });
                   nutritionReportPayload = null;

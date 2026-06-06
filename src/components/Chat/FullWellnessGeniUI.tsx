@@ -326,14 +326,16 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     sendMessageRef.current = sendMessage;
   }, [sendMessage]);
 
-  // Auto-send an initial message once (used for partner-context preload)
+  // Auto-send an initial message once (used for partner-context preload).
+  // Skip if we restored a prior conversation — don't re-launch an assessment
+  // the user is already in the middle of.
   const initialSentRef = useRef(false);
   useEffect(() => {
-    if (initialMessage && !initialSentRef.current) {
+    if (initialMessage && !initialSentRef.current && messages.length === 0) {
       initialSentRef.current = true;
-      // small delay so UI mounts cleanly
       setTimeout(() => sendMessageRef.current?.(initialMessage), 250);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -344,6 +346,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
 
   const handleReset = () => {
     setMessages([]);
+    setToolCtx(null);
+    setShownByCategory({});
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
     toast({ title: "Chat Reset", description: "Conversation cleared." });
   };
 

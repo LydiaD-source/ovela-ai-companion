@@ -44,7 +44,7 @@ const Home = () => {
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);
-  const activateChatRef = useRef<(() => void) | null>(null);
+  const activateChatRef = useRef<((opts?: { seeded?: boolean }) => void) | null>(null);
 
   // Register video element globally for StreamingService
   useEffect(() => {
@@ -171,7 +171,7 @@ const Home = () => {
     }
 
     // Defer to next tick so activateChatRef is populated by its sync effect.
-    const fireActivate = () => setTimeout(() => activateChatRef.current?.(), 0);
+    const fireActivate = (seeded: boolean) => setTimeout(() => activateChatRef.current?.({ seeded }), 0);
 
     if (toolSeed?.initialPrompt) {
       (window as any).__ISABELLA_CTX__ = {
@@ -182,7 +182,7 @@ const Home = () => {
         detail: { tool_context: toolSeed.tool_context, authority_topic: toolSeed.authority_topic }
       }));
       setInitialChatMessage(toolSeed.initialPrompt);
-      fireActivate();
+      fireActivate(true);
       window.history.replaceState({}, '', '/');
       return;
     }
@@ -191,10 +191,10 @@ const Home = () => {
       const label = partnerLabels[partner];
       const msg = `I'd like to register for Ovela Network membership${partner === 'general' ? '' : ` for ${label} access`}. Please acknowledge my interest, confirm my details will be sent to the Ovela team, and go straight into collecting my information (full name, email, company, country, and a short note on what I'm looking for). Skip the presentation — I'll ask if I want to know more.`;
       setInitialChatMessage(msg);
-      fireActivate();
+      fireActivate(true);
       window.history.replaceState({}, '', '/');
     } else if (params.get('chat') === 'open') {
-      fireActivate();
+      fireActivate(false);
       window.history.replaceState({}, '', '/');
     }
   }, []);
@@ -219,9 +219,20 @@ const Home = () => {
   }, []);
 
   // Activate chat and initialize D-ID connection
-  const activateChat = useCallback(async () => {
+  const activateChat = useCallback(async (opts?: { seeded?: boolean }) => {
     console.log('[Home] 🟢 Activating chat');
-    
+
+    // If this is a plain "Ask About Digital Employees" open (no tool seed,
+    // no partner preset), clear any leftover assessment context/messages from
+    // a previous session so Isabella doesn't greet with the wrong topic
+    // (e.g. nutrition prompt persisting after a prior assessment).
+    if (!opts?.seeded) {
+      try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
+      try { delete (window as any).__ISABELLA_CTX__; } catch {}
+      window.dispatchEvent(new Event('isabella:reset'));
+      setInitialChatMessage(undefined);
+    }
+
     // Unlock audio context (browser autoplay policy workaround)
     try {
       const silentAudio = new Audio();
@@ -259,7 +270,7 @@ const Home = () => {
       detail: { tool_context: payload.tool_context, authority_topic: payload.authority_topic }
     }));
     setInitialChatMessage(payload.initialPrompt);
-    activateChat();
+    activateChat({ seeded: true });
     // Smooth scroll back up so the user sees Isabella respond
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
   }, [activateChat]);
@@ -386,7 +397,7 @@ const Home = () => {
                   {/* Primary CTAs row */}
                   <div className="hero-btn-row">
                     <button 
-                      onClick={activateChat}
+                      onClick={() => activateChat()}
                       className="hero-btn-primary"
                     >
                       {t('hero.cta')}

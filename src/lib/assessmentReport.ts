@@ -1408,8 +1408,8 @@ function fmtEUR(n: number | undefined | null): string {
   return `EUR ${Math.round(n).toLocaleString('en-US').replace(/,/g, ' ')}`;
 }
 
-function buildBusinessCalculator(doc: jsPDF, data: any) {
-  header(doc, 'Receptionist Cost & ROI Assessment');
+function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LANG) {
+  header(doc, tr(lang, 'receptionist_title'), lang);
   let y = 110;
 
   // 1. Executive snapshot

@@ -430,23 +430,48 @@
     min-height: 100dvh;
   }
 
-  /* Isabella becomes a compact top band, not half the screen */
+  /* Isabella becomes a circular FACE-ONLY avatar on mobile */
   .isabella-container {
     width: 100%;
-    height: 32vh;
-    max-height: 280px;
-    align-items: flex-end;
+    height: auto;
+    align-items: center;
     justify-content: center;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
   }
 
+  .isabella-image-wrapper {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.5);
+    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.35), 0 0 0 6px rgba(212, 175, 55, 0.08);
+    background: #0A0E27;
+    flex: 0 0 auto;
+  }
+
+  /* Crop to face: scale up and anchor to head */
   .isabella-hero-image {
-    max-height: 32vh;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center 12%;
     margin-left: 0;
+    transform: scale(1.6) translateY(6%);
+    transform-origin: center top;
   }
 
   .isabella-spotlight {
-    width: 320px;
-    height: 360px;
+    width: 220px;
+    height: 220px;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .isabella-backlight {
+    display: none;
   }
 
   /* Text column gets the rest, stays readable */
@@ -513,8 +538,29 @@
     max-height: 100dvh;
     border-radius: 0;
     border: none;
-    padding-top: env(safe-area-inset-top, 0px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 140px);
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
+  }
+
+  /* When chat is active on mobile, float Isabella's face above the chat */
+  .hero-section.chat-active .isabella-container {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 0;
+    z-index: 10001;
+  }
+
+  .hero-section.chat-active .isabella-image-wrapper {
+    width: 96px;
+    height: 96px;
+  }
+
+  .hero-section.chat-active .isabella-spotlight {
+    width: 140px;
+    height: 140px;
   }
 
   .hero-chat-overlay.active .hero-chat-close {

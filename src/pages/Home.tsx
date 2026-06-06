@@ -294,7 +294,7 @@ const Home = () => {
 
       <div>
         {/* Luxury Hero Section */}
-        <section className="hero-section">
+        <section className={`hero-section ${isChatActive ? 'chat-active' : ''}`}>
           {/* Deep Navy to Black Gradient Background */}
           <div className="hero-gradient-bg"></div>
           

@@ -156,8 +156,19 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const d = (e as CustomEvent).detail || {};
       setToolCtx({ tool_context: d.tool_context, authority_topic: d.authority_topic });
     };
+    const onReset = () => {
+      setMessages([]);
+      setToolCtx(null);
+      setShownByCategory({});
+      setPendingAttachments([]);
+      try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    };
     window.addEventListener('isabella:tool-context', onCtx as EventListener);
-    return () => window.removeEventListener('isabella:tool-context', onCtx as EventListener);
+    window.addEventListener('isabella:reset', onReset as EventListener);
+    return () => {
+      window.removeEventListener('isabella:tool-context', onCtx as EventListener);
+      window.removeEventListener('isabella:reset', onReset as EventListener);
+    };
   }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);

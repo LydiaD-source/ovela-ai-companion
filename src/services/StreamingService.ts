@@ -314,7 +314,8 @@ class PersistentStreamManager {
 
       const targetAspect = targetWidth / targetHeight;
       const sourceAspect = sourceWidth / sourceHeight;
-      const frameY = window.innerWidth < 768 ? 0.35 : 0.28;
+      const isMobileViewport = window.innerWidth < 768;
+      const frameY = isMobileViewport ? 0.34 : 0.3;
       let sx = 0;
       let sy = 0;
       let sw = sourceWidth;
@@ -328,11 +329,14 @@ class PersistentStreamManager {
         sy = (sourceHeight - sh) * frameY;
       }
 
-      const animatedScale = window.innerWidth < 768 ? 0.94 : 0.9;
+      // Keep the generated D-ID frame nearly full-size. The previous 0.9 scale
+      // left transparent side gutters, so users saw the navy holder replacing
+      // Isabella's original grey portrait background during speech.
+      const animatedScale = isMobileViewport ? 0.98 : 0.965;
       const drawWidth = targetWidth * animatedScale;
       const drawHeight = targetHeight * animatedScale;
       const drawX = (targetWidth - drawWidth) / 2;
-      const drawY = (targetHeight - drawHeight) / 2 + (window.innerWidth < 768 ? 0 : targetHeight * 0.025);
+      const drawY = (targetHeight - drawHeight) / 2 + (isMobileViewport ? 0 : targetHeight * 0.008);
 
       ctx.clearRect(0, 0, targetWidth, targetHeight);
       ctx.drawImage(this.hiddenVideo, sx, sy, sw, sh, drawX, drawY, drawWidth, drawHeight);

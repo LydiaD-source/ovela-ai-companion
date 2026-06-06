@@ -95,24 +95,34 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header
+  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header.
+  // Once the stream is attached we keep it visible at full opacity so the user sees Isabella's face
+  // (idle + lip-sync) continuously without depending on per-speech-cycle fade events. This is the
+  // primary "she is here" cue on mobile where the hero full-body avatar is hidden.
   const headerVideoRef = useRef<HTMLVideoElement>(null);
+  const [hasHeaderStream, setHasHeaderStream] = useState(false);
   const [headerIsSpeaking, setHeaderIsSpeaking] = useState(false);
   useEffect(() => {
     const attach = () => {
       const stream = (window as any).__AVATAR_VIDEO_STREAM__ as MediaStream | undefined;
-      if (stream && headerVideoRef.current && headerVideoRef.current.srcObject !== stream) {
-        headerVideoRef.current.srcObject = stream;
-        headerVideoRef.current.play().catch(() => {});
+      const el = headerVideoRef.current;
+      if (stream && el && el.srcObject !== stream) {
+        el.srcObject = stream;
+        el.play().catch(() => {});
+        setHasHeaderStream(true);
       }
     };
     attach();
+    // Retry attach for a few seconds in case the chat header mounts before the D-ID stream resolves
+    const retry = window.setInterval(attach, 500);
+    window.setTimeout(() => window.clearInterval(retry), 8000);
     window.addEventListener('avatar-stream-ready', attach);
     const onStart = () => setHeaderIsSpeaking(true);
     const onEnd = () => setHeaderIsSpeaking(false);
     window.addEventListener('avatar-frame-ready', onStart);
     window.addEventListener('avatar-speech-end', onEnd);
     return () => {
+      window.clearInterval(retry);
       window.removeEventListener('avatar-stream-ready', attach);
       window.removeEventListener('avatar-frame-ready', onStart);
       window.removeEventListener('avatar-speech-end', onEnd);

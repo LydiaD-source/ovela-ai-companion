@@ -1,96 +1,58 @@
-# Final Free-Version Polish (Ovela + WellneSpirit upsell)
+## Why only one row exists in `assessment_trial`
 
-Goal: lock the **Free Assessment v1.0** so it's ready to publish on both ovelainteractive.com and wellnespirit.com. After this, the next stage (paid Pro on WellneSpirit) adds Stripe, accounts, weekly tracking, memory.
+Two real bugs in `supabase/functions/ovela-chat/index.ts`:
 
-This plan only covers what we do **now** in the free version. Paid features are deferred.
+1. **`checkAndRecordTrial` is only called inside the nutrition branch** — recovery/resilience, biological-age, and the business calculators never write a row.
+2. **All guest sessions used to share the same `user_key`** (`ovela_client_001::ovela-guest`). Today's row literally is that shared key with `assessment_count = 5`, which is why the WG admin sees "1 row, many users". We already switched the frontend to a per-browser `guest:<uuid>` for chat, but legacy sessions and any non-chat entry points still collapse to `ovela-guest`.
 
----
+WG's RLS GRANT is their side; on our side we just need to make sure writes happen and are uniquely keyed.
 
-## 1. Trial gating (7-day free window)
+## Plan
 
-**Where:** `supabase/functions/ovela-chat/index.ts` + tiny client signal.
+### 1. Track every assessment, not just nutrition
 
-- Track `first_assessment_at` per `user_id` in a lightweight Supabase table (`assessment_trial`) — anonymous users keyed by stable `client_id` cookie already sent.
-- On every assessment tool call, the edge function:
-  - If no record → insert `first_assessment_at = now()`, allow.
-  - If record exists and `now() - first_assessment_at <= 7 days` → allow.
-  - If > 7 days → still return the report **once more** with a `trial_expired: true` flag, and Isabella's closing message becomes the upsell:
-    > "Your 7-day free assessment window has ended. To continue receiving weekly assessments, progress tracking and Isabella's ongoing support, activate the full monthly programme at **wellnespirit.com** — our clinical partner for executive nutrition."
-- After expiration, subsequent assessment requests return the upsell message only (no new PDF).
+- Extract `recordTrial(userKey, assessmentType, language)` from the existing `checkAndRecordTrial` (keep the 7-day expiry gate **only** for nutrition — that's the product rule).
+- Call `recordTrial(...)` from every assessment branch: `nutrition_assessment`, `recovery_resilience_assessment`, `biological_age_assessment`, `receptionist_cost`, `missed_calls`.
+- Build `userKey` as `${clientId}::${userId || `guest:${anonId}`}` and stop falling back to the literal `ovela-guest` string.
 
-**Migration:** new table `public.assessment_trial(user_id text pk, first_assessment_at timestamptz)` with GRANTs + RLS (service_role only, edge function writes).
+### 2. Migration on `public.assessment_trial`
 
-## 2. Time-budget profiling
+Add two nullable columns so WG's dashboard can slice usage:
 
-**Where:** `_tools.ts` schema + `index.ts` system prompt + `assessmentReport.ts`.
+- `assessment_type text` (nutrition / recovery / biological_age / receptionist_cost / missed_calls)
+- `language text` (en, es, fr, de, ca, pt)
 
-- Add `time_budget` enum field to the nutrition assessment tool:
-  `enjoys_cooking | cooks_when_time | needs_quick_meals | travels_frequently`
-- Isabella must ask one short question before generating: *"Which best describes you: enjoy cooking, cook when you have time, need quick meals, or travel frequently?"*
-- Recommendations adapt:
-  - `needs_quick_meals` / `travels_frequently` → "buy this, add this, done in 2 minutes" style (ready-to-eat protein, pre-cooked options, no soaking/prep verbs).
-  - `enjoys_cooking` → full recipes allowed.
-- Render a small "Tailored for: Quick meals" chip near the meal framework section.
+Backfill nothing — existing row keeps NULLs. No RLS changes from our side (WG owns the admin GRANT).
 
-## 3. Food-specific recommendations ("foods you already eat")
+### 3. PDFs in the user's chat language
 
-**Where:** `_tools.ts` schema adds `habit_upgrades: [{existing_meal, upgrade, why}]` (3–5 items). Prompt requires Isabella to anchor each suggestion to a meal from the diary.
+The 1854-line `src/lib/assessmentReport.ts` has English chrome (section titles, table headers, footer disclaimer) plus dynamic narrative that already comes from Gemini in the user's language thanks to the LANGUAGE OVERRIDE in the edge function.
 
-- Render new section **"Upgrade the meals you already eat"** between "What Isabella noticed" and "Fastest Win".
-- Examples baked into the prompt so the model produces the right tone: "Your yogurt breakfast → add one scoop whey for +25g protein."
+Approach:
 
-## 4. Micronutrient risk flags (observational, not diagnostic)
+- Add a `language` field to `AssessmentReport` and thread `selectedLanguage` through `ChatMessages` → `downloadAssessmentReport` / email button.
+- Introduce a single `LABELS: Record<Lang, Record<Key, string>>` dict covering the ~40 fixed chrome strings (header title, section titles, score row labels, footer disclaimer, "Page X of Y").
+- Replace literal strings in `header`, `footer`, `sectionTitle`, `scoreRow`, and the section builders (`buildNutrition`, `buildRecoveryResilience`, `buildBusinessCalculator`, `buildMissedCalls`) with `t(key, lang)`.
+- Translations covered: en, es, fr, de, ca, pt (matches `i18n/locales/`).
+- Email subject/filename in `email-assessment-report` already use a generic title — pass the localized title from the client.
 
-**Where:** `_tools.ts` adds `nutrition_risk_flags: [{nutrient, confidence: low|moderate|high, reasoning}]`.
+Dynamic narrative text from Gemini is already localized, so we don't need to translate per-paragraph copy generated by the model.
 
-- Allowed nutrients: fibre, omega-3, magnesium, potassium, vitamin D, vegetable diversity.
-- Confidence inferred from diary patterns (no oily fish → omega-3 moderate; <2 veg servings/day → fibre + vegetable diversity moderate, etc.).
-- Render as **"Nutrition risk flags (observational)"** section with amber-styled chips. Disclaimer line: *"Observations from your diary — not a diagnosis. Confirm with a clinician if relevant."*
+### 4. Verification
 
-## 5. "What success looks like in 14 days"
+- After deploy, fire two test assessments (nutrition + recovery) from one browser → confirm two rows with `assessment_type` set and `language='en'`/etc.
+- Generate one PDF in Spanish and one in French → confirm header/footer/section titles render in the chosen language while narrative stays in that language.
 
-**Where:** `_tools.ts` already has `reassessment_projection`. Add sibling `success_preview: {if_completed: string[], you_should_notice: string[]}`.
+## Files touched
 
-- Renders inside the closing "Reassess in 14 days" section as a two-column checklist (Actions ✓ / Expected wins).
+- `supabase/migrations/<new>.sql` — add `assessment_type`, `language` columns
+- `supabase/functions/ovela-chat/index.ts` — rename + call `recordTrial` from all branches, stable guest key, pass type+language
+- `src/lib/assessmentReport.ts` — `LABELS` dict + `t()` helper, swap all chrome strings, accept `language` on report
+- `src/lib/isabellaAPI.ts` — pass `language` into the structured `assessmentReport` returned from the function
+- `src/components/Chat/FullWellnessGeniUI.tsx` and/or `ChatMessages.tsx` — thread `selectedLanguage` into the report at download/email time
+- `supabase/functions/email-assessment-report/index.ts` — accept localized title from client (minor)
 
-## 6. WellneSpirit upsell footer (always, even before trial expires)
+## Out of scope (intentionally)
 
-- Last page of every PDF + closing chat message after report: soft mention that weekly tracking & monthly reassessments live at WellneSpirit.com.
-- Pre-expiry tone: invitational. Post-expiry: required to continue.
-
-## 7. Dedupe + polish pass
-
-- Confirm "Fastest Win" appears exactly once.
-- Verify color hierarchy (green / amber / red) still reads cleanly with new sections.
-- Renumber sections 1–19 sequentially in `assessmentReport.ts`.
-
----
-
-## What we are NOT doing in this stage
-
-Deferred to **Stage 2 — WellneSpirit Pro**:
-- Stripe checkout + €19/month subscription
-- User accounts / login
-- Assessment memory (compare today vs last month)
-- Weekly automated reassessment emails
-- Product link integrations (whey, supplements, etc.)
-- Recovery & Resilience assessment
-- Biological age / longevity scoring
-
----
-
-## Technical surfaces touched
-
-- `supabase/migrations/<new>.sql` — `assessment_trial` table + GRANTs + RLS
-- `supabase/functions/ovela-chat/_tools.ts` — schema additions (time_budget, habit_upgrades, nutrition_risk_flags, success_preview)
-- `supabase/functions/ovela-chat/index.ts` — trial check, upsell injection, prompt updates requiring the new fields
-- `src/lib/assessmentReport.ts` — render new sections, footer upsell, renumber
-
-## Verification
-
-1. Run a full fake assessment via curl — confirm new fields present in tool output.
-2. Inspect generated PDF: new sections render, dedupe holds, colors correct.
-3. Simulate trial expiry by backdating the row — confirm upsell message replaces report.
-4. Confirm "Email PDF" + download buttons still appear when report is delivered.
-
-Reply **go** to execute, or tell me what to change.
+- Changing WG's admin RLS / dashboard — they own that migration.
+- Translating the dynamic narrative paragraphs (already in user's language via Gemini).

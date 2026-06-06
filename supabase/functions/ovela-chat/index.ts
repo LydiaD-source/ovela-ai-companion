@@ -1272,13 +1272,28 @@ After any tool call, present results conversationally (1 short paragraph + key b
         // Guarantee the report is returned as structured data and, when needed,
         // as a valid fenced block regardless of whether the model already wrote text.
         if (nutritionReportPayload || bioAgeReportPayload || receptionistReportPayload || missedLeadsReportPayload) {
-          const payload = nutritionReportPayload
+          // Translate the tool result into the user's chat language so the
+          // PDF + on-page report match the conversation. Skipped for en/auto.
+          const wantsTranslation = language && language !== 'en' && language !== 'auto';
+          if (wantsTranslation && lovableKey) {
+            try {
+              if (nutritionReportPayload) nutritionReportPayload = await translateStringsDeep(nutritionReportPayload, language, lovableKey);
+              if (bioAgeReportPayload) bioAgeReportPayload = await translateStringsDeep(bioAgeReportPayload, language, lovableKey);
+              if (receptionistReportPayload) receptionistReportPayload = await translateStringsDeep(receptionistReportPayload, language, lovableKey);
+              if (missedLeadsReportPayload) missedLeadsReportPayload = await translateStringsDeep(missedLeadsReportPayload, language, lovableKey);
+              console.log('🌐 Assessment payload translated to', language);
+            } catch (e) {
+              console.warn('⚠️ Assessment translation failed, keeping English:', String(e));
+            }
+          }
+          const payload: any = nutritionReportPayload
             ? { type: 'nutrition_assessment', title: 'Nutrition & Muscle Preservation Assessment', data: nutritionReportPayload }
             : missedLeadsReportPayload
               ? { type: 'business_calculator', subtype: 'missed_calls', title: 'Missed Calls & Revenue Leak Diagnostic', data: missedLeadsReportPayload }
               : receptionistReportPayload
                 ? { type: 'business_calculator', subtype: 'receptionist_cost', title: 'Receptionist Cost & ROI Assessment', data: receptionistReportPayload }
                 : { type: 'recovery_resilience', title: 'Executive Recovery & Resilience Assessment', data: bioAgeReportPayload };
+          if (wantsTranslation) payload.language = language;
           assessmentReportResponse = payload;
           const reportBlockRe = /`{2,3}\s*assessment-report\s*([\s\S]*?)`{2,3}/i;
           const existingReportBlock = finalMessage.match(reportBlockRe);

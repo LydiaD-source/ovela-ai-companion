@@ -51,56 +51,61 @@
 /* Isabella Container (Left Anchor - 35%) */
 .isabella-container {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   width: 35%;
   position: relative;
   z-index: 1;
 }
 
+/* DESKTOP: large circular floating face portrait. Matches D-ID source
+   exactly so the lip-sync canvas overlays cleanly with no swap flash. */
 .isabella-image-wrapper {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: min(46vw, 560px);
+  height: min(46vw, 560px);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   z-index: 2;
-  background: transparent !important;
-  overflow: visible;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(212, 175, 55, 0.55);
+  box-shadow:
+    0 24px 80px rgba(212, 175, 55, 0.35),
+    0 0 0 10px rgba(212, 175, 55, 0.08),
+    inset 0 0 80px rgba(0, 0, 0, 0.25);
+  background: #0A0E27;
 }
 
 /* Soft Spotlight Behind Isabella */
 .isabella-spotlight {
   position: absolute;
-  bottom: 0;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 500px;
-  height: 700px;
-  background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.08) 40%, transparent 70%);
+  transform: translate(-50%, -50%);
+  width: min(60vw, 720px);
+  height: min(60vw, 720px);
+  background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.30) 0%, rgba(212, 175, 55, 0.08) 45%, transparent 75%);
   filter: blur(60px);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Isabella Image - Maximum Sharpness, Responsive Scaling */
 .isabella-hero-image {
   position: relative;
-  object-fit: contain;
-  object-position: bottom center;
-  height: auto;
-  max-height: 88vh;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
   z-index: 3;
   backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
   transform: none !important;
   -webkit-transform: none !important;
-  margin-left: 19px; /* ~5mm nudge to the right on typical displays */
+  margin-left: 0;
   image-rendering: -webkit-optimize-contrast !important;
-  image-rendering: crisp-edges !important;
   filter: none !important;
   -webkit-filter: none !important;
   mix-blend-mode: normal;

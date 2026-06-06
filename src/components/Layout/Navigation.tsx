@@ -44,6 +44,17 @@ const Navigation = () => {
       <div className="flex items-center justify-between" style={{ padding: '20px 30px 30px 30px' }}>
         {/* Logo */}
         <Link to="/" className="pointer-events-auto flex items-center space-x-2">
+          {/* Isabella silhouette mark — the yellow-gown figure is part of the
+              Ovela wordmark identity, sized to the cap-height of the "O". */}
+          <img
+            src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png"
+            alt=""
+            aria-hidden="true"
+            className="h-7 w-auto object-contain"
+            style={{ filter: 'drop-shadow(0 1px 2px rgba(212,175,55,0.35))' }}
+            loading="eager"
+            decoding="async"
+          />
           <div className="text-2xl font-bold">
             <span className="gradient-text">Ovela</span>
           </div>

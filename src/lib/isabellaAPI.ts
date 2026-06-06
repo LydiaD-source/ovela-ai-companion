@@ -84,6 +84,7 @@ class IsabellaAPI {
           tool_context: context?.tool_context,
           authority_topic: context?.authority_topic,
           attachments: context?.attachments || [],
+          language: context?.language || undefined,
         }
       });
 

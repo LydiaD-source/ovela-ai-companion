@@ -348,7 +348,7 @@ const Home = () => {
                   decoding="sync"
                   fetchPriority="high"
                   style={{
-                    opacity: isAvatarVisible ? 0 : 1,
+                    opacity: 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />

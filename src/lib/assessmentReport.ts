@@ -94,7 +94,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
     disclaimer: 'Esta avaliacao e apenas educativa e informativa. Nao e um diagnostico medico e nao deve substituir a consulta com um profissional de saude qualificado.',
   },
 };
-function t(lang: AssessmentLang, key: string): string {
+function tr(lang: AssessmentLang, key: string): string {
   const v = PDF_STRINGS[lang]?.[key] ?? PDF_STRINGS.en[key];
   return typeof v === 'string' ? v : '';
 }
@@ -269,7 +269,7 @@ function header(doc: jsPDF, title: string, lang: AssessmentLang = DEFAULT_LANG) 
   doc.setTextColor(GOLD);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text(t(lang, 'brand'), 40, 28);
+  doc.text(tr(lang, 'brand'), 40, 28);
   doc.setTextColor('#ffffff');
   doc.setFontSize(18);
   doc.text(title, 40, 52);
@@ -283,10 +283,10 @@ function footer(doc: jsPDF, pageNo: number, pages: number, lang: AssessmentLang 
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(8);
   doc.setTextColor(MUTED);
-  const wrapped = doc.splitTextToSize(t(lang, 'disclaimer') || FOOTER_DISCLAIMER, 515);
+  const wrapped = doc.splitTextToSize(tr(lang, 'disclaimer') || FOOTER_DISCLAIMER, 515);
   doc.text(wrapped, 40, h - 55);
   doc.setFont('helvetica', 'normal');
-  doc.text(`${t(lang, 'footer_attrib')}  ·  ${tFn(lang, 'page_x_of_y', pageNo, pages)}`, 40, h - 20);
+  doc.text(`${tr(lang, 'footer_attrib')}  ·  ${tFn(lang, 'page_x_of_y', pageNo, pages)}`, 40, h - 20);
 }
 
 function sectionTitle(doc: jsPDF, text: string, y: number) {
@@ -338,7 +338,7 @@ function ensureSpace(doc: jsPDF, y: number, needed: number) {
 
 // ── Nutrition report (clean sequential numbering) ───────────────────────
 function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LANG) {
-  header(doc, t(lang, 'nutrition_title'), lang);
+  header(doc, tr(lang, 'nutrition_title'), lang);
   let y = 110;
   const s = data.scores || {};
 

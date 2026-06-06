@@ -413,8 +413,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-soft-white/10">
         <div className="flex items-center space-x-3">
+          {/* Avatar badge — MOBILE ONLY. On desktop the full-body hero avatar
+              already shows Isabella's animated face, so a duplicate badge here
+              would confuse users and (when it mirrors the D-ID stream) makes
+              the page feel like two competing avatars. */}
           <div
-            className={`relative w-16 h-16 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+            className={`md:hidden relative w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-300 ${
               headerIsSpeaking
                 ? 'border-champagne-gold shadow-[0_0_22px_rgba(212,175,55,0.7)]'
                 : 'border-champagne-gold/50'

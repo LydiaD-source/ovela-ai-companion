@@ -61,14 +61,38 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   initialMessage,
 }) => {
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<Message[]>([]);
+
+  // ── Conversation persistence ──────────────────────────────────────────────
+  // Survives tab switches (uploading photos, checking calendar/bloodwork),
+  // accidental reloads, and mobile app backgrounding. Critical for assessments
+  // where users routinely leave the page mid-flow.
+  const STORAGE_KEY = 'ovela_chat_session_v1';
+  const readPersisted = () => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const p = JSON.parse(raw);
+      // Expire stale sessions after 24h to avoid showing yesterday's chat.
+      if (p?.savedAt && Date.now() - p.savedAt > 24 * 60 * 60 * 1000) return null;
+      return p;
+    } catch { return null; }
+  };
+  const persisted = readPersisted();
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (!persisted?.messages) return [];
+    try {
+      return persisted.messages.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) }));
+    } catch { return []; }
+  });
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
-  const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>({});
+  const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Tool context persists for the whole assessment session, not just the first message.
@@ -76,8 +100,22 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     if (typeof window === 'undefined') return null;
     const w = (window as any).__ISABELLA_CTX__;
     if (w) { try { delete (window as any).__ISABELLA_CTX__; } catch {} return w; }
-    return null;
+    return persisted?.toolCtx || null;
   });
+
+  // Persist on changes (debounced via microtask is overkill; this is light).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        savedAt: Date.now(),
+        messages,
+        toolCtx,
+        shownByCategory,
+      }));
+    } catch { /* quota / private mode */ }
+  }, [messages, toolCtx, shownByCategory]);
+
   // Listen for tool launches that happen while the chat is already open.
   useEffect(() => {
     const onCtx = (e: Event) => {

@@ -73,8 +73,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
       const p = JSON.parse(raw);
-      // Expire stale sessions after 24h to avoid showing yesterday's chat.
-      if (p?.savedAt && Date.now() - p.savedAt > 24 * 60 * 60 * 1000) return null;
+      // Expire stale sessions after 30 minutes — long enough to switch apps/upload
+      // photos, short enough that reopening the site later feels like a fresh start.
+      if (p?.savedAt && Date.now() - p.savedAt > 30 * 60 * 1000) return null;
       return p;
     } catch { return null; }
   };

@@ -95,6 +95,29 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header
+  const headerVideoRef = useRef<HTMLVideoElement>(null);
+  const [headerIsSpeaking, setHeaderIsSpeaking] = useState(false);
+  useEffect(() => {
+    const attach = () => {
+      const stream = (window as any).__AVATAR_VIDEO_STREAM__ as MediaStream | undefined;
+      if (stream && headerVideoRef.current && headerVideoRef.current.srcObject !== stream) {
+        headerVideoRef.current.srcObject = stream;
+        headerVideoRef.current.play().catch(() => {});
+      }
+    };
+    attach();
+    window.addEventListener('avatar-stream-ready', attach);
+    const onStart = () => setHeaderIsSpeaking(true);
+    const onEnd = () => setHeaderIsSpeaking(false);
+    window.addEventListener('avatar-frame-ready', onStart);
+    window.addEventListener('avatar-speech-end', onEnd);
+    return () => {
+      window.removeEventListener('avatar-stream-ready', attach);
+      window.removeEventListener('avatar-frame-ready', onStart);
+      window.removeEventListener('avatar-speech-end', onEnd);
+    };
+  }, []);
   // Tool context persists for the whole assessment session, not just the first message.
   const [toolCtx, setToolCtx] = useState<{ tool_context?: string; authority_topic?: string } | null>(() => {
     if (typeof window === 'undefined') return null;

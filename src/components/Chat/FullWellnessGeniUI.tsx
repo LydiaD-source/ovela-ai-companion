@@ -256,6 +256,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         tool_context: toolCtx?.tool_context,
         authority_topic: toolCtx?.authority_topic,
         attachments: attachmentsToSend,
+        language: selectedLanguage || undefined,
       });
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       // Extract any structured assessment report and strip it from the visible text.
@@ -436,16 +437,14 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
             }`}
             style={{ background: '#0A0E27', flex: '0 0 auto' }}
           >
-            {/* Still photo fallback — only visible until the live D-ID stream attaches */}
+            {/* Still photo fallback — face-cropped, shown until live D-ID stream attaches */}
             <img
-              src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png"
+              src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png"
               alt="Isabella"
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 10%',
-                transform: 'scale(1.8) translateY(4%)',
-                transformOrigin: 'center top',
+                objectPosition: 'center 20%',
                 opacity: hasHeaderStream ? 0 : 1,
                 transition: 'opacity 0.4s ease-in-out',
               }}
@@ -459,12 +458,12 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 10%',
-                transform: 'scale(1.8) translateY(4%)',
-                transformOrigin: 'center top',
+                objectPosition: 'center 25%',
+                transform: 'scale(1.6)',
+                transformOrigin: 'center 25%',
                 opacity: hasHeaderStream ? 1 : 0,
                 transition: 'opacity 0.4s ease-in-out',
-                background: '#0A0E27',
+                background: 'transparent',
               }}
             />
           </div>

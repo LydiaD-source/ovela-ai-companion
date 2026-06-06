@@ -40,6 +40,7 @@ export interface IsabellaContext {
   tool_context?: string;
   authority_topic?: string;
   attachments?: IsabellaAttachment[];
+  language?: string;
 }
 
 class IsabellaAPI {
@@ -83,6 +84,7 @@ class IsabellaAPI {
           tool_context: context?.tool_context,
           authority_topic: context?.authority_topic,
           attachments: context?.attachments || [],
+          language: context?.language || undefined,
         }
       });
 

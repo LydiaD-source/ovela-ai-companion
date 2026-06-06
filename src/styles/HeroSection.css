@@ -430,45 +430,53 @@
     min-height: 100dvh;
   }
 
-  /* Isabella becomes a circular FACE-ONLY avatar on mobile */
+  /* Isabella becomes a LARGE circular face-only portrait on mobile.
+     We swap the image source (face close-up) at the React layer so no
+     transform/scale hack is needed — the D-ID canvas overlay aligns
+     naturally with what's painted, eliminating the previous mobile bug
+     where the animated face was clipped off-frame. */
   .isabella-container {
     width: 100%;
     height: auto;
     align-items: center;
     justify-content: center;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
   }
 
   .isabella-image-wrapper {
-    width: 140px;
-    height: 140px;
+    width: min(70vw, 320px);
+    height: min(70vw, 320px);
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid rgba(212, 175, 55, 0.5);
-    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.35), 0 0 0 6px rgba(212, 175, 55, 0.08);
+    border: 2px solid rgba(212, 175, 55, 0.55);
+    box-shadow: 0 12px 48px rgba(212, 175, 55, 0.45), 0 0 0 8px rgba(212, 175, 55, 0.08);
     background: #0A0E27;
     flex: 0 0 auto;
   }
 
-  /* Crop to face: scale up and anchor to head */
   .isabella-hero-image {
     width: 100%;
     height: 100%;
     max-height: none;
     object-fit: cover;
-    object-position: center 12%;
+    object-position: center 30%;
     margin-left: 0;
-    transform: scale(1.6) translateY(6%);
-    transform-origin: center top;
+    transform: none !important;
+  }
+
+  /* Mobile-only face image: centred on the eyes for chat-avatar feel */
+  .isabella-hero-image.isabella-mobile-face {
+    object-position: center 35%;
   }
 
   .isabella-spotlight {
-    width: 220px;
-    height: 220px;
+    width: min(80vw, 360px);
+    height: min(80vw, 360px);
     bottom: auto;
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
 
   .isabella-backlight {
     display: none;

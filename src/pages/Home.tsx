@@ -397,7 +397,7 @@ const Home = () => {
                   {/* Primary CTAs row */}
                   <div className="hero-btn-row">
                     <button 
-                      onClick={activateChat}
+                      onClick={() => activateChat()}
                       className="hero-btn-primary"
                     >
                       {t('hero.cta')}

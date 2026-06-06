@@ -208,6 +208,11 @@ class PersistentStreamManager {
     this.pc.ontrack = (event) => {
       if (event.track.kind === 'video' && event.streams[0]) {
         this.setupChromaKey(event.streams[0]);
+        // Expose video stream so secondary surfaces (e.g. mobile chat header) can mirror it
+        try {
+          (window as any).__AVATAR_VIDEO_STREAM__ = event.streams[0];
+          window.dispatchEvent(new CustomEvent('avatar-stream-ready'));
+        } catch {}
       } else if (event.track.kind === 'audio') {
         const targetVideo = (window as any).__AVATAR_VIDEO_REF__ as HTMLVideoElement | undefined;
         if (targetVideo && event.streams[0]) {

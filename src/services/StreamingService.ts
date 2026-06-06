@@ -328,8 +328,14 @@ class PersistentStreamManager {
         sy = (sourceHeight - sh) * frameY;
       }
 
+      const animatedScale = window.innerWidth < 768 ? 0.94 : 0.9;
+      const drawWidth = targetWidth * animatedScale;
+      const drawHeight = targetHeight * animatedScale;
+      const drawX = (targetWidth - drawWidth) / 2;
+      const drawY = (targetHeight - drawHeight) / 2 + (window.innerWidth < 768 ? 0 : targetHeight * 0.025);
+
       ctx.clearRect(0, 0, targetWidth, targetHeight);
-      ctx.drawImage(this.hiddenVideo, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
+      ctx.drawImage(this.hiddenVideo, sx, sy, sw, sh, drawX, drawY, drawWidth, drawHeight);
       
       // Remove pure black background (D-ID default)
       const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);

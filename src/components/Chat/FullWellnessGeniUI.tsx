@@ -459,8 +459,9 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         </div>
         
         <div className="flex items-center gap-2">
-          <button onClick={handleReset} className="p-2 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors" title="Reset">
+          <button onClick={handleReset} className="px-3 py-1.5 rounded-full bg-soft-white/10 hover:bg-soft-white/20 transition-colors flex items-center gap-1.5" title="Start a fresh conversation">
             <RotateCcw className="w-4 h-4 text-soft-white" />
+            <span className="text-xs text-soft-white font-medium hidden sm:inline">New</span>
           </button>
           
           {/* Custom Language Selector */}

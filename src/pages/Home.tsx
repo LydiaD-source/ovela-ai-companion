@@ -44,7 +44,7 @@ const Home = () => {
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const hasInitialized = useRef(false);
-  const activateChatRef = useRef<(() => void) | null>(null);
+  const activateChatRef = useRef<((opts?: { seeded?: boolean }) => void) | null>(null);
 
   // Register video element globally for StreamingService
   useEffect(() => {

@@ -329,14 +329,13 @@ class PersistentStreamManager {
         sy = (sourceHeight - sh) * frameY;
       }
 
-      // Keep the generated D-ID frame nearly full-size. The previous 0.9 scale
-      // left transparent side gutters, so users saw the navy holder replacing
-      // Isabella's original grey portrait background during speech.
-      const animatedScale = isMobileViewport ? 0.98 : 0.965;
+      // Keep the generated D-ID frame full-bleed. Any downscale exposes the
+      // holder/hero background on the sides and makes the portrait look replaced.
+      const animatedScale = 1;
       const drawWidth = targetWidth * animatedScale;
       const drawHeight = targetHeight * animatedScale;
       const drawX = (targetWidth - drawWidth) / 2;
-      const drawY = (targetHeight - drawHeight) / 2 + (isMobileViewport ? 0 : targetHeight * 0.008);
+      const drawY = (targetHeight - drawHeight) / 2;
 
       ctx.clearRect(0, 0, targetWidth, targetHeight);
       ctx.drawImage(this.hiddenVideo, sx, sy, sw, sh, drawX, drawY, drawWidth, drawHeight);

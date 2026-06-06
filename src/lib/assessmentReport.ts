@@ -26,7 +26,7 @@ function normLang(l?: string): AssessmentLang {
   return (SUPPORTED_LANGS.includes(x) ? x : DEFAULT_LANG);
 }
 
-const PDF_STRINGS: Record<AssessmentLang, Record<string, string>> = {
+const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   en: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Nutrition & Muscle Preservation Assessment',

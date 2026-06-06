@@ -337,8 +337,8 @@ function ensureSpace(doc: jsPDF, y: number, needed: number) {
 }
 
 // ── Nutrition report (clean sequential numbering) ───────────────────────
-function buildNutrition(doc: jsPDF, data: any) {
-  header(doc, 'Nutrition & Muscle Preservation Assessment');
+function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LANG) {
+  header(doc, t(lang, 'nutrition_title'), lang);
   let y = 110;
   const s = data.scores || {};
 

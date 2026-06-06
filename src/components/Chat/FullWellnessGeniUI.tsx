@@ -256,6 +256,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
         tool_context: toolCtx?.tool_context,
         authority_topic: toolCtx?.authority_topic,
         attachments: attachmentsToSend,
+        language: selectedLanguage || undefined,
       });
       const rawText = isa.message || "I'm sorry — I didn't get that. Please try again.";
       // Extract any structured assessment report and strip it from the visible text.

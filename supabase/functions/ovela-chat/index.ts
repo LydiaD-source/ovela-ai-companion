@@ -213,7 +213,14 @@ async function submitLeadToCRM(leadData: any) {
 // After 7 days, returns trial_expired=true so the chat can replace the
 // PDF delivery with the WellneSpirit upsell.
 const TRIAL_WINDOW_DAYS = 7;
-async function checkAndRecordTrial(userKey: string): Promise<{ trial_expired: boolean; days_used: number; first_at: string | null }> {
+// Records an assessment run for analytics + the 7-day nutrition trial gate.
+// Called from EVERY assessment branch so the admin dashboard sees real usage,
+// not just nutrition. assessment_type / language are best-effort columns.
+async function recordAssessment(
+  userKey: string,
+  assessmentType: string,
+  language?: string,
+): Promise<{ trial_expired: boolean; days_used: number; first_at: string | null }> {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -226,6 +233,7 @@ async function checkAndRecordTrial(userKey: string): Promise<{ trial_expired: bo
       "Content-Type": "application/json",
       "Prefer": "return=representation",
     };
+    const lang = (language && language !== "auto") ? language : null;
     // 1) Try to fetch existing record
     const getRes = await fetch(`${supabaseUrl}/rest/v1/assessment_trial?user_key=eq.${encodeURIComponent(userKey)}&select=user_key,first_assessment_at,assessment_count`, { headers });
     let row: any = null;
@@ -235,29 +243,41 @@ async function checkAndRecordTrial(userKey: string): Promise<{ trial_expired: bo
     }
     const now = Date.now();
     if (!row) {
-      // Insert new
       await fetch(`${supabaseUrl}/rest/v1/assessment_trial`, {
         method: "POST",
         headers,
-        body: JSON.stringify({ user_key: userKey, first_assessment_at: new Date().toISOString(), assessment_count: 1, last_assessment_at: new Date().toISOString() }),
+        body: JSON.stringify({
+          user_key: userKey,
+          first_assessment_at: new Date().toISOString(),
+          assessment_count: 1,
+          last_assessment_at: new Date().toISOString(),
+          assessment_type: assessmentType,
+          language: lang,
+        }),
       });
       return { trial_expired: false, days_used: 0, first_at: new Date().toISOString() };
     }
     const firstAt = new Date(row.first_assessment_at).getTime();
     const daysUsed = Math.floor((now - firstAt) / (1000 * 60 * 60 * 24));
     const expired = daysUsed > TRIAL_WINDOW_DAYS;
-    // Bump count + last seen (best-effort)
     await fetch(`${supabaseUrl}/rest/v1/assessment_trial?user_key=eq.${encodeURIComponent(userKey)}`, {
       method: "PATCH",
       headers,
-      body: JSON.stringify({ assessment_count: (row.assessment_count ?? 0) + 1, last_assessment_at: new Date().toISOString() }),
+      body: JSON.stringify({
+        assessment_count: (row.assessment_count ?? 0) + 1,
+        last_assessment_at: new Date().toISOString(),
+        assessment_type: assessmentType,
+        language: lang,
+      }),
     });
     return { trial_expired: expired, days_used: daysUsed, first_at: row.first_assessment_at };
   } catch (e) {
-    console.warn("⚠️ Trial check failed (allowing assessment):", e);
+    console.warn("⚠️ recordAssessment failed (allowing assessment):", e);
     return { trial_expired: false, days_used: 0, first_at: null };
   }
 }
+// Back-compat alias
+const checkAndRecordTrial = (userKey: string) => recordAssessment(userKey, 'nutrition_assessment');
 
 const WELLNESPIRIT_PRE_EXPIRY_FOOTER =
   "\n\n_This is your **free baseline assessment** — a one-time snapshot. Accuracy improves dramatically when changes are tracked weekly against a stable baseline. For monthly reassessments, score-vs-score progress comparisons (Month 1 → Month 2 → Month 6) and Isabella's ongoing support, the full programme lives at our clinical partner WellneSpirit (wellnespirit.com)._";

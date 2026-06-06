@@ -346,9 +346,9 @@ const Home = () => {
                   className={`isabella-hero-image hero-image-raw ${isMobile ? 'isabella-mobile-face' : ''}`}
                   loading="eager"
                   decoding="sync"
-                  fetchPriority="high"
+                  {...{ fetchpriority: 'high' }}
                   style={{
-                    opacity: isAvatarVisible ? 0 : 1,
+                    opacity: 1,
                     transition: 'opacity 0.3s ease-in-out',
                   }}
                 />

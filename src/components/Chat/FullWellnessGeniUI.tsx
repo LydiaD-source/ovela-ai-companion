@@ -454,7 +454,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
                 ? 'border-champagne-gold shadow-[0_0_22px_rgba(212,175,55,0.7)]'
                 : 'border-champagne-gold/50'
             }`}
-            style={{ background: '#0A0E27', flex: '0 0 auto' }}
+            style={{ background: '#ccd9d5', flex: '0 0 auto' }}
           >
             {/* Still photo fallback — face-cropped, shown until live D-ID stream attaches */}
             <img

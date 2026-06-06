@@ -63,8 +63,8 @@
    exactly so the lip-sync canvas overlays cleanly with no swap flash. */
 .isabella-image-wrapper {
   position: relative;
-  width: min(46vw, 560px);
-  height: min(46vw, 560px);
+  width: min(42vw, 520px);
+  height: min(42vw, 520px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +76,7 @@
     0 24px 80px rgba(212, 175, 55, 0.35),
     0 0 0 10px rgba(212, 175, 55, 0.08),
     inset 0 0 80px rgba(0, 0, 0, 0.25);
-  background: #0A0E27;
+  background: #ccd9d5;
 }
 
 /* Soft Spotlight Behind Isabella */
@@ -449,13 +449,15 @@
   }
 
   .isabella-image-wrapper {
-    width: min(70vw, 320px);
-    height: min(70vw, 320px);
+    width: clamp(220px, 62vw, 280px);
+    height: clamp(220px, 62vw, 280px);
+    max-width: calc(100vw - 48px);
+    max-height: calc(100vw - 48px);
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid rgba(212, 175, 55, 0.55);
     box-shadow: 0 12px 48px rgba(212, 175, 55, 0.45), 0 0 0 8px rgba(212, 175, 55, 0.08);
-    background: #0A0E27;
+    background: #ccd9d5;
     flex: 0 0 auto;
   }
 

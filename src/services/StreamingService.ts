@@ -314,7 +314,8 @@ class PersistentStreamManager {
 
       const targetAspect = targetWidth / targetHeight;
       const sourceAspect = sourceWidth / sourceHeight;
-      const frameY = window.innerWidth < 768 ? 0.35 : 0.28;
+      const isMobileViewport = window.innerWidth < 768;
+      const frameY = isMobileViewport ? 0.34 : 0.3;
       let sx = 0;
       let sy = 0;
       let sw = sourceWidth;
@@ -328,11 +329,13 @@ class PersistentStreamManager {
         sy = (sourceHeight - sh) * frameY;
       }
 
-      const animatedScale = window.innerWidth < 768 ? 0.94 : 0.9;
+      // Keep the generated D-ID frame full-bleed. Any downscale exposes the
+      // holder/hero background on the sides and makes the portrait look replaced.
+      const animatedScale = 1;
       const drawWidth = targetWidth * animatedScale;
       const drawHeight = targetHeight * animatedScale;
       const drawX = (targetWidth - drawWidth) / 2;
-      const drawY = (targetHeight - drawHeight) / 2 + (window.innerWidth < 768 ? 0 : targetHeight * 0.025);
+      const drawY = (targetHeight - drawHeight) / 2;
 
       ctx.clearRect(0, 0, targetWidth, targetHeight);
       ctx.drawImage(this.hiddenVideo, sx, sy, sw, sh, drawX, drawY, drawWidth, drawHeight);

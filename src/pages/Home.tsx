@@ -270,7 +270,7 @@ const Home = () => {
       detail: { tool_context: payload.tool_context, authority_topic: payload.authority_topic }
     }));
     setInitialChatMessage(payload.initialPrompt);
-    activateChat();
+    activateChat({ seeded: true });
     // Smooth scroll back up so the user sees Isabella respond
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
   }, [activateChat]);

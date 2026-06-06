@@ -493,8 +493,8 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     doc.rect(40, y - 10, 515, panelH, 'F');
     // Left column header
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Top changes'), '
-    doc.text(L(lang, 'Expected 14-day gains'), '
+    doc.text(L(lang, 'Top changes'), 56, y + 6);
+    doc.text(L(lang, 'Expected 14-day gains'), 320, y + 6);
     let oy = y + 22;
     opps.forEach((o: any) => {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
@@ -537,7 +537,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     doc.setFontSize(9);
     doc.setTextColor(MUTED);
     doc.text(`Measures: ${(er.measures || []).join(' · ')}`, 260, y + 30);
-    doc.text(L(lang, 'Scale:'), '
+    doc.text(L(lang, 'Scale:'), 260, y + 44);
     (er.scale || []).slice(0, 4).forEach((line: string, i: number) => {
       doc.text(`• ${line}`, 300, y + 44 + (i + 1) * 10);
     });
@@ -563,10 +563,10 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y += 4;
     // Column headers
     doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Metric'), '
-    doc.text(L(lang, 'Current'), '
-    doc.text(L(lang, 'Recommended'), '
-    doc.text(L(lang, 'Position'), '
+    doc.text(L(lang, 'Metric'), 40, y);
+    doc.text(L(lang, 'Current'), 200, y);
+    doc.text(L(lang, 'Recommended'), 330, y);
+    doc.text(L(lang, 'Position'), 470, y);
     y += 6;
     doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 8;
     (eb.items || []).forEach((it: any) => {
@@ -723,10 +723,10 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y = paragraph(doc, 'Meal-by-meal view of how much protein you ate vs. a practical target.', y, { color: MUTED, size: 9 });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Meal'), '
-    doc.text(L(lang, 'Actual'), '
-    doc.text(L(lang, 'Target'), '
-    doc.text(L(lang, 'Gap'), '
+    doc.text(L(lang, 'Meal'), 40, y);
+    doc.text(L(lang, 'Actual'), 240, y);
+    doc.text(L(lang, 'Target'), 340, y);
+    doc.text(L(lang, 'Gap'), 460, y);
     y += 6;
     doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
     po.meals.forEach((m: any) => {
@@ -740,7 +740,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
         doc.text(`-${m.gap_g} g`, 460, y);
       } else if (m.gap_g === 0) {
         doc.setTextColor('#2d8a5e'); doc.setFont('helvetica', 'bold');
-        doc.text(L(lang, 'on target'), '
+        doc.text(L(lang, 'on target'), 460, y);
       } else {
         doc.setTextColor(MUTED);
         doc.text('—', 460, y);
@@ -890,14 +890,14 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
       if ((bai.positive || []).length) {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
-        doc.text(L(lang, 'Strengths'), '
+        doc.text(L(lang, 'Strengths'), 40, y); y += 14;
         bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `+ ${p}`, y, { color: '#2d8a5e' }); });
         y += 4;
       }
       if ((bai.needs_improvement || []).length) {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(GOLD);
-        doc.text(L(lang, 'Needs improvement'), '
+        doc.text(L(lang, 'Needs improvement'), 40, y); y += 14;
         bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `! ${p}`, y, { color: '#a8801a' }); });
         y += 4;
       }
@@ -946,7 +946,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y += 4;
     if (lto.most_impactful_improvement) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text(L(lang, 'Most impactful improvement:'), '
+      doc.text(L(lang, 'Most impactful improvement:'), 40, y); y += 14;
       y = paragraph(doc, lto.most_impactful_improvement, y, { color: MUTED });
     }
     y += 6;
@@ -1046,7 +1046,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
       doc.text(`Pattern ${i + 1}: ${p.pattern}`, 40, y); y += 14;
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(GOLD);
-      doc.text(L(lang, 'Impact:'), '
+      doc.text(L(lang, 'Impact:'), 40, y);
       doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
       const impactLines = doc.splitTextToSize(p.impact, 480);
       doc.text(impactLines, 80, y); y += 14 + (impactLines.length - 1) * 11;
@@ -1100,7 +1100,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     if (sp) {
       y = ensureSpace(doc, y, 140);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-      doc.text(L(lang, 'What success looks like in 14 days'), '
+      doc.text(L(lang, 'What success looks like in 14 days'), 40, y); y += 16;
       y = paragraph(doc, 'If you complete:', y);
       (sp.if_completed || []).forEach((line: string) => {
         y = ensureSpace(doc, y, 14);
@@ -1159,7 +1159,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   doc.setLineWidth(0.5);
   doc.rect(40, y - 12, 515, 104, 'FD');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-  doc.text(L(lang, 'Free baseline today · Tracked progress with Pro.'), '
+  doc.text(L(lang, 'Free baseline today · Tracked progress with Pro.'), 50, y + 2);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
   const wsLines = doc.splitTextToSize(
     "This free report is a one-time baseline. For monthly reassessments, score-vs-score comparisons against this baseline (Month 1 → Month 2 → Month 6), and ongoing executive-wellness support from Isabella with full progress tracking, register for the monthly programme at our clinical partner WellneSpirit.",
@@ -1197,7 +1197,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(NAVY);
-  doc.text(L(lang, 'Burnout risk indicator:'), '
+  doc.text(L(lang, 'Burnout risk indicator:'), 40, y);
   const riskColor = sc.burnout_risk === 'Elevated' ? '#c2553a' : sc.burnout_risk === 'Moderate' ? GOLD : '#2d8a5e';
   doc.setTextColor(riskColor);
   doc.text(String(sc.burnout_risk ?? '—'), 220, y);
@@ -1228,7 +1228,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     doc.text(a.name, 40, y); y += 16;
     if (Array.isArray(a.characteristics)) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text(L(lang, 'Characteristics:'), '
+      doc.text(L(lang, 'Characteristics:'), 40, y); y += 13;
       a.characteristics.forEach((c: string) => {
         y = ensureSpace(doc, y, 14);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
@@ -1238,12 +1238,12 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     }
     if (a.typical_risk) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text(L(lang, 'Typical risk:'), '
+      doc.text(L(lang, 'Typical risk:'), 40, y); y += 12;
       y = paragraph(doc, a.typical_risk, y, { color: MUTED });
     }
     if (a.primary_focus) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text(L(lang, 'Primary focus:'), '
+      doc.text(L(lang, 'Primary focus:'), 40, y); y += 12;
       y = paragraph(doc, a.primary_focus, y, { color: MUTED });
     }
     y += 6;
@@ -1286,7 +1286,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     y = ensureSpace(doc, y, 200);
     y = sectionTitle(doc, L(lang, '3d · Executive dashboard — your 14-day leverage'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Biggest opportunities (ranked by leverage):'), '
+    doc.text(L(lang, 'Biggest opportunities (ranked by leverage):'), 40, y); y += 16;
     (ed.biggest_opportunities || []).forEach((o: any, i: number) => {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1296,7 +1296,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     });
     y += 6;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Expected 14-day gains:'), '
+    doc.text(L(lang, 'Expected 14-day gains:'), 40, y); y += 14;
     const g = ed.expected_14_day_gains || {};
     const rows: Array<[string, any]> = [
       ['Recovery capacity', g.recovery_capacity],
@@ -1321,7 +1321,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
 
     if (Array.isArray(rd.drains) && rd.drains.length) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#c2553a');
-      doc.text(L(lang, 'Biggest recovery drains:'), '
+      doc.text(L(lang, 'Biggest recovery drains:'), 40, y); y += 14;
       rd.drains.forEach((d: any, i: number) => {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1335,7 +1335,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     if (Array.isArray(rd.protectors) && rd.protectors.length) {
       y = ensureSpace(doc, y, 80);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#2d8a5e');
-      doc.text(L(lang, 'Biggest recovery protectors:'), '
+      doc.text(L(lang, 'Biggest recovery protectors:'), 40, y); y += 14;
       rd.protectors.forEach((p: any, i: number) => {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1546,15 +1546,15 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(NAVY);
   doc.text(fmtEUR(cmp.annual_savings), 56, y + 56);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-  doc.text(L(lang, 'Estimated annual savings vs human (mid)'), '
+  doc.text(L(lang, 'Estimated annual savings vs human (mid)'), 56, y + 70);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(GOLD);
   doc.text(`${cmp.pct_savings ?? 0}%`, 300, y + 56);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-  doc.text(L(lang, 'Cost reduction vs full human TCO'), '
+  doc.text(L(lang, 'Cost reduction vs full human TCO'), 300, y + 70);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(NAVY);
   doc.text(cmp.payback_months ? `${cmp.payback_months} mo` : '—', 460, y + 56);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-  doc.text(L(lang, 'Payback period'), '
+  doc.text(L(lang, 'Payback period'), 460, y + 70);
   y += 96;
 
   // 2. Archetype
@@ -1584,7 +1584,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
     ['Software & phone seat', hidden.software_and_phone ?? 0],
   ];
   doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-  doc.text(L(lang, 'Cost component'), '
+  doc.text(L(lang, 'Cost component'), 40, y); doc.text(L(lang, 'Amount per year'), 420, y); y += 6;
   doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
   rows.forEach(([label, val]) => {
@@ -1595,7 +1595,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   });
   doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 14;
   doc.setFont('helvetica', 'bold'); doc.setTextColor(NAVY);
-  doc.text(L(lang, 'True annual cost (mid)'), '
+  doc.text(L(lang, 'True annual cost (mid)'), 40, y);
   doc.text(fmtEUR(data.true_annual_cost_eur?.mid), 420, y);
   y += 18;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
@@ -1608,7 +1608,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   y = sectionTitle(doc, L(lang, '4 - Coverage gap'), y);
   doc.setFillColor('#f5f5f5'); doc.rect(40, y - 10, 515, 80, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-  doc.text(L(lang, 'Human (single FTE)'), '
+  doc.text(L(lang, 'Human (single FTE)'), 56, y + 6);
   doc.text('Isabella', 320, y + 6);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
   doc.text(`${cov.human_productive_hours_per_year ?? 1760} productive hours / year`, 56, y + 24);
@@ -1641,13 +1641,13 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   y = ensureSpace(doc, y, 140);
   y = sectionTitle(doc, L(lang, '6 - Total cost of ownership (3 and 5 years)'), y);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-  doc.text(L(lang, 'Horizon'), '
+  doc.text(L(lang, 'Horizon'), 40, y); doc.text(L(lang, 'Human (mid)'), 200, y); doc.text(L(lang, 'Isabella'), 340, y); doc.text(L(lang, 'Savings'), 470, y);
   y += 6; doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 12;
   const tco3 = data.tco_3yr_eur || {}; const tco5 = data.tco_5yr_eur || {};
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
-  doc.text(L(lang, '3 years'), '
+  doc.text(L(lang, '3 years'), 40, y); doc.text(fmtEUR(tco3.human_mid), 200, y); doc.text(fmtEUR(tco3.isabella), 340, y);
   doc.setTextColor('#2d8a5e'); doc.text(fmtEUR(tco3.savings), 470, y); doc.setTextColor(INK); y += 16;
-  doc.text(L(lang, '5 years'), '
+  doc.text(L(lang, '5 years'), 40, y); doc.text(fmtEUR(tco5.human_mid), 200, y); doc.text(fmtEUR(tco5.isabella), 340, y);
   doc.setTextColor('#2d8a5e'); doc.text(fmtEUR(tco5.savings), 470, y); doc.setTextColor(INK); y += 16;
   doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(MUTED);
   y = paragraph(doc, 'Assumes 3.5% annual salary inflation on the human side and flat Isabella pricing.', y + 4, { color: MUTED, size: 8 });
@@ -1685,7 +1685,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
     doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor('#2d8a5e');
     doc.text(fmtEUR(rp.annual_revenue_at_risk_eur), 56, y + 30);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-    doc.text(L(lang, 'Annual revenue exposed to missed inbound at current capture rate'), '
+    doc.text(L(lang, 'Annual revenue exposed to missed inbound at current capture rate'), 56, y + 46);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
     doc.text(`Missed inquiries / month: ${rp.missed_inquiries_per_month}`, 56, y + 68);
     doc.text(`Avg deal value: ${fmtEUR(rp.avg_deal_value_eur)}`, 240, y + 68);
@@ -1753,12 +1753,12 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
     y = sectionTitle(doc, L(lang, '11 - If you do nothing — 12-month cost of inaction'), y);
     doc.setFillColor('#fff4f2'); doc.rect(40, y - 10, 515, 130, 'F');
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
-    doc.text(L(lang, 'Hidden staffing cost'), '
-    doc.text(L(lang, 'Missed revenue (annual)'), '
-    doc.text(L(lang, 'Turnover exposure'), '
+    doc.text(L(lang, 'Hidden staffing cost'), 56, y + 8);    doc.text(fmtEUR(coi.hidden_staffing_cost_eur), 420, y + 8);
+    doc.text(L(lang, 'Missed revenue (annual)'), 56, y + 26); doc.text(fmtEUR(coi.missed_revenue_eur), 420, y + 26);
+    doc.text(L(lang, 'Turnover exposure'), 56, y + 44);     doc.text(fmtEUR(coi.turnover_exposure_eur), 420, y + 44);
     doc.setDrawColor('#dddddd'); doc.line(56, y + 56, 499, y + 56);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor('#c0392b');
-    doc.text(L(lang, 'Total opportunity cost'), '
+    doc.text(L(lang, 'Total opportunity cost'), 56, y + 78);
     doc.text(fmtEUR(coi.total_opportunity_cost_eur), 420, y + 78);
     doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
     y = paragraph(doc, coi.narrative || '', y + 96, { color: MUTED, size: 9 });
@@ -1771,11 +1771,11 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
     y = ensureSpace(doc, y, 160);
     y = sectionTitle(doc, L(lang, '12 - Recommended staffing model (Human + Isabella)'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Today'), '
+    doc.text(L(lang, 'Today'), 40, y); y += 14;
     y = paragraph(doc, staff.current, y, { color: INK, size: 10 });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Recommended'), '
+    doc.text(L(lang, 'Recommended'), 330, y);
     (staff.recommended || []).forEach((r: string) => { y = paragraph(doc, `- ${r}`, y); });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
@@ -1975,11 +1975,11 @@ function buildMissedCalls(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_
     y = ensureSpace(doc, y, 160);
     y = sectionTitle(doc, `${nextNum()} - Recommended staffing model (Human + Isabella)`, y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Today'), '
+    doc.text(L(lang, 'Today'), 40, y); y += 14;
     y = paragraph(doc, staff.current, y, { color: INK, size: 10 });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text(L(lang, 'Recommended'), '
+    doc.text(L(lang, 'Recommended'), 330, y);
     (staff.recommended || []).forEach((r: string) => { y = paragraph(doc, `- ${r}`, y); });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');

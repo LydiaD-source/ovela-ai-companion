@@ -538,8 +538,29 @@
     max-height: 100dvh;
     border-radius: 0;
     border: none;
-    padding-top: env(safe-area-inset-top, 0px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 140px);
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
+  }
+
+  /* When chat is active on mobile, float Isabella's face above the chat */
+  .hero-section.chat-active .isabella-container {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 0;
+    z-index: 10001;
+  }
+
+  .hero-section.chat-active .isabella-image-wrapper {
+    width: 96px;
+    height: 96px;
+  }
+
+  .hero-section.chat-active .isabella-spotlight {
+    width: 140px;
+    height: 140px;
   }
 
   .hero-chat-overlay.active .hero-chat-close {

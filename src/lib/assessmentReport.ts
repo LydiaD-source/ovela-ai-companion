@@ -1904,16 +1904,17 @@ function buildMissedCalls(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_
 function buildAssessmentDoc(report: AssessmentReport): jsPDF {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   installSanitizer(doc);
-  if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data);
+  const lang = normLang(report.language);
+  if (report.type === 'nutrition_assessment') buildNutrition(doc, report.data, lang);
   else if (report.type === 'business_calculator') {
-    if (report.subtype === 'missed_calls') buildMissedCalls(doc, report.data);
-    else buildBusinessCalculator(doc, report.data);
+    if (report.subtype === 'missed_calls') buildMissedCalls(doc, report.data, lang);
+    else buildBusinessCalculator(doc, report.data, lang);
   }
-  else buildRecoveryResilience(doc, report.data);
+  else buildRecoveryResilience(doc, report.data, lang);
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {
     doc.setPage(i);
-    footer(doc, i, pages);
+    footer(doc, i, pages, lang);
   }
   return doc;
 }

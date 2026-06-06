@@ -336,9 +336,9 @@ const Home = () => {
               <div className="isabella-image-wrapper">
                 {/* Isabella Image - Hides when D-ID animation is active */}
                 <img 
-                  src={ISABELLA_AVATAR_URL}
+                  src={heroImage}
                   alt="Isabella Navia - AI Model Ambassador"
-                  className="isabella-hero-image hero-image-raw"
+                  className={`isabella-hero-image hero-image-raw ${isMobile ? 'isabella-mobile-face' : ''}`}
                   loading="eager"
                   decoding="sync"
                   fetchPriority="high"

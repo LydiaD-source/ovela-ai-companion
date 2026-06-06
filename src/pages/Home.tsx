@@ -14,9 +14,13 @@ import { textToSpeechService } from '@/lib/textToSpeech';
 import { useSEO } from '@/hooks/useSEO';
 import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, professionalServiceSchema, localBusinessSchema, faqSchema } from '@/hooks/useStructuredData';
 import '@/styles/HeroSection.css';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-// Isabella avatar URL - centralized constant
+// Isabella avatar URLs - centralized constants
+// Desktop: full-body glamour shot. Mobile: face close-up portrait so the D-ID
+// lip-sync overlay matches what's on screen and the avatar reads instantly.
 const ISABELLA_AVATAR_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
+const ISABELLA_AVATAR_MOBILE_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1778871138/Add_beauty_mark_above_lip_202605152023_k8zdc9.jpg";
 const ISABELLA_VIDEO_URL = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
 
 const Home = () => {

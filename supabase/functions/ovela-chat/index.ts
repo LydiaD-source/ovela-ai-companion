@@ -1024,6 +1024,10 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const result = calcReceptionistCost(args);
               console.log('💰 Receptionist cost calc:', { country: result.country, role: result.role, archetype: result.archetype?.id });
               receptionistReportPayload = result;
+              try {
+                const trialKey = `${clientId || 'ovela'}::${userId || 'guest'}`;
+                await recordAssessment(trialKey, 'receptionist_cost', language);
+              } catch (_) { /* best-effort */ }
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });
@@ -1038,6 +1042,10 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const result = calcMissedLeads(args);
               console.log('📉 Missed leads calc:', { monthly_inbound: result.inputs.monthly_inbound, leak: result.annual_revenue_loss_eur });
               missedLeadsReportPayload = result;
+              try {
+                const trialKey = `${clientId || 'ovela'}::${userId || 'guest'}`;
+                await recordAssessment(trialKey, 'missed_calls', language);
+              } catch (_) { /* best-effort */ }
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

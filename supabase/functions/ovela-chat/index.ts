@@ -1151,6 +1151,11 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const result = recoveryResilienceAssessment(args);
               bioAgeReportPayload = result;
               console.log('🛡️ Recovery & Resilience assessment:', { exec: result.scores.executive_wellness, burnout: result.scores.burnout_risk });
+              try {
+                const trialKey = `${clientId || 'ovela'}::${userId || 'guest'}`;
+                const assessType = toolCall.function?.name === 'biological_age_assessment' ? 'biological_age' : 'recovery_resilience';
+                await recordAssessment(trialKey, assessType, language);
+              } catch (_) { /* analytics best-effort */ }
               toolResults.push({ id: toolCall.id, content: JSON.stringify(result) });
             } catch (e) {
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ error: String(e) }) });

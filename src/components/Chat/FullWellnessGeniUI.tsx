@@ -50,6 +50,8 @@ const LANGUAGES = [
   { code: 'pt-PT', label: 'Português', flag: '🇵🇹' },
 ];
 
+const ISABELLA_FACE_IMAGE_URL = 'https://res.cloudinary.com/di5gj4nyp/image/upload/v1758918813/Flux_Dev_v_0_xhxy5n.jpg';
+
 // Lead capture is handled entirely by the AI backend via tool calls — no frontend patterns needed
 
 const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
@@ -96,35 +98,47 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header.
-  // Once the stream is attached we keep it visible at full opacity so the user sees Isabella's face
-  // (idle + lip-sync) continuously without depending on per-speech-cycle fade events. This is the
-  // primary "she is here" cue on mobile where the hero full-body avatar is hidden.
-  const headerVideoRef = useRef<HTMLVideoElement>(null);
+  // Header avatar mirror — mobile uses the same processed D-ID canvas as the hero,
+  // not the raw WebRTC video. That prevents old fallback photos / white video mats
+  // from appearing when the animation starts.
+  const headerCanvasRef = useRef<HTMLCanvasElement>(null);
   const [hasHeaderStream, setHasHeaderStream] = useState(false);
   const [headerIsSpeaking, setHeaderIsSpeaking] = useState(false);
   useEffect(() => {
-    const attach = () => {
-      const stream = (window as any).__AVATAR_VIDEO_STREAM__ as MediaStream | undefined;
-      const el = headerVideoRef.current;
-      if (stream && el && el.srcObject !== stream) {
-        el.srcObject = stream;
-        el.play().catch(() => {});
-        setHasHeaderStream(true);
+    let raf = 0;
+    let frameSeen = false;
+
+    const mirrorFrame = () => {
+      const source = (window as any).__AVATAR_CANVAS_REF__ as HTMLCanvasElement | undefined;
+      const target = headerCanvasRef.current;
+
+      if (source && target && source.width > 0 && source.height > 0) {
+        if (target.width !== source.width || target.height !== source.height) {
+          target.width = source.width;
+          target.height = source.height;
+        }
+
+        const ctx = target.getContext('2d', { alpha: true });
+        if (ctx) {
+          ctx.clearRect(0, 0, target.width, target.height);
+          ctx.drawImage(source, 0, 0, target.width, target.height);
+          if (!frameSeen) {
+            frameSeen = true;
+            setHasHeaderStream(true);
+          }
+        }
       }
+
+      raf = window.requestAnimationFrame(mirrorFrame);
     };
-    attach();
-    // Retry attach for a few seconds in case the chat header mounts before the D-ID stream resolves
-    const retry = window.setInterval(attach, 500);
-    window.setTimeout(() => window.clearInterval(retry), 8000);
-    window.addEventListener('avatar-stream-ready', attach);
+
+    raf = window.requestAnimationFrame(mirrorFrame);
     const onStart = () => setHeaderIsSpeaking(true);
     const onEnd = () => setHeaderIsSpeaking(false);
     window.addEventListener('avatar-frame-ready', onStart);
     window.addEventListener('avatar-speech-end', onEnd);
     return () => {
-      window.clearInterval(retry);
-      window.removeEventListener('avatar-stream-ready', attach);
+      window.cancelAnimationFrame(raf);
       window.removeEventListener('avatar-frame-ready', onStart);
       window.removeEventListener('avatar-speech-end', onEnd);
     };
@@ -435,7 +449,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               would confuse users and (when it mirrors the D-ID stream) makes
               the page feel like two competing avatars. */}
           <div
-            className={`md:hidden relative w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+            className={`md:hidden relative h-20 w-20 rounded-full overflow-hidden border-2 transition-all duration-300 ${
               headerIsSpeaking
                 ? 'border-champagne-gold shadow-[0_0_22px_rgba(212,175,55,0.7)]'
                 : 'border-champagne-gold/50'
@@ -444,29 +458,24 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
           >
             {/* Still photo fallback — face-cropped, shown until live D-ID stream attaches */}
             <img
-              src="/lovable-uploads/747c6d6a-cb67-45f5-9bf0-64ea66c8b8e4.png"
+              src={ISABELLA_FACE_IMAGE_URL}
               alt="Isabella"
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 20%',
-                opacity: hasHeaderStream ? 0 : 1,
+                objectPosition: 'center 35%',
+                opacity: headerIsSpeaking && hasHeaderStream ? 0 : 1,
                 transition: 'opacity 0.4s ease-in-out',
               }}
             />
-            {/* Live animated head — mirrors the D-ID WebRTC stream, head-cropped */}
-            <video
-              ref={headerVideoRef}
-              autoPlay
-              playsInline
-              muted
+            {/* Live animated head — mirrors the processed hero D-ID canvas, not raw video */}
+            <canvas
+              ref={headerCanvasRef}
               className="absolute inset-0 w-full h-full"
               style={{
                 objectFit: 'cover',
-                objectPosition: 'center 25%',
-                transform: 'scale(1.6)',
-                transformOrigin: 'center 25%',
-                opacity: hasHeaderStream ? 1 : 0,
+                objectPosition: 'center 35%',
+                opacity: headerIsSpeaking && hasHeaderStream ? 1 : 0,
                 transition: 'opacity 0.4s ease-in-out',
                 background: 'transparent',
               }}

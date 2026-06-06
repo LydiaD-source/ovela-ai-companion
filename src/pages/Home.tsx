@@ -19,8 +19,13 @@ import { useIsMobile } from '@/hooks/use-mobile';
 // Isabella avatar URLs - centralized constants
 // Desktop: full-body glamour shot. Mobile: face close-up portrait so the D-ID
 // lip-sync overlay matches what's on screen and the avatar reads instantly.
-const ISABELLA_AVATAR_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png";
-const ISABELLA_AVATAR_MOBILE_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1778871138/Add_beauty_mark_above_lip_202605152023_k8zdc9.jpg";
+// Unified Isabella face image — used for BOTH the on-screen hero portrait
+// and the D-ID lip-sync animation source. Keeping them identical eliminates
+// the mobile "image swap" flash where the chat avatar differed from the
+// animated yellow-gown image. D-ID animates faces, so a face-forward portrait
+// also produces a higher-quality lip-sync.
+const ISABELLA_AVATAR_URL = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1758918813/Flux_Dev_v_0_xhxy5n.jpg";
+const ISABELLA_AVATAR_MOBILE_URL = ISABELLA_AVATAR_URL;
 const ISABELLA_VIDEO_URL = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1758719713/133adb02-04ab-46f1-a4cf-ed32398f10b3_hsrjzm.mp4";
 
 const Home = () => {

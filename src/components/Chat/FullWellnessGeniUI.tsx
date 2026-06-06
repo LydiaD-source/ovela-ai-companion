@@ -95,6 +95,29 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Header avatar live-video mirror (D-ID stream) — shows Isabella's animated face in the chat header
+  const headerVideoRef = useRef<HTMLVideoElement>(null);
+  const [headerIsSpeaking, setHeaderIsSpeaking] = useState(false);
+  useEffect(() => {
+    const attach = () => {
+      const stream = (window as any).__AVATAR_VIDEO_STREAM__ as MediaStream | undefined;
+      if (stream && headerVideoRef.current && headerVideoRef.current.srcObject !== stream) {
+        headerVideoRef.current.srcObject = stream;
+        headerVideoRef.current.play().catch(() => {});
+      }
+    };
+    attach();
+    window.addEventListener('avatar-stream-ready', attach);
+    const onStart = () => setHeaderIsSpeaking(true);
+    const onEnd = () => setHeaderIsSpeaking(false);
+    window.addEventListener('avatar-frame-ready', onStart);
+    window.addEventListener('avatar-speech-end', onEnd);
+    return () => {
+      window.removeEventListener('avatar-stream-ready', attach);
+      window.removeEventListener('avatar-frame-ready', onStart);
+      window.removeEventListener('avatar-speech-end', onEnd);
+    };
+  }, []);
   // Tool context persists for the whole assessment session, not just the first message.
   const [toolCtx, setToolCtx] = useState<{ tool_context?: string; authority_topic?: string } | null>(() => {
     if (typeof window === 'undefined') return null;
@@ -379,8 +402,43 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-soft-white/10">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-champagne-gold/20 to-soft-purple/20 flex items-center justify-center">
-            <span className="text-lg">✨</span>
+          <div
+            className={`relative w-12 h-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+              headerIsSpeaking
+                ? 'border-champagne-gold shadow-[0_0_18px_rgba(212,175,55,0.6)]'
+                : 'border-champagne-gold/40'
+            }`}
+            style={{ background: '#0A0E27', flex: '0 0 auto' }}
+          >
+            <img
+              src="https://res.cloudinary.com/di5gj4nyp/image/upload/v1759836676/golddress_ibt1fp.png"
+              alt="Isabella"
+              className="absolute inset-0 w-full h-full"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center 12%',
+                transform: 'scale(1.6) translateY(6%)',
+                transformOrigin: 'center top',
+                opacity: headerIsSpeaking ? 0 : 1,
+                transition: 'opacity 0.25s ease-in-out',
+              }}
+            />
+            <video
+              ref={headerVideoRef}
+              autoPlay
+              playsInline
+              muted
+              className="absolute inset-0 w-full h-full"
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center 12%',
+                transform: 'scale(1.6) translateY(6%)',
+                transformOrigin: 'center top',
+                opacity: headerIsSpeaking ? 1 : 0,
+                transition: 'opacity 0.25s ease-in-out',
+                background: '#0A0E27',
+              }}
+            />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-soft-white">Isabella</h3>

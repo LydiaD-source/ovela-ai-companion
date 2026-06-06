@@ -265,21 +265,20 @@ class PersistentStreamManager {
     this.hiddenVideo.style.display = 'none';
     container.appendChild(this.hiddenVideo);
     
-    // Canvas for chroma-key processing
+    // Canvas for chroma-key processing. It must occupy the exact same fixed
+    // portrait frame as the still image; only the pixels inside the frame move.
     this.chromaCanvas = document.createElement('canvas');
     Object.assign(this.chromaCanvas.style, {
       position: 'absolute',
-      bottom: '0',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      maxHeight: '88vh',
-      width: 'auto',
-      height: 'auto',
-      zIndex: '150',
+      inset: '0',
+      width: '100%',
+      height: '100%',
+      zIndex: '20',
       backgroundColor: 'transparent',
       pointerEvents: 'none',
       opacity: '0',
       transition: 'opacity 0.3s ease-in-out',
+      borderRadius: 'inherit',
     });
     container.appendChild(this.chromaCanvas);
     
@@ -295,24 +294,45 @@ class PersistentStreamManager {
       
       if (!this.hiddenVideo || this.hiddenVideo.paused || this.hiddenVideo.readyState < 2) return;
       
-      const { videoWidth: width, videoHeight: height } = this.hiddenVideo;
-      if (!width || !height) return;
-      
-      if (!canvasReady && this.chromaCanvas) {
-        this.chromaCanvas.width = width;
-        this.chromaCanvas.height = height;
+      const { videoWidth: sourceWidth, videoHeight: sourceHeight } = this.hiddenVideo;
+      if (!sourceWidth || !sourceHeight || !this.chromaCanvas) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const targetWidth = Math.max(1, Math.round(containerRect.width * Math.min(window.devicePixelRatio || 1, 1.5)));
+      const targetHeight = Math.max(1, Math.round(containerRect.height * Math.min(window.devicePixelRatio || 1, 1.5)));
+
+      if (!canvasReady) {
+        this.chromaCanvas.width = targetWidth;
+        this.chromaCanvas.height = targetHeight;
         canvasReady = true;
       }
       
-      if (this.chromaCanvas && (this.chromaCanvas.width !== width || this.chromaCanvas.height !== height)) {
-        this.chromaCanvas.width = width;
-        this.chromaCanvas.height = height;
+      if (this.chromaCanvas.width !== targetWidth || this.chromaCanvas.height !== targetHeight) {
+        this.chromaCanvas.width = targetWidth;
+        this.chromaCanvas.height = targetHeight;
       }
-      
-      ctx.drawImage(this.hiddenVideo, 0, 0, width, height);
+
+      const targetAspect = targetWidth / targetHeight;
+      const sourceAspect = sourceWidth / sourceHeight;
+      const frameY = window.innerWidth < 768 ? 0.35 : 0.28;
+      let sx = 0;
+      let sy = 0;
+      let sw = sourceWidth;
+      let sh = sourceHeight;
+
+      if (sourceAspect > targetAspect) {
+        sw = sourceHeight * targetAspect;
+        sx = (sourceWidth - sw) / 2;
+      } else if (sourceAspect < targetAspect) {
+        sh = sourceWidth / targetAspect;
+        sy = (sourceHeight - sh) * frameY;
+      }
+
+      ctx.clearRect(0, 0, targetWidth, targetHeight);
+      ctx.drawImage(this.hiddenVideo, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
       
       // Remove pure black background (D-ID default)
-      const imageData = ctx.getImageData(0, 0, width, height);
+      const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
       const data = imageData.data;
       
       for (let i = 0; i < data.length; i += 4) {

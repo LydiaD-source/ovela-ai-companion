@@ -25,6 +25,9 @@ const ISABELLA_VIDEO_URL = "https://res.cloudinary.com/di5gj4nyp/video/upload/v1
 
 const Home = () => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  const heroImage = isMobile ? ISABELLA_AVATAR_MOBILE_URL : ISABELLA_AVATAR_URL;
+
   
   // SEO with translated meta tags
   useSEO({

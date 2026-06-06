@@ -279,6 +279,53 @@ async function recordAssessment(
 // Back-compat alias
 const checkAndRecordTrial = (userKey: string) => recordAssessment(userKey, 'nutrition_assessment');
 
+// Translate every string VALUE in a JSON object to the user's language.
+// Keys, numbers, IDs, enums, currency codes are preserved. Used to localize
+// assessment tool outputs so the PDF + on-page report match the chat language.
+async function translateStringsDeep(obj: any, targetLang: string, lovableKey: string): Promise<any> {
+  if (!obj) return obj;
+  const normalized = (targetLang || '').toLowerCase();
+  if (!normalized || normalized === 'en' || normalized === 'auto') return obj;
+  const langName: Record<string, string> = {
+    es: 'Spanish', fr: 'French', de: 'German', it: 'Italian',
+    ca: 'Catalan', pt: 'Portuguese', 'pt-br': 'Brazilian Portuguese',
+    nl: 'Dutch'
+  };
+  const target = langName[normalized] || targetLang;
+  try {
+    const json = JSON.stringify(obj);
+    if (json.length > 80000) {
+      console.warn('⚠️ translateStringsDeep: payload too large, skipping', { len: json.length });
+      return obj;
+    }
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${lovableKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: `You are a strict JSON translator. Return ONLY a valid JSON object — no markdown fences, no commentary. Translate EVERY human-readable string VALUE in the input JSON to ${target}. Rules: (1) do NOT translate JSON keys; (2) do NOT translate numbers, booleans, null, arrays' structure; (3) do NOT translate identifiers, enums, country codes (ES, FR, EUR), currency codes, URLs, email addresses, IDs, or numeric strings like "247"; (4) translate prose strings: titles, labels, names, descriptions, recommendations, sentences, bullet text, archetype names, pattern descriptions, meal names, summaries; (5) keep the exact JSON structure, all keys, all numeric values, all array orderings; (6) translate naturally and idiomatically into ${target}, suitable for a premium executive audience.` },
+          { role: "user", content: json }
+        ],
+        stream: false,
+        response_format: { type: "json_object" }
+      })
+    });
+    if (!res.ok) {
+      console.warn('⚠️ translateStringsDeep gateway error', res.status);
+      return obj;
+    }
+    const body = await res.json();
+    const txt = body?.choices?.[0]?.message?.content || "";
+    if (!txt) return obj;
+    const parsed = JSON.parse(txt);
+    return parsed && typeof parsed === 'object' ? parsed : obj;
+  } catch (e) {
+    console.warn('⚠️ translateStringsDeep failed, returning original:', String(e));
+    return obj;
+  }
+}
+
 const WELLNESPIRIT_PRE_EXPIRY_FOOTER =
   "\n\n_This is your **free baseline assessment** — a one-time snapshot. Accuracy improves dramatically when changes are tracked weekly against a stable baseline. For monthly reassessments, score-vs-score progress comparisons (Month 1 → Month 2 → Month 6) and Isabella's ongoing support, the full programme lives at our clinical partner WellneSpirit (wellnespirit.com)._";
 

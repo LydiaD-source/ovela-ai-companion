@@ -219,9 +219,20 @@ const Home = () => {
   }, []);
 
   // Activate chat and initialize D-ID connection
-  const activateChat = useCallback(async () => {
+  const activateChat = useCallback(async (opts?: { seeded?: boolean }) => {
     console.log('[Home] 🟢 Activating chat');
-    
+
+    // If this is a plain "Ask About Digital Employees" open (no tool seed,
+    // no partner preset), clear any leftover assessment context/messages from
+    // a previous session so Isabella doesn't greet with the wrong topic
+    // (e.g. nutrition prompt persisting after a prior assessment).
+    if (!opts?.seeded) {
+      try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
+      try { delete (window as any).__ISABELLA_CTX__; } catch {}
+      window.dispatchEvent(new Event('isabella:reset'));
+      setInitialChatMessage(undefined);
+    }
+
     // Unlock audio context (browser autoplay policy workaround)
     try {
       const silentAudio = new Audio();

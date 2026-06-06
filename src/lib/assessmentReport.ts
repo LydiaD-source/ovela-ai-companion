@@ -1705,8 +1705,8 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
 }
 
 
-function buildMissedCalls(doc: jsPDF, data: any) {
-  header(doc, 'Missed Calls & Revenue Leak Diagnostic');
+function buildMissedCalls(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LANG) {
+  header(doc, tr(lang, 'missed_title'), lang);
   let y = 110;
   const annual = data.annual_revenue_loss_eur ?? 0;
   const leak = data.leak_breakdown_eur || {};

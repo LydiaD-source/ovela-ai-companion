@@ -171,7 +171,7 @@ const Home = () => {
     }
 
     // Defer to next tick so activateChatRef is populated by its sync effect.
-    const fireActivate = () => setTimeout(() => activateChatRef.current?.(), 0);
+    const fireActivate = (seeded: boolean) => setTimeout(() => activateChatRef.current?.({ seeded }), 0);
 
     if (toolSeed?.initialPrompt) {
       (window as any).__ISABELLA_CTX__ = {
@@ -182,7 +182,7 @@ const Home = () => {
         detail: { tool_context: toolSeed.tool_context, authority_topic: toolSeed.authority_topic }
       }));
       setInitialChatMessage(toolSeed.initialPrompt);
-      fireActivate();
+      fireActivate(true);
       window.history.replaceState({}, '', '/');
       return;
     }
@@ -191,10 +191,10 @@ const Home = () => {
       const label = partnerLabels[partner];
       const msg = `I'd like to register for Ovela Network membership${partner === 'general' ? '' : ` for ${label} access`}. Please acknowledge my interest, confirm my details will be sent to the Ovela team, and go straight into collecting my information (full name, email, company, country, and a short note on what I'm looking for). Skip the presentation — I'll ask if I want to know more.`;
       setInitialChatMessage(msg);
-      fireActivate();
+      fireActivate(true);
       window.history.replaceState({}, '', '/');
     } else if (params.get('chat') === 'open') {
-      fireActivate();
+      fireActivate(false);
       window.history.replaceState({}, '', '/');
     }
   }, []);

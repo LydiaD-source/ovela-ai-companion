@@ -465,7 +465,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   // 1. Summary
   if (data.executive_summary) {
-    y = sectionTitle(doc, '1 · Summary', y);
+    y = sectionTitle(doc, L(lang, '1 · Summary'), y);
     y = paragraph(doc, data.executive_summary, y);
     y += 8;
   }
@@ -473,7 +473,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   // 1b. Observations from your diary (meal-log references — personalization)
   if (Array.isArray(data.meal_observations) && data.meal_observations.length) {
     y = ensureSpace(doc, y, 30 + data.meal_observations.length * 16);
-    y = sectionTitle(doc, 'What Isabella noticed in your diary', y);
+    y = sectionTitle(doc, L(lang, 'What Isabella noticed in your diary'), y);
     data.meal_observations.forEach((obs: string) => {
       y = ensureSpace(doc, y, 16);
       y = paragraph(doc, `- ${obs}`, y, { color: INK });
@@ -488,13 +488,13 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     const gains = ed.expected_14_day_gains || [];
     const panelH = 40 + Math.max(opps.length, gains.length) * 16;
     y = ensureSpace(doc, y, panelH + 30);
-    y = sectionTitle(doc, 'Your biggest opportunities', y);
+    y = sectionTitle(doc, L(lang, 'Your biggest opportunities'), y);
     doc.setFillColor('#f7f3e6');
     doc.rect(40, y - 10, 515, panelH, 'F');
     // Left column header
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text('Top changes', 56, y + 6);
-    doc.text('Expected 14-day gains', 320, y + 6);
+    doc.text(L(lang, 'Top changes'), '
+    doc.text(L(lang, 'Expected 14-day gains'), '
     let oy = y + 22;
     opps.forEach((o: any) => {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
@@ -521,7 +521,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const er = data.executive_readiness;
   if (er) {
     y = ensureSpace(doc, y, 140);
-    y = sectionTitle(doc, '2 · Nutrition Optimization Score', y);
+    y = sectionTitle(doc, L(lang, '2 · Nutrition Optimization Score'), y);
     // Big number block
     doc.setFillColor('#f7f3e6');
     doc.rect(40, y - 12, 515, 70, 'F');
@@ -537,7 +537,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     doc.setFontSize(9);
     doc.setTextColor(MUTED);
     doc.text(`Measures: ${(er.measures || []).join(' · ')}`, 260, y + 30);
-    doc.text('Scale:', 260, y + 44);
+    doc.text(L(lang, 'Scale:'), '
     (er.scale || []).slice(0, 4).forEach((line: string, i: number) => {
       doc.text(`• ${line}`, 300, y + 44 + (i + 1) * 10);
     });
@@ -546,7 +546,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   // 3. Headline scores (Nutrition / Recovery Support / Muscle)
   y = ensureSpace(doc, y, 130);
-  y = sectionTitle(doc, '3 · Headline scores', y);
+  y = sectionTitle(doc, L(lang, '3 · Headline scores'), y);
   y = paragraph(doc, 'These three scores feed into your Nutrition Optimization Score above. Lowest score = biggest leverage point.', y, { color: MUTED, size: 9 });
   y += 4;
   y = scoreRow(doc, 'Nutrition quality', s.overall_nutrition ?? 0, y);
@@ -558,15 +558,15 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const eb = data.executive_benchmark;
   if (eb) {
     y = ensureSpace(doc, y, 200);
-    y = sectionTitle(doc, '4 · Nutrition benchmark', y);
+    y = sectionTitle(doc, L(lang, '4 · Nutrition benchmark'), y);
     y = paragraph(doc, `Compared with ${eb.cohort}:`, y, { color: MUTED, size: 9 });
     y += 4;
     // Column headers
     doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-    doc.text('Metric', 40, y);
-    doc.text('Current', 200, y);
-    doc.text('Recommended', 330, y);
-    doc.text('Position', 470, y);
+    doc.text(L(lang, 'Metric'), '
+    doc.text(L(lang, 'Current'), '
+    doc.text(L(lang, 'Recommended'), '
+    doc.text(L(lang, 'Position'), '
     y += 6;
     doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 8;
     (eb.items || []).forEach((it: any) => {
@@ -590,7 +590,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   // Nutrition snapshot (sub of executive view, no number)
   y = ensureSpace(doc, y, 180);
-  y = sectionTitle(doc, 'Nutrition snapshot', y);
+  y = sectionTitle(doc, L(lang, 'Nutrition snapshot'), y);
   y = scoreRow(doc, 'Protein', s.protein ?? 0, y);
   y = scoreRow(doc, 'Carbohydrate quality', s.carbs ?? 0, y);
   y = scoreRow(doc, 'Fat quality', s.fat ?? 0, y);
@@ -602,7 +602,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const drivers = data.score_drivers;
   if (drivers && (drivers.hydration || drivers.carbs || drivers.recovery_support)) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, 'Why these scores', y);
+    y = sectionTitle(doc, L(lang, 'Why these scores'), y);
     const blocks: Array<[string, any]> = [
       ['Hydration', drivers.hydration],
       ['Carbohydrate quality', drivers.carbs],
@@ -621,7 +621,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   // Targets + calculation basis (sub, no number)
   y = ensureSpace(doc, y, 160);
-  y = sectionTitle(doc, 'Your daily targets', y);
+  y = sectionTitle(doc, L(lang, 'Your daily targets'), y);
   const t = data.targets || {};
   const cb = data.calculation_basis;
   if (cb?.note) {
@@ -655,7 +655,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   // Fastest win (sub, no number)
   if (data.fastest_win) {
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, '⚡ Fastest win', y);
+    y = sectionTitle(doc, L(lang, '⚡ Fastest win'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(NAVY);
     doc.text(data.fastest_win.title, 40, y); y += 16;
     y = paragraph(doc, data.fastest_win.action, y);
@@ -672,7 +672,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const mp = data.muscle_preservation;
   if (mp) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '5 · Muscle preservation & performance capacity', y);
+    y = sectionTitle(doc, L(lang, '5 · Muscle preservation & performance capacity'), y);
     y = paragraph(doc,
       `Current protein: ${mp.current_protein_g ?? '—'} g/day\n` +
       `Recommended protein: ${mp.recommended_protein_g ?? '—'} g/day\n` +
@@ -692,7 +692,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const tmEarly = data.top_meals;
   if (tmEarly && (tmEarly.strongest || tmEarly.weakest)) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, 'Top meals from your week', y);
+    y = sectionTitle(doc, L(lang, 'Top meals from your week'), y);
     const drawMeal = (label: string, color: string, m: any, reasonsKey: string) => {
       if (!m || !m.meal) return;
       y = ensureSpace(doc, y, 90);
@@ -719,14 +719,14 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const po = data.protein_opportunity;
   if (po && Array.isArray(po.meals)) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, 'Protein opportunity — where your protein is missing', y);
+    y = sectionTitle(doc, L(lang, 'Protein opportunity — where your protein is missing'), y);
     y = paragraph(doc, 'Meal-by-meal view of how much protein you ate vs. a practical target.', y, { color: MUTED, size: 9 });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-    doc.text('Meal', 40, y);
-    doc.text('Actual', 240, y);
-    doc.text('Target', 340, y);
-    doc.text('Gap', 460, y);
+    doc.text(L(lang, 'Meal'), '
+    doc.text(L(lang, 'Actual'), '
+    doc.text(L(lang, 'Target'), '
+    doc.text(L(lang, 'Gap'), '
     y += 6;
     doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
     po.meals.forEach((m: any) => {
@@ -740,7 +740,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
         doc.text(`-${m.gap_g} g`, 460, y);
       } else if (m.gap_g === 0) {
         doc.setTextColor('#2d8a5e'); doc.setFont('helvetica', 'bold');
-        doc.text('on target', 460, y);
+        doc.text(L(lang, 'on target'), '
       } else {
         doc.setTextColor(MUTED);
         doc.text('—', 460, y);
@@ -798,7 +798,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const mfr: Array<{ slot: string; current: string; upgrade: string }> = Array.isArray(data.meal_framework_replacements) ? data.meal_framework_replacements : [];
   if (mfr.length) {
     y = ensureSpace(doc, y, 60 + mfr.length * 48);
-    y = sectionTitle(doc, '7 · Personalised meal framework — based on your diary', y);
+    y = sectionTitle(doc, L(lang, '7 · Personalised meal framework — based on your diary'), y);
     y = paragraph(doc, 'Replacements for the meals already in your week — not a generic plan.', y, { color: MUTED, size: 9 });
     y += 4;
     mfr.forEach((m) => {
@@ -829,7 +829,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const ms = data.metabolic_support;
   if (ms) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '8 · Recovery & metabolic efficiency', y);
+    y = sectionTitle(doc, L(lang, '8 · Recovery & metabolic efficiency'), y);
     y = scoreRow(doc, 'Metabolic support score', ms.score ?? 0, y);
     if ((ms.biggest_opportunities || []).length) {
       y += 4;
@@ -846,7 +846,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const rt = data.resistance_training;
   if (rt) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '9 · Resistance training recommendation', y);
+    y = sectionTitle(doc, L(lang, '9 · Resistance training recommendation'), y);
     y = paragraph(doc,
       `Age: ${rt.age}    Goal: ${rt.goal}\n` +
       `• ${rt.strength_sessions_per_week} resistance sessions per week\n` +
@@ -861,7 +861,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const bai = data.biological_age_impact;
   if ((lf && (lf.alcohol || lf.coffee || lf.walking)) || bai) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '10 · Recovery & lifestyle factors', y);
+    y = sectionTitle(doc, L(lang, '10 · Recovery & lifestyle factors'), y);
     if (lf?.alcohol) {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
@@ -890,14 +890,14 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
       if ((bai.positive || []).length) {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
-        doc.text('Strengths', 40, y); y += 14;
+        doc.text(L(lang, 'Strengths'), '
         bai.positive.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `+ ${p}`, y, { color: '#2d8a5e' }); });
         y += 4;
       }
       if ((bai.needs_improvement || []).length) {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(GOLD);
-        doc.text('Needs improvement', 40, y); y += 14;
+        doc.text(L(lang, 'Needs improvement'), '
         bai.needs_improvement.forEach((p: string) => { y = ensureSpace(doc, y, 14); y = paragraph(doc, `! ${p}`, y, { color: '#a8801a' }); });
         y += 4;
       }
@@ -908,7 +908,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const proj = data.weight_loss_projection;
   if (proj) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '11 · Expected progress', y);
+    y = sectionTitle(doc, L(lang, '11 · Expected progress'), y);
     y = paragraph(doc, proj.assumes, y, { color: MUTED, size: 9 });
     y += 4;
     y = paragraph(doc,
@@ -924,7 +924,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const epi = data.executive_performance_impact;
   if (epi && (epi.current_likely_influences || []).length) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '12 · How your nutrition is affecting your results', y);
+    y = sectionTitle(doc, L(lang, '12 · How your nutrition is affecting your results'), y);
     y = paragraph(doc, 'Right now, your nutrition pattern most likely shapes:', y);
     epi.current_likely_influences.forEach((p: string) => {
       y = ensureSpace(doc, y, 14);
@@ -937,7 +937,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const lto = data.long_term_outlook;
   if (lto) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '13 · Long-term outlook', y);
+    y = sectionTitle(doc, L(lang, '13 · Long-term outlook'), y);
     y = paragraph(doc, 'Current trajectory:', y);
     y = paragraph(doc, `• Muscle preservation risk: ${lto.muscle_preservation_risk}`, y);
     y = paragraph(doc, `• Recovery Support Score: ${lto.recovery_capacity}`, y);
@@ -946,7 +946,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y += 4;
     if (lto.most_impactful_improvement) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text('Most impactful improvement:', 40, y); y += 14;
+      doc.text(L(lang, 'Most impactful improvement:'), '
       y = paragraph(doc, lto.most_impactful_improvement, y, { color: MUTED });
     }
     y += 6;
@@ -955,7 +955,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   // 12. Three highest-impact improvements (RED — highest priority)
   if ((data.improvement_priorities || []).length) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '14 · Highest-priority improvements', y);
+    y = sectionTitle(doc, L(lang, '14 · Highest-priority improvements'), y);
     data.improvement_priorities.forEach((p: any, i: number) => {
       y = ensureSpace(doc, y, 50);
       doc.setFont('helvetica', 'bold');
@@ -972,7 +972,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const wap = data.weekly_action_plan;
   if (wap) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, "15 · Isabella's weekly action plan", y);
+    y = sectionTitle(doc, L(lang, "15 · Isabella's weekly action plan"), y);
     y = paragraph(doc, 'Your priority focus this week:', y);
     (wap.priorities || []).forEach((p: string) => {
       y = ensureSpace(doc, y, 16);
@@ -989,7 +989,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   if ((data.seven_day_plan || []).length) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, '7-day upgrade plan', y);
+    y = sectionTitle(doc, L(lang, '7-day upgrade plan'), y);
     data.seven_day_plan.forEach((line: string) => {
       y = ensureSpace(doc, y, 18);
       y = paragraph(doc, `• ${line}`, y);
@@ -1000,7 +1000,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const upgrades = Array.isArray(data.habit_upgrades) ? data.habit_upgrades : [];
   if (upgrades.length) {
     y = ensureSpace(doc, y, 60 + upgrades.length * 50);
-    y = sectionTitle(doc, '16 · Upgrade the meals you already eat', y);
+    y = sectionTitle(doc, L(lang, '16 · Upgrade the meals you already eat'), y);
     y = paragraph(doc, "Each upgrade is anchored to a meal already in your week — small changes, not new routines.", y, { color: MUTED, size: 9 });
     y += 4;
     upgrades.forEach((u: any, i: number) => {
@@ -1018,7 +1018,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const flags = Array.isArray(data.nutrition_risk_flags) ? data.nutrition_risk_flags : [];
   if (flags.length) {
     y = ensureSpace(doc, y, 60 + flags.length * 28);
-    y = sectionTitle(doc, '17 · Nutrition risk flags (observational)', y);
+    y = sectionTitle(doc, L(lang, '17 · Nutrition risk flags (observational)'), y);
     y = paragraph(doc, "Observations from your diary — not a diagnosis. Confirm with a clinician if relevant.", y, { color: MUTED, size: 9 });
     y += 4;
     flags.forEach((f: any) => {
@@ -1038,7 +1038,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   const patterns = Array.isArray(data.dominant_nutrition_patterns) ? data.dominant_nutrition_patterns : [];
   if (patterns.length) {
     y = ensureSpace(doc, y, 50 + patterns.length * 40);
-    y = sectionTitle(doc, 'Dominant nutrition patterns', y);
+    y = sectionTitle(doc, L(lang, 'Dominant nutrition patterns'), y);
     y = paragraph(doc, "How a practitioner would read your week — not nutrients in isolation, but the patterns they form.", y, { color: MUTED, size: 9 });
     y += 4;
     patterns.forEach((p: any, i: number) => {
@@ -1046,7 +1046,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
       doc.text(`Pattern ${i + 1}: ${p.pattern}`, 40, y); y += 14;
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(GOLD);
-      doc.text('Impact:', 40, y);
+      doc.text(L(lang, 'Impact:'), '
       doc.setFont('helvetica', 'normal'); doc.setTextColor(INK);
       const impactLines = doc.splitTextToSize(p.impact, 480);
       doc.text(impactLines, 80, y); y += 14 + (impactLines.length - 1) * 11;
@@ -1058,7 +1058,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
   // 18. Isabella's Clinical Observation
   if (data.clinical_perspective) {
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, "18 · Isabella's Clinical Observation", y);
+    y = sectionTitle(doc, L(lang, "18 · Isabella's Clinical Observation"), y);
     doc.setFillColor('#f4f1ea');
     doc.setDrawColor(GOLD);
     doc.setLineWidth(0.5);
@@ -1100,7 +1100,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     if (sp) {
       y = ensureSpace(doc, y, 140);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-      doc.text('What success looks like in 14 days', 40, y); y += 16;
+      doc.text(L(lang, 'What success looks like in 14 days'), '
       y = paragraph(doc, 'If you complete:', y);
       (sp.if_completed || []).forEach((line: string) => {
         y = ensureSpace(doc, y, 14);
@@ -1117,7 +1117,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   // 19b. Baseline vs Tracked Progress (free vs Pro framing)
   y = ensureSpace(doc, y, 150);
-  y = sectionTitle(doc, 'Your baseline today — vs your tracked progress', y);
+  y = sectionTitle(doc, L(lang, 'Your baseline today — vs your tracked progress'), y);
   doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
   y = paragraph(doc,
     'This report is a free one-time baseline snapshot. The numbers below are illustrative of what monthly tracking reveals — they are not your projected scores.',
@@ -1153,13 +1153,13 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 
   // 20. WellneSpirit — continue your progress (always last)
   y = ensureSpace(doc, y, 140);
-  y = sectionTitle(doc, '20 · Continue your progress with WellneSpirit', y);
+  y = sectionTitle(doc, L(lang, '20 · Continue your progress with WellneSpirit'), y);
   doc.setFillColor('#f7f3e6');
   doc.setDrawColor(GOLD);
   doc.setLineWidth(0.5);
   doc.rect(40, y - 12, 515, 104, 'FD');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-  doc.text('Free baseline today · Tracked progress with Pro.', 50, y + 2);
+  doc.text(L(lang, 'Free baseline today · Tracked progress with Pro.'), '
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
   const wsLines = doc.splitTextToSize(
     "This free report is a one-time baseline. For monthly reassessments, score-vs-score comparisons against this baseline (Month 1 → Month 2 → Month 6), and ongoing executive-wellness support from Isabella with full progress tracking, register for the monthly programme at our clinical partner WellneSpirit.",
@@ -1181,14 +1181,14 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
 
   // 1. Executive summary
   if (data.executive_summary) {
-    y = sectionTitle(doc, '1 · Executive summary', y);
+    y = sectionTitle(doc, L(lang, '1 · Executive summary'), y);
     y = paragraph(doc, data.executive_summary, y);
     y += 8;
   }
 
   // 2. Headline scores (simplified to the 4 core signals)
   y = ensureSpace(doc, y, 180);
-  y = sectionTitle(doc, '2 · Core scores', y);
+  y = sectionTitle(doc, L(lang, '2 · Core scores'), y);
   y = scoreRow(doc, 'Recovery capacity', sc.recovery_capacity ?? 0, y);
   y = scoreRow(doc, 'Stress load (higher = heavier)', sc.stress_load ?? 0, y);
   y = scoreRow(doc, 'Resilience', sc.resilience ?? 0, y);
@@ -1197,7 +1197,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(NAVY);
-  doc.text('Burnout risk indicator:', 40, y);
+  doc.text(L(lang, 'Burnout risk indicator:'), '
   const riskColor = sc.burnout_risk === 'Elevated' ? '#c2553a' : sc.burnout_risk === 'Moderate' ? GOLD : '#2d8a5e';
   doc.setTextColor(riskColor);
   doc.text(String(sc.burnout_risk ?? '—'), 220, y);
@@ -1212,7 +1212,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.recovery_stage) {
     const rs = data.recovery_stage;
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, '2b · Your recovery stage', y);
+    y = sectionTitle(doc, L(lang, '2b · Your recovery stage'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(GOLD);
     doc.text(`${rs.zone} (${rs.range})`, 40, y); y += 16;
     y = paragraph(doc, rs.summary, y);
@@ -1223,12 +1223,12 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.recovery_archetype) {
     const a = data.recovery_archetype;
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, '2c · Your Isabella recovery archetype', y);
+    y = sectionTitle(doc, L(lang, '2c · Your Isabella recovery archetype'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(NAVY);
     doc.text(a.name, 40, y); y += 16;
     if (Array.isArray(a.characteristics)) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text('Characteristics:', 40, y); y += 13;
+      doc.text(L(lang, 'Characteristics:'), '
       a.characteristics.forEach((c: string) => {
         y = ensureSpace(doc, y, 14);
         doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
@@ -1238,12 +1238,12 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     }
     if (a.typical_risk) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text('Typical risk:', 40, y); y += 12;
+      doc.text(L(lang, 'Typical risk:'), '
       y = paragraph(doc, a.typical_risk, y, { color: MUTED });
     }
     if (a.primary_focus) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-      doc.text('Primary focus:', 40, y); y += 12;
+      doc.text(L(lang, 'Primary focus:'), '
       y = paragraph(doc, a.primary_focus, y, { color: MUTED });
     }
     y += 6;
@@ -1252,7 +1252,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 3. Burnout note (never a diagnosis)
   if (data.burnout_note) {
     y = ensureSpace(doc, y, 90);
-    y = sectionTitle(doc, '3 · Burnout risk indicators', y);
+    y = sectionTitle(doc, L(lang, '3 · Burnout risk indicators'), y);
     y = paragraph(doc, data.burnout_note, y, { color: MUTED });
     y += 6;
   }
@@ -1261,7 +1261,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 3b. Isabella's clinical observation
   if (data.isabella_observation) {
     y = ensureSpace(doc, y, 110);
-    y = sectionTitle(doc, "3b · What Isabella noticed", y);
+    y = sectionTitle(doc, L(lang, "3b · What Isabella noticed"), y);
     y = paragraph(doc, data.isabella_observation, y);
     y += 6;
   }
@@ -1269,7 +1269,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 3c. Dominant recovery patterns
   if (Array.isArray(data.dominant_patterns) && data.dominant_patterns.length) {
     y = ensureSpace(doc, y, 140);
-    y = sectionTitle(doc, '3c · Dominant recovery patterns', y);
+    y = sectionTitle(doc, L(lang, '3c · Dominant recovery patterns'), y);
     data.dominant_patterns.forEach((p: any) => {
       y = ensureSpace(doc, y, 46);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1284,9 +1284,9 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.executive_dashboard) {
     const ed = data.executive_dashboard;
     y = ensureSpace(doc, y, 200);
-    y = sectionTitle(doc, '3d · Executive dashboard — your 14-day leverage', y);
+    y = sectionTitle(doc, L(lang, '3d · Executive dashboard — your 14-day leverage'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
-    doc.text('Biggest opportunities (ranked by leverage):', 40, y); y += 16;
+    doc.text(L(lang, 'Biggest opportunities (ranked by leverage):'), '
     (ed.biggest_opportunities || []).forEach((o: any, i: number) => {
       y = ensureSpace(doc, y, 36);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1296,7 +1296,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     });
     y += 6;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text('Expected 14-day gains:', 40, y); y += 14;
+    doc.text(L(lang, 'Expected 14-day gains:'), '
     const g = ed.expected_14_day_gains || {};
     const rows: Array<[string, any]> = [
       ['Recovery capacity', g.recovery_capacity],
@@ -1317,11 +1317,11 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.recovery_drivers) {
     const rd = data.recovery_drivers;
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, '3e · Your recovery drivers', y);
+    y = sectionTitle(doc, L(lang, '3e · Your recovery drivers'), y);
 
     if (Array.isArray(rd.drains) && rd.drains.length) {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#c2553a');
-      doc.text('Biggest recovery drains:', 40, y); y += 14;
+      doc.text(L(lang, 'Biggest recovery drains:'), '
       rd.drains.forEach((d: any, i: number) => {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1335,7 +1335,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     if (Array.isArray(rd.protectors) && rd.protectors.length) {
       y = ensureSpace(doc, y, 80);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor('#2d8a5e');
-      doc.text('Biggest recovery protectors:', 40, y); y += 14;
+      doc.text(L(lang, 'Biggest recovery protectors:'), '
       rd.protectors.forEach((p: any, i: number) => {
         y = ensureSpace(doc, y, 40);
         doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
@@ -1369,7 +1369,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
     ['Hydration / alcohol / caffeine', fb.hydration_alcohol_caffeine],
   ];
   y = ensureSpace(doc, y, 200);
-  y = sectionTitle(doc, '4 · Executive performance factors', y);
+  y = sectionTitle(doc, L(lang, '4 · Executive performance factors'), y);
   for (const [label, val] of factors) {
     if (typeof val === 'number') {
       y = ensureSpace(doc, y, 24);
@@ -1381,7 +1381,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 5. Fastest wins
   if (Array.isArray(data.fastest_wins) && data.fastest_wins.length) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '5 · Fastest wins', y);
+    y = sectionTitle(doc, L(lang, '5 · Fastest wins'), y);
     data.fastest_wins.forEach((w: any, i: number) => {
       y = ensureSpace(doc, y, 50);
       doc.setFont('helvetica', 'bold');
@@ -1398,7 +1398,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.nutrition_integration) {
     const ni = data.nutrition_integration;
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, '5b · Nutrition × Recovery — combined view', y);
+    y = sectionTitle(doc, L(lang, '5b · Nutrition × Recovery — combined view'), y);
     const ns = ni.nutrition_scores || {};
     const rowsN: Array<[string, any]> = [
       ['Protein', ns.protein],
@@ -1424,7 +1424,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.trajectory) {
     const t = data.trajectory;
     y = ensureSpace(doc, y, 240);
-    y = sectionTitle(doc, '5c · Your two trajectories', y);
+    y = sectionTitle(doc, L(lang, '5c · Your two trajectories'), y);
 
     const renderTrajectory = (block: any, color: string) => {
       if (!block) return;
@@ -1449,7 +1449,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 6. 7-day recovery plan
   if (Array.isArray(data.seven_day_plan) && data.seven_day_plan.length) {
     y = ensureSpace(doc, y, 180);
-    y = sectionTitle(doc, '6 · 7-day recovery plan', y);
+    y = sectionTitle(doc, L(lang, '6 · 7-day recovery plan'), y);
     data.seven_day_plan.forEach((d: any) => {
       y = ensureSpace(doc, y, 38);
       doc.setFont('helvetica', 'bold');
@@ -1467,7 +1467,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.outlook_30_60_90) {
     const o = data.outlook_30_60_90;
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '6b · 30 / 60 / 90-day outlook', y);
+    y = sectionTitle(doc, L(lang, '6b · 30 / 60 / 90-day outlook'), y);
     const horizons: Array<[string, string]> = [
       ['At 30 days', o.day_30],
       ['At 60 days', o.day_60],
@@ -1487,7 +1487,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
   if (data.executive_age_impact) {
     const ea = data.executive_age_impact;
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '6c · Executive recovery-age estimate', y);
+    y = sectionTitle(doc, L(lang, '6c · Executive recovery-age estimate'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
     doc.text(`Chronological age: ${ea.chronological_age}`, 40, y); y += 14;
     doc.setTextColor(GOLD);
@@ -1503,7 +1503,7 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
 
   if (data.closing_recommendation) {
     y = ensureSpace(doc, y, 100);
-    y = sectionTitle(doc, '7 · Next step', y);
+    y = sectionTitle(doc, L(lang, '7 · Next step'), y);
     y = paragraph(doc, data.closing_recommendation, y);
   }
 }
@@ -1534,7 +1534,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   let y = 110;
 
   // 1. Executive snapshot
-  y = sectionTitle(doc, '1 - Executive snapshot', y);
+  y = sectionTitle(doc, L(lang, '1 - Executive snapshot'), y);
   doc.setFillColor('#f7f3e6');
   doc.rect(40, y - 10, 515, 86, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(NAVY);
@@ -1546,21 +1546,21 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(NAVY);
   doc.text(fmtEUR(cmp.annual_savings), 56, y + 56);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-  doc.text('Estimated annual savings vs human (mid)', 56, y + 70);
+  doc.text(L(lang, 'Estimated annual savings vs human (mid)'), '
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(GOLD);
   doc.text(`${cmp.pct_savings ?? 0}%`, 300, y + 56);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-  doc.text('Cost reduction vs full human TCO', 300, y + 70);
+  doc.text(L(lang, 'Cost reduction vs full human TCO'), '
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(NAVY);
   doc.text(cmp.payback_months ? `${cmp.payback_months} mo` : '—', 460, y + 56);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-  doc.text('Payback period', 460, y + 70);
+  doc.text(L(lang, 'Payback period'), '
   y += 96;
 
   // 2. Archetype
   if (data.archetype) {
     y = ensureSpace(doc, y, 70);
-    y = sectionTitle(doc, '2 - Your archetype', y);
+    y = sectionTitle(doc, L(lang, '2 - Your archetype'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(GOLD);
     doc.text(data.archetype.label, 40, y); y += 14;
     y = paragraph(doc, data.archetype.description, y);
@@ -1569,7 +1569,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
 
   // 3. Annual cost breakdown
   y = ensureSpace(doc, y, 200);
-  y = sectionTitle(doc, '3 - True annual cost of a human (mid estimate)', y);
+  y = sectionTitle(doc, L(lang, '3 - True annual cost of a human (mid estimate)'), y);
   const totalEmp = data.annual_total_employer_cost_eur?.mid ?? 0;
   const gross = data.annual_gross_eur?.mid ?? 0;
   const onCost = totalEmp - gross;
@@ -1584,7 +1584,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
     ['Software & phone seat', hidden.software_and_phone ?? 0],
   ];
   doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-  doc.text('Cost component', 40, y); doc.text('Amount per year', 420, y); y += 6;
+  doc.text(L(lang, 'Cost component'), '
   doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 10;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
   rows.forEach(([label, val]) => {
@@ -1595,7 +1595,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   });
   doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 14;
   doc.setFont('helvetica', 'bold'); doc.setTextColor(NAVY);
-  doc.text('True annual cost (mid)', 40, y);
+  doc.text(L(lang, 'True annual cost (mid)'), '
   doc.text(fmtEUR(data.true_annual_cost_eur?.mid), 420, y);
   y += 18;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
@@ -1605,10 +1605,10 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 4. Coverage gap
   const cov = data.coverage || {};
   y = ensureSpace(doc, y, 110);
-  y = sectionTitle(doc, '4 - Coverage gap', y);
+  y = sectionTitle(doc, L(lang, '4 - Coverage gap'), y);
   doc.setFillColor('#f5f5f5'); doc.rect(40, y - 10, 515, 80, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-  doc.text('Human (single FTE)', 56, y + 6);
+  doc.text(L(lang, 'Human (single FTE)'), '
   doc.text('Isabella', 320, y + 6);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
   doc.text(`${cov.human_productive_hours_per_year ?? 1760} productive hours / year`, 56, y + 24);
@@ -1625,7 +1625,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
 
   // 5. Isabella vs Human side-by-side (annual)
   y = ensureSpace(doc, y, 110);
-  y = sectionTitle(doc, '5 - Annual cost: human vs Isabella', y);
+  y = sectionTitle(doc, L(lang, '5 - Annual cost: human vs Isabella'), y);
   const isabella = data.comparison?.isabella_recommended ?? 0;
   y = scoreRow(doc, `Human (true cost, mid)`, Math.min(100, Math.round((data.true_annual_cost_eur?.mid / Math.max(data.true_annual_cost_eur?.mid, 1)) * 100)), y);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
@@ -1639,15 +1639,15 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
 
   // 6. 3-year / 5-year TCO
   y = ensureSpace(doc, y, 140);
-  y = sectionTitle(doc, '6 - Total cost of ownership (3 and 5 years)', y);
+  y = sectionTitle(doc, L(lang, '6 - Total cost of ownership (3 and 5 years)'), y);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-  doc.text('Horizon', 40, y); doc.text('Human (mid)', 200, y); doc.text('Isabella', 340, y); doc.text('Savings', 470, y);
+  doc.text(L(lang, 'Horizon'), '
   y += 6; doc.setDrawColor('#dddddd'); doc.line(40, y, 555, y); y += 12;
   const tco3 = data.tco_3yr_eur || {}; const tco5 = data.tco_5yr_eur || {};
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
-  doc.text('3 years', 40, y); doc.text(fmtEUR(tco3.human_mid), 200, y); doc.text(fmtEUR(tco3.isabella), 340, y);
+  doc.text(L(lang, '3 years'), '
   doc.setTextColor('#2d8a5e'); doc.text(fmtEUR(tco3.savings), 470, y); doc.setTextColor(INK); y += 16;
-  doc.text('5 years', 40, y); doc.text(fmtEUR(tco5.human_mid), 200, y); doc.text(fmtEUR(tco5.isabella), 340, y);
+  doc.text(L(lang, '5 years'), '
   doc.setTextColor('#2d8a5e'); doc.text(fmtEUR(tco5.savings), 470, y); doc.setTextColor(INK); y += 16;
   doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(MUTED);
   y = paragraph(doc, 'Assumes 3.5% annual salary inflation on the human side and flat Isabella pricing.', y + 4, { color: MUTED, size: 8 });
@@ -1657,7 +1657,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   const foe = data.front_office_efficiency;
   if (foe) {
     y = ensureSpace(doc, y, 150);
-    y = sectionTitle(doc, '7 - Front Office Efficiency Score', y);
+    y = sectionTitle(doc, L(lang, '7 - Front Office Efficiency Score'), y);
     doc.setFillColor('#f7f3e6'); doc.rect(40, y - 10, 515, 110, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(36); doc.setTextColor(NAVY);
     doc.text(`${foe.overall}`, 56, y + 40);
@@ -1680,12 +1680,12 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   const rp = data.revenue_protected;
   if (rp) {
     y = ensureSpace(doc, y, 140);
-    y = sectionTitle(doc, '8 - Revenue protected (estimated)', y);
+    y = sectionTitle(doc, L(lang, '8 - Revenue protected (estimated)'), y);
     doc.setFillColor('#eef7ef'); doc.rect(40, y - 10, 515, 100, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor('#2d8a5e');
     doc.text(fmtEUR(rp.annual_revenue_at_risk_eur), 56, y + 30);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(MUTED);
-    doc.text('Annual revenue exposed to missed inbound at current capture rate', 56, y + 46);
+    doc.text(L(lang, 'Annual revenue exposed to missed inbound at current capture rate'), '
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
     doc.text(`Missed inquiries / month: ${rp.missed_inquiries_per_month}`, 56, y + 68);
     doc.text(`Avg deal value: ${fmtEUR(rp.avg_deal_value_eur)}`, 240, y + 68);
@@ -1702,7 +1702,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   const ib = data.industry_benchmark;
   if (ib) {
     y = ensureSpace(doc, y, 130);
-    y = sectionTitle(doc, '9 - Industry benchmark', y);
+    y = sectionTitle(doc, L(lang, '9 - Industry benchmark'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
     doc.text(ib.label, 40, y); y += 14;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
@@ -1727,7 +1727,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   const rf = data.risk_flags;
   if (rf) {
     y = ensureSpace(doc, y, 120);
-    y = sectionTitle(doc, '10 - Operational risk exposure', y);
+    y = sectionTitle(doc, L(lang, '10 - Operational risk exposure'), y);
     const riskColor = (lvl: string) => lvl === 'High' ? '#c0392b' : lvl === 'Moderate' ? '#d68910' : '#2d8a5e';
     const riskRow = (label: string, lvl: string) => {
       y = ensureSpace(doc, y, 18);
@@ -1750,15 +1750,15 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   const coi = data.cost_of_inaction;
   if (coi) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '11 - If you do nothing — 12-month cost of inaction', y);
+    y = sectionTitle(doc, L(lang, '11 - If you do nothing — 12-month cost of inaction'), y);
     doc.setFillColor('#fff4f2'); doc.rect(40, y - 10, 515, 130, 'F');
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(INK);
-    doc.text('Hidden staffing cost', 56, y + 8);    doc.text(fmtEUR(coi.hidden_staffing_cost_eur), 420, y + 8);
-    doc.text('Missed revenue (annual)', 56, y + 26); doc.text(fmtEUR(coi.missed_revenue_eur), 420, y + 26);
-    doc.text('Turnover exposure', 56, y + 44);     doc.text(fmtEUR(coi.turnover_exposure_eur), 420, y + 44);
+    doc.text(L(lang, 'Hidden staffing cost'), '
+    doc.text(L(lang, 'Missed revenue (annual)'), '
+    doc.text(L(lang, 'Turnover exposure'), '
     doc.setDrawColor('#dddddd'); doc.line(56, y + 56, 499, y + 56);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor('#c0392b');
-    doc.text('Total opportunity cost', 56, y + 78);
+    doc.text(L(lang, 'Total opportunity cost'), '
     doc.text(fmtEUR(coi.total_opportunity_cost_eur), 420, y + 78);
     doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(MUTED);
     y = paragraph(doc, coi.narrative || '', y + 96, { color: MUTED, size: 9 });
@@ -1769,13 +1769,13 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   const staff = data.staffing_recommendation;
   if (staff) {
     y = ensureSpace(doc, y, 160);
-    y = sectionTitle(doc, '12 - Recommended staffing model (Human + Isabella)', y);
+    y = sectionTitle(doc, L(lang, '12 - Recommended staffing model (Human + Isabella)'), y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text('Today', 40, y); y += 14;
+    doc.text(L(lang, 'Today'), '
     y = paragraph(doc, staff.current, y, { color: INK, size: 10 });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text('Recommended', 40, y); y += 14;
+    doc.text(L(lang, 'Recommended'), '
     (staff.recommended || []).forEach((r: string) => { y = paragraph(doc, `- ${r}`, y); });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');
@@ -1787,7 +1787,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 12. Country context
   if (data.country_note) {
     y = ensureSpace(doc, y, 60);
-    y = sectionTitle(doc, '13 - Country context', y);
+    y = sectionTitle(doc, L(lang, '13 - Country context'), y);
     y = paragraph(doc, data.country_note, y);
     y += 6;
   }
@@ -1795,7 +1795,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 13. Recommendations
   if (Array.isArray(data.recommendations) && data.recommendations.length) {
     y = ensureSpace(doc, y, 40 + data.recommendations.length * 18);
-    y = sectionTitle(doc, '14 - Recommendations', y);
+    y = sectionTitle(doc, L(lang, '14 - Recommendations'), y);
     data.recommendations.forEach((r: string) => {
       y = ensureSpace(doc, y, 18);
       y = paragraph(doc, `- ${r}`, y);
@@ -1806,7 +1806,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
   // 14. Isabella Business Observation
   if (data.isabella_observation) {
     y = ensureSpace(doc, y, 90);
-    y = sectionTitle(doc, '15 - Isabella Business Observation', y);
+    y = sectionTitle(doc, L(lang, '15 - Isabella Business Observation'), y);
     doc.setFillColor('#f5f1e4'); doc.rect(40, y - 10, 515, 4, 'F');
     y = paragraph(doc, data.isabella_observation, y + 4, { color: INK, size: 10 });
     y += 8;
@@ -1814,7 +1814,7 @@ function buildBusinessCalculator(doc: jsPDF, data: any, lang: AssessmentLang = D
 
   // 15. Next step
   y = ensureSpace(doc, y, 70);
-  y = sectionTitle(doc, '16 - Next step', y);
+  y = sectionTitle(doc, L(lang, '16 - Next step'), y);
   doc.setFillColor('#f7f3e6'); doc.rect(40, y - 10, 515, 56, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
   doc.text('Deploy Isabella in your front office', 56, y + 8);
@@ -1975,11 +1975,11 @@ function buildMissedCalls(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_
     y = ensureSpace(doc, y, 160);
     y = sectionTitle(doc, `${nextNum()} - Recommended staffing model (Human + Isabella)`, y);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text('Today', 40, y); y += 14;
+    doc.text(L(lang, 'Today'), '
     y = paragraph(doc, staff.current, y, { color: INK, size: 10 });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
-    doc.text('Recommended', 40, y); y += 14;
+    doc.text(L(lang, 'Recommended'), '
     (staff.recommended || []).forEach((r: string) => { y = paragraph(doc, `- ${r}`, y); });
     y += 4;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor('#2d8a5e');

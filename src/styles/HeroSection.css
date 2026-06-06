@@ -542,10 +542,19 @@
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 56px);
   }
 
-  /* Chat header now renders Isabella's animated face, so hide the floating
-     hero avatar on mobile when chat is active to avoid duplication + empty space. */
+  /* Chat header renders Isabella's animated face on mobile by MIRRORING the
+     D-ID WebRTC stream that lives inside .isabella-container. We must keep that
+     container in the layout tree (and the video element decoding) — using
+     display:none would freeze the WebRTC video track on mobile browsers. So we
+     visually hide it instead. */
   .hero-section.chat-active .isabella-container {
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
   }
 
   .hero-chat-overlay.active .hero-chat-close {

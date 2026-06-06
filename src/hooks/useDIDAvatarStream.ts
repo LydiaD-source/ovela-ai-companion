@@ -346,20 +346,25 @@ export const useDIDAvatarStream = ({
 
       // Create canvas for chroma-key processing - CRISP, NO BLUR
       const canvas = document.createElement('canvas');
+      // Match the still hero <img> exactly: fill the circular wrapper with
+      // object-fit: cover and the same vertical framing (center 28%) so the
+      // portrait composition does NOT shift the moment animation starts.
+      // Previously: contain + bottom center caused the head to anchor to the
+      // bottom of the circle, cutting off the top of the forehead during
+      // animation. cover + center 28% keeps the face in the same spot the
+      // still image occupies, eliminating the visible "jump".
       Object.assign(canvas.style, {
         position: 'absolute',
-        bottom: '0',
+        top: '0',
         left: '0',
         width: '100%',
         height: '100%',
-        maxHeight: '88vh',
-        objectFit: 'contain',
-        objectPosition: 'bottom center',
+        objectFit: 'cover',
+        objectPosition: 'center 28%',
         opacity: '0',
         transition: 'opacity 0.3s ease-in-out',
         zIndex: '20',
         backgroundColor: 'transparent',
-        // CRITICAL: No blur or filters
         imageRendering: 'auto',
         filter: 'none',
       } as CSSStyleDeclaration);

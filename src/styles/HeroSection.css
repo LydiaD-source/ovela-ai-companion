@@ -449,8 +449,10 @@
   }
 
   .isabella-image-wrapper {
-    width: min(66vw, 300px);
-    height: min(66vw, 300px);
+    width: clamp(220px, 62vw, 280px);
+    height: clamp(220px, 62vw, 280px);
+    max-width: calc(100vw - 48px);
+    max-height: calc(100vw - 48px);
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid rgba(212, 175, 55, 0.55);

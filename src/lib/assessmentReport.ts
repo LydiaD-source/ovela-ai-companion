@@ -98,6 +98,10 @@ function t(lang: AssessmentLang, key: string): string {
   const v = PDF_STRINGS[lang]?.[key] ?? PDF_STRINGS.en[key];
   return typeof v === 'string' ? v : '';
 }
+function tFn(lang: AssessmentLang, key: string, ...args: any[]): string {
+  const v = PDF_STRINGS[lang]?.[key] ?? PDF_STRINGS.en[key];
+  return typeof v === 'function' ? v(...args) : String(v ?? '');
+}
 
 const FOOTER_DISCLAIMER =
   'This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.';

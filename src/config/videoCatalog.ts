@@ -90,6 +90,9 @@ export const VIDEO_CATEGORIES: VideoCategory[] = [
     description: 'Property, architecture, luxury listings & premium environments',
     keywords: ['real estate', 'property', 'architecture', 'housing', 'apartment', 'building', 'construction', 'home', 'villa', 'development', 'penthouse', 'listing', 'agent'],
     videos: [
+      { id: '9ZtYrML0qB0', title: "Luxury Property Buyers Don't Wait For Office Hours", category: 'real_estate' },
+      { id: 'brdIsARN0Sc', title: 'What If Your Property Listings Could Speak Any Language?', category: 'real_estate' },
+      { id: 'hoPfY-ySHmk', title: 'Com Presentar Propietats 24/7 en Qualsevol Idioma | Ovela Interactive', category: 'real_estate' },
       { id: 'Wks3Oxp7hIA', title: 'Boost Your Real Estate Sales After Hours with AI Host', category: 'real_estate' },
       { id: 'Yewiv1kwo0w', title: 'AI Is Already Handling Real Estate Clients 24/7', category: 'real_estate' },
       { id: 'eaKPR03Uh0A', title: 'AI Is Already Selling Properties 24/7 — Most Businesses Are Behind', category: 'real_estate' },

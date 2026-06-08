@@ -498,17 +498,17 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     let oy = y + 22;
     opps.forEach((o: any) => {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(NAVY);
-      doc.text(`• ${o.label}`, 56, oy);
+      doc.text(`• ${o.label ?? ''}`, 56, oy);
       doc.setFont('helvetica', 'normal'); doc.setTextColor(GOLD);
-      doc.text(o.delta, 200, oy);
+      doc.text(String(o.delta ?? ''), 200, oy);
       oy += 14;
     });
     let gy = y + 22;
     gains.forEach((g: any) => {
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
-      doc.text(g.metric, 320, gy);
+      doc.text(String(g.metric ?? ''), 320, gy);
       doc.setFont('helvetica', 'bold'); doc.setTextColor('#2d8a5e');
-      doc.text(g.gain, 520, gy);
+      doc.text(String(g.gain ?? ''), 520, gy);
       gy += 14;
     });
     y += panelH;

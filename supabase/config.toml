@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.did-streaming-ovela]
 verify_jwt = false
+
+[functions.sync-youtube-channel]
+verify_jwt = false

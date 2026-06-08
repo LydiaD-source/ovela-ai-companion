@@ -3139,6 +3139,99 @@ export type Database = {
         }
         Relationships: []
       }
+      youtube_sync_runs: {
+        Row: {
+          error: string | null
+          finished_at: string | null
+          id: string
+          new_video_ids: string[] | null
+          new_videos_count: number | null
+          source_channel: string
+          started_at: string
+          status: string
+          total_fetched: number | null
+        }
+        Insert: {
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          new_video_ids?: string[] | null
+          new_videos_count?: number | null
+          source_channel?: string
+          started_at?: string
+          status?: string
+          total_fetched?: number | null
+        }
+        Update: {
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          new_video_ids?: string[] | null
+          new_videos_count?: number | null
+          source_channel?: string
+          started_at?: string
+          status?: string
+          total_fetched?: number | null
+        }
+        Relationships: []
+      }
+      youtube_videos_synced: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          duration: string | null
+          duration_seconds: number | null
+          id: string
+          keywords: string[] | null
+          published_at: string | null
+          source_channel: string
+          synced_at: string
+          tags: string[] | null
+          thumbnail: string | null
+          title: string
+          updated_at: string
+          video_id: string
+          view_count: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string
+          duration?: string | null
+          duration_seconds?: number | null
+          id?: string
+          keywords?: string[] | null
+          published_at?: string | null
+          source_channel?: string
+          synced_at?: string
+          tags?: string[] | null
+          thumbnail?: string | null
+          title: string
+          updated_at?: string
+          video_id: string
+          view_count?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          duration?: string | null
+          duration_seconds?: number | null
+          id?: string
+          keywords?: string[] | null
+          published_at?: string | null
+          source_channel?: string
+          synced_at?: string
+          tags?: string[] | null
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string
+          video_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

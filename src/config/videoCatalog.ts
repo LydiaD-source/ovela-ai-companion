@@ -121,8 +121,11 @@ export const VIDEO_CATEGORIES: VideoCategory[] = [
     key: 'ai_ambassador',
     label: 'AI Brand Ambassador',
     description: 'Isabella capabilities, digital human interaction & ambassador demos',
-    keywords: ['ambassador', 'ai host', 'digital human', 'isabella', 'interaction', 'assistant', 'chatbot', 'website host', 'virtual', 'digital model', 'digital ambassador'],
+    keywords: ['ambassador', 'ai host', 'digital human', 'isabella', 'interaction', 'assistant', 'chatbot', 'website host', 'virtual', 'digital model', 'digital ambassador', 'digital employee', 'digital team member', 'ai team', 'lost revenue', 'automation', 'lead generation'],
     videos: [
+      { id: '1DSOiVx6sQI', title: 'How Businesses Recover Lost Revenue With AI', category: 'ai_ambassador' },
+      { id: 'AVOCSVl3mbc', title: "Your Next Team Member Doesn't Need an Office | AI Digital Employees", category: 'ai_ambassador' },
+      { id: '3aZLFzK-0bo', title: 'What If Your Website Had A Team Instead Of A Contact Form?', category: 'ai_ambassador' },
       { id: 'ugYmCLAqCUY', title: 'AI Website Host That Talks to Your Customers 24/7', category: 'ai_ambassador' },
       { id: 'IFbRIofRI8Y', title: 'AI Website Host That Talks to Your Clients 24/7', category: 'ai_ambassador' },
       { id: 'KKpnvS5NAnw', title: 'AI Knows Your Size Already | The Future of Smart Fashion', category: 'ai_ambassador' },

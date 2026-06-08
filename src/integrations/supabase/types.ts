@@ -1389,6 +1389,45 @@ export type Database = {
         }
         Relationships: []
       }
+      face_enrollments: {
+        Row: {
+          created_at: string
+          embedding: number[]
+          id: string
+          is_primary: boolean
+          label: string
+          metadata: Json
+          relationship: string
+          thumbnail_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: number[]
+          id?: string
+          is_primary?: boolean
+          label: string
+          metadata?: Json
+          relationship?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: number[]
+          id?: string
+          is_primary?: boolean
+          label?: string
+          metadata?: Json
+          relationship?: string
+          thumbnail_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       feature_locks: {
         Row: {
           created_at: string
@@ -1951,6 +1990,8 @@ export type Database = {
           updated_at: string | null
           user_id: string
           username: string | null
+          vision_consent_at: string | null
+          vision_enabled: boolean
           voice: string | null
           voice_enabled: boolean | null
           voice_id: string | null
@@ -1991,6 +2032,8 @@ export type Database = {
           updated_at?: string | null
           user_id: string
           username?: string | null
+          vision_consent_at?: string | null
+          vision_enabled?: boolean
           voice?: string | null
           voice_enabled?: boolean | null
           voice_id?: string | null
@@ -2031,6 +2074,8 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           username?: string | null
+          vision_consent_at?: string | null
+          vision_enabled?: boolean
           voice?: string | null
           voice_enabled?: boolean | null
           voice_id?: string | null

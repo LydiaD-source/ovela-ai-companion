@@ -1510,16 +1510,18 @@ function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = D
 
 function installSanitizer(doc: jsPDF) {
   const anyDoc = doc as any;
-  const origText = anyDoc.text.bind(doc);
-  anyDoc.text = (text: any, ...rest: any[]) => {
-    if (typeof text === 'string') text = sanitize(text);
-    else if (Array.isArray(text)) text = text.map((t: any) => typeof t === 'string' ? sanitize(t) : t);
-    return origText(text, ...rest);
+  const toSafe = (t: any): any => {
+    if (t == null) return '';
+    if (typeof t === 'string') return sanitize(t);
+    if (Array.isArray(t)) return t.map((x: any) => (x == null ? '' : typeof x === 'string' ? sanitize(x) : sanitize(String(x))));
+    return sanitize(String(t));
   };
+  const origText = anyDoc.text.bind(doc);
+  anyDoc.text = (text: any, ...rest: any[]) => origText(toSafe(text), ...rest);
   const origSplit = anyDoc.splitTextToSize.bind(doc);
   anyDoc.splitTextToSize = (text: any, width: number, opts?: any) => {
-    if (typeof text === 'string') text = sanitize(text);
-    return origSplit(text, width, opts);
+    const safe = typeof text === 'string' ? sanitize(text) : (text == null ? '' : sanitize(String(text)));
+    return origSplit(safe, width, opts);
   };
 }
 

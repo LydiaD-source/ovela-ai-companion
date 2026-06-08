@@ -4,6 +4,7 @@ import { Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEO from '@/components/SEO';
 import { ALL_VIDEOS, VIDEO_LIBRARY_CATEGORIES } from '@/lib/videoLibrary';
+import { useMergedVideoLibrary } from '@/lib/useMergedVideoLibrary';
 import { CATEGORY_META, getCategorySlugByKey } from '@/lib/videoCategoryMeta';
 import { TOPIC_HUBS } from '@/lib/topicHubsContent';
 
@@ -14,10 +15,12 @@ const VideoLibrary: React.FC = () => {
   const langPrefix = lang === 'en' ? '' : `/${lang}`;
   const [filter, setFilter] = useState<string>('all');
 
+  const library = useMergedVideoLibrary();
   const filtered = useMemo(
-    () => (filter === 'all' ? ALL_VIDEOS : ALL_VIDEOS.filter((v) => v.category === filter)),
-    [filter],
+    () => (filter === 'all' ? library : library.filter((v) => v.category === filter)),
+    [filter, library],
   );
+
 
   const itemListSchema = {
     '@context': 'https://schema.org',

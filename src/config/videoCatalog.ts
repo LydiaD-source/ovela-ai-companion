@@ -58,9 +58,16 @@ export const VIDEO_CATEGORIES: VideoCategory[] = [
   {
     key: 'wellness_spa',
     label: 'Wellness & Spa',
-    description: 'Wellness, lifestyle, relaxation, spa & health marketing',
-    keywords: ['wellness', 'spa', 'health', 'lifestyle', 'relaxation', 'wellbeing', 'clinic', 'beauty', 'skincare', 'treatment', 'booking', 'hotel', 'concierge'],
+    description: 'Wellness, lifestyle, relaxation, spa, health marketing, burnout prevention & executive recovery',
+    keywords: ['wellness', 'spa', 'health', 'lifestyle', 'relaxation', 'wellbeing', 'clinic', 'beauty', 'skincare', 'treatment', 'booking', 'hotel', 'concierge', 'burnout', 'stress', 'executive health', 'high performer', 'recovery', 'fatigue', 'exhaustion', 'longevity', 'wellnespirit', 'andorra', 'dr picard'],
     videos: [
+      { id: 'rXEi34uopVE', title: 'If You Wake Up Tired, This Video Is For You', category: 'wellness_spa' },
+      { id: 'uIxboOhXm0c', title: 'The Hidden Burnout Signs Most Executives Ignore', category: 'wellness_spa' },
+      { id: 'a6X7CaHGvJo', title: 'The Hidden Cost of High Performance | Executive Burnout Begins Before Exhaustion', category: 'wellness_spa' },
+      { id: 'HIKq4d15yZs', title: 'Executives Miss These Burnout Warning Signs', category: 'wellness_spa' },
+      { id: 'NNbUAofywgk', title: '3 Early Signs of Burnout Most Professionals Ignore', category: 'wellness_spa' },
+      { id: 'vSycLkv5xH8', title: 'Why High Performers Burn Out', category: 'wellness_spa' },
+      { id: '-d3M0n1QaSE', title: 'High Performers: Exhaustion Is Often The Final Stage Of Chronic Stress', category: 'wellness_spa' },
       { id: 'sZJl1egIJjk', title: "Your Website Isn't Talking… That's the Problem", category: 'wellness_spa' },
       { id: 'vxvKb9Mq5tE', title: 'Your Website Should Talk Back (AI Hotel & Spa Host)', category: 'wellness_spa' },
       { id: '4G-IGbL44V4', title: "You're Losing Clients After Hours… Here's Why", category: 'wellness_spa' },

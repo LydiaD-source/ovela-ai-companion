@@ -1172,7 +1172,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 }
 
 
-// ── Executive Recovery & Resilience report ──────────────────────────────
+// ── Recovery & Resilience report ────────────────────────────────────────
 function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LANG) {
   header(doc, tr(lang, 'recovery_title'), lang);
   let y = 110;

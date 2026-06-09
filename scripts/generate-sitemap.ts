@@ -41,6 +41,7 @@ const STATIC_PATHS = [
   { path: '/videos/category/ai-ambassador', changefreq: 'weekly', priority: '0.8' },
   { path: '/videos/category/studio-overview', changefreq: 'weekly', priority: '0.7' },
   // Topic hubs (Tier 3 authority pages)
+  { path: '/topics', changefreq: 'weekly', priority: '0.8' },
   { path: '/topics/ai-receptionist', changefreq: 'weekly', priority: '0.9' },
   { path: '/topics/executive-burnout-recovery', changefreq: 'weekly', priority: '0.9' },
   { path: '/topics/ai-property-presenter', changefreq: 'weekly', priority: '0.9' },

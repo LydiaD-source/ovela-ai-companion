@@ -4,7 +4,7 @@
  *
  * Two report types:
  *   - nutrition_assessment
- *   - recovery_resilience  (Executive Recovery & Resilience Assessment)
+ *   - recovery_resilience  (Recovery & Resilience Assessment)
  *
  * Legacy alias: 'biological_age' is still accepted on inbound payloads.
  *
@@ -140,7 +140,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   en: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Nutrition & Muscle Preservation Assessment',
-    recovery_title: 'Executive Recovery & Resilience Assessment',
+    recovery_title: 'Recovery & Resilience Assessment',
     receptionist_title: 'Receptionist Cost & ROI Assessment',
     missed_title: 'Missed Calls & Revenue Leak Diagnostic',
     summary: 'Summary',
@@ -151,7 +151,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   es: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Evaluacion de Nutricion y Preservacion Muscular',
-    recovery_title: 'Evaluacion Ejecutiva de Recuperacion y Resiliencia',
+    recovery_title: 'Evaluacion de Recuperacion y Resiliencia',
     receptionist_title: 'Coste de Recepcionista y Evaluacion de ROI',
     missed_title: 'Diagnostico de Llamadas Perdidas y Fuga de Ingresos',
     summary: 'Resumen',
@@ -162,7 +162,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   fr: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Evaluation Nutrition et Preservation Musculaire',
-    recovery_title: 'Evaluation Executive de Recuperation et de Resilience',
+    recovery_title: 'Evaluation de Recuperation et de Resilience',
     receptionist_title: 'Cout de Receptionniste et Evaluation du ROI',
     missed_title: 'Diagnostic des Appels Manques et Fuite de Revenus',
     summary: 'Resume',
@@ -173,7 +173,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   de: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Ernahrungs- und Muskelerhaltungs-Assessment',
-    recovery_title: 'Executive Recovery- und Resilienz-Assessment',
+    recovery_title: 'Recovery- und Resilienz-Assessment',
     receptionist_title: 'Empfangskosten- und ROI-Assessment',
     missed_title: 'Diagnose verpasster Anrufe und Umsatzverluste',
     summary: 'Zusammenfassung',
@@ -184,7 +184,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   ca: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Avaluacio de Nutricio i Preservacio Muscular',
-    recovery_title: 'Avaluacio Executiva de Recuperacio i Resiliencia',
+    recovery_title: 'Avaluacio de Recuperacio i Resiliencia',
     receptionist_title: 'Cost de Recepcionista i Avaluacio de ROI',
     missed_title: 'Diagnostic de Trucades Perdudes i Fuga d\'Ingressos',
     summary: 'Resum',
@@ -195,7 +195,7 @@ const PDF_STRINGS: Record<AssessmentLang, Record<string, any>> = {
   pt: {
     brand: 'OVELA INTERACTIVE  ·  ISABELLA',
     nutrition_title: 'Avaliacao de Nutricao e Preservacao Muscular',
-    recovery_title: 'Avaliacao Executiva de Recuperacao e Resiliencia',
+    recovery_title: 'Avaliacao de Recuperacao e Resiliencia',
     receptionist_title: 'Custo de Rececionista e Avaliacao de ROI',
     missed_title: 'Diagnostico de Chamadas Perdidas e Fuga de Receita',
     summary: 'Resumo',
@@ -293,7 +293,7 @@ function normalizeAssessmentReportPayload(parsed: any): AssessmentReport | null 
   if (recoveryPayload) {
     const report: AssessmentReport = {
       type: 'recovery_resilience',
-      title: 'Executive Recovery & Resilience Assessment',
+      title: 'Recovery & Resilience Assessment',
       data: recoveryPayload,
     };
     return isMeaningfulAssessmentReport(report) ? report : null;
@@ -311,7 +311,7 @@ function normalizeAssessmentReportPayload(parsed: any): AssessmentReport | null 
   if (parsed.scores?.burnout_risk || parsed.recovery_capacity || parsed.executive_wellness || parsed.resilience) {
     const report: AssessmentReport = {
       type: 'recovery_resilience',
-      title: 'Executive Recovery & Resilience Assessment',
+      title: 'Recovery & Resilience Assessment',
       data: parsed,
     };
     return isMeaningfulAssessmentReport(report) ? report : null;
@@ -1172,7 +1172,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
 }
 
 
-// ── Executive Recovery & Resilience report ──────────────────────────────
+// ── Recovery & Resilience report ────────────────────────────────────────
 function buildRecoveryResilience(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LANG) {
   header(doc, tr(lang, 'recovery_title'), lang);
   let y = 110;

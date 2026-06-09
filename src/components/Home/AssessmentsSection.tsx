@@ -31,7 +31,7 @@ const CARDS: Card[] = [
     tool: 'nutrition_assessment',
     icon: <Apple className="w-6 h-6" />,
     emoji: '🧬',
-    title: 'Executive Nutrition & Muscle Preservation Assessment',
+    title: 'Nutrition & Muscle Preservation Assessment',
     blurb:
       'Upload a meal log, describe a typical week, or answer a few questions.',
     bullets: [
@@ -45,7 +45,7 @@ const CARDS: Card[] = [
     cta: 'Start Free Assessment',
     status: 'live',
     initialPrompt:
-      "I'd like the Executive Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
+      "I'd like the Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
     tool_context: 'nutrition_assessment',
     authority_topic: 'protein_nutrition_assessment',
   },
@@ -53,21 +53,21 @@ const CARDS: Card[] = [
     tool: 'recovery_resilience',
     icon: <Hourglass className="w-6 h-6" />,
     emoji: '⏳',
-    title: 'Executive Recovery & Resilience Assessment',
+    title: 'Recovery & Resilience Assessment',
     blurb:
       'Discover how stress, recovery, sleep, workload and lifestyle habits may be affecting your resilience, energy and long-term performance.',
     bullets: [
       'Recovery capacity score',
       'Stress load & resilience scoring',
       'Burnout risk indicators',
-      'Executive performance factor analysis',
+      'Performance factor analysis',
       '7-day recovery plan',
       'Downloadable PDF report',
     ],
     cta: 'Check My Recovery Capacity',
     status: 'live',
     initialPrompt:
-      "I'd like the Executive Recovery & Resilience Assessment. Please run it conversationally in 5 short phases (personal profile, workload & stress, recovery, lifestyle & resilience, optional nutrition integration). Lifestyle questions only — no medical history, no diagnosis. Start with the disclaimer and ask 2–3 questions at a time.",
+      "I'd like the Recovery & Resilience Assessment. Please run it conversationally in 5 short phases (personal profile, workload & stress, recovery, lifestyle & resilience, optional nutrition integration). Lifestyle questions only — no medical history, no diagnosis. Start with the disclaimer and ask 2–3 questions at a time.",
     tool_context: 'recovery_resilience_assessment',
     authority_topic: 'recovery_resilience_assessment',
   },

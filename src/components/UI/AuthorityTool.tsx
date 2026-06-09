@@ -49,19 +49,19 @@ const TOOL_PRESETS: Record<ToolKind, {
     tool_context: 'wellness_assessment_suggestion',
   },
   nutrition_assessment: {
-    label: 'Analyze my diet & protein intake',
+    label: 'Nutrition & Muscle Preservation Assessment',
     sub: 'Upload, paste, type or describe a typical week — Isabella analyses protein, balance and improvement opportunities.',
     icon: <Apple className="w-5 h-5" />,
     initialPrompt:
-      "I'd like the Executive Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
+      "I'd like the Nutrition & Muscle Preservation Assessment. Please walk me through it conversationally — I can type my week, paste my meal diary, upload a PDF or screenshot, or just describe it. Start with the disclaimer, then ask for what you need.",
     tool_context: 'nutrition_assessment',
   },
   recovery_resilience: {
-    label: 'Check my recovery capacity',
-    sub: 'Workload, sleep, stress, recovery and lifestyle — Isabella scores your resilience, burnout risk and executive performance factors.',
+    label: 'Recovery & Resilience Assessment',
+    sub: 'Workload, sleep, stress, recovery and lifestyle — Isabella scores your resilience, burnout risk and performance factors.',
     icon: <Hourglass className="w-5 h-5" />,
     initialPrompt:
-      "I'd like the Executive Recovery & Resilience Assessment. Please run it conversationally in 5 short phases (personal profile, workload & stress, recovery, lifestyle & resilience, optional nutrition integration). Lifestyle questions only — no medical history, no diagnosis. Start with the disclaimer and ask 2–3 questions at a time.",
+      "I'd like the Recovery & Resilience Assessment. Please run it conversationally in 5 short phases (personal profile, workload & stress, recovery, lifestyle & resilience, optional nutrition integration). Lifestyle questions only — no medical history, no diagnosis. Start with the disclaimer and ask 2–3 questions at a time.",
     tool_context: 'recovery_resilience_assessment',
   },
 };

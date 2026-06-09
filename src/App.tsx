@@ -20,6 +20,7 @@ import VideoLibrary from "./pages/VideoLibrary";
 import VideoDetail from "./pages/VideoDetail";
 import VideoCategory from "./pages/VideoCategory";
 import TopicHub from "./pages/TopicHub";
+import TopicsIndex from "./pages/TopicsIndex";
 
 import Clinics from "./pages/industries/Clinics";
 import RealEstate from "./pages/industries/RealEstate";
@@ -47,6 +48,7 @@ const SiteRoutes = () => (
     <Route path="videos" element={<VideoLibrary />} />
     <Route path="videos/category/:categorySlug" element={<VideoCategory />} />
     <Route path="videos/:slug" element={<VideoDetail />} />
+    <Route path="topics" element={<TopicsIndex />} />
     <Route path="topics/:hubSlug" element={<TopicHub />} />
 
     <Route path="industries/clinics" element={<Clinics />} />

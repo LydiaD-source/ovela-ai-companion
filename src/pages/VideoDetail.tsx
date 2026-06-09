@@ -114,6 +114,7 @@ const VideoDetail: React.FC = () => {
         ogImage={video.thumbnail}
         ogType="video.other"
         singleCanonical
+        noindex={lang !== 'en'}
         schema={[videoSchema, breadcrumbSchema, faqSchema, ...quotesSchema] as any}
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">

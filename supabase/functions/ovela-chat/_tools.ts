@@ -906,7 +906,7 @@ export function nutritionAssessment(args: {
   const proteinTarget = { low_g: Math.round(calcWeight * pLo), high_g: Math.round(calcWeight * pHi) };
   const proteinMid = Math.round((proteinTarget.low_g + proteinTarget.high_g) / 2);
 
-  const hydrationTargetL = Math.round((calcWeight * 0.033) * 10) / 10;
+  // hydrationTargetL is computed inside the v2.2 hydration block below.
   const [cLo, cHi] = CARB_RANGE[goal];
   const carbTargetRange = { low_g: Math.round(calcWeight * cLo), high_g: Math.round(calcWeight * cHi) };
   const fatTargetRange = { low_g: Math.round(calcWeight * 0.8), high_g: Math.round(calcWeight * 1.0) };

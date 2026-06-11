@@ -1309,14 +1309,19 @@ export function nutritionAssessment(args: {
     const positives: string[] = [];
     const limiting: string[] = [];
     if (args.est_hydration_l != null) {
-      if (args.est_hydration_l >= hydrationTargetL * 0.85) {
-        positives.push(`Drinking ~${args.est_hydration_l} L/day, near the ${hydrationTargetL} L target`);
+      if (hydrationStatusBand === "green" || hydrationStatusBand === "blue") {
+        positives.push(`Drinking ~${args.est_hydration_l} L/day — within the ${hydrationRangeLowL}–${hydrationRangeHighL} L optimal range`);
+      } else if (hydrationStatusBand === "yellow") {
+        limiting.push(`Currently ~${args.est_hydration_l} L/day — slightly below the ${hydrationRangeLowL}–${hydrationRangeHighL} L optimal range`);
+      } else if (hydrationStatusBand === "red") {
+        limiting.push(`Currently ~${args.est_hydration_l} L/day — well below the ${hydrationRangeLowL}–${hydrationRangeHighL} L optimal range`);
       } else {
-        limiting.push(`Currently ~${args.est_hydration_l} L/day vs target ~${hydrationTargetL} L (gap ~${hydrationGapL} L)`);
+        positives.push(`Drinking ~${args.est_hydration_l} L/day — well above typical intake; ensure electrolytes are balanced`);
       }
     } else {
       limiting.push("Daily fluid intake not reported");
     }
+
     if ((args.coffee_cups_per_day ?? 0) >= 4) limiting.push("High coffee intake increases fluid turnover");
     if ((args.alcohol_units_per_week ?? 0) > 7) limiting.push("Alcohol load increases dehydration risk");
     return { positives, limiting };

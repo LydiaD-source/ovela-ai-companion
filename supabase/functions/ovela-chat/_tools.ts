@@ -1527,7 +1527,7 @@ export function nutritionAssessment(args: {
     reassess_in_days: 14,
     if_you: [
       proteinGap != null && proteinGap > 10 ? `Increase protein toward ${proteinMid} g/day` : "Maintain current protein intake",
-      hydrationGapL != null && hydrationGapL > 0.4 ? `Increase hydration by ~${hydrationGapL} L/day` : "Maintain hydration",
+      hydrationOpportunityMlLow > 0 ? `Add ~${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day towards the ${hydrationRangeLowL}-${hydrationRangeHighL} L optimal range` : "Maintain hydration within optimal range",
       strength < reco.strength_sessions_per_week ? `Reach ${reco.strength_sessions_per_week} resistance sessions/week` : "Maintain resistance training",
       (alcohol ?? 0) > 7 ? "Reduce alcohol toward <= 7 units/week" : "Keep alcohol in current range",
     ],

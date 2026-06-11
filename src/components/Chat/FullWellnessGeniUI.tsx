@@ -175,6 +175,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       setToolCtx(null);
       setShownByCategory({});
       setPendingAttachments([]);
+      initialSentRef.current = false;
       try { localStorage.removeItem(STORAGE_KEY); } catch {}
     };
     window.addEventListener('isabella:tool-context', onCtx as EventListener);

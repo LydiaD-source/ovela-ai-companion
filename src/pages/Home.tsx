@@ -186,6 +186,9 @@ const Home = () => {
     const fireActivate = (seeded: boolean) => setTimeout(() => activateChatRef.current?.({ seeded }), 0);
 
     if (toolSeed?.initialPrompt) {
+      // Always start a NEW assessment session — never resume the previous one.
+      try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
+      window.dispatchEvent(new Event('isabella:reset'));
       (window as any).__ISABELLA_CTX__ = {
         tool_context: toolSeed.tool_context,
         authority_topic: toolSeed.authority_topic,

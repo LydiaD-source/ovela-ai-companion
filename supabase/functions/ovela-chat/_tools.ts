@@ -856,6 +856,10 @@ export function nutritionAssessment(args: {
   energy_level?: number;          // 1–10 daily energy self-rating
   stress_level?: number;          // 1–10 average over last 30 days
   morning_recovery?: number;      // 1–10 how recovered the user feels on waking
+  // v2.2 — Hydration intelligence
+  hydration_symptoms?: Array<{ symptom?: "dry_mouth" | "afternoon_fatigue" | "headaches" | "dark_urine"; frequency?: "never" | "sometimes" | "often" }>;
+  electrolytes_use?: boolean;
+  heavy_sweat?: boolean;
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";
@@ -906,7 +910,7 @@ export function nutritionAssessment(args: {
   const proteinTarget = { low_g: Math.round(calcWeight * pLo), high_g: Math.round(calcWeight * pHi) };
   const proteinMid = Math.round((proteinTarget.low_g + proteinTarget.high_g) / 2);
 
-  const hydrationTargetL = Math.round((calcWeight * 0.033) * 10) / 10;
+  // hydrationTargetL is computed inside the v2.2 hydration block below.
   const [cLo, cHi] = CARB_RANGE[goal];
   const carbTargetRange = { low_g: Math.round(calcWeight * cLo), high_g: Math.round(calcWeight * cHi) };
   const fatTargetRange = { low_g: Math.round(calcWeight * 0.8), high_g: Math.round(calcWeight * 1.0) };
@@ -933,32 +937,108 @@ export function nutritionAssessment(args: {
   if (args.sugar_snacks)   fatScore = Math.min(fatScore, 72);
   if (args.low_vegetables) fatScore = Math.max(40, fatScore - 8);
   fatScore = Math.max(35, Math.min(100, fatScore));
-  // Hydration uses a tolerant band, not a single rigid target. Optimal band
-  // is 28-33 ml/kg calculation weight (acceptable down to ~24 ml/kg). This
-  // avoids penalising older adults who drink 1.8-2.2 L/day.
-  const hydrationOptimalLow = Math.round((calcWeight * 0.028) * 10) / 10;
-  const hydrationAcceptableLow = Math.round((calcWeight * 0.024) * 10) / 10;
-  const hydrationBand = { acceptable_l: hydrationAcceptableLow, optimal_low_l: hydrationOptimalLow, optimal_high_l: hydrationTargetL };
-  const hydrationScore = (() => {
-    const v = args.est_hydration_l;
-    if (v == null) return 60;
-    if (v >= hydrationTargetL) return 95;
-    if (v >= hydrationOptimalLow) {
-      const span = Math.max(0.1, hydrationTargetL - hydrationOptimalLow);
-      return 85 + Math.round(((v - hydrationOptimalLow) / span) * 10);
-    }
-    if (v >= hydrationAcceptableLow) {
-      const span = Math.max(0.1, hydrationOptimalLow - hydrationAcceptableLow);
-      return 70 + Math.round(((v - hydrationAcceptableLow) / span) * 14);
-    }
-    if (v >= hydrationAcceptableLow * 0.75) return 50;
-    if (v >= hydrationAcceptableLow * 0.5) return 35;
-    return 25;
-  })();
-  if (args.est_hydration_l != null) {
-    const deficit = hydrationAcceptableLow - args.est_hydration_l;
-    hydrationGapL = deficit > 0 ? Math.round(deficit * 10) / 10 : 0;
+  // ── Hydration v2.2 — activity-scaled OPTIMAL RANGE (not a single target) ─
+  // ml per kg of calculation weight, scaled by activity level. Older / heavier
+  // adults are not pushed to athlete-tier numbers, and athletes are not
+  // under-served with a generic 33 ml/kg formula.
+  const HYDRATION_ML_PER_KG: Record<ActivityLevel, [number, number]> = {
+    sedentary: [0.030, 0.038],
+    moderate:  [0.028, 0.036],
+    active:    [0.025, 0.037],
+    athlete:   [0.030, 0.045],
+  };
+  const [hMlLow, hMlHigh] = HYDRATION_ML_PER_KG[activity];
+  const hydrationRangeLowL = Math.round((calcWeight * hMlLow) * 10) / 10;
+  const hydrationRangeHighL = Math.round((calcWeight * hMlHigh) * 10) / 10;
+  const hydrationMidL = Math.round(((hydrationRangeLowL + hydrationRangeHighL) / 2) * 10) / 10;
+  // Backward-compat fields used elsewhere in the tool.
+  const hydrationTargetL = hydrationMidL;
+  const hydrationOptimalLow = hydrationRangeLowL;
+  const hydrationAcceptableLow = Math.round((hydrationRangeLowL * 0.85) * 10) / 10;
+  const hydrationBand = {
+    optimal_low_l: hydrationRangeLowL,
+    optimal_high_l: hydrationRangeHighL,
+    midpoint_l: hydrationMidL,
+    activity_level: activity,
+    ml_per_kg_low: hMlLow,
+    ml_per_kg_high: hMlHigh,
+    note: `Optimal range scaled to ${activity} activity for ${calcWeight} kg. Older adults drinking ${hydrationRangeLowL}-${(hydrationRangeLowL + 0.3).toFixed(1)} L/day are usually within healthy norms.`,
+  };
+
+  // Status band (relative to optimal midpoint).
+  const hydrationPct = args.est_hydration_l != null && hydrationMidL > 0
+    ? Math.round((args.est_hydration_l / hydrationMidL) * 100) : null;
+  const hydrationStatusBand =
+    hydrationPct == null ? "not_reported" :
+    hydrationPct < 70   ? "red" :
+    hydrationPct < 90   ? "yellow" :
+    hydrationPct <= 120 ? "green" :
+    hydrationPct <= 150 ? "blue" : "over_blue";
+  const hydrationStatusLabel = ({
+    not_reported: "Not reported",
+    red: "Well below optimal range",
+    yellow: "Moderately below optimal range",
+    green: "Within optimal range",
+    blue: "Above optimal range",
+    over_blue: "Significantly above typical intake",
+  } as Record<string, string>)[hydrationStatusBand];
+
+  const hydrationScore =
+    hydrationStatusBand === "green" ? 92 :
+    hydrationStatusBand === "blue" ? 82 :
+    hydrationStatusBand === "yellow" ? 60 :
+    hydrationStatusBand === "red" ? Math.max(25, Math.round((hydrationPct ?? 0) * 0.4)) :
+    hydrationStatusBand === "over_blue" ? 65 :
+    60;
+
+  // Soft-language opportunity (range, not aggressive single number).
+  let hydrationOpportunityMlLow = 0, hydrationOpportunityMlHigh = 0;
+  if (args.est_hydration_l != null && args.est_hydration_l < hydrationRangeLowL) {
+    const lowGapMl = Math.round((hydrationRangeLowL - args.est_hydration_l) * 1000);
+    hydrationOpportunityMlLow = Math.max(250, Math.round(lowGapMl / 100) * 100);
+    hydrationOpportunityMlHigh = Math.min(1500, hydrationOpportunityMlLow + 500);
   }
+  hydrationGapL = args.est_hydration_l != null
+    ? Math.max(0, Math.round((hydrationRangeLowL - args.est_hydration_l) * 10) / 10)
+    : null;
+
+  // Symptom check (drives clinical relevance of any hydration gap).
+  const hydSymList = (args.hydration_symptoms ?? []).filter(s => s && s.frequency);
+  const oftenSym = hydSymList.filter(s => s.frequency === "often").length;
+  const someSym = hydSymList.filter(s => s.frequency === "sometimes").length;
+  const hydrationSymptomLoad =
+    hydSymList.length === 0 ? "not_reported" :
+    oftenSym >= 2 ? "high" :
+    oftenSym >= 1 ? "moderate" :
+    someSym >= 2 ? "mild" : "minimal";
+
+  // Efficiency score (quality, not just litres).
+  const hydrationEfficiency = (() => {
+    let s = 78;
+    const elec = args.electrolytes_use === true;
+    const sweat = args.heavy_sweat === true;
+    const coffeeCups = args.coffee_cups_per_day ?? 0;
+    const alc = args.alcohol_units_per_week ?? 0;
+    const exerciseSessions = (args.strength_sessions_per_week ?? 0) + (args.cardio_sessions_per_week ?? 0);
+    if (elec && (sweat || exerciseSessions >= 4 || activity === "active" || activity === "athlete")) s += 12;
+    if (sweat && !elec) s -= 10;
+    if (coffeeCups >= 5) s -= 12; else if (coffeeCups >= 4) s -= 6;
+    if (alc > 14) s -= 12; else if (alc > 7) s -= 6;
+    if (hydrationSymptomLoad === "high") s -= 18;
+    else if (hydrationSymptomLoad === "moderate") s -= 10;
+    else if (hydrationSymptomLoad === "mild") s -= 4;
+    else if (hydrationSymptomLoad === "minimal") s += 4;
+    s = Math.max(20, Math.min(100, s));
+    const drivers: string[] = [];
+    if (elec) drivers.push("Electrolyte support in place");
+    if (sweat && !elec) drivers.push("Heavy sweating without electrolyte support");
+    if (coffeeCups >= 4) drivers.push(`${coffeeCups} cups of coffee/day raises fluid turnover`);
+    if (alc > 7) drivers.push(`Alcohol load ~${alc} units/week is mildly dehydrating`);
+    if (hydrationSymptomLoad === "high" || hydrationSymptomLoad === "moderate") drivers.push("Reported dehydration-pattern symptoms");
+    if (!drivers.length) drivers.push("No major efficiency drains detected");
+    return { score: s, drivers };
+  })();
+
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
        - (args.irregular_meals ? 10 : 0) - (args.low_vegetables ? 10 : 0));
@@ -1068,7 +1148,7 @@ export function nutritionAssessment(args: {
     });
   }
   if (args.sugar_snacks) priorities.push({ title: "Replace afternoon sugar snacks", detail: "Swap for a protein-forward option (yogurt, eggs, cottage cheese, edamame)." });
-  if (hydrationGapL != null && hydrationGapL > 0.6) priorities.push({ title: `Increase hydration by ~${hydrationGapL} L/day`, detail: "Front-load 500 ml on waking and 500 ml between meals." });
+  if (hydrationOpportunityMlLow > 0) priorities.push({ title: `Hydration opportunity: add ~${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day`, detail: `Towards an optimal range of ${hydrationRangeLowL}-${hydrationRangeHighL} L/day for your size and activity. Front-load 250-500 ml on waking and between meals.` });
   if (args.low_vegetables) priorities.push({ title: "Add one vegetable-forward meal per day", detail: "Half a plate of vegetables improves fibre, micronutrients, and satiety." });
   if ((args.alcohol_units_per_week ?? 0) > 10) priorities.push({ title: "Reduce alcohol load", detail: "Target ≤ 7 units/week — fastest single change for sleep quality, recovery, and visceral fat." });
   while (priorities.length < 3) priorities.push({ title: "Maintain consistency for 7 days", detail: "Repeat the strongest two days from this week. Consistency beats perfection." });
@@ -1097,11 +1177,11 @@ export function nutritionAssessment(args: {
         closes_pct_of_weekly_gap: 0,
       };
     }
-    if (hydrationGapL != null && hydrationGapL > 0.6) {
+    if (hydrationOpportunityMlLow > 0) {
       return {
-        title: `Increase hydration by ${hydrationGapL} L/day`,
-        action: "500 ml on waking, 500 ml mid-morning, 500 ml mid-afternoon.",
-        expected_benefits: ["Energy stability", "Cognitive clarity", "Fewer false hunger cues"],
+        title: `Hydration opportunity: ${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day towards optimal range`,
+        action: `Add 250-500 ml on waking, 250-500 ml mid-morning, 250-500 ml mid-afternoon. Optimal range for your profile: ${hydrationRangeLowL}-${hydrationRangeHighL} L/day.`,
+        expected_benefits: ["Improved energy stability", "Better concentration", "Improved training recovery", "Reduced false hunger signals"],
         closes_pct_of_weekly_gap: 0,
       };
     }
@@ -1158,7 +1238,7 @@ export function nutritionAssessment(args: {
   if (proteinGap != null && proteinGap > 0) weeklyActions.push(`Reach ${proteinMid} g of protein daily (currently ~${args.est_protein_g} g).`);
   else weeklyActions.push(`Maintain ${proteinTarget.low_g}–${proteinTarget.high_g} g protein daily.`);
   weeklyActions.push(`Add strength training ${reco.strength_sessions_per_week}× weekly.`);
-  weeklyActions.push(`Hydrate to ~${hydrationTargetL} L per day.`);
+  weeklyActions.push(`Hydrate within the ${hydrationRangeLowL}–${hydrationRangeHighL} L/day optimal range.`);
   weeklyActions.push("Add vegetables to two meals daily.");
   const expectedBenefits = [
     "Improved satiety and fewer cravings",
@@ -1229,14 +1309,19 @@ export function nutritionAssessment(args: {
     const positives: string[] = [];
     const limiting: string[] = [];
     if (args.est_hydration_l != null) {
-      if (args.est_hydration_l >= hydrationTargetL * 0.85) {
-        positives.push(`Drinking ~${args.est_hydration_l} L/day, near the ${hydrationTargetL} L target`);
+      if (hydrationStatusBand === "green" || hydrationStatusBand === "blue") {
+        positives.push(`Drinking ~${args.est_hydration_l} L/day — within the ${hydrationRangeLowL}–${hydrationRangeHighL} L optimal range`);
+      } else if (hydrationStatusBand === "yellow") {
+        limiting.push(`Currently ~${args.est_hydration_l} L/day — slightly below the ${hydrationRangeLowL}–${hydrationRangeHighL} L optimal range`);
+      } else if (hydrationStatusBand === "red") {
+        limiting.push(`Currently ~${args.est_hydration_l} L/day — well below the ${hydrationRangeLowL}–${hydrationRangeHighL} L optimal range`);
       } else {
-        limiting.push(`Currently ~${args.est_hydration_l} L/day vs target ~${hydrationTargetL} L (gap ~${hydrationGapL} L)`);
+        positives.push(`Drinking ~${args.est_hydration_l} L/day — well above typical intake; ensure electrolytes are balanced`);
       }
     } else {
       limiting.push("Daily fluid intake not reported");
     }
+
     if ((args.coffee_cups_per_day ?? 0) >= 4) limiting.push("High coffee intake increases fluid turnover");
     if ((args.alcohol_units_per_week ?? 0) > 7) limiting.push("Alcohol load increases dehydration risk");
     return { positives, limiting };
@@ -1442,7 +1527,7 @@ export function nutritionAssessment(args: {
     reassess_in_days: 14,
     if_you: [
       proteinGap != null && proteinGap > 10 ? `Increase protein toward ${proteinMid} g/day` : "Maintain current protein intake",
-      hydrationGapL != null && hydrationGapL > 0.4 ? `Increase hydration by ~${hydrationGapL} L/day` : "Maintain hydration",
+      hydrationOpportunityMlLow > 0 ? `Add ~${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day towards the ${hydrationRangeLowL}-${hydrationRangeHighL} L optimal range` : "Maintain hydration within optimal range",
       strength < reco.strength_sessions_per_week ? `Reach ${reco.strength_sessions_per_week} resistance sessions/week` : "Maintain resistance training",
       (alcohol ?? 0) > 7 ? "Reduce alcohol toward <= 7 units/week" : "Keep alcohol in current range",
     ],
@@ -1471,10 +1556,10 @@ export function nutritionAssessment(args: {
       impact: "Restores deep sleep and overnight recovery.",
     });
   }
-  if (hydrationGapL != null && hydrationGapL >= 0.4) {
+  if (hydrationOpportunityMlLow > 0) {
     opportunitiesList.push({
       label: "Hydration",
-      delta: `+${hydrationGapL} L/day`,
+      delta: `+${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day`,
       impact: "Steadier afternoon energy and cognitive stamina.",
     });
   }
@@ -1643,9 +1728,9 @@ export function nutritionAssessment(args: {
       strength < reco.strength_sessions_per_week
         ? `${reco.strength_sessions_per_week} resistance sessions per week`
         : `Maintain ${reco.strength_sessions_per_week} resistance sessions per week`,
-      hydrationGapL != null && hydrationGapL > 0.4
-        ? `Reach ~${hydrationTargetL} L hydration daily`
-        : `Maintain ~${hydrationTargetL} L hydration daily`,
+      hydrationOpportunityMlLow > 0
+        ? `Move toward the ${hydrationRangeLowL}–${hydrationRangeHighL} L hydration range (add ~${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day)`
+        : `Maintain hydration within ${hydrationRangeLowL}–${hydrationRangeHighL} L/day`,
       (alcohol ?? 0) > 7 ? "Reduce alcohol toward ≤ 7 units/week" : "Keep alcohol within current range",
     ],
     you_should_notice: [
@@ -1815,6 +1900,37 @@ export function nutritionAssessment(args: {
       disclaimer: "Educational only — Isabella does not diagnose. Any concern should be discussed with your physician.",
     },
     hydration_band: hydrationBand,
+    hydration_status: {
+      current_l: args.est_hydration_l ?? null,
+      optimal_range_l: { low: hydrationRangeLowL, high: hydrationRangeHighL },
+      midpoint_l: hydrationMidL,
+      percent_of_midpoint: hydrationPct,
+      status_band: hydrationStatusBand,
+      status_label: hydrationStatusLabel,
+      status_color_hint: hydrationStatusBand,
+      symptom_load: hydrationSymptomLoad,
+      symptoms: hydSymList,
+      efficiency: hydrationEfficiency,
+      opportunity: hydrationOpportunityMlLow > 0 ? {
+        increase_ml_low: hydrationOpportunityMlLow,
+        increase_ml_high: hydrationOpportunityMlHigh,
+        headline: "Hydration Opportunity",
+        narrative: `Your current intake appears ${hydrationStatusBand === "red" ? "well" : "slightly"} below the optimal range for your age, body size and activity level. Increasing intake by approximately ${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml per day may support energy stability, concentration, training recovery and appetite regulation.`,
+        potential_benefits: [
+          "Improved energy stability",
+          "Better concentration",
+          "Improved training recovery",
+          "Reduced false hunger signals",
+        ],
+      } : (hydrationStatusBand === "green" || hydrationStatusBand === "blue") ? {
+        increase_ml_low: 0,
+        increase_ml_high: 0,
+        headline: "Hydration is well-supported",
+        narrative: "Your current intake sits within the optimal range for your profile — no increase needed. Maintain consistency through the day.",
+        potential_benefits: [],
+      } : null,
+      tone_note: "Framed as opportunity, not deficit — credibility before correction.",
+    },
     executive_benchmark: executiveBenchmark,
     executive_dashboard: executiveDashboard,
     protein_opportunity: proteinOpportunity,

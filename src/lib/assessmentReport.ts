@@ -587,6 +587,58 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y += 6;
   }
 
+  // 4b · Executive Readiness extensions (subjective, waist, sun, digestion, thyroid)
+  const subj = data.subjective_scores;
+  const waistA = data.waist_assessment;
+  const sunA = data.sun_exposure_assessment;
+  const digA = data.digestion_screening;
+  const thyA = data.thyroid_screening;
+  if (subj || waistA || sunA || digA || thyA) {
+    y = ensureSpace(doc, y, 60);
+    y = sectionTitle(doc, L(lang, 'Executive Readiness — extended signals'), y);
+    if (subj) {
+      const parts: string[] = [];
+      if (subj.energy?.score != null) parts.push(`Energy ${subj.energy.raw ?? '—'}/10 (${subj.energy.label})`);
+      if (subj.stress?.score != null) parts.push(`Stress ${subj.stress.raw ?? '—'}/10 (${subj.stress.label})`);
+      if (subj.morning_recovery?.score != null) parts.push(`Morning recovery ${subj.morning_recovery.raw ?? '—'}/10 (${subj.morning_recovery.label})`);
+      if (parts.length) {
+        y = paragraph(doc, `Subjective: ${parts.join(' · ')}`, y, { size: 10 });
+        y = paragraph(doc, subj.note, y, { color: MUTED, size: 8 });
+        y += 4;
+      }
+    }
+    if (waistA) {
+      y = ensureSpace(doc, y, 28);
+      y = paragraph(doc, `Waist: ${waistA.waist_cm} cm — ${String(waistA.risk_band).toUpperCase()} risk band.`, y, { size: 10 });
+      y = paragraph(doc, waistA.note, y, { color: MUTED, size: 8 });
+      y += 4;
+    }
+    if (sunA) {
+      y = ensureSpace(doc, y, 28);
+      y = paragraph(doc, `Sun exposure: ${sunA.minutes_per_day} min/day.`, y, { size: 10 });
+      y = paragraph(doc, sunA.note, y, { color: MUTED, size: 8 });
+      y += 4;
+    }
+    if (digA) {
+      y = ensureSpace(doc, y, 28);
+      const issues = (digA.issues || []).map((d: any) => `${d.issue?.replace(/_/g, ' ')} (${d.frequency})`).join(', ');
+      y = paragraph(doc, `Digestion (${digA.severity}): ${issues}`, y, { size: 10 });
+      y = paragraph(doc, digA.note, y, { color: MUTED, size: 8 });
+      y += 4;
+    }
+    if (thyA) {
+      y = ensureSpace(doc, y, 36);
+      const sym = (thyA.symptoms || []).join(', ').replace(/_/g, ' ');
+      y = paragraph(doc, `Thyroid screening: ${thyA.diagnosis || 'no diagnosis reported'}${sym ? ` · symptoms: ${sym}` : ''}.`, y, { size: 10 });
+      y = paragraph(doc, thyA.note, y, { color: MUTED, size: 8 });
+      y = paragraph(doc, thyA.disclaimer, y, { color: MUTED, size: 7 });
+      y += 4;
+    }
+    y += 4;
+  }
+
+
+
 
   // Nutrition snapshot (sub of executive view, no number)
   y = ensureSpace(doc, y, 180);

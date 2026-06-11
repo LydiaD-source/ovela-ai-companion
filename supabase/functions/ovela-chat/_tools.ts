@@ -1728,9 +1728,9 @@ export function nutritionAssessment(args: {
       strength < reco.strength_sessions_per_week
         ? `${reco.strength_sessions_per_week} resistance sessions per week`
         : `Maintain ${reco.strength_sessions_per_week} resistance sessions per week`,
-      hydrationGapL != null && hydrationGapL > 0.4
-        ? `Reach ~${hydrationTargetL} L hydration daily`
-        : `Maintain ~${hydrationTargetL} L hydration daily`,
+      hydrationOpportunityMlLow > 0
+        ? `Move toward the ${hydrationRangeLowL}–${hydrationRangeHighL} L hydration range (add ~${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day)`
+        : `Maintain hydration within ${hydrationRangeLowL}–${hydrationRangeHighL} L/day`,
       (alcohol ?? 0) > 7 ? "Reduce alcohol toward ≤ 7 units/week" : "Keep alcohol within current range",
     ],
     you_should_notice: [

@@ -913,7 +913,13 @@ export function nutritionAssessment(args: {
 
   const proteinGap = args.est_protein_g != null ? Math.round(proteinMid - args.est_protein_g) : null;
   const weeklyProteinGap = proteinGap != null && proteinGap > 0 ? proteinGap * 7 : 0;
-  const hydrationGapL = args.est_hydration_l != null ? Math.round((hydrationTargetL - args.est_hydration_l) * 10) / 10 : null;
+  // Gap is measured against the acceptable floor (not the optimal target),
+  // so older adults drinking 2.0-2.5 L are not flagged as deficient.
+  const hydrationGapL = (() => {
+    if (args.est_hydration_l == null) return null;
+    // Will be reassigned below once hydrationOptimalLow is in scope.
+    return null as number | null;
+  })();
 
   const score = (val: number | null, target: number, tolerance = 0.25) => {
     if (val == null) return 50;

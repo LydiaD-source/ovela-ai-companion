@@ -1148,7 +1148,7 @@ export function nutritionAssessment(args: {
     });
   }
   if (args.sugar_snacks) priorities.push({ title: "Replace afternoon sugar snacks", detail: "Swap for a protein-forward option (yogurt, eggs, cottage cheese, edamame)." });
-  if (hydrationGapL != null && hydrationGapL > 0.6) priorities.push({ title: `Increase hydration by ~${hydrationGapL} L/day`, detail: "Front-load 500 ml on waking and 500 ml between meals." });
+  if (hydrationOpportunityMlLow > 0) priorities.push({ title: `Hydration opportunity: add ~${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day`, detail: `Towards an optimal range of ${hydrationRangeLowL}-${hydrationRangeHighL} L/day for your size and activity. Front-load 250-500 ml on waking and between meals.` });
   if (args.low_vegetables) priorities.push({ title: "Add one vegetable-forward meal per day", detail: "Half a plate of vegetables improves fibre, micronutrients, and satiety." });
   if ((args.alcohol_units_per_week ?? 0) > 10) priorities.push({ title: "Reduce alcohol load", detail: "Target ≤ 7 units/week — fastest single change for sleep quality, recovery, and visceral fat." });
   while (priorities.length < 3) priorities.push({ title: "Maintain consistency for 7 days", detail: "Repeat the strongest two days from this week. Consistency beats perfection." });

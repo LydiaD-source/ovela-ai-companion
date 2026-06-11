@@ -1768,13 +1768,53 @@ export function nutritionAssessment(args: {
       score: executiveReadiness,
       level: executiveReadinessLevel,
       scale: [
-        "80-100 = Optimized nutrition",
-        "60-79 = Functional — clear room to improve",
-        "40-59 = Nutrition deficit",
-        "Below 40 = High nutritional risk",
+        "90-100 = Peak readiness",
+        "75-89 = Strong performance foundation",
+        "60-74 = Performance drift detected",
+        "Below 60 = Recovery capacity compromised",
       ],
-      measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
+      measures: ["Nutrition foundation", "Hydration", "Recovery & sleep", "Subjective energy/stress/recovery", "Waist & metabolic risk", "Sun exposure & circadian support"],
     },
+    subjective_scores: (energyScore != null || stressScoreInv != null || morningRecoveryScore != null) ? {
+      energy: { raw: args.energy_level ?? null, score: energyScore, label: energyScore == null ? null : energyScore >= 75 ? "Strong" : energyScore >= 50 ? "Moderate" : "Low" },
+      stress: { raw: args.stress_level ?? null, score: stressScoreInv, label: stressScoreInv == null ? null : stressScoreInv >= 75 ? "Well-managed" : stressScoreInv >= 50 ? "Elevated" : "High" },
+      morning_recovery: { raw: args.morning_recovery ?? null, score: morningRecoveryScore, label: morningRecoveryScore == null ? null : morningRecoveryScore >= 75 ? "Refreshed" : morningRecoveryScore >= 50 ? "Partial" : "Unrecovered" },
+      note: "Subjective scores often reveal what objective metrics miss — eight hours of sleep does not always equal eight hours of recovery.",
+    } : null,
+    waist_assessment: waistCm == null ? null : {
+      waist_cm: waistCm,
+      gender,
+      thresholds_cm: waistThresh,
+      score: waistScore,
+      risk_band: waistRisk,
+      note: waistRisk === "low" ? "Waist circumference is within the low-risk range for cardiometabolic health."
+        : waistRisk === "moderate" ? "Waist circumference is in the moderate-risk range — fat-loss progress should reduce this towards the low-risk threshold."
+        : "Waist circumference is in the higher-risk range — a 5-7 cm reduction would meaningfully improve metabolic and cardiovascular markers.",
+    },
+    sun_exposure_assessment: sunMin == null ? null : {
+      minutes_per_day: sunMin,
+      score: sunScore,
+      supports: ["Vitamin D synthesis", "Circadian rhythm anchoring", "Recovery quality", "Mood regulation"],
+      note: sunMin < 10 ? "Very low daylight exposure — consider 10-20 min outdoor light within an hour of waking, and discuss vitamin D status with your physician."
+        : sunMin < 20 ? "Moderate daylight exposure — adding a short midday walk would strengthen circadian support."
+        : sunMin < 40 ? "Good daylight exposure — supportive of vitamin D, sleep and recovery."
+        : "Excellent daylight exposure — protect skin during peak UV hours.",
+    },
+    digestion_screening: digestionList.length === 0 ? null : {
+      issues: digestionList,
+      score: digestionScore,
+      severity: oftenCount >= 2 ? "high" : oftenCount >= 1 ? "moderate" : sometimesCount >= 2 ? "mild" : "minimal",
+      note: oftenCount >= 1 ? "Frequent digestive symptoms warrant a closer look at fibre, hydration, fermented foods and meal pacing — and discussion with a clinician if persistent."
+        : "Occasional symptoms — small adjustments to fibre, hydration and meal regularity usually resolve these.",
+    },
+    thyroid_screening: (thyroidDx == null && thyroidSym.length === 0) ? null : {
+      diagnosis: thyroidDx,
+      symptoms: thyroidSym,
+      flag: thyroidFlag,
+      note: thyroidNote,
+      disclaimer: "Educational only — Isabella does not diagnose. Any concern should be discussed with your physician.",
+    },
+    hydration_band: hydrationBand,
     executive_benchmark: executiveBenchmark,
     executive_dashboard: executiveDashboard,
     protein_opportunity: proteinOpportunity,

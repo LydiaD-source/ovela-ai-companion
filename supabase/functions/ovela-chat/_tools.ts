@@ -848,6 +848,14 @@ export function nutritionAssessment(args: {
   top_meals?: { strongest?: { meal?: string; why_it_works?: string[]; score?: number }; weakest?: { meal?: string; why_it_hurts?: string[]; score?: number } };
   oily_fish_per_week?: number;
   vegetable_servings_per_day?: number;
+  // v2.1 — Executive Readiness expansion
+  sun_exposure_minutes_per_day?: number;
+  thyroid_diagnosis?: "none" | "hypothyroidism" | "hashimotos" | "hyperthyroidism" | "unknown";
+  thyroid_symptoms?: Array<"cold_hands_feet" | "fatigue_despite_sleep" | "difficulty_losing_weight" | "low_motivation" | "dry_skin">;
+  digestion_issues?: Array<{ issue?: "bloating" | "reflux" | "constipation" | "loose_stools"; frequency?: "never" | "sometimes" | "often" }>;
+  energy_level?: number;          // 1–10 daily energy self-rating
+  stress_level?: number;          // 1–10 average over last 30 days
+  morning_recovery?: number;      // 1–10 how recovered the user feels on waking
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";
@@ -905,7 +913,8 @@ export function nutritionAssessment(args: {
 
   const proteinGap = args.est_protein_g != null ? Math.round(proteinMid - args.est_protein_g) : null;
   const weeklyProteinGap = proteinGap != null && proteinGap > 0 ? proteinGap * 7 : 0;
-  const hydrationGapL = args.est_hydration_l != null ? Math.round((hydrationTargetL - args.est_hydration_l) * 10) / 10 : null;
+  // Gap will be recomputed below against the acceptable hydration floor.
+  let hydrationGapL: number | null = null;
 
   const score = (val: number | null, target: number, tolerance = 0.25) => {
     if (val == null) return 50;
@@ -924,7 +933,32 @@ export function nutritionAssessment(args: {
   if (args.sugar_snacks)   fatScore = Math.min(fatScore, 72);
   if (args.low_vegetables) fatScore = Math.max(40, fatScore - 8);
   fatScore = Math.max(35, Math.min(100, fatScore));
-  const hydrationScore = score(args.est_hydration_l ?? null, hydrationTargetL, 0.2);
+  // Hydration uses a tolerant band, not a single rigid target. Optimal band
+  // is 28-33 ml/kg calculation weight (acceptable down to ~24 ml/kg). This
+  // avoids penalising older adults who drink 1.8-2.2 L/day.
+  const hydrationOptimalLow = Math.round((calcWeight * 0.028) * 10) / 10;
+  const hydrationAcceptableLow = Math.round((calcWeight * 0.024) * 10) / 10;
+  const hydrationBand = { acceptable_l: hydrationAcceptableLow, optimal_low_l: hydrationOptimalLow, optimal_high_l: hydrationTargetL };
+  const hydrationScore = (() => {
+    const v = args.est_hydration_l;
+    if (v == null) return 60;
+    if (v >= hydrationTargetL) return 95;
+    if (v >= hydrationOptimalLow) {
+      const span = Math.max(0.1, hydrationTargetL - hydrationOptimalLow);
+      return 85 + Math.round(((v - hydrationOptimalLow) / span) * 10);
+    }
+    if (v >= hydrationAcceptableLow) {
+      const span = Math.max(0.1, hydrationOptimalLow - hydrationAcceptableLow);
+      return 70 + Math.round(((v - hydrationAcceptableLow) / span) * 14);
+    }
+    if (v >= hydrationAcceptableLow * 0.75) return 50;
+    if (v >= hydrationAcceptableLow * 0.5) return 35;
+    return 25;
+  })();
+  if (args.est_hydration_l != null) {
+    const deficit = hydrationAcceptableLow - args.est_hydration_l;
+    hydrationGapL = deficit > 0 ? Math.round(deficit * 10) / 10 : 0;
+  }
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
        - (args.irregular_meals ? 10 : 0) - (args.low_vegetables ? 10 : 0));
@@ -1281,19 +1315,65 @@ export function nutritionAssessment(args: {
     most_impactful_improvement: `${primaryLimiter.short} — ${priorities[0]?.title || fastestWin.title}`,
   };
 
+  // ── New v2.1 inputs: subjective scores, waist, sun, digestion, thyroid ─
+  const energyScore = args.energy_level != null ? Math.max(10, Math.min(100, Math.round(args.energy_level * 10))) : null;
+  const stressScoreInv = args.stress_level != null ? Math.max(10, Math.min(100, Math.round((11 - args.stress_level) * 10))) : null;
+  const morningRecoveryScore = args.morning_recovery != null ? Math.max(10, Math.min(100, Math.round(args.morning_recovery * 10))) : null;
+  const subjectiveScores = [energyScore, stressScoreInv, morningRecoveryScore].filter(v => v != null) as number[];
+  const subjectiveAvg = subjectiveScores.length ? Math.round(subjectiveScores.reduce((a, b) => a + b, 0) / subjectiveScores.length) : null;
+
+  const waistCm = args.waist_cm ?? null;
+  const waistThresh = gender === "female" ? { low: 80, high: 88 } : { low: 94, high: 102 };
+  const waistScore = waistCm == null ? null
+    : waistCm <= waistThresh.low ? 92
+    : waistCm <= waistThresh.high ? 65
+    : Math.max(25, 65 - Math.round((waistCm - waistThresh.high) * 3));
+  const waistRisk = waistCm == null ? "not_reported"
+    : waistCm <= waistThresh.low ? "low"
+    : waistCm <= waistThresh.high ? "moderate" : "high";
+
+  const sunMin = args.sun_exposure_minutes_per_day ?? null;
+  const sunScore = sunMin == null ? null
+    : sunMin < 10 ? 35 : sunMin < 20 ? 60 : sunMin < 40 ? 85 : 95;
+
+  const digestionList = (args.digestion_issues ?? []).filter(d => d && d.frequency);
+  const oftenCount = digestionList.filter(d => d.frequency === "often").length;
+  const sometimesCount = digestionList.filter(d => d.frequency === "sometimes").length;
+  const digestionScore = digestionList.length === 0 ? null
+    : Math.max(25, 95 - oftenCount * 20 - sometimesCount * 8);
+
+  const thyroidDx = args.thyroid_diagnosis ?? null;
+  const thyroidSym = args.thyroid_symptoms ?? [];
+  const thyroidFlag = (thyroidDx && thyroidDx !== "none" && thyroidDx !== "unknown") ? "diagnosed"
+    : thyroidSym.length >= 3 ? "symptom_cluster"
+    : thyroidSym.length >= 1 ? "mild_signs" : "no_flags";
+  const thyroidNote = (() => {
+    if (thyroidFlag === "diagnosed") return `Reported ${String(thyroidDx).replace("_", " ")} — recommendations are general nutrition guidance only; please align with your endocrinologist.`;
+    if (thyroidFlag === "symptom_cluster") return `Several patterns you reported (${thyroidSym.slice(0, 3).join(", ").replace(/_/g, " ")}) sometimes overlap with thyroid presentations. This is not a diagnosis — worth discussing with your physician at your next visit.`;
+    if (thyroidFlag === "mild_signs") return "One or two symptoms you mentioned can have many causes — keep an eye on them, no immediate action needed.";
+    return "No thyroid-related signals reported.";
+  })();
+
   // ── Executive Readiness Score (headline number for retention) ───────
   const sleepPenalty = sleepH < 7 ? (7 - sleepH) * 15 : 0;
+  // Subjective fallback uses moderate 65 when no self-rating given.
+  const subjectiveComp = subjectiveAvg ?? 65;
+  const waistComp = waistScore ?? 70;
+  const sunComp = sunScore ?? 70;
   const executiveReadiness = Math.max(20, Math.min(100, Math.round(
-    recoveryCapacity * 0.30 +
-    overall * 0.25 +
-    musclePres * 0.25 +
-    Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.20
+    recoveryCapacity * 0.24 +
+    overall * 0.20 +
+    musclePres * 0.18 +
+    Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.14 +
+    subjectiveComp * 0.12 +
+    waistComp * 0.06 +
+    sunComp * 0.06
   )));
   const executiveReadinessLevel =
-    executiveReadiness >= 80 ? "Optimized nutrition" :
-    executiveReadiness >= 60 ? "Functional — clear room to improve" :
-    executiveReadiness >= 40 ? "Nutrition deficit" :
-                               "High nutritional risk";
+    executiveReadiness >= 90 ? "Peak readiness" :
+    executiveReadiness >= 75 ? "Strong performance foundation" :
+    executiveReadiness >= 60 ? "Performance drift detected" :
+                               "Recovery capacity compromised";
 
   // ── Executive Benchmark (peer comparison — psychologically motivating) ─
   const cohortLabel = (() => {
@@ -1688,13 +1768,53 @@ export function nutritionAssessment(args: {
       score: executiveReadiness,
       level: executiveReadinessLevel,
       scale: [
-        "80-100 = Optimized nutrition",
-        "60-79 = Functional — clear room to improve",
-        "40-59 = Nutrition deficit",
-        "Below 40 = High nutritional risk",
+        "90-100 = Peak readiness",
+        "75-89 = Strong performance foundation",
+        "60-74 = Performance drift detected",
+        "Below 60 = Recovery capacity compromised",
       ],
-      measures: ["Protein adequacy", "Hydration", "Recovery support", "Nutrient density", "Muscle preservation support"],
+      measures: ["Nutrition foundation", "Hydration", "Recovery & sleep", "Subjective energy/stress/recovery", "Waist & metabolic risk", "Sun exposure & circadian support"],
     },
+    subjective_scores: (energyScore != null || stressScoreInv != null || morningRecoveryScore != null) ? {
+      energy: { raw: args.energy_level ?? null, score: energyScore, label: energyScore == null ? null : energyScore >= 75 ? "Strong" : energyScore >= 50 ? "Moderate" : "Low" },
+      stress: { raw: args.stress_level ?? null, score: stressScoreInv, label: stressScoreInv == null ? null : stressScoreInv >= 75 ? "Well-managed" : stressScoreInv >= 50 ? "Elevated" : "High" },
+      morning_recovery: { raw: args.morning_recovery ?? null, score: morningRecoveryScore, label: morningRecoveryScore == null ? null : morningRecoveryScore >= 75 ? "Refreshed" : morningRecoveryScore >= 50 ? "Partial" : "Unrecovered" },
+      note: "Subjective scores often reveal what objective metrics miss — eight hours of sleep does not always equal eight hours of recovery.",
+    } : null,
+    waist_assessment: waistCm == null ? null : {
+      waist_cm: waistCm,
+      gender,
+      thresholds_cm: waistThresh,
+      score: waistScore,
+      risk_band: waistRisk,
+      note: waistRisk === "low" ? "Waist circumference is within the low-risk range for cardiometabolic health."
+        : waistRisk === "moderate" ? "Waist circumference is in the moderate-risk range — fat-loss progress should reduce this towards the low-risk threshold."
+        : "Waist circumference is in the higher-risk range — a 5-7 cm reduction would meaningfully improve metabolic and cardiovascular markers.",
+    },
+    sun_exposure_assessment: sunMin == null ? null : {
+      minutes_per_day: sunMin,
+      score: sunScore,
+      supports: ["Vitamin D synthesis", "Circadian rhythm anchoring", "Recovery quality", "Mood regulation"],
+      note: sunMin < 10 ? "Very low daylight exposure — consider 10-20 min outdoor light within an hour of waking, and discuss vitamin D status with your physician."
+        : sunMin < 20 ? "Moderate daylight exposure — adding a short midday walk would strengthen circadian support."
+        : sunMin < 40 ? "Good daylight exposure — supportive of vitamin D, sleep and recovery."
+        : "Excellent daylight exposure — protect skin during peak UV hours.",
+    },
+    digestion_screening: digestionList.length === 0 ? null : {
+      issues: digestionList,
+      score: digestionScore,
+      severity: oftenCount >= 2 ? "high" : oftenCount >= 1 ? "moderate" : sometimesCount >= 2 ? "mild" : "minimal",
+      note: oftenCount >= 1 ? "Frequent digestive symptoms warrant a closer look at fibre, hydration, fermented foods and meal pacing — and discussion with a clinician if persistent."
+        : "Occasional symptoms — small adjustments to fibre, hydration and meal regularity usually resolve these.",
+    },
+    thyroid_screening: (thyroidDx == null && thyroidSym.length === 0) ? null : {
+      diagnosis: thyroidDx,
+      symptoms: thyroidSym,
+      flag: thyroidFlag,
+      note: thyroidNote,
+      disclaimer: "Educational only — Isabella does not diagnose. Any concern should be discussed with your physician.",
+    },
+    hydration_band: hydrationBand,
     executive_benchmark: executiveBenchmark,
     executive_dashboard: executiveDashboard,
     protein_opportunity: proteinOpportunity,

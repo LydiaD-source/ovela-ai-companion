@@ -848,6 +848,14 @@ export function nutritionAssessment(args: {
   top_meals?: { strongest?: { meal?: string; why_it_works?: string[]; score?: number }; weakest?: { meal?: string; why_it_hurts?: string[]; score?: number } };
   oily_fish_per_week?: number;
   vegetable_servings_per_day?: number;
+  // v2.1 — Executive Readiness expansion
+  sun_exposure_minutes_per_day?: number;
+  thyroid_diagnosis?: "none" | "hypothyroidism" | "hashimotos" | "hyperthyroidism" | "unknown";
+  thyroid_symptoms?: Array<"cold_hands_feet" | "fatigue_despite_sleep" | "difficulty_losing_weight" | "low_motivation" | "dry_skin">;
+  digestion_issues?: Array<{ issue?: "bloating" | "reflux" | "constipation" | "loose_stools"; frequency?: "never" | "sometimes" | "often" }>;
+  energy_level?: number;          // 1–10 daily energy self-rating
+  stress_level?: number;          // 1–10 average over last 30 days
+  morning_recovery?: number;      // 1–10 how recovered the user feels on waking
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";

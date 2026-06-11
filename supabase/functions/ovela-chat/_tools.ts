@@ -860,6 +860,15 @@ export function nutritionAssessment(args: {
   hydration_symptoms?: Array<{ symptom?: "dry_mouth" | "afternoon_fatigue" | "headaches" | "dark_urine"; frequency?: "never" | "sometimes" | "often" }>;
   electrolytes_use?: boolean;
   heavy_sweat?: boolean;
+  // v2.3 — Personal context & companion intelligence
+  medications_affecting_metabolism?: "no" | "yes" | "prefer_not_to_say";
+  medication_categories?: Array<"blood_pressure" | "thyroid" | "diabetes" | "digestive" | "corticosteroids" | "hormonal" | "other" | "unsure">;
+  recovery_assessment_completed?: boolean;
+  recovery_scores_from_user?: { recovery_capacity?: number; resilience?: number; executive_wellness?: number; burnout_risk?: "low" | "moderate" | "elevated" };
+  appetite_pattern?: "low" | "normal" | "high" | "irregular";
+  food_dislikes_notes?: string;
+  cooking_skill?: "beginner" | "intermediate" | "advanced";
+  personal_notes?: string; // free-text Isabella captured to remember the person (lifestyle/personality cues)
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";

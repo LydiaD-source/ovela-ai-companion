@@ -1315,19 +1315,65 @@ export function nutritionAssessment(args: {
     most_impactful_improvement: `${primaryLimiter.short} — ${priorities[0]?.title || fastestWin.title}`,
   };
 
+  // ── New v2.1 inputs: subjective scores, waist, sun, digestion, thyroid ─
+  const energyScore = args.energy_level != null ? Math.max(10, Math.min(100, Math.round(args.energy_level * 10))) : null;
+  const stressScoreInv = args.stress_level != null ? Math.max(10, Math.min(100, Math.round((11 - args.stress_level) * 10))) : null;
+  const morningRecoveryScore = args.morning_recovery != null ? Math.max(10, Math.min(100, Math.round(args.morning_recovery * 10))) : null;
+  const subjectiveScores = [energyScore, stressScoreInv, morningRecoveryScore].filter(v => v != null) as number[];
+  const subjectiveAvg = subjectiveScores.length ? Math.round(subjectiveScores.reduce((a, b) => a + b, 0) / subjectiveScores.length) : null;
+
+  const waistCm = args.waist_cm ?? null;
+  const waistThresh = gender === "female" ? { low: 80, high: 88 } : { low: 94, high: 102 };
+  const waistScore = waistCm == null ? null
+    : waistCm <= waistThresh.low ? 92
+    : waistCm <= waistThresh.high ? 65
+    : Math.max(25, 65 - Math.round((waistCm - waistThresh.high) * 3));
+  const waistRisk = waistCm == null ? "not_reported"
+    : waistCm <= waistThresh.low ? "low"
+    : waistCm <= waistThresh.high ? "moderate" : "high";
+
+  const sunMin = args.sun_exposure_minutes_per_day ?? null;
+  const sunScore = sunMin == null ? null
+    : sunMin < 10 ? 35 : sunMin < 20 ? 60 : sunMin < 40 ? 85 : 95;
+
+  const digestionList = (args.digestion_issues ?? []).filter(d => d && d.frequency);
+  const oftenCount = digestionList.filter(d => d.frequency === "often").length;
+  const sometimesCount = digestionList.filter(d => d.frequency === "sometimes").length;
+  const digestionScore = digestionList.length === 0 ? null
+    : Math.max(25, 95 - oftenCount * 20 - sometimesCount * 8);
+
+  const thyroidDx = args.thyroid_diagnosis ?? null;
+  const thyroidSym = args.thyroid_symptoms ?? [];
+  const thyroidFlag = (thyroidDx && thyroidDx !== "none" && thyroidDx !== "unknown") ? "diagnosed"
+    : thyroidSym.length >= 3 ? "symptom_cluster"
+    : thyroidSym.length >= 1 ? "mild_signs" : "no_flags";
+  const thyroidNote = (() => {
+    if (thyroidFlag === "diagnosed") return `Reported ${String(thyroidDx).replace("_", " ")} — recommendations are general nutrition guidance only; please align with your endocrinologist.`;
+    if (thyroidFlag === "symptom_cluster") return `Several patterns you reported (${thyroidSym.slice(0, 3).join(", ").replace(/_/g, " ")}) sometimes overlap with thyroid presentations. This is not a diagnosis — worth discussing with your physician at your next visit.`;
+    if (thyroidFlag === "mild_signs") return "One or two symptoms you mentioned can have many causes — keep an eye on them, no immediate action needed.";
+    return "No thyroid-related signals reported.";
+  })();
+
   // ── Executive Readiness Score (headline number for retention) ───────
   const sleepPenalty = sleepH < 7 ? (7 - sleepH) * 15 : 0;
+  // Subjective fallback uses moderate 65 when no self-rating given.
+  const subjectiveComp = subjectiveAvg ?? 65;
+  const waistComp = waistScore ?? 70;
+  const sunComp = sunScore ?? 70;
   const executiveReadiness = Math.max(20, Math.min(100, Math.round(
-    recoveryCapacity * 0.30 +
-    overall * 0.25 +
-    musclePres * 0.25 +
-    Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.20
+    recoveryCapacity * 0.24 +
+    overall * 0.20 +
+    musclePres * 0.18 +
+    Math.max(0, 100 - alcoholPenalty - sleepPenalty) * 0.14 +
+    subjectiveComp * 0.12 +
+    waistComp * 0.06 +
+    sunComp * 0.06
   )));
   const executiveReadinessLevel =
-    executiveReadiness >= 80 ? "Optimized nutrition" :
-    executiveReadiness >= 60 ? "Functional — clear room to improve" :
-    executiveReadiness >= 40 ? "Nutrition deficit" :
-                               "High nutritional risk";
+    executiveReadiness >= 90 ? "Peak readiness" :
+    executiveReadiness >= 75 ? "Strong performance foundation" :
+    executiveReadiness >= 60 ? "Performance drift detected" :
+                               "Recovery capacity compromised";
 
   // ── Executive Benchmark (peer comparison — psychologically motivating) ─
   const cohortLabel = (() => {

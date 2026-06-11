@@ -1556,10 +1556,10 @@ export function nutritionAssessment(args: {
       impact: "Restores deep sleep and overnight recovery.",
     });
   }
-  if (hydrationGapL != null && hydrationGapL >= 0.4) {
+  if (hydrationOpportunityMlLow > 0) {
     opportunitiesList.push({
       label: "Hydration",
-      delta: `+${hydrationGapL} L/day`,
+      delta: `+${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day`,
       impact: "Steadier afternoon energy and cognitive stamina.",
     });
   }

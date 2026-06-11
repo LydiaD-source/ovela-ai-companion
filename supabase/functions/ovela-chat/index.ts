@@ -980,10 +980,23 @@ After any tool call, present results conversationally (1 short paragraph + key b
         const fullContext = (conversationHistory || []).map((m: any) => String(m.content || '')).join(' ') + ' ' + finalMessage;
         const isNutrition = /(nutrition|protein|muscle preservation|food|diet|meal diary)/i.test(fullContext);
         const isRecovery = /(recovery|resilience|burnout|stress level|sleep quality|exercise sessions|work hours|work-life|motivation)/i.test(fullContext);
-        const looksDeferred = (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage))
+        // Suppress forcing when the model is explicitly saying it still needs
+        // more info (e.g. "one last thing before I build your report").
+        const STILL_ASKING_RE = /(one (last|more) (thing|question)|before (i|we) (build|create|generate|prepare|finalize|complete)|still need|i need to (ask|know|confirm)|just need|could you (also )?(share|tell|let me know)|may i (also )?ask|first,|to start,|to begin,)/i;
+        const looksDeferred = (
+             (DEFER_RE.test(finalMessage) && REPORT_RE.test(finalMessage))
           || FALSE_DELIVERY_RE.test(finalMessage)
-          || WRAPUP_RE.test(finalMessage);
-        const forceTool = looksDeferred ? (isNutrition && !isRecovery ? 'nutrition_assessment' : (isRecovery ? 'recovery_resilience_assessment' : null)) : null;
+          || WRAPUP_RE.test(finalMessage)
+        ) && !STILL_ASKING_RE.test(finalMessage);
+        // Prefer the active assessment. Nutrition wins when its keywords are
+        // present, because recovery keywords (stress/sleep/work) frequently
+        // appear inside nutrition lifestyle questions and produced false
+        // forces into recovery_resilience_assessment.
+        const forceTool = looksDeferred
+          ? (isNutrition
+              ? 'nutrition_assessment'
+              : (isRecovery ? 'recovery_resilience_assessment' : null))
+          : null;
 
         if (forceTool) {
           console.warn(`🚨 Deferral detected — forcing ${forceTool}. Msg:`, finalMessage.substring(0, 140));
@@ -1359,11 +1372,8 @@ After any tool call, present results conversationally (1 short paragraph + key b
       console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
       
       if (!finalMessage) {
-        console.error("No assistant text extracted from response");
-        return new Response(JSON.stringify({ success: false, message: "No response generated", data: {} }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
+        console.error("No assistant text extracted from response — sending graceful continuation");
+        finalMessage = "I'm just finishing the last step of your assessment — could you send your message again, or type 'continue' so I can complete your report?";
       }
       
       return new Response(JSON.stringify({ 

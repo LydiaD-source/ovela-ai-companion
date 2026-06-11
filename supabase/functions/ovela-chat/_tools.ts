@@ -1238,7 +1238,7 @@ export function nutritionAssessment(args: {
   if (proteinGap != null && proteinGap > 0) weeklyActions.push(`Reach ${proteinMid} g of protein daily (currently ~${args.est_protein_g} g).`);
   else weeklyActions.push(`Maintain ${proteinTarget.low_g}–${proteinTarget.high_g} g protein daily.`);
   weeklyActions.push(`Add strength training ${reco.strength_sessions_per_week}× weekly.`);
-  weeklyActions.push(`Hydrate to ~${hydrationTargetL} L per day.`);
+  weeklyActions.push(`Hydrate within the ${hydrationRangeLowL}–${hydrationRangeHighL} L/day optimal range.`);
   weeklyActions.push("Add vegetables to two meals daily.");
   const expectedBenefits = [
     "Improved satiety and fewer cravings",

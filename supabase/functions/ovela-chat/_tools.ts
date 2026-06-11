@@ -1177,11 +1177,11 @@ export function nutritionAssessment(args: {
         closes_pct_of_weekly_gap: 0,
       };
     }
-    if (hydrationGapL != null && hydrationGapL > 0.6) {
+    if (hydrationOpportunityMlLow > 0) {
       return {
-        title: `Increase hydration by ${hydrationGapL} L/day`,
-        action: "500 ml on waking, 500 ml mid-morning, 500 ml mid-afternoon.",
-        expected_benefits: ["Energy stability", "Cognitive clarity", "Fewer false hunger cues"],
+        title: `Hydration opportunity: ${hydrationOpportunityMlLow}-${hydrationOpportunityMlHigh} ml/day towards optimal range`,
+        action: `Add 250-500 ml on waking, 250-500 ml mid-morning, 250-500 ml mid-afternoon. Optimal range for your profile: ${hydrationRangeLowL}-${hydrationRangeHighL} L/day.`,
+        expected_benefits: ["Improved energy stability", "Better concentration", "Improved training recovery", "Reduced false hunger signals"],
         closes_pct_of_weekly_gap: 0,
       };
     }

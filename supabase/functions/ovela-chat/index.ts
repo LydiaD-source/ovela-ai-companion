@@ -1372,11 +1372,8 @@ After any tool call, present results conversationally (1 short paragraph + key b
       console.log("✅ Isabella (Ovela) ready – brand personality active", { clientId, guideSource, brandTemplateId: clientId, crmSubmitted });
       
       if (!finalMessage) {
-        console.error("No assistant text extracted from response");
-        return new Response(JSON.stringify({ success: false, message: "No response generated", data: {} }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
+        console.error("No assistant text extracted from response — sending graceful continuation");
+        finalMessage = "I'm just finishing the last step of your assessment — could you send your message again, or type 'continue' so I can complete your report?";
       }
       
       return new Response(JSON.stringify({ 

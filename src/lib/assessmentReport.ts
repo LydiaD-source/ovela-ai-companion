@@ -685,7 +685,7 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     `Protein: ${t.protein_g?.low_g ?? '—'}–${t.protein_g?.high_g ?? '—'} g\n` +
     `Carbohydrates: ${t.carbs_g?.low_g ?? '—'}–${t.carbs_g?.high_g ?? '—'} g\n` +
     `Fat: ${t.fat_g?.low_g ?? '—'}–${t.fat_g?.high_g ?? '—'} g\n` +
-    `Hydration: ~${t.hydration_l ?? '—'} L`, y);
+    `Hydration optimal range: ${data.hydration_status?.optimal_range_l?.low ?? t.hydration_l ?? '—'}–${data.hydration_status?.optimal_range_l?.high ?? t.hydration_l ?? '—'} L/day (activity-scaled)`, y);
   y += 6;
 
   // Weekly protein gap callout

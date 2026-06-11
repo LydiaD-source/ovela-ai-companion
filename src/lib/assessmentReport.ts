@@ -637,6 +637,50 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y += 4;
   }
 
+  // 4c · Hydration Status (activity-scaled range, status band, opportunity, efficiency)
+  const hs = data.hydration_status;
+  if (hs) {
+    y = ensureSpace(doc, y, 80);
+    y = sectionTitle(doc, L(lang, 'Hydration Status'), y);
+    const rangeStr = `${hs.optimal_range_l?.low}–${hs.optimal_range_l?.high} L/day`;
+    const currentStr = hs.current_l != null ? `~${hs.current_l} L/day` : 'Not reported';
+    y = paragraph(doc, `Current intake: ${currentStr}`, y, { size: 10 });
+    y = paragraph(doc, `Estimated optimal range: ${rangeStr}`, y, { size: 10 });
+    y = paragraph(doc, `Status: ${hs.status_label}${hs.percent_of_midpoint != null ? ` (${hs.percent_of_midpoint}% of midpoint)` : ''}`, y, { size: 10 });
+    if (hs.opportunity) {
+      y = ensureSpace(doc, y, 40);
+      doc.setFillColor('#f7f3e6');
+      doc.rect(40, y - 8, 515, 16, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(NAVY);
+      doc.text(hs.opportunity.headline, 48, y + 3);
+      y += 16;
+      y = paragraph(doc, hs.opportunity.narrative, y + 4, { size: 9 });
+      if ((hs.opportunity.potential_benefits || []).length) {
+        for (const b of hs.opportunity.potential_benefits) {
+          y = ensureSpace(doc, y, 12);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(INK);
+          doc.text(`✓ ${b}`, 48, y); y += 12;
+        }
+      }
+    }
+    if (hs.efficiency) {
+      y = ensureSpace(doc, y, 28);
+      y = paragraph(doc, `Hydration Efficiency Score: ${hs.efficiency.score}/100`, y, { size: 10 });
+      for (const d of (hs.efficiency.drivers || [])) {
+        y = ensureSpace(doc, y, 12);
+        y = paragraph(doc, `· ${d}`, y, { color: MUTED, size: 8 });
+      }
+    }
+    if (hs.symptom_load && hs.symptom_load !== 'not_reported') {
+      const list = (hs.symptoms || []).map((s: any) => `${String(s.symptom).replace(/_/g,' ')} (${s.frequency})`).join(', ');
+      y = ensureSpace(doc, y, 18);
+      y = paragraph(doc, `Hydration symptom check (${hs.symptom_load}): ${list}`, y, { color: MUTED, size: 8 });
+    }
+    y += 8;
+  }
+
+
+
 
 
 

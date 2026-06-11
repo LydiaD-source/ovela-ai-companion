@@ -932,7 +932,28 @@ export function nutritionAssessment(args: {
   if (args.sugar_snacks)   fatScore = Math.min(fatScore, 72);
   if (args.low_vegetables) fatScore = Math.max(40, fatScore - 8);
   fatScore = Math.max(35, Math.min(100, fatScore));
-  const hydrationScore = score(args.est_hydration_l ?? null, hydrationTargetL, 0.2);
+  // Hydration uses a tolerant band, not a single rigid target. Optimal band
+  // is 28-33 ml/kg calculation weight (acceptable down to ~24 ml/kg). This
+  // avoids penalising older adults who drink 1.8-2.2 L/day.
+  const hydrationOptimalLow = Math.round((calcWeight * 0.028) * 10) / 10;
+  const hydrationAcceptableLow = Math.round((calcWeight * 0.024) * 10) / 10;
+  const hydrationBand = { acceptable_l: hydrationAcceptableLow, optimal_low_l: hydrationOptimalLow, optimal_high_l: hydrationTargetL };
+  const hydrationScore = (() => {
+    const v = args.est_hydration_l;
+    if (v == null) return 60;
+    if (v >= hydrationTargetL) return 95;
+    if (v >= hydrationOptimalLow) {
+      const span = Math.max(0.1, hydrationTargetL - hydrationOptimalLow);
+      return 85 + Math.round(((v - hydrationOptimalLow) / span) * 10);
+    }
+    if (v >= hydrationAcceptableLow) {
+      const span = Math.max(0.1, hydrationOptimalLow - hydrationAcceptableLow);
+      return 70 + Math.round(((v - hydrationAcceptableLow) / span) * 14);
+    }
+    if (v >= hydrationAcceptableLow * 0.75) return 50;
+    if (v >= hydrationAcceptableLow * 0.5) return 35;
+    return 25;
+  })();
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
        - (args.irregular_meals ? 10 : 0) - (args.low_vegetables ? 10 : 0));

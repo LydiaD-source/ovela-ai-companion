@@ -277,6 +277,10 @@ const Home = () => {
   // Launch an assessment from the homepage AssessmentsSection.
   // Seeds Isabella's context, opens chat, scrolls to it.
   const launchAssessment = useCallback((payload: AssessmentLaunchPayload) => {
+    // Wipe any prior chat so the new assessment starts cleanly with its own
+    // greeting, instead of resuming the previous (possibly different) flow.
+    try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
+    window.dispatchEvent(new Event('isabella:reset'));
     (window as any).__ISABELLA_CTX__ = {
       tool_context: payload.tool_context,
       authority_topic: payload.authority_topic,

@@ -856,6 +856,10 @@ export function nutritionAssessment(args: {
   energy_level?: number;          // 1–10 daily energy self-rating
   stress_level?: number;          // 1–10 average over last 30 days
   morning_recovery?: number;      // 1–10 how recovered the user feels on waking
+  // v2.2 — Hydration intelligence
+  hydration_symptoms?: Array<{ symptom?: "dry_mouth" | "afternoon_fatigue" | "headaches" | "dark_urine"; frequency?: "never" | "sometimes" | "often" }>;
+  electrolytes_use?: boolean;
+  heavy_sweat?: boolean;
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";

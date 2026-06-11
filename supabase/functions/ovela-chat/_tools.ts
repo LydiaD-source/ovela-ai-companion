@@ -955,6 +955,10 @@ export function nutritionAssessment(args: {
     if (v >= hydrationAcceptableLow * 0.5) return 35;
     return 25;
   })();
+  if (args.est_hydration_l != null) {
+    const deficit = hydrationAcceptableLow - args.est_hydration_l;
+    hydrationGapL = deficit > 0 ? Math.round(deficit * 10) / 10 : 0;
+  }
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
        - (args.irregular_meals ? 10 : 0) - (args.low_vegetables ? 10 : 0));

@@ -93,7 +93,15 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [emailInputMode, setEmailInputMode] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    // Auto-detect from browser locale on first load. User can still override
+    // via the language menu. Falls back to empty (= server default English).
+    if (typeof navigator === 'undefined') return '';
+    const nav = (navigator.language || '').toLowerCase();
+    const base = nav.split('-')[0];
+    const match = LANGUAGES.find(l => l.code && l.code.toLowerCase().startsWith(base));
+    return match?.code || '';
+  });
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [shownByCategory, setShownByCategory] = useState<Record<string, string[]>>(persisted?.shownByCategory || {});
   const [pendingAttachments, setPendingAttachments] = useState<IsabellaAttachment[]>([]);

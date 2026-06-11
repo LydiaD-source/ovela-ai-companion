@@ -2095,6 +2095,14 @@ export function nutritionAssessment(args: {
     },
     executive_performance_impact: executivePerformanceImpact,
     long_term_outlook: longTermOutlook,
+    medication_screening: medicationScreening,
+    recovery_cross_reference: recoveryCrossRef,
+    biological_context: biologicalContext.length ? {
+      title: "Factors Influencing Your Results",
+      items: biologicalContext,
+      purpose: "These factors help explain WHY your scores look the way they do — not just what to improve.",
+    } : null,
+    personal_profile_snapshot: personalProfileSnapshot,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

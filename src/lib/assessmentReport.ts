@@ -637,6 +637,70 @@ function buildNutrition(doc: jsPDF, data: any, lang: AssessmentLang = DEFAULT_LA
     y += 4;
   }
 
+  // 4b-2 · Personal Profile Snapshot — "who Isabella is coaching"
+  const pps = data.personal_profile_snapshot;
+  if (pps?.headline) {
+    y = ensureSpace(doc, y, 50);
+    y = sectionTitle(doc, L(lang, 'Personal Profile Snapshot'), y);
+    y = paragraph(doc, pps.headline, y, { size: 10 });
+    const extras: string[] = [];
+    if (pps.appetite_pattern) extras.push(`Appetite: ${String(pps.appetite_pattern).replace(/_/g,' ')}`);
+    if (pps.cooking_skill) extras.push(`Cooking: ${pps.cooking_skill}`);
+    if (pps.time_budget) extras.push(`Time: ${String(pps.time_budget).replace(/_/g,' ')}`);
+    if (extras.length) y = paragraph(doc, extras.join(' · '), y, { color: MUTED, size: 9 });
+    if (pps.notes) y = paragraph(doc, `Notes: ${pps.notes}`, y, { color: MUTED, size: 9 });
+    y = paragraph(doc, pps.purpose, y, { color: MUTED, size: 7 });
+    y += 6;
+  }
+
+  // 4b-3 · Medication Screening (context only)
+  const meds = data.medication_screening;
+  if (meds) {
+    y = ensureSpace(doc, y, 40);
+    y = sectionTitle(doc, L(lang, 'Medication Context'), y);
+    const cats = (meds.categories || []).map((c: string) => c.replace(/_/g,' ')).join(', ');
+    y = paragraph(doc, `Reported: ${String(meds.reported).replace(/_/g,' ')}${cats ? ` · Categories: ${cats}` : ''}`, y, { size: 10 });
+    y = paragraph(doc, meds.note, y, { color: MUTED, size: 9 });
+    y = paragraph(doc, meds.disclaimer, y, { color: MUTED, size: 7 });
+    y += 6;
+  }
+
+  // 4b-4 · Recovery Cross-Reference
+  const rxRef = data.recovery_cross_reference;
+  if (rxRef) {
+    y = ensureSpace(doc, y, 40);
+    y = sectionTitle(doc, L(lang, 'Recovery & Resilience Cross-Reference'), y);
+    if (rxRef.completed) {
+      const sc = rxRef.scores || {};
+      const parts: string[] = [];
+      if (sc.recovery_capacity != null) parts.push(`Recovery capacity ${sc.recovery_capacity}`);
+      if (sc.resilience != null) parts.push(`Resilience ${sc.resilience}`);
+      if (sc.executive_wellness != null) parts.push(`Executive wellness ${sc.executive_wellness}`);
+      if (sc.burnout_risk) parts.push(`Burnout risk: ${sc.burnout_risk}`);
+      if (parts.length) y = paragraph(doc, parts.join(' · '), y, { size: 10 });
+      y = paragraph(doc, rxRef.interpretation, y, { color: MUTED, size: 9 });
+    } else {
+      y = paragraph(doc, rxRef.recommendation, y, { size: 10 });
+    }
+    y += 6;
+  }
+
+  // 4b-5 · Factors Influencing Your Results (Biological Context)
+  const bio = data.biological_context;
+  if (bio?.items?.length) {
+    y = ensureSpace(doc, y, 60);
+    y = sectionTitle(doc, L(lang, bio.title || 'Factors Influencing Your Results'), y);
+    for (const it of bio.items) {
+      y = ensureSpace(doc, y, 22);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(INK);
+      doc.text(`• ${it.factor}`, 48, y); y += 12;
+      y = paragraph(doc, it.influence, y, { color: MUTED, size: 9 });
+    }
+    y = paragraph(doc, bio.purpose, y, { color: MUTED, size: 7 });
+    y += 6;
+  }
+
+
   // 4c · Hydration Status (activity-scaled range, status band, opportunity, efficiency)
   const hs = data.hydration_status;
   if (hs) {

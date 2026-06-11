@@ -860,6 +860,15 @@ export function nutritionAssessment(args: {
   hydration_symptoms?: Array<{ symptom?: "dry_mouth" | "afternoon_fatigue" | "headaches" | "dark_urine"; frequency?: "never" | "sometimes" | "often" }>;
   electrolytes_use?: boolean;
   heavy_sweat?: boolean;
+  // v2.3 — Personal context & companion intelligence
+  medications_affecting_metabolism?: "no" | "yes" | "prefer_not_to_say";
+  medication_categories?: Array<"blood_pressure" | "thyroid" | "diabetes" | "digestive" | "corticosteroids" | "hormonal" | "other" | "unsure">;
+  recovery_assessment_completed?: boolean;
+  recovery_scores_from_user?: { recovery_capacity?: number; resilience?: number; executive_wellness?: number; burnout_risk?: "low" | "moderate" | "elevated" };
+  appetite_pattern?: "low" | "normal" | "high" | "irregular";
+  food_dislikes_notes?: string;
+  cooking_skill?: "beginner" | "intermediate" | "advanced";
+  personal_notes?: string; // free-text Isabella captured to remember the person (lifestyle/personality cues)
 }) {
   const weight = Math.max(35, Math.min(args.weight_kg || 70, 250));
   const goal: NutritionGoal = (args.goal as NutritionGoal) || "energy";
@@ -1800,7 +1809,83 @@ export function nutritionAssessment(args: {
     return { meals, total_actual_g: totalActual, total_target_g: totalTarget, total_gap_g: totalGap };
   })();
 
+  // ── Medication screening (context, NOT diagnosis) ───────────────────
+  const medCats = (args.medication_categories ?? []).filter(Boolean);
+  const medicationScreening = (args.medications_affecting_metabolism || medCats.length > 0) ? {
+    reported: args.medications_affecting_metabolism ?? (medCats.length > 0 ? "yes" : "no"),
+    categories: medCats,
+    note: (args.medications_affecting_metabolism === "yes" || medCats.length > 0)
+      ? "Current medication use may influence assessment results. Some medications can affect water balance, digestion, appetite, body composition, and recovery — please interpret results with that context, and discuss with your prescribing clinician before changing diet or hydration."
+      : args.medications_affecting_metabolism === "prefer_not_to_say"
+      ? "Medication information not provided — results are interpreted without that context."
+      : "No medications affecting metabolism reported.",
+    disclaimer: "Educational only. Isabella does not prescribe, adjust or comment on medications.",
+  } : null;
 
+  // ── Recovery & Resilience cross-reference ───────────────────────────
+  const rxScores = args.recovery_scores_from_user || {};
+  const recoveryCrossRef = args.recovery_assessment_completed === true ? {
+    completed: true,
+    scores: {
+      recovery_capacity: rxScores.recovery_capacity ?? null,
+      resilience: rxScores.resilience ?? null,
+      executive_wellness: rxScores.executive_wellness ?? null,
+      burnout_risk: rxScores.burnout_risk ?? null,
+    },
+    interpretation: (() => {
+      const rc = rxScores.recovery_capacity;
+      if (rc == null) return "Recovery context noted — share your Recovery & Resilience scores next time to unlock a combined readiness view.";
+      if (rc < 60 && overall >= 70) return `Nutrition habits appear supportive (Nutrition ${overall}). Recovery capacity (${rc}) may currently be the primary limiting factor — prioritise sleep, decompression, and de-load weeks before further nutritional optimisation.`;
+      if (rc >= 75 && overall < 65) return `Recovery capacity (${rc}) is strong; the largest leverage point now is nutrition quality (${overall}).`;
+      return `Nutrition (${overall}) and recovery (${rc}) are tracking together — keep both moving in parallel.`;
+    })(),
+  } : args.recovery_assessment_completed === false ? {
+    completed: false,
+    recommendation: "For a more complete understanding of recovery capacity, stress load and resilience, consider completing the Recovery & Resilience Assessment. It pairs with this report to produce a Combined Readiness view.",
+  } : null;
+
+  // ── Biological Context (WHY results may look the way they do) ───────
+  const biologicalContext: Array<{ factor: string; influence: string }> = [];
+  if (sunMin != null && sunMin < 20) biologicalContext.push({ factor: "Limited sun exposure", influence: "May reduce vitamin D status, circadian anchoring, mood and recovery quality." });
+  if (thyroidFlag === "diagnosed") biologicalContext.push({ factor: "Reported thyroid condition", influence: "Can influence energy, recovery, body weight, muscle preservation and metabolic rate." });
+  else if (thyroidFlag === "symptom_cluster") biologicalContext.push({ factor: "Thyroid symptom cluster", influence: "Pattern worth discussing with your physician — not a diagnosis." });
+  if (medicationScreening && (medicationScreening.reported === "yes" || (medicationScreening.categories?.length ?? 0) > 0)) {
+    biologicalContext.push({ factor: "Current medication use", influence: "May affect water balance, digestion, appetite, body composition and recovery." });
+  }
+  if (digestionScore != null && digestionScore < 70) biologicalContext.push({ factor: "Digestive symptoms", influence: "May reduce nutrient absorption and recovery efficiency." });
+  if ((recoveryCapacity ?? 100) < 65) biologicalContext.push({ factor: "Elevated recovery demands", influence: "Workload, sleep or stress patterns may be drawing on recovery faster than nutrition can rebuild." });
+  if (hydrationStatusBand === "red") biologicalContext.push({ factor: "Inadequate hydration", influence: "Can blunt afternoon energy, cognitive stamina and appetite regulation." });
+  if (args.appetite_pattern === "low") biologicalContext.push({ factor: "Low appetite", influence: "Smaller, more frequent protein-anchored meals may be more sustainable than three large ones." });
+  if (args.appetite_pattern === "irregular") biologicalContext.push({ factor: "Irregular appetite", influence: "Anchoring meals to fixed times (rather than hunger cues) often stabilises intake within 7–10 days." });
+
+  // ── Personal Profile Snapshot — the "image of who Isabella is talking to" ─
+  const bodyArchetype = (() => {
+    if (bmi >= 30) return "Larger frame — strength and joint-friendly progression matter most";
+    if (bmi >= 25) return "Solid frame with room to refine body composition";
+    if (bmi >= 22) return "Athletic / well-proportioned frame";
+    if (bmi >= 18.5) return "Lean frame — muscle preservation is the priority lever";
+    return "Underweight range — calorie sufficiency before optimisation";
+  })();
+  const energyState = subjectiveAvg == null ? "energy not self-reported"
+    : subjectiveAvg >= 75 ? "energy steady"
+    : subjectiveAvg >= 55 ? "energy uneven"
+    : "energy depleted";
+  const stressState = args.stress_level == null ? "stress not reported"
+    : args.stress_level >= 8 ? "high stress load"
+    : args.stress_level >= 5 ? "moderate stress" : "low stress";
+  const activityState = activity === "athlete" ? "athlete-level training"
+    : activity === "active" ? "consistently active"
+    : activity === "moderate" ? "moderately active" : "mostly sedentary";
+  const personalProfileSnapshot = {
+    headline: `${age}-year-old ${gender === "female" ? "woman" : gender === "male" ? "man" : "person"} · ${bodyArchetype} · ${activityState} · ${energyState} · ${stressState}`,
+    body_archetype: bodyArchetype,
+    activity_signature: activityState,
+    appetite_pattern: args.appetite_pattern ?? null,
+    cooking_skill: args.cooking_skill ?? null,
+    time_budget: timeBudget,
+    notes: args.personal_notes ?? null,
+    purpose: "Used by Isabella to remember WHO she is coaching — not a template. Re-read at every follow-up to keep guidance personal.",
+  };
 
   return {
 
@@ -2010,6 +2095,14 @@ export function nutritionAssessment(args: {
     },
     executive_performance_impact: executivePerformanceImpact,
     long_term_outlook: longTermOutlook,
+    medication_screening: medicationScreening,
+    recovery_cross_reference: recoveryCrossRef,
+    biological_context: biologicalContext.length ? {
+      title: "Factors Influencing Your Results",
+      items: biologicalContext,
+      purpose: "These factors help explain WHY your scores look the way they do — not just what to improve.",
+    } : null,
+    personal_profile_snapshot: personalProfileSnapshot,
     disclaimer:
       "This assessment is educational and informational only. It is not a medical diagnosis and should not replace consultation with a qualified healthcare professional.",
   };

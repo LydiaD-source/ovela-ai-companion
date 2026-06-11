@@ -933,32 +933,108 @@ export function nutritionAssessment(args: {
   if (args.sugar_snacks)   fatScore = Math.min(fatScore, 72);
   if (args.low_vegetables) fatScore = Math.max(40, fatScore - 8);
   fatScore = Math.max(35, Math.min(100, fatScore));
-  // Hydration uses a tolerant band, not a single rigid target. Optimal band
-  // is 28-33 ml/kg calculation weight (acceptable down to ~24 ml/kg). This
-  // avoids penalising older adults who drink 1.8-2.2 L/day.
-  const hydrationOptimalLow = Math.round((calcWeight * 0.028) * 10) / 10;
-  const hydrationAcceptableLow = Math.round((calcWeight * 0.024) * 10) / 10;
-  const hydrationBand = { acceptable_l: hydrationAcceptableLow, optimal_low_l: hydrationOptimalLow, optimal_high_l: hydrationTargetL };
-  const hydrationScore = (() => {
-    const v = args.est_hydration_l;
-    if (v == null) return 60;
-    if (v >= hydrationTargetL) return 95;
-    if (v >= hydrationOptimalLow) {
-      const span = Math.max(0.1, hydrationTargetL - hydrationOptimalLow);
-      return 85 + Math.round(((v - hydrationOptimalLow) / span) * 10);
-    }
-    if (v >= hydrationAcceptableLow) {
-      const span = Math.max(0.1, hydrationOptimalLow - hydrationAcceptableLow);
-      return 70 + Math.round(((v - hydrationAcceptableLow) / span) * 14);
-    }
-    if (v >= hydrationAcceptableLow * 0.75) return 50;
-    if (v >= hydrationAcceptableLow * 0.5) return 35;
-    return 25;
-  })();
-  if (args.est_hydration_l != null) {
-    const deficit = hydrationAcceptableLow - args.est_hydration_l;
-    hydrationGapL = deficit > 0 ? Math.round(deficit * 10) / 10 : 0;
+  // ── Hydration v2.2 — activity-scaled OPTIMAL RANGE (not a single target) ─
+  // ml per kg of calculation weight, scaled by activity level. Older / heavier
+  // adults are not pushed to athlete-tier numbers, and athletes are not
+  // under-served with a generic 33 ml/kg formula.
+  const HYDRATION_ML_PER_KG: Record<ActivityLevel, [number, number]> = {
+    sedentary: [0.030, 0.038],
+    moderate:  [0.028, 0.036],
+    active:    [0.025, 0.037],
+    athlete:   [0.030, 0.045],
+  };
+  const [hMlLow, hMlHigh] = HYDRATION_ML_PER_KG[activity];
+  const hydrationRangeLowL = Math.round((calcWeight * hMlLow) * 10) / 10;
+  const hydrationRangeHighL = Math.round((calcWeight * hMlHigh) * 10) / 10;
+  const hydrationMidL = Math.round(((hydrationRangeLowL + hydrationRangeHighL) / 2) * 10) / 10;
+  // Backward-compat fields used elsewhere in the tool.
+  const hydrationTargetL = hydrationMidL;
+  const hydrationOptimalLow = hydrationRangeLowL;
+  const hydrationAcceptableLow = Math.round((hydrationRangeLowL * 0.85) * 10) / 10;
+  const hydrationBand = {
+    optimal_low_l: hydrationRangeLowL,
+    optimal_high_l: hydrationRangeHighL,
+    midpoint_l: hydrationMidL,
+    activity_level: activity,
+    ml_per_kg_low: hMlLow,
+    ml_per_kg_high: hMlHigh,
+    note: `Optimal range scaled to ${activity} activity for ${calcWeight} kg. Older adults drinking ${hydrationRangeLowL}-${(hydrationRangeLowL + 0.3).toFixed(1)} L/day are usually within healthy norms.`,
+  };
+
+  // Status band (relative to optimal midpoint).
+  const hydrationPct = args.est_hydration_l != null && hydrationMidL > 0
+    ? Math.round((args.est_hydration_l / hydrationMidL) * 100) : null;
+  const hydrationStatusBand =
+    hydrationPct == null ? "not_reported" :
+    hydrationPct < 70   ? "red" :
+    hydrationPct < 90   ? "yellow" :
+    hydrationPct <= 120 ? "green" :
+    hydrationPct <= 150 ? "blue" : "over_blue";
+  const hydrationStatusLabel = ({
+    not_reported: "Not reported",
+    red: "Well below optimal range",
+    yellow: "Moderately below optimal range",
+    green: "Within optimal range",
+    blue: "Above optimal range",
+    over_blue: "Significantly above typical intake",
+  } as Record<string, string>)[hydrationStatusBand];
+
+  const hydrationScore =
+    hydrationStatusBand === "green" ? 92 :
+    hydrationStatusBand === "blue" ? 82 :
+    hydrationStatusBand === "yellow" ? 60 :
+    hydrationStatusBand === "red" ? Math.max(25, Math.round((hydrationPct ?? 0) * 0.4)) :
+    hydrationStatusBand === "over_blue" ? 65 :
+    60;
+
+  // Soft-language opportunity (range, not aggressive single number).
+  let hydrationOpportunityMlLow = 0, hydrationOpportunityMlHigh = 0;
+  if (args.est_hydration_l != null && args.est_hydration_l < hydrationRangeLowL) {
+    const lowGapMl = Math.round((hydrationRangeLowL - args.est_hydration_l) * 1000);
+    hydrationOpportunityMlLow = Math.max(250, Math.round(lowGapMl / 100) * 100);
+    hydrationOpportunityMlHigh = Math.min(1500, hydrationOpportunityMlLow + 500);
   }
+  hydrationGapL = args.est_hydration_l != null
+    ? Math.max(0, Math.round((hydrationRangeLowL - args.est_hydration_l) * 10) / 10)
+    : null;
+
+  // Symptom check (drives clinical relevance of any hydration gap).
+  const hydSymList = (args.hydration_symptoms ?? []).filter(s => s && s.frequency);
+  const oftenSym = hydSymList.filter(s => s.frequency === "often").length;
+  const someSym = hydSymList.filter(s => s.frequency === "sometimes").length;
+  const hydrationSymptomLoad =
+    hydSymList.length === 0 ? "not_reported" :
+    oftenSym >= 2 ? "high" :
+    oftenSym >= 1 ? "moderate" :
+    someSym >= 2 ? "mild" : "minimal";
+
+  // Efficiency score (quality, not just litres).
+  const hydrationEfficiency = (() => {
+    let s = 78;
+    const elec = args.electrolytes_use === true;
+    const sweat = args.heavy_sweat === true;
+    const coffeeCups = args.coffee_cups_per_day ?? 0;
+    const alc = args.alcohol_units_per_week ?? 0;
+    const exerciseSessions = (args.strength_sessions_per_week ?? 0) + (args.cardio_sessions_per_week ?? 0);
+    if (elec && (sweat || exerciseSessions >= 4 || activity === "active" || activity === "athlete")) s += 12;
+    if (sweat && !elec) s -= 10;
+    if (coffeeCups >= 5) s -= 12; else if (coffeeCups >= 4) s -= 6;
+    if (alc > 14) s -= 12; else if (alc > 7) s -= 6;
+    if (hydrationSymptomLoad === "high") s -= 18;
+    else if (hydrationSymptomLoad === "moderate") s -= 10;
+    else if (hydrationSymptomLoad === "mild") s -= 4;
+    else if (hydrationSymptomLoad === "minimal") s += 4;
+    s = Math.max(20, Math.min(100, s));
+    const drivers: string[] = [];
+    if (elec) drivers.push("Electrolyte support in place");
+    if (sweat && !elec) drivers.push("Heavy sweating without electrolyte support");
+    if (coffeeCups >= 4) drivers.push(`${coffeeCups} cups of coffee/day raises fluid turnover`);
+    if (alc > 7) drivers.push(`Alcohol load ~${alc} units/week is mildly dehydrating`);
+    if (hydrationSymptomLoad === "high" || hydrationSymptomLoad === "moderate") drivers.push("Reported dehydration-pattern symptoms");
+    if (!drivers.length) drivers.push("No major efficiency drains detected");
+    return { score: s, drivers };
+  })();
+
   const recoveryScore  = Math.max(30,
     80 - (args.low_protein_breakfast ? 15 : 0) - (args.sugar_snacks ? 10 : 0)
        - (args.irregular_meals ? 10 : 0) - (args.low_vegetables ? 10 : 0));

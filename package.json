@@ -7,9 +7,9 @@
     "predev": "bunx tsx scripts/generate-sitemap.ts",
     "dev": "vite",
     "prebuild": "bunx tsx scripts/generate-sitemap.ts",
-    "build": "vite build && bunx tsx scripts/prerender-localized.ts",
-    "build:dev": "bunx tsx scripts/generate-sitemap.ts && vite build --mode development && bunx tsx scripts/prerender-localized.ts",
+    "build": "vite build",
     "postbuild": "bunx tsx scripts/prerender-localized.ts",
+    "build:dev": "bunx tsx scripts/generate-sitemap.ts && vite build --mode development && bunx tsx scripts/prerender-localized.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },

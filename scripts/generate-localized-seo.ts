@@ -8,7 +8,7 @@
  * Output: src/data/localized-seo.json
  */
 
-import { writeFileSync, mkdirSync } from 'fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { TOPIC_HUBS } from '../src/lib/topicHubsContent';
 import { CATEGORY_META } from '../src/lib/videoCategoryMeta';
@@ -59,14 +59,22 @@ const HUB_SYSTEM = `You are a multilingual SEO copywriter for Ovela Interactive,
 const CAT_SYSTEM = HUB_SYSTEM;
 
 async function localizeHub(hub: typeof TOPIC_HUBS[number], lang: typeof LANGS[number]) {
+  const sectionsSrc = hub.sections.map((s, i) => `  ${i + 1}. ${s.heading}\n     ${s.body}`).join('\n');
+  const subSrc = hub.subSegments.map((s, i) => `  ${i + 1}. ${s.title}\n     ${s.body}`).join('\n');
+
   const prompt = `Generate market-aware localized SEO content for the topic hub "${hub.h1}" in ${lang.name}.
 
 MARKET CONTEXT: ${lang.marketNote}
 
-SOURCE (English, for reference only — DO NOT translate, REWRITE for the target market):
+SOURCE (English, for reference only — DO NOT translate literally, REWRITE for the target market):
 - Tagline: "${hub.tagline}"
 - Hero intro: "${hub.heroIntro}"
-- Topic focus: ${hub.sections.map(s => s.heading).join(' | ')}
+
+SOURCE SECTIONS (you MUST return exactly ${hub.sections.length} sections in the same order, same topic, but rewritten natively):
+${sectionsSrc}
+
+SOURCE SUB-SEGMENTS (you MUST return exactly ${hub.subSegments.length} sub-segments in the same order, same topic, but rewritten natively):
+${subSrc || '  (none)'}
 
 Return JSON with this exact shape:
 {
@@ -74,10 +82,18 @@ Return JSON with this exact shape:
   "seoDescription": "150-160 chars, market-tuned, includes a benefit + CTA verb",
   "tagline": "8-14 words, punchy, native to ${lang.name}",
   "heroIntro": "2-3 sentences (60-90 words), market-tuned, NOT a literal translation",
+  "sections": [
+    { "heading": "native heading", "body": "100-180 words, native register, same topic as source #N, rewritten not translated" }
+  ],
+  "subSegments": [
+    { "title": "native title", "body": "40-80 words, native, same topic as source #N" }
+  ],
   "faqs": [
     { "question": "...", "answer": "..." }
   ]
 }
+
+CRITICAL: "sections" array length MUST equal ${hub.sections.length}. "subSegments" array length MUST equal ${hub.subSegments.length}.
 
 For "faqs", produce 8 native questions a ${lang.name} buyer would actually search/ask in this market — different from a generic translation. Answers should be 2-4 sentences each, specific, no fluff. Use the proper conventions of ${lang.name} (e.g. Catalan must be Catalan, not Spanish).`;
 
@@ -125,40 +141,63 @@ async function runWithRetry<T>(fn: () => Promise<T>, label: string, tries = 3): 
 }
 
 async function main() {
-  const out: any = { hubs: {}, categories: {} };
+  const outPath = resolve('src/data/localized-seo.json');
+  // Merge with existing so partial reruns don't wipe other hubs/categories.
+  const existing = existsSync(outPath)
+    ? JSON.parse(readFileSync(outPath, 'utf-8'))
+    : { hubs: {}, categories: {} };
+  const out: any = { hubs: { ...(existing.hubs || {}) }, categories: { ...(existing.categories || {}) } };
+
+  // CLI: --only=hubs | --only=categories ; --hub=<slug> ; --force (re-generate even if present)
+  const args = process.argv.slice(2);
+  const only = args.find(a => a.startsWith('--only='))?.split('=')[1];
+  const hubFilter = args.find(a => a.startsWith('--hub='))?.split('=')[1];
+  const force = args.includes('--force');
 
   // Hubs
-  for (const hub of TOPIC_HUBS) {
-    out.hubs[hub.slug] = {};
-    console.log(`\n▶ Hub: ${hub.slug}`);
-    // Process langs in parallel for this hub
-    const results = await Promise.all(
-      LANGS.map(async (lang) => {
-        const data = await runWithRetry(() => localizeHub(hub, lang), `${hub.slug}/${lang.code}`);
-        console.log(`  ✓ ${lang.code}`);
-        return [lang.code, data] as const;
-      })
-    );
-    for (const [code, data] of results) out.hubs[hub.slug][code] = data;
+  if (!only || only === 'hubs') {
+    const hubs = hubFilter ? TOPIC_HUBS.filter(h => h.slug === hubFilter) : TOPIC_HUBS;
+    for (const hub of hubs) {
+      const current = out.hubs[hub.slug] || {};
+      console.log(`\n▶ Hub: ${hub.slug}`);
+      const todo = LANGS.filter(l => force || !current[l.code]?.sections);
+      if (todo.length === 0) { console.log('  (up to date)'); out.hubs[hub.slug] = current; continue; }
+      const results = await Promise.all(
+        todo.map(async (lang) => {
+          const data = await runWithRetry(() => localizeHub(hub, lang), `${hub.slug}/${lang.code}`);
+          console.log(`  ✓ ${lang.code}`);
+          return [lang.code, data] as const;
+        })
+      );
+      for (const [code, data] of results) current[code] = data;
+      out.hubs[hub.slug] = current;
+      // Save after each hub so a crash mid-run keeps progress.
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, JSON.stringify(out, null, 2));
+    }
   }
 
   // Categories
-  for (const cat of CATEGORY_META) {
-    out.categories[cat.slug] = {};
-    console.log(`\n▶ Category: ${cat.slug}`);
-    const results = await Promise.all(
-      LANGS.map(async (lang) => {
-        const data = await runWithRetry(() => localizeCategory(cat, lang), `${cat.slug}/${lang.code}`);
-        console.log(`  ✓ ${lang.code}`);
-        return [lang.code, data] as const;
-      })
-    );
-    for (const [code, data] of results) out.categories[cat.slug][code] = data;
+  if (!only || only === 'categories') {
+    for (const cat of CATEGORY_META) {
+      const current = out.categories[cat.slug] || {};
+      console.log(`\n▶ Category: ${cat.slug}`);
+      const todo = LANGS.filter(l => force || !current[l.code]);
+      if (todo.length === 0) { console.log('  (up to date)'); out.categories[cat.slug] = current; continue; }
+      const results = await Promise.all(
+        todo.map(async (lang) => {
+          const data = await runWithRetry(() => localizeCategory(cat, lang), `${cat.slug}/${lang.code}`);
+          console.log(`  ✓ ${lang.code}`);
+          return [lang.code, data] as const;
+        })
+      );
+      for (const [code, data] of results) current[code] = data;
+      out.categories[cat.slug] = current;
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, JSON.stringify(out, null, 2));
+    }
   }
 
-  const outPath = resolve('src/data/localized-seo.json');
-  mkdirSync(dirname(outPath), { recursive: true });
-  writeFileSync(outPath, JSON.stringify(out, null, 2));
   console.log(`\n✅ Wrote ${outPath}`);
 }
 

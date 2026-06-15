@@ -59,14 +59,22 @@ const HUB_SYSTEM = `You are a multilingual SEO copywriter for Ovela Interactive,
 const CAT_SYSTEM = HUB_SYSTEM;
 
 async function localizeHub(hub: typeof TOPIC_HUBS[number], lang: typeof LANGS[number]) {
+  const sectionsSrc = hub.sections.map((s, i) => `  ${i + 1}. ${s.heading}\n     ${s.body}`).join('\n');
+  const subSrc = hub.subSegments.map((s, i) => `  ${i + 1}. ${s.title}\n     ${s.body}`).join('\n');
+
   const prompt = `Generate market-aware localized SEO content for the topic hub "${hub.h1}" in ${lang.name}.
 
 MARKET CONTEXT: ${lang.marketNote}
 
-SOURCE (English, for reference only — DO NOT translate, REWRITE for the target market):
+SOURCE (English, for reference only — DO NOT translate literally, REWRITE for the target market):
 - Tagline: "${hub.tagline}"
 - Hero intro: "${hub.heroIntro}"
-- Topic focus: ${hub.sections.map(s => s.heading).join(' | ')}
+
+SOURCE SECTIONS (you MUST return exactly ${hub.sections.length} sections in the same order, same topic, but rewritten natively):
+${sectionsSrc}
+
+SOURCE SUB-SEGMENTS (you MUST return exactly ${hub.subSegments.length} sub-segments in the same order, same topic, but rewritten natively):
+${subSrc || '  (none)'}
 
 Return JSON with this exact shape:
 {
@@ -74,10 +82,18 @@ Return JSON with this exact shape:
   "seoDescription": "150-160 chars, market-tuned, includes a benefit + CTA verb",
   "tagline": "8-14 words, punchy, native to ${lang.name}",
   "heroIntro": "2-3 sentences (60-90 words), market-tuned, NOT a literal translation",
+  "sections": [
+    { "heading": "native heading", "body": "100-180 words, native register, same topic as source #N, rewritten not translated" }
+  ],
+  "subSegments": [
+    { "title": "native title", "body": "40-80 words, native, same topic as source #N" }
+  ],
   "faqs": [
     { "question": "...", "answer": "..." }
   ]
 }
+
+CRITICAL: "sections" array length MUST equal ${hub.sections.length}. "subSegments" array length MUST equal ${hub.subSegments.length}.
 
 For "faqs", produce 8 native questions a ${lang.name} buyer would actually search/ask in this market — different from a generic translation. Answers should be 2-4 sentences each, specific, no fluff. Use the proper conventions of ${lang.name} (e.g. Catalan must be Catalan, not Spanish).`;
 

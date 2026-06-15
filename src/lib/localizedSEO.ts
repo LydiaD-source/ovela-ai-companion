@@ -11,6 +11,10 @@ export interface LocalizedHubContent {
   seoDescription: string;
   tagline: string;
   heroIntro: string;
+  /** Optional: localized long-form sections (matches source `sections[]` 1:1). */
+  sections?: { heading: string; body: string }[];
+  /** Optional: localized industry sub-segments (matches source `subSegments[]` 1:1). */
+  subSegments?: { title: string; body: string }[];
   faqs: { question: string; answer: string }[];
 }
 

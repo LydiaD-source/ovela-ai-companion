@@ -46,6 +46,14 @@ const TopicHub: React.FC = () => {
   const seoTitle = loc?.seoTitle || hub.seoTitle;
   const seoDescription = loc?.seoDescription || hub.seoDescription;
   const faqs = loc?.faqs?.length ? loc.faqs : hub.faqs;
+  // Long-form sections + sub-segments: use localized if available and length
+  // matches the source (so headings/order align), otherwise fall back.
+  const sections = loc?.sections && loc.sections.length === hub.sections.length
+    ? loc.sections
+    : hub.sections;
+  const subSegments = loc?.subSegments && loc.subSegments.length === hub.subSegments.length
+    ? loc.subSegments
+    : hub.subSegments;
 
   const videos = matchVideosForHub(hub, 9);
   const featured = videos.slice(0, 6);
@@ -142,7 +150,7 @@ const TopicHub: React.FC = () => {
 
           {/* Long-form sections */}
           <article className="space-y-12 mb-20">
-            {hub.sections.map((s, i) => (
+            {sections.map((s, i) => (
               <section key={i}>
                 <h2 className="font-playfair text-2xl md:text-3xl mb-4 text-champagne-gold">
                   {s.heading}
@@ -155,13 +163,13 @@ const TopicHub: React.FC = () => {
           </article>
 
           {/* Sub-segments */}
-          {hub.subSegments.length > 0 && (
+          {subSegments.length > 0 && (
             <section className="mb-20" aria-labelledby="subseg-heading">
               <h2 id="subseg-heading" className="font-playfair text-2xl md:text-3xl mb-6">
                 Where this applies
               </h2>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {hub.subSegments.map((s) => (
+                {subSegments.map((s) => (
                   <li
                     key={s.title}
                     className="p-6 rounded-xl border border-soft-white/10 bg-soft-white/[0.03]"

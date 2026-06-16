@@ -46,13 +46,27 @@ const VideoDetail: React.FC = () => {
 
   const shortDesc = video.description.split('\n')[0].slice(0, 160);
 
-  const videoSchema = {
+  const videoPageUrl = `https://www.ovelainteractive.com/videos/${video.slug}`;
+  const videoNodeId = `${videoPageUrl}#video`;
+  // Normalize uploadDate to a full ISO-8601 datetime with timezone.
+  // GSC flags date-only or timezone-less values ("Invalid datetime",
+  // "missing timezone"). Drop the field entirely if we have no usable value
+  // rather than emitting an invalid one.
+  const uploadDateISO = (() => {
+    const raw = video.publishedAt;
+    if (!raw) return undefined;
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return undefined;
+    return d.toISOString();
+  })();
+
+  const videoSchema: Record<string, any> = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
+    '@id': videoNodeId,
     name: video.title,
     description: video.description,
     thumbnailUrl: [video.thumbnail],
-    uploadDate: video.publishedAt,
     duration: video.duration,
     contentUrl: video.watchUrl,
     embedUrl: video.embedUrl,
@@ -71,6 +85,7 @@ const VideoDetail: React.FC = () => {
       },
     },
   };
+  if (uploadDateISO) videoSchema.uploadDate = uploadDateISO;
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -92,16 +107,16 @@ const VideoDetail: React.FC = () => {
     })),
   };
 
+  // Reference the main VideoObject via @id instead of inlining a bare
+  // {name,url} VideoObject. Google was extracting each nested object as a
+  // separate VideoObject and flagging them as missing
+  // thumbnailUrl/uploadDate/description/contentUrl.
   const quotesSchema = quotes.length > 0 ? quotes.map((q) => ({
     '@context': 'https://schema.org',
     '@type': 'Quotation',
     text: q.text,
     spokenByCharacter: 'Isabella',
-    isPartOf: {
-      '@type': 'VideoObject',
-      name: video.title,
-      url: `https://www.ovelainteractive.com${langPrefix}/videos/${video.slug}`,
-    },
+    isPartOf: { '@id': videoNodeId },
   })) : [];
 
 

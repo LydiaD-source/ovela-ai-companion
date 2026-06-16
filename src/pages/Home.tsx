@@ -296,7 +296,10 @@ const Home = () => {
 
   return (
     <>
-      {/* SEO Schema for Isabella's Video */}
+      {/* SEO Schema for Isabella's Hero Video.
+          thumbnailUrl MUST be an image (not the video file) and uploadDate
+          MUST be a full ISO-8601 datetime with timezone, otherwise GSC
+          flags the VideoObject as invalid. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -304,9 +307,12 @@ const Home = () => {
             "@context": "https://schema.org",
             "@type": "VideoObject",
             "name": "Isabella — The World's First AI Brand Ambassador",
-            "description": "10-second introduction to Isabella, Ovela Interactive's AI marketing companion.",
-            "thumbnailUrl": `${ISABELLA_VIDEO_URL}#t=0.5`,
-            "uploadDate": new Date().toISOString().split('T')[0],
+            "description": "10-second introduction to Isabella, Ovela Interactive's AI marketing companion and interactive AI host.",
+            "thumbnailUrl": [
+              "https://www.ovelainteractive.com/images/isabella-hero-native.png",
+              ISABELLA_AVATAR_URL
+            ],
+            "uploadDate": "2024-10-01T00:00:00Z",
             "duration": "PT10S",
             "contentUrl": ISABELLA_VIDEO_URL,
             "embedUrl": ISABELLA_VIDEO_URL,
@@ -321,6 +327,7 @@ const Home = () => {
           })
         }}
       />
+
 
       <div>
         {/* Luxury Hero Section */}

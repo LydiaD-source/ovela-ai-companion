@@ -1,0 +1,85 @@
+{
+  "type": "recovery_resilience",
+  "title": "Executive Recovery & Resilience Assessment",
+  "data": {
+    "inputs": {
+      "age": 47,
+      "gender": "male",
+      "height_cm": 178,
+      "weight_kg": 84,
+      "occupation": "CEO / founder",
+      "primary_goal": "prevent_burnout",
+      "work_hours_per_week": 62,
+      "focused_work_hours_per_day": 3,
+      "meeting_hours_per_day": 5,
+      "travel_hours_per_day": 1.5,
+      "works_evenings": true,
+      "works_weekends": true,
+      "pressure_frequency": 8,
+      "responsibility_level": 9,
+      "sleep_hours": 6.2,
+      "sleep_quality": 6,
+      "wakes_refreshed": false,
+      "exercise_sessions_per_week": 3,
+      "exercise_type": "mixed",
+      "takes_recovery_days": true,
+      "outdoor_hours_per_week": 4,
+      "alcohol_units_per_week": 7,
+      "caffeine_per_day": 4,
+      "water_liters_per_day": 1.6,
+      "social_support": 7,
+      "work_life_balance": 4,
+      "stress_level": 7,
+      "energy_level": 5,
+      "motivation_level": 7,
+      "nutrition": {
+        "protein_score": 78,
+        "hydration_score": 62,
+        "recovery_score": 70,
+        "muscle_preservation_score": 75
+      }
+    },
+    "scores": {
+      "executive_wellness": 68,
+      "recovery_capacity": 64,
+      "burnout_risk": "elevated",
+      "combined_resilience_score": 70,
+      "stress_load": 76,
+      "lifestyle_resilience": 66
+    },
+    "workload_profile": {
+      "category": "High-pressure executive",
+      "drift_factors": ["evening work", "weekend work", "<7h sleep"],
+      "weekly_load_index": 8.1
+    },
+    "recovery_profile": {
+      "sleep_band": "below_optimal",
+      "movement_band": "adequate",
+      "outdoor_exposure_band": "low",
+      "notes": "Sleep quantity is the dominant constraint; outdoor minutes are well below the 7h/week resilience threshold."
+    },
+    "lifestyle_profile": {
+      "hydration_band": "yellow",
+      "alcohol_band": "moderate",
+      "caffeine_band": "elevated",
+      "social_support_band": "strong"
+    },
+    "fastest_wins": [
+      "Anchor a 30-minute outdoor walk before 10am, four days a week — directly raises recovery capacity by 6–9 points.",
+      "Cap caffeine at three cups by 2pm to protect sleep depth.",
+      "Block one no-meeting morning per week for focused work to lower pressure_frequency."
+    ],
+    "seven_day_plan": {
+      "monday": "Outdoor walk 30 min · 2L water · last coffee by 2pm",
+      "tuesday": "Strength session · 7h sleep window blocked",
+      "wednesday": "No-meeting morning · 20-min decompression walk after 5pm",
+      "thursday": "Outdoor walk 30 min · alcohol-free",
+      "friday": "Strength + mobility · 7h sleep window",
+      "saturday": "60 min outdoor + family time · alcohol cap 2 units",
+      "sunday": "Active recovery walk · weekly review · phone off after 9pm"
+    },
+    "personal_profile_snapshot": "47-year-old founder, high responsibility, chronic mild sleep debt, undertrained outdoor exposure, strong social support. Burnout risk is elevated but reversible with sleep + outdoor + caffeine timing levers.",
+    "closing_recommendation": "Your recovery and resilience score suggests several opportunities to improve stress adaptation, energy management, and long-term performance. This assessment is educational only. If symptoms persist or are affecting your quality of life, consider a comprehensive executive wellness evaluation through WellneSpirit.",
+    "disclaimer": "This assessment is educational and informational only. It is not a medical diagnosis, psychological diagnosis, or burnout diagnosis. It should not replace consultation with a qualified healthcare professional."
+  }
+}

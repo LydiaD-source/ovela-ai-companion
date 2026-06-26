@@ -1,0 +1,39 @@
+# Ovela Interactive
+
+> Ovela Interactive is an AI-powered marketing studio building humanlike AI digital employees — led by Isabella, an interactive AI ambassador for clinics, real estate, hotels, spas and wellness brands.
+
+## Pages
+
+- [Home](/): Overview of Ovela Interactive and Isabella, the AI ambassador.
+- [About](/about): Who we are, mission, and the team behind Ovela.
+- [Projects](/projects): Featured AI digital employee deployments and case studies.
+- [Interactive](/interactive): Live interactive demos with Isabella.
+- [Videos](/videos): Video library of Isabella in action across industries.
+- [Partner](/partner): Partnership program for agencies and brands.
+- [Pricing](/pricing): Plans and pricing for AI digital employees.
+- [Contact](/contact): Get in touch with the Ovela team.
+- [Ecosystem](/ecosystem): The connected brand ecosystem powered by Ovela.
+
+## Industries
+
+- [Clinics](/industries/clinics): AI receptionists for clinics and medical practices.
+- [Real Estate](/industries/real-estate): AI property presenters for real estate agencies.
+- [Wellness](/industries/wellness): AI concierges for wellness, spa and hotel brands.
+
+## Topic Hubs
+
+- [AI Digital Employees](/topics/ai-digital-employees): What AI digital employees are and how they work.
+- [AI Receptionist](/topics/ai-receptionist): Multilingual AI receptionists, always on.
+- [AI Clinic Receptionist](/topics/ai-clinic-receptionist): AI reception for medical clinics.
+- [AI Property Presenter](/topics/ai-property-presenter): AI listings agent for real estate.
+- [AI Patient Communication](/topics/ai-patient-communication): Patient-facing AI conversations.
+- [After-hours Lead Capture](/topics/after-hours-lead-capture): Never miss an after-hours lead.
+- [Multilingual Customer Communication](/topics/multilingual-customer-communication): Native-feel conversations in 7+ languages.
+- [AI for Wellness Clinics](/topics/ai-for-wellness-clinics): AI in wellness and longevity clinics.
+- [Digital Concierge for Hotels & Spa](/topics/digital-concierge-hotels-spa): AI concierge for hospitality.
+- [Executive Burnout Recovery](/topics/executive-burnout-recovery): Recovery and resilience for executives.
+- [Executive Wellness Programs](/topics/executive-wellness-programs): Wellness programs for leadership teams.
+
+## Optional
+
+- [WellnessGeni](/wellnessgeni): WellnessGeni — Isabella's wellness coaching surface.

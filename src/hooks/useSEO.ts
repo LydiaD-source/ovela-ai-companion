@@ -90,7 +90,7 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
     const xDefault = document.createElement('link');
     xDefault.rel = 'alternate';
     xDefault.hreflang = 'x-default';
-    xDefault.href = pageUrl;
+    xDefault.href = buildUrl('en');
     document.head.appendChild(xDefault);
 
     // 8. Update title if provided

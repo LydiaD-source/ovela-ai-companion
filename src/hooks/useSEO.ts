@@ -25,14 +25,20 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
   const currentLang = i18n.language?.split('-')[0] || 'en'; // Normalize 'en-US' to 'en'
 
   useEffect(() => {
-    // Normalize path (ensure no trailing slash except homepage)
+    // Normalize path (no trailing slash except homepage)
     const normalizedPath = path === '/' ? '' : path;
-    const pageUrl = `${BASE_URL}${normalizedPath}`;
+    const langPrefix = currentLang === 'en' ? '' : `/${currentLang}`;
+    const pageUrl = `${BASE_URL}${langPrefix}${normalizedPath || (langPrefix ? '' : '/')}`;
+
+    const buildUrl = (lang: string) => {
+      const p = lang === 'en' ? '' : `/${lang}`;
+      return `${BASE_URL}${p}${normalizedPath || (p ? '' : '/')}`;
+    };
 
     // 1. Update HTML lang attribute
     document.documentElement.lang = currentLang;
 
-    // 2. Update or create canonical link (self-referencing)
+    // 2. Update or create canonical link (self-referencing for current language)
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     if (canonical) {
       canonical.href = pageUrl;
@@ -57,12 +63,7 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
     // 4. Update Open Graph locale
     let ogLocale = document.querySelector('meta[property="og:locale"]') as HTMLMetaElement;
     const localeMap: Record<string, string> = {
-      en: 'en_US',
-      es: 'es_ES',
-      fr: 'fr_FR',
-      de: 'de_DE',
-      pt: 'pt_BR',
-      ca: 'ca_ES',
+      en: 'en_US', es: 'es_ES', fr: 'fr_FR', de: 'de_DE', pt: 'pt_BR', ca: 'ca_ES',
     };
     if (ogLocale) {
       ogLocale.content = localeMap[currentLang] || 'en_US';
@@ -76,20 +77,20 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
     // 5. Remove old hreflang tags
     document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
 
-    // 6. Add hreflang tags for all supported languages
+    // 6. Add per-language hreflang tags with proper language-prefixed URLs
     SUPPORTED_LANGUAGES.forEach(lang => {
       const link = document.createElement('link');
       link.rel = 'alternate';
       link.hreflang = lang;
-      link.href = pageUrl; // Same URL - language is handled client-side
+      link.href = buildUrl(lang);
       document.head.appendChild(link);
     });
 
-    // 7. Add x-default hreflang (points to default/English version)
+    // 7. x-default → English
     const xDefault = document.createElement('link');
     xDefault.rel = 'alternate';
     xDefault.hreflang = 'x-default';
-    xDefault.href = pageUrl;
+    xDefault.href = buildUrl('en');
     document.head.appendChild(xDefault);
 
     // 8. Update title if provided

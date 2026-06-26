@@ -24,6 +24,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const STATIC_PATHS = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
   { path: '/about', changefreq: 'monthly', priority: '0.8' },
+  { path: '/ecosystem', changefreq: 'monthly', priority: '0.8' },
   { path: '/projects', changefreq: 'weekly', priority: '0.9' },
   { path: '/partner', changefreq: 'monthly', priority: '0.8' },
   { path: '/pricing', changefreq: 'monthly', priority: '0.8' },

@@ -1461,6 +1461,89 @@ export type Database = {
         }
         Relationships: []
       }
+      iipe_submissions: {
+        Row: {
+          addons: Json
+          callback_url: string | null
+          client_id: string
+          contact: Json
+          created_at: string
+          external_submission_id: string
+          final_public_id: string | null
+          id: string
+          media: Json
+          membership_tier: string | null
+          package: string | null
+          poster_public_id: string | null
+          preview_public_id: string | null
+          production_notes: string | null
+          property: Json
+          raw_payload: Json
+          signature_verified: boolean
+          source_ip: string | null
+          status: string
+          story: Json
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          addons?: Json
+          callback_url?: string | null
+          client_id: string
+          contact?: Json
+          created_at?: string
+          external_submission_id: string
+          final_public_id?: string | null
+          id?: string
+          media?: Json
+          membership_tier?: string | null
+          package?: string | null
+          poster_public_id?: string | null
+          preview_public_id?: string | null
+          production_notes?: string | null
+          property?: Json
+          raw_payload: Json
+          signature_verified?: boolean
+          source_ip?: string | null
+          status?: string
+          story?: Json
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          addons?: Json
+          callback_url?: string | null
+          client_id?: string
+          contact?: Json
+          created_at?: string
+          external_submission_id?: string
+          final_public_id?: string | null
+          id?: string
+          media?: Json
+          membership_tier?: string | null
+          package?: string | null
+          poster_public_id?: string | null
+          preview_public_id?: string | null
+          production_notes?: string | null
+          property?: Json
+          raw_payload?: Json
+          signature_verified?: boolean
+          source_ip?: string | null
+          status?: string
+          story?: Json
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iipe_submissions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invite_links: {
         Row: {
           active: boolean | null

@@ -112,7 +112,7 @@ const NotFound = () => {
       <div className="text-center px-6">
         <h1 className="text-6xl font-bold mb-4" style={{ color: '#E8CFA9', fontFamily: 'Playfair Display, serif' }}>404</h1>
         <p className="text-xl text-white/70 mb-8">Oops! Page not found</p>
-        <p className="text-white/50 mb-8 max-w-md mx-auto">
+        <p className="text-white/80 mb-8 max-w-md mx-auto">
           The page you're looking for doesn't exist or has been moved.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

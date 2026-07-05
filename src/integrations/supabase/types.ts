@@ -279,27 +279,39 @@ export type Database = {
       }
       assessment_trial: {
         Row: {
+          app_source: string | null
           assessment_count: number
           assessment_type: string | null
+          client_id: string | null
           first_assessment_at: string
           language: string | null
           last_assessment_at: string
+          last_launch_at: string | null
+          origin: string | null
           user_key: string
         }
         Insert: {
+          app_source?: string | null
           assessment_count?: number
           assessment_type?: string | null
+          client_id?: string | null
           first_assessment_at?: string
           language?: string | null
           last_assessment_at?: string
+          last_launch_at?: string | null
+          origin?: string | null
           user_key: string
         }
         Update: {
+          app_source?: string | null
           assessment_count?: number
           assessment_type?: string | null
+          client_id?: string | null
           first_assessment_at?: string
           language?: string | null
           last_assessment_at?: string
+          last_launch_at?: string | null
+          origin?: string | null
           user_key?: string
         }
         Relationships: []

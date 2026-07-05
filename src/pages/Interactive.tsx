@@ -73,7 +73,7 @@ const Interactive = () => {
           {/* Alternative Chat Option */}
           {!showAvatar && (
             <div className="text-center mt-8">
-              <p className="text-white/50 mb-4">Or prefer text chat?</p>
+              <p className="text-white/75 mb-4">Or prefer text chat?</p>
               <Button
                 onClick={() => navigate('/?chat=open')}
                 variant="outline"

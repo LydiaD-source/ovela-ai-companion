@@ -397,7 +397,7 @@ export const IsabellaAvatarStream = ({ onStreamingChange }: IsabellaAvatarStream
 
       {/* Session Info */}
       {sessionData && (
-        <div className="mt-4 text-sm text-white/50 text-center">
+        <div className="mt-4 text-sm text-white/75 text-center">
           Session ID: {sessionData.session_id}
         </div>
       )}

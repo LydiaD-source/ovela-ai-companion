@@ -156,7 +156,7 @@ const Ecosystem: React.FC = () => {
 
       {/* Final whisper */}
       <section className="px-6 pb-32">
-        <p className="max-w-3xl mx-auto text-center text-white/40 text-sm tracking-[0.25em] uppercase">
+        <p className="max-w-3xl mx-auto text-center text-white/70 text-sm tracking-[0.25em] uppercase">
           {t('ecosystem.finalNote', 'Selected brands and institutions are invited to join the ecosystem.')}
         </p>
       </section>
@@ -219,7 +219,7 @@ const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onRequest, t }) => {
           >
             {t('ecosystem.partnerCard.requestAccess', 'Request Network Access')}
           </button>
-          <span className="text-white/40 text-xs tracking-wider uppercase">
+          <span className="text-white/70 text-xs tracking-wider uppercase">
             {t('ecosystem.partnerCard.viaIsabella', 'Qualified via Isabella')}
           </span>
         </div>
@@ -306,10 +306,10 @@ const HowOvelaHelpsPartners: React.FC<{ t: ReturnType<typeof useTranslation>['t'
         <p className="text-white/60 max-w-3xl mx-auto leading-relaxed mb-6">
           {t('ecosystem.helpsPartners.description', 'Ovela Interactive was created to help selected brands modernize their digital presence, automate communication, and access premium marketing infrastructure without the complexity and cost typically associated with large-scale production and development.')}
         </p>
-        <p className="text-white/50 max-w-3xl mx-auto leading-relaxed mb-6">
+        <p className="text-white/75 max-w-3xl mx-auto leading-relaxed mb-6">
           {t('ecosystem.helpsPartners.subdescription', 'Through the ecosystem, partners gain access to preferred production terms, strategic collaboration opportunities, intelligent cross-promotion, and custom-built solutions adapted to their operational needs.')}
         </p>
-        <p className="text-white/50 max-w-3xl mx-auto leading-relaxed mb-14">
+        <p className="text-white/75 max-w-3xl mx-auto leading-relaxed mb-14">
           {t('ecosystem.helpsPartners.subdescription2', 'Whether launching an interactive website, integrating an AI team member, producing cinematic media, or automating client communication, Ovela works directly with each partner to create scalable systems designed for long-term growth and premium positioning.')}
         </p>
       </div>

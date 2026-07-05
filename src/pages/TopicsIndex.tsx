@@ -40,6 +40,7 @@ const TopicsIndex: React.FC = () => {
         description="Explore in-depth topic guides on AI receptionists, multilingual customer communication, executive wellness, AI property presenters, and digital employees."
         ogType="website"
         schema={[breadcrumbSchema, itemListSchema] as any}
+        singleCanonical
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-28 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">

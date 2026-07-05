@@ -21,7 +21,7 @@ const BASE_URL = 'https://www.ovelainteractive.com';
 const LANGS = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;
 const TODAY = new Date().toISOString().slice(0, 10);
 
-const STATIC_PATHS = [
+const STATIC_PATHS: Array<{ path: string; changefreq: string; priority: string; englishOnly?: boolean }> = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
   { path: '/about', changefreq: 'monthly', priority: '0.8' },
   { path: '/ecosystem', changefreq: 'monthly', priority: '0.8' },
@@ -30,19 +30,19 @@ const STATIC_PATHS = [
   { path: '/pricing', changefreq: 'monthly', priority: '0.8' },
   { path: '/contact', changefreq: 'monthly', priority: '0.7' },
   { path: '/interactive', changefreq: 'weekly', priority: '0.9' },
-  { path: '/wellnessgeni', changefreq: 'monthly', priority: '0.6' },
-  { path: '/videos', changefreq: 'weekly', priority: '0.9' },
+  { path: '/wellnessgeni', changefreq: 'monthly', priority: '0.6', englishOnly: true },
+  // Video library + category hubs — content not translated per language; canonical is English only
+  { path: '/videos', changefreq: 'weekly', priority: '0.9', englishOnly: true },
   { path: '/industries/clinics', changefreq: 'monthly', priority: '0.8' },
   { path: '/industries/real-estate', changefreq: 'monthly', priority: '0.8' },
   { path: '/industries/wellness', changefreq: 'monthly', priority: '0.8' },
-  // Video category hubs
-  { path: '/videos/category/interactive-marketing', changefreq: 'weekly', priority: '0.8' },
-  { path: '/videos/category/wellness-spa', changefreq: 'weekly', priority: '0.8' },
-  { path: '/videos/category/real-estate', changefreq: 'weekly', priority: '0.8' },
-  { path: '/videos/category/ai-ambassador', changefreq: 'weekly', priority: '0.8' },
-  { path: '/videos/category/studio-overview', changefreq: 'weekly', priority: '0.7' },
-  // Topic hubs (Tier 3 authority pages)
-  { path: '/topics', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/interactive-marketing', changefreq: 'weekly', priority: '0.8', englishOnly: true },
+  { path: '/videos/category/wellness-spa', changefreq: 'weekly', priority: '0.8', englishOnly: true },
+  { path: '/videos/category/real-estate', changefreq: 'weekly', priority: '0.8', englishOnly: true },
+  { path: '/videos/category/ai-ambassador', changefreq: 'weekly', priority: '0.8', englishOnly: true },
+  { path: '/videos/category/studio-overview', changefreq: 'weekly', priority: '0.7', englishOnly: true },
+  // Topic hubs index — index-only page not translated; individual hubs ARE translated
+  { path: '/topics', changefreq: 'weekly', priority: '0.8', englishOnly: true },
   { path: '/topics/ai-receptionist', changefreq: 'weekly', priority: '0.9' },
   { path: '/topics/executive-burnout-recovery', changefreq: 'weekly', priority: '0.9' },
   { path: '/topics/ai-property-presenter', changefreq: 'weekly', priority: '0.9' },

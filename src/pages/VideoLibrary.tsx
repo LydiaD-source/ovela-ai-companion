@@ -42,6 +42,7 @@ const VideoLibrary: React.FC = () => {
         title="AI Digital Employee Video Library | Ovela Interactive"
         description="Hundreds of real demos of AI digital employees, AI receptionists, and multilingual AI representatives across clinics, real estate, wellness, hospitality, and more — updated weekly."
         schema={itemListSchema}
+        singleCanonical
       />
       <div className="min-h-screen bg-charcoal text-soft-white pt-32 pb-24">
         <div className="container mx-auto px-6 max-w-7xl">

@@ -67,16 +67,22 @@ const Welcome = () => {
 
           {/* Cards */}
           <ul className="mt-10 space-y-3">
-            {CARDS.map(({ eyebrow, title, subtitle, href, icon: Icon }) => (
-              <li key={href}>
+            {CARDS.map(({ eyebrow, title, subtitle, href, image, objectPosition }) => (
+              <li key={href + title}>
                 <a
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-start gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-[#D4B76A]/50 hover:bg-white/[0.06]"
+                  className="group flex items-start gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-[#D4B76A]/50 hover:bg-white/[0.06]"
                 >
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#D4B76A]/10 text-[#D4B76A]">
-                    <Icon className="h-5 w-5" />
+                  <span className="mt-0.5 h-14 w-14 shrink-0 overflow-hidden rounded-lg ring-1 ring-[#D4B76A]/30">
+                    <img
+                      src={image}
+                      alt={title}
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                      style={{ objectPosition }}
+                    />
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="block text-[10px] uppercase tracking-[0.25em] text-[#D4B76A]">

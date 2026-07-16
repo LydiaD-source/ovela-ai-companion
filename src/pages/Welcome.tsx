@@ -1,10 +1,14 @@
-import { ArrowUpRight, Building2, HeartPulse, Youtube, Calendar } from "lucide-react";
+import { ArrowUpRight, Calendar } from "lucide-react";
 
-const MIRELLA_URL = "https://iipeexchange.lovable.app";
+const MIRELLA_URL = "https://iipeexchange.lovable.app/mirella";
 const WELLNESPIRIT_NUTRITION = "https://wellspirit-nexus.lovable.app/assessments/nutrition";
 const WELLNESPIRIT_RECOVERY = "https://wellspirit-nexus.lovable.app/assessments/recovery";
 const YOUTUBE_URL = "https://www.youtube.com/channel/UC0ZabJImCcMx5OLJkLU8iwg";
 const BOOK_URL = "https://www.ovelainteractive.com/contact";
+
+const ISABELLA_IMG = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1758802492/1_21_cqlyv4.jpg";
+const MIRELLA_IMG = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1779109383/mirella_face_d8ix2l.png";
+const DARIO_IMG = "https://res.cloudinary.com/di5gj4nyp/image/upload/v1777296226/lucid-origin_artistic_portrait_photography_of_ultra_realistic_portrait_of_a_handsome_masculin-0_1_xelofp.jpg";
 
 const CARDS = [
   {
@@ -12,28 +16,32 @@ const CARDS = [
     title: "Meet Mirella",
     subtitle: "Luxury Property Concierge · International Property Intelligence.",
     href: MIRELLA_URL,
-    icon: Building2,
+    image: MIRELLA_IMG,
+    objectPosition: "center 25%",
   },
   {
     eyebrow: "Wellness · Nutrition",
     title: "Isabella — Nutrition Assessment",
     subtitle: "Complimentary AI-guided nutrition evaluation.",
     href: WELLNESPIRIT_NUTRITION,
-    icon: HeartPulse,
+    image: ISABELLA_IMG,
+    objectPosition: "center 30%",
   },
   {
     eyebrow: "Wellness · Recovery",
     title: "Isabella — Recovery & Resilience",
     subtitle: "Burnout, recovery and resilience assessment.",
     href: WELLNESPIRIT_RECOVERY,
-    icon: HeartPulse,
+    image: ISABELLA_IMG,
+    objectPosition: "center 30%",
   },
   {
     eyebrow: "Watch Them Working",
     title: "See the digital team in action",
     subtitle: "Mirella. Dario. Isabella. No explanation required.",
     href: YOUTUBE_URL,
-    icon: Youtube,
+    image: DARIO_IMG,
+    objectPosition: "center 20%",
   },
 ];
 

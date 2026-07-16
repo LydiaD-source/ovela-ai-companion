@@ -52,8 +52,6 @@ const SiteRoutes = () => (
     <Route path="videos/:slug" element={<VideoDetail />} />
     <Route path="topics" element={<TopicsIndex />} />
     <Route path="topics/:hubSlug" element={<TopicHub />} />
-    <Route path="welcome" element={<Welcome />} />
-    <Route path="welcome/qr" element={<WelcomeQR />} />
 
     <Route path="industries/clinics" element={<Clinics />} />
     <Route path="industries/real-estate" element={<RealEstate />} />
@@ -70,22 +68,32 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <div className="min-h-screen flex flex-col">
-            <Navigation />
-            <main className="flex-1">
-              <Routes>
-                {/* English at root */}
-                <Route path="/">{SiteRoutes()}</Route>
-                {/* Per-language prefixed routes */}
-                {LANG_PREFIXES.map((lang) => (
-                  <Route key={lang} path={`/${lang}`} element={<LangLayout />}>
-                    {SiteRoutes()}
-                  </Route>
-                ))}
-              </Routes>
-            </main>
-          </div>
-          <CookieConsentBanner />
+          <Routes>
+            {/* Standalone card pages — no Ovela chrome, reached only via QR */}
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/welcome/qr" element={<WelcomeQR />} />
+
+            {/* Main Ovela site */}
+            <Route
+              path="/*"
+              element={
+                <div className="min-h-screen flex flex-col">
+                  <Navigation />
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/">{SiteRoutes()}</Route>
+                      {LANG_PREFIXES.map((lang) => (
+                        <Route key={lang} path={`/${lang}`} element={<LangLayout />}>
+                          {SiteRoutes()}
+                        </Route>
+                      ))}
+                    </Routes>
+                  </main>
+                  <CookieConsentBanner />
+                </div>
+              }
+            />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

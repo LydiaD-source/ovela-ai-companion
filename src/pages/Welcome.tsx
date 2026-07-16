@@ -96,7 +96,7 @@ const Welcome = () => {
   return (
     <>
       <SEO
-        title="Welcome to Ovela — Meet the Team That Never Sleeps"
+        title="Welcome to Ovela — Meet the Team That Never Sleeps" path="/welcome"
         description="Meet Ovela's intelligent digital employees. Talk to Mirella, try Isabella's assessments, and watch them work — no explanation required."
       />
 

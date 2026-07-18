@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedPageSEO } from '@/lib/localizedPageSEO';
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;

@@ -48,13 +48,18 @@ export const SEO: React.FC<SEOProps> = ({
   const { i18n } = useTranslation();
   const currentLang = (i18n.language?.split('-')[0] || 'en') as typeof SUPPORTED_LANGUAGES[number];
   const canonicalUrl = singleCanonical ? buildUrl('en', path) : buildUrl(currentLang, path);
+  // Prefer the shared localized SEO map when the caller didn't override,
+  // so the client-side head matches the prerendered per-language head.
+  const localized = getLocalizedPageSEO(path, currentLang);
+  const effectiveTitle = title ?? localized?.title ?? '';
+  const effectiveDescription = description ?? localized?.description ?? '';
   const schemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 
   return (
     <Helmet>
       <html lang={currentLang} />
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      <title>{effectiveTitle}</title>
+      <meta name="description" content={effectiveDescription} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       <link rel="canonical" href={canonicalUrl} />

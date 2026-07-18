@@ -92,11 +92,7 @@ const faqSchema = {
 const Contact = () => {
   const { t } = useTranslation();
 
-  useSEO({
-    path: '/contact',
-    title: 'Contact Ovela | Build Your AI Digital Employee',
-    description: 'Deploy AI representatives for clinics, real estate, and modern businesses. Chat with Isabella for instant answers about AI digital employees, customer communication systems, pricing, and integrations.'
-  });
+  useSEO({ path: '/contact' });
 
   useStructuredData([localBusinessSchema, contactPageSchema, faqSchema], 'contact-structured-data');
 

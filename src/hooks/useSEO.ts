@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedPageSEO } from '@/lib/localizedPageSEO';
 
 // Primary domain - use non-www as canonical (with 301 redirects from www)
 const BASE_URL = 'https://www.ovelainteractive.com';

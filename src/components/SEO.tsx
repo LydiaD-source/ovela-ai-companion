@@ -11,8 +11,10 @@ const LOCALE_MAP: Record<string, string> = {
 interface SEOProps {
   /** Path WITHOUT language prefix, e.g. "/about", "/videos/some-slug", "/" */
   path: string;
-  title: string;
-  description: string;
+  /** Optional — falls back to the shared localized SEO map. */
+  title?: string;
+  /** Optional — falls back to the shared localized SEO map. */
+  description?: string;
   ogImage?: string;
   ogType?: 'website' | 'article' | 'video.other';
   /** Optional JSON-LD schema(s) to inject */

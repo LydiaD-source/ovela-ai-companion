@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedPageSEO } from '@/lib/localizedPageSEO';
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 const SUPPORTED_LANGUAGES = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;
@@ -10,8 +11,10 @@ const LOCALE_MAP: Record<string, string> = {
 interface SEOProps {
   /** Path WITHOUT language prefix, e.g. "/about", "/videos/some-slug", "/" */
   path: string;
-  title: string;
-  description: string;
+  /** Optional — falls back to the shared localized SEO map. */
+  title?: string;
+  /** Optional — falls back to the shared localized SEO map. */
+  description?: string;
   ogImage?: string;
   ogType?: 'website' | 'article' | 'video.other';
   /** Optional JSON-LD schema(s) to inject */
@@ -47,13 +50,18 @@ export const SEO: React.FC<SEOProps> = ({
   const { i18n } = useTranslation();
   const currentLang = (i18n.language?.split('-')[0] || 'en') as typeof SUPPORTED_LANGUAGES[number];
   const canonicalUrl = singleCanonical ? buildUrl('en', path) : buildUrl(currentLang, path);
+  // Prefer the shared localized SEO map when the caller didn't override,
+  // so the client-side head matches the prerendered per-language head.
+  const localized = getLocalizedPageSEO(path, currentLang);
+  const effectiveTitle = title ?? localized?.title ?? '';
+  const effectiveDescription = description ?? localized?.description ?? '';
   const schemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 
   return (
     <Helmet>
       <html lang={currentLang} />
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      <title>{effectiveTitle}</title>
+      <meta name="description" content={effectiveDescription} />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       <link rel="canonical" href={canonicalUrl} />
@@ -69,16 +77,16 @@ export const SEO: React.FC<SEOProps> = ({
       {/* Open Graph */}
       <meta property="og:type" content={ogType} />
       <meta property="og:site_name" content="Ovela Interactive" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={effectiveTitle} />
+      <meta property="og:description" content={effectiveDescription} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:locale" content={LOCALE_MAP[currentLang] || 'en_US'} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content={effectiveTitle} />
+      <meta name="twitter:description" content={effectiveDescription} />
       <meta name="twitter:image" content={ogImage} />
 
       {schemas.map((s, i) => (

@@ -24,7 +24,9 @@ const IndustryPage: React.FC<IndustryPageProps> = ({
 
   return (
     <>
-      <SEO path={path} title={title} description={description} />
+      {/* title/description resolved per-language from the shared
+          localized SEO map — see src/lib/localizedPageSEO.ts */}
+      <SEO path={path} />
       <div className="min-h-screen bg-[hsl(var(--background))] text-soft-white pt-32 pb-24">
         <div className="container mx-auto px-6 max-w-5xl">
           <header className="text-center mb-16">

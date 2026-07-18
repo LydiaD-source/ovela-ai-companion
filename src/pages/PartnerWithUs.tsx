@@ -7,11 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const PartnerWithUs = () => {
   const { t } = useTranslation();
-  useSEO({
-    path: '/partner',
-    title: 'Build Your Own AI Digital Employee | Ovela',
-    description: 'Transform websites, customer communication, and lead engagement into real-time business interaction powered by AI representatives trained specifically for your industry.'
-  });
+  useSEO({ path: '/partner' });
 
   const openChat = () => {
     window.location.href = '/?chat=open';

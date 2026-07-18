@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedPageSEO } from '@/lib/localizedPageSEO';
 
 // Primary domain - use non-www as canonical (with 301 redirects from www)
 const BASE_URL = 'https://www.ovelainteractive.com';
@@ -38,16 +39,20 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
     // 1. Update HTML lang attribute
     document.documentElement.lang = currentLang;
 
-    // 2. Update or create canonical link (self-referencing for current language)
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
-    if (canonical) {
-      canonical.href = pageUrl;
-    } else {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
-      canonical.href = pageUrl;
-      document.head.appendChild(canonical);
-    }
+    // Prefer explicit title/description; otherwise fall back to the
+    // shared localized SEO map so client-side updates never clobber
+    // the prerendered per-language title/description with English.
+    const localized = getLocalizedPageSEO(path, currentLang);
+    const effectiveTitle = title ?? localized?.title;
+    const effectiveDescription = description ?? localized?.description;
+
+    // 2. Update canonical link (remove any prior canonicals — including
+    // the one written by the prerender — so only one ships).
+    document.querySelectorAll('link[rel="canonical"]').forEach((el) => el.remove());
+    const canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    canonical.href = pageUrl;
+    document.head.appendChild(canonical);
 
     // 3. Update Open Graph URL
     let ogUrl = document.querySelector('meta[property="og:url"]') as HTMLMetaElement;
@@ -93,20 +98,20 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
     xDefault.href = buildUrl('en');
     document.head.appendChild(xDefault);
 
-    // 8. Update title if provided
-    if (title) {
-      document.title = title;
+    // 8. Update title
+    if (effectiveTitle) {
+      document.title = effectiveTitle;
     }
 
-    // 9. Update meta description if provided
-    if (description) {
+    // 9. Update meta description
+    if (effectiveDescription) {
       let metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement;
       if (metaDesc) {
-        metaDesc.content = description;
+        metaDesc.content = effectiveDescription;
       } else {
         metaDesc = document.createElement('meta');
         metaDesc.name = 'description';
-        metaDesc.content = description;
+        metaDesc.content = effectiveDescription;
         document.head.appendChild(metaDesc);
       }
     }

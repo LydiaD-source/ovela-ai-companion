@@ -107,11 +107,7 @@ const PlanCard = ({ title, price, setup, description, features, cta, ideal, popu
 );
 
 const Pricing = () => {
-  useSEO({
-    path: '/pricing',
-    title: 'Solutions Pricing | Ovela Interactive',
-    description: 'Pricing built around business growth. AI team members, digital content production, industry packages and corporate programs — scalable solutions from Ovela.',
-  });
+  useSEO({ path: '/pricing' });
 
   useStructuredData(
     [

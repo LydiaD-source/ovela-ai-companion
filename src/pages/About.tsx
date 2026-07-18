@@ -9,11 +9,9 @@ const NAVY = '#0A0A23';
 const chatHref = '/?chat=open';
 
 const About = () => {
-  useSEO({
-    path: '/about',
-    title: 'About Ovela | AI Digital Employees For Modern Businesses',
-    description: 'Ovela builds AI digital employees and AI representatives that communicate with visitors, qualify leads, present services and support customer communication around the clock.'
-  });
+  // Title/description resolved from shared localized SEO map so /es/about,
+  // /fr/about etc. keep their prerendered per-language head after hydration.
+  useSEO({ path: '/about' });
 
   const team = [
     {

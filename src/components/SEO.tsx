@@ -75,16 +75,16 @@ export const SEO: React.FC<SEOProps> = ({
       {/* Open Graph */}
       <meta property="og:type" content={ogType} />
       <meta property="og:site_name" content="Ovela Interactive" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={effectiveTitle} />
+      <meta property="og:description" content={effectiveDescription} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:locale" content={LOCALE_MAP[currentLang] || 'en_US'} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content={effectiveTitle} />
+      <meta name="twitter:description" content={effectiveDescription} />
       <meta name="twitter:image" content={ogImage} />
 
       {schemas.map((s, i) => (

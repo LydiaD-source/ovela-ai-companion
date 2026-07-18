@@ -98,20 +98,20 @@ export const useSEO = ({ path, title, description }: SEOConfig) => {
     xDefault.href = buildUrl('en');
     document.head.appendChild(xDefault);
 
-    // 8. Update title if provided
-    if (title) {
-      document.title = title;
+    // 8. Update title
+    if (effectiveTitle) {
+      document.title = effectiveTitle;
     }
 
-    // 9. Update meta description if provided
-    if (description) {
+    // 9. Update meta description
+    if (effectiveDescription) {
       let metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement;
       if (metaDesc) {
-        metaDesc.content = description;
+        metaDesc.content = effectiveDescription;
       } else {
         metaDesc = document.createElement('meta');
         metaDesc.name = 'description';
-        metaDesc.content = description;
+        metaDesc.content = effectiveDescription;
         document.head.appendChild(metaDesc);
       }
     }

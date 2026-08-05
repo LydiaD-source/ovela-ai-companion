@@ -60,6 +60,14 @@ export const sendBeaconOncePerSession = (
 };
 
 export const trackAppLaunch = () => sendBeaconOncePerSession('app_launch');
-export const trackChatOpen = () => void sendBeacon('chat_open');
+// Short dedupe window guards against React StrictMode double-mounts and
+// multiple chat instances mounting at once.
+let lastChatOpen = 0;
+export const trackChatOpen = () => {
+  const now = Date.now();
+  if (now - lastChatOpen < 10000) return;
+  lastChatOpen = now;
+  void sendBeacon('chat_open');
+};
 export const trackAssessmentStart = (tool: string) =>
   void sendBeacon('assessment_start', { tool });

@@ -35,6 +35,7 @@ Deno.serve(async (req) => {
       language: str(body?.language, 10),
       referrer: str(body?.referrer, 500),
       session_id: str(body?.session_id, 100),
+      tool: str(body?.tool, 100),
       user_agent: str(req.headers.get('user-agent'), 400),
       fired_at: new Date().toISOString(),
     }

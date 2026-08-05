@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
       user_name: 'Ovela Visitor',
       event_type: 'tracking',
       event_name: eventName,
-      description: `Ovela ${eventName} on ${metadata.path ?? '/'}`,
+      description: `Ovela ${eventName}${metadata.tool ? ` [${metadata.tool}]` : ''} on ${metadata.path ?? '/'}`,
       context_mode: 'ovela',
       status: 'new',
       opted_in: false,

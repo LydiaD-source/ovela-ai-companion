@@ -10,6 +10,7 @@ import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
 import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, assessmentReportToBase64, assessmentReportFilename, type AssessmentReport } from '@/lib/assessmentReport';
 import { supabase } from '@/integrations/supabase/client';
+import { trackChatOpen } from '@/lib/usageBeacon';
 import { humanizeForSpeech } from '@/lib/humanizeSpeech';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';

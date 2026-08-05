@@ -15,6 +15,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, professionalServiceSchema, localBusinessSchema, faqSchema } from '@/hooks/useStructuredData';
 import '@/styles/HeroSection.css';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { trackAssessmentStart } from '@/lib/usageBeacon';
 
 // Isabella avatar URLs - centralized constants
 // Desktop: full-body glamour shot. Mobile: face close-up portrait so the D-ID
@@ -189,6 +190,7 @@ const Home = () => {
       // Always start a NEW assessment session — never resume the previous one.
       try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
       window.dispatchEvent(new Event('isabella:reset'));
+      if (toolSeed.tool_context) trackAssessmentStart(toolSeed.tool_context);
       (window as any).__ISABELLA_CTX__ = {
         tool_context: toolSeed.tool_context,
         authority_topic: toolSeed.authority_topic,
@@ -281,6 +283,7 @@ const Home = () => {
     // greeting, instead of resuming the previous (possibly different) flow.
     try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
     window.dispatchEvent(new Event('isabella:reset'));
+    trackAssessmentStart(payload.tool_context);
     (window as any).__ISABELLA_CTX__ = {
       tool_context: payload.tool_context,
       authority_topic: payload.authority_topic,

@@ -35,6 +35,7 @@ Deno.serve(async (req) => {
       language: str(body?.language, 10),
       referrer: str(body?.referrer, 500),
       session_id: str(body?.session_id, 100),
+      tool: str(body?.tool, 100),
       user_agent: str(req.headers.get('user-agent'), 400),
       fired_at: new Date().toISOString(),
     }
@@ -49,7 +50,7 @@ Deno.serve(async (req) => {
       user_name: 'Ovela Visitor',
       event_type: 'tracking',
       event_name: eventName,
-      description: `Ovela ${eventName} on ${metadata.path ?? '/'}`,
+      description: `Ovela ${eventName}${metadata.tool ? ` [${metadata.tool}]` : ''} on ${metadata.path ?? '/'}`,
       context_mode: 'ovela',
       status: 'new',
       opted_in: false,

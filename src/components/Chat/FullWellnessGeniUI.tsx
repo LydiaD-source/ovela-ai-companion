@@ -10,6 +10,7 @@ import VideoCard from '@/components/Chat/VideoCard';
 import { VIDEO_CATEGORIES, getVideosByCategory, getFallbackVideos } from '@/config/videoCatalog';
 import { extractAssessmentReport, downloadAssessmentReport, isMeaningfulAssessmentReport, assessmentReportToBase64, assessmentReportFilename, type AssessmentReport } from '@/lib/assessmentReport';
 import { supabase } from '@/integrations/supabase/client';
+import { trackChatOpen } from '@/lib/usageBeacon';
 import { humanizeForSpeech } from '@/lib/humanizeSpeech';
 
 import { useWebSpeechSTT } from '@/hooks/useWebSpeechSTT';
@@ -171,6 +172,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
       }));
     } catch { /* quota / private mode */ }
   }, [messages, toolCtx, shownByCategory]);
+
+  // Report chat opens to WellnessGeni admin tracking.
+  useEffect(() => {
+    trackChatOpen();
+  }, []);
 
   // Listen for tool launches that happen while the chat is already open.
   useEffect(() => {

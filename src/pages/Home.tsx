@@ -15,6 +15,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, professionalServiceSchema, localBusinessSchema, faqSchema } from '@/hooks/useStructuredData';
 import '@/styles/HeroSection.css';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { trackAssessmentStart } from '@/lib/usageBeacon';
 
 // Isabella avatar URLs - centralized constants
 // Desktop: full-body glamour shot. Mobile: face close-up portrait so the D-ID

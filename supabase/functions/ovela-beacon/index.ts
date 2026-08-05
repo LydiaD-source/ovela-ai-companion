@@ -39,7 +39,14 @@ Deno.serve(async (req) => {
       fired_at: new Date().toISOString(),
     }
 
+    // user_events.user_id is NOT NULL; anonymous Ovela site visitors get a
+    // stable sentinel id so WG admin can group them as anonymous traffic.
+    const ANON_VISITOR_ID = '00000000-0000-0000-0000-00000000ov'.slice(0, 36)
+
     const { error } = await supabase.from('user_events').insert({
+      user_id: '00000000-0000-0000-0000-000000000001',
+      user_email: 'anonymous@ovelainteractive.com',
+      user_name: 'Ovela Visitor',
       event_type: 'tracking',
       event_name: eventName,
       description: `Ovela ${eventName} on ${metadata.path ?? '/'}`,

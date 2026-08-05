@@ -172,6 +172,11 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
     } catch { /* quota / private mode */ }
   }, [messages, toolCtx, shownByCategory]);
 
+  // Report chat opens to WellnessGeni admin tracking.
+  useEffect(() => {
+    trackChatOpen();
+  }, []);
+
   // Listen for tool launches that happen while the chat is already open.
   useEffect(() => {
     const onCtx = (e: Event) => {

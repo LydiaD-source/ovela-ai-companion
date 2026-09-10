@@ -36,11 +36,13 @@ const STATIC_PATHS: Array<{ path: string; changefreq: string; priority: string; 
   { path: '/industries/clinics', changefreq: 'monthly', priority: '0.8' },
   { path: '/industries/real-estate', changefreq: 'monthly', priority: '0.8' },
   { path: '/industries/wellness', changefreq: 'monthly', priority: '0.8' },
-  { path: '/videos/category/interactive-marketing', changefreq: 'weekly', priority: '0.8', englishOnly: true },
-  { path: '/videos/category/wellness-spa', changefreq: 'weekly', priority: '0.8', englishOnly: true },
-  { path: '/videos/category/real-estate', changefreq: 'weekly', priority: '0.8', englishOnly: true },
-  { path: '/videos/category/ai-ambassador', changefreq: 'weekly', priority: '0.8', englishOnly: true },
-  { path: '/videos/category/studio-overview', changefreq: 'weekly', priority: '0.7', englishOnly: true },
+  // Category hubs have fully translated copy (src/data/localized-seo.json) and
+  // are prerendered per language with self-canonicals → list every language.
+  { path: '/videos/category/interactive-marketing', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/wellness-spa', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/real-estate', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/ai-ambassador', changefreq: 'weekly', priority: '0.8' },
+  { path: '/videos/category/studio-overview', changefreq: 'weekly', priority: '0.7' },
   // Topic hubs index — index-only page not translated; individual hubs ARE translated
   { path: '/topics', changefreq: 'weekly', priority: '0.8', englishOnly: true },
   { path: '/topics/ai-receptionist', changefreq: 'weekly', priority: '0.9' },

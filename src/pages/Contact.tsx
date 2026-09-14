@@ -212,7 +212,7 @@ const Contact = () => {
                 {item.href ? (
                   <a href={item.href} className="hover:opacity-80 transition-opacity text-sm" style={{ color: '#D4AF37' }}>{item.value}</a>
                 ) : (
-                  <p className="text-sm whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.value}</p>
+                  <p className="text-sm whitespace-pre-line break-words" style={{ color: 'rgba(255,255,255,0.5)', overflowWrap: 'anywhere' }}>{item.value}</p>
                 )}
               </div>
             ))}

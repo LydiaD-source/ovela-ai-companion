@@ -202,7 +202,7 @@ const Contact = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             {[
               { icon: Phone, title: 'Phone', value: '+376 699 369', href: 'tel:+376699369' },
-              { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com', href: 'mailto:support@ovelainteractive.com' },
+              { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com' },
               { icon: MapPin, title: 'Office', value: 'Avinguda Les Escoles 7\nAD700, Les Escaldes-Engordany\nAndorra' },
               { icon: Clock, title: 'Hours', value: 'Monday–Friday\n9am–6pm CET' },
             ].map((item, i) => (

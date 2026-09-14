@@ -43,7 +43,13 @@ export const ContactMessageForm = () => {
     }
     setErrors({});
     setSending(true);
-    const result = await crmAPI.submitLead({ ...parsed.data, source: 'contact_page' });
+    const result = await crmAPI.submitLead({
+      name: values.name.trim(),
+      email: values.email.trim(),
+      inquiry_type: values.inquiry_type,
+      message: values.message.trim(),
+      source: 'contact_page',
+    });
     setSending(false);
     if (result.success) {
       setSent(true);

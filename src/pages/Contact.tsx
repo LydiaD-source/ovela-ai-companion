@@ -4,6 +4,7 @@ import { Mail, MapPin, Clock, MessageCircle, ArrowRight, Sparkles, Globe, Users,
 import { useSEO } from '@/hooks/useSEO';
 import { useStructuredData } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
+import ContactMessageForm from '@/components/UI/ContactMessageForm';
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 
@@ -179,6 +180,19 @@ const Contact = () => {
       {/* Divider */}
       <div className="max-w-xs mx-auto h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent)' }} />
 
+      {/* Send Us a Message */}
+      <section className="w-full py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="font-playfair text-2xl md:text-3xl text-center mb-3" style={{ color: '#D4AF37' }}>
+            Send Us a Message
+          </h2>
+          <p className="text-center mb-8 text-base" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            Write to us here and we'll reply by email within one business day.
+          </p>
+          <ContactMessageForm />
+        </div>
+      </section>
+
       {/* Direct Contact — Secondary */}
       <section className="w-full py-12 px-4">
         <div className="max-w-3xl mx-auto">
@@ -188,7 +202,7 @@ const Contact = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             {[
               { icon: Phone, title: 'Phone', value: '+376 699 369', href: 'tel:+376699369' },
-              { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com', href: 'mailto:support@ovelainteractive.com' },
+              { icon: Mail, title: 'Email', value: 'support@ovelainteractive.com' },
               { icon: MapPin, title: 'Office', value: 'Avinguda Les Escoles 7\nAD700, Les Escaldes-Engordany\nAndorra' },
               { icon: Clock, title: 'Hours', value: 'Monday–Friday\n9am–6pm CET' },
             ].map((item, i) => (
@@ -198,7 +212,7 @@ const Contact = () => {
                 {item.href ? (
                   <a href={item.href} className="hover:opacity-80 transition-opacity text-sm" style={{ color: '#D4AF37' }}>{item.value}</a>
                 ) : (
-                  <p className="text-sm whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.value}</p>
+                  <p className="text-sm whitespace-pre-line break-words" style={{ color: 'rgba(255,255,255,0.5)', overflowWrap: 'anywhere' }}>{item.value}</p>
                 )}
               </div>
             ))}

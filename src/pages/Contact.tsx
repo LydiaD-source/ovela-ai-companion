@@ -4,6 +4,7 @@ import { Mail, MapPin, Clock, MessageCircle, ArrowRight, Sparkles, Globe, Users,
 import { useSEO } from '@/hooks/useSEO';
 import { useStructuredData } from '@/hooks/useStructuredData';
 import { useTranslation } from 'react-i18next';
+import ContactMessageForm from '@/components/UI/ContactMessageForm';
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 

@@ -179,6 +179,19 @@ const Contact = () => {
       {/* Divider */}
       <div className="max-w-xs mx-auto h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent)' }} />
 
+      {/* Send Us a Message */}
+      <section className="w-full py-12 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="font-playfair text-2xl md:text-3xl text-center mb-3" style={{ color: '#D4AF37' }}>
+            Send Us a Message
+          </h2>
+          <p className="text-center mb-8 text-base" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            Write to us here and we'll reply by email within one business day.
+          </p>
+          <ContactMessageForm />
+        </div>
+      </section>
+
       {/* Direct Contact — Secondary */}
       <section className="w-full py-12 px-4">
         <div className="max-w-3xl mx-auto">

@@ -20,6 +20,15 @@ export default {
 		},
 		extend: {
 			colors: {
+				solution: {
+					DEFAULT: 'hsl(var(--solution-background))',
+					surface: 'hsl(var(--solution-surface))',
+					foreground: 'hsl(var(--solution-foreground))',
+					muted: 'hsl(var(--solution-muted))',
+					border: 'hsl(var(--solution-border))',
+					gold: 'hsl(var(--solution-gold))',
+					cyan: 'hsl(var(--solution-cyan))',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

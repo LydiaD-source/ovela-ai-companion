@@ -65,7 +65,7 @@ const Navigation = () => {
   }, [isOpen]);
 
   return (
-    <nav className="fixed top-0 w-full z-50 pointer-events-none">
+    <nav className={`fixed top-0 w-full pointer-events-none ${isOpen ? 'z-[110]' : 'z-50'}`}>
       <div ref={dropdownRef} className="flex items-center justify-between px-5 py-4 md:px-8">
         {/* Logo */}
         <Link to="/" className="pointer-events-auto flex items-center space-x-2">
@@ -105,7 +105,7 @@ const Navigation = () => {
       {isOpen && (
         <div 
           id="navigation-menu"
-          className="solution-menu fixed right-4 top-16 w-[350px] max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border border-solution-gold/40 bg-solution/95 p-5 text-solution-foreground backdrop-blur-xl pointer-events-auto md:right-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2"
+          className="solution-menu fixed right-4 top-16 w-[350px] max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border border-solution-gold/40 bg-solution p-5 text-solution-foreground pointer-events-auto md:right-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2"
         >
           <p className="mb-2 text-xs uppercase text-solution-muted">{labels[0]}</p>
           <div className="flex flex-col">

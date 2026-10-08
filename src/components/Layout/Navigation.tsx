@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/UI/LanguageSwitcher';
+import { Button } from '@/components/ui/button';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
+  const location = useLocation();
 
   const lang = t('languageCode', { defaultValue: '' }) || (typeof window !== 'undefined' ? (window.location.pathname.split('/').filter(Boolean)[0] || '') : '');
   const langPrefix = ['fr', 'es', 'de', 'pt', 'ca'].includes(lang) ? `/${lang}` : '';
@@ -22,6 +24,24 @@ const Navigation = () => {
     { name: t('nav.contact'), path: `${langPrefix}/contact` },
   ];
 
+  const solutionLabels: Record<string, string[]> = {
+    en: ['Solutions', 'Digital Employees', 'Ovela Digital Cards', 'Business Automation', 'Industry Solutions'],
+    es: ['Soluciones', 'Empleados digitales', 'Ovela Digital Cards', 'Automatización empresarial', 'Soluciones por sector'],
+    fr: ['Solutions', 'Employés numériques', 'Ovela Digital Cards', 'Automatisation d’entreprise', 'Solutions sectorielles'],
+    de: ['Lösungen', 'Digitale Mitarbeiter', 'Ovela Digital Cards', 'Geschäftsautomatisierung', 'Branchenlösungen'],
+    pt: ['Soluções', 'Colaboradores digitais', 'Ovela Digital Cards', 'Automação empresarial', 'Soluções por setor'],
+    ca: ['Solucions', 'Empleats digitals', 'Ovela Digital Cards', 'Automatització empresarial', 'Solucions per sector'],
+  };
+  const labels = solutionLabels[lang] ?? solutionLabels.en;
+  const solutions = [
+    { name: labels[1], path: `${langPrefix}/#meet-team` },
+    { name: labels[2], path: `${langPrefix}/#digital-cards` },
+    { name: labels[3], path: `${langPrefix}/#solutions` },
+    { name: labels[4], path: `${langPrefix}/projects` },
+  ];
+
+  useEffect(() => { setIsOpen(false); }, [location]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -29,19 +49,24 @@ const Navigation = () => {
         setIsOpen(false);
       }
     };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [isOpen]);
 
   return (
-    <nav className="fixed top-0 w-full z-50 pointer-events-none">
-      <div className="flex items-center justify-between" style={{ padding: '20px 30px 30px 30px' }}>
+    <nav className={`fixed top-0 w-full pointer-events-none ${isOpen ? 'z-[110]' : 'z-50'}`}>
+      <div ref={dropdownRef} className="flex items-center justify-between px-5 py-4 md:px-8">
         {/* Logo */}
         <Link to="/" className="pointer-events-auto flex items-center space-x-2">
           {/* Isabella silhouette mark — the yellow-gown figure is part of the
@@ -64,61 +89,38 @@ const Navigation = () => {
         {/* Language Switcher and Hamburger Menu */}
         <div className="flex items-center gap-2 pointer-events-auto">
           <LanguageSwitcher />
-          <button
-            className="p-2 transition-colors duration-200 relative z-50"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative z-50 text-soft-white hover:bg-soft-white/10 hover:text-soft-white [&_svg]:size-7"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
-            style={{ color: 'white' }}
+            aria-expanded={isOpen}
+            aria-controls="navigation-menu"
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+          </Button>
         </div>
-      </div>
-
       {/* Luxury Dropdown Menu */}
       {isOpen && (
         <div 
-          ref={dropdownRef}
-          className="fixed right-4 md:right-8 top-20 w-full md:w-[350px] max-w-[calc(100%-2rem)] pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-300"
-          style={{
-            background: 'rgba(10, 10, 30, 0.9)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid hsl(var(--champagne-gold))',
-            borderRadius: '12px',
-            boxShadow: '0 0 30px rgba(232, 207, 169, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4)'
-          }}
+          id="navigation-menu"
+          className="solution-menu fixed right-4 top-16 w-[350px] max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border border-solution-gold/40 bg-solution p-5 text-solution-foreground pointer-events-auto md:right-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2"
         >
-          <div className="flex flex-col p-4">
-            {navItems.map((item, index) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-                className="relative group py-3 transition-all duration-300"
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: '1.125rem',
-                  lineHeight: '40px',
-                  color: 'hsl(var(--champagne-gold))',
-                  borderBottom: index < navItems.length - 1 ? '1px solid rgba(232, 207, 169, 0.1)' : 'none'
-                }}
-              >
-                <span className="relative inline-block">
-                  {item.name}
-                  <span 
-                    className="absolute bottom-0 left-0 w-0 h-[2px] group-hover:w-full transition-all duration-300"
-                    style={{
-                      background: 'hsl(var(--champagne-gold))',
-                      boxShadow: '0 0 8px hsl(var(--champagne-gold))'
-                    }}
-                  />
-                </span>
-              </Link>
-            ))}
+          <p className="mb-2 text-xs uppercase text-solution-muted">{labels[0]}</p>
+          <div className="flex flex-col">
+            {solutions.map(item => <Button key={item.name} asChild variant="link" className="h-auto justify-start whitespace-normal px-0 py-2 text-left font-playfair text-lg text-solution-gold"><Link to={item.path} onClick={() => setIsOpen(false)}>{item.name}</Link></Button>)}
+          </div>
+          <div className="my-3 border-t border-solution-border" />
+          <div className="grid grid-cols-2 gap-x-3">
+            {navItems.map(item => <Button key={item.path} asChild variant="link" className="h-auto justify-start whitespace-normal px-0 py-2 text-left text-sm text-solution-muted hover:text-solution-foreground"><Link to={item.path} onClick={() => setIsOpen(false)}>{item.name}</Link></Button>)}
+          </div>
+          <div className="mt-3 border-t border-solution-border pt-3">
+            <Button asChild variant="link" className="h-auto w-full justify-between px-0 py-1 text-solution-cyan"><a href="https://iipeexchange.lovable.app/" target="_blank" rel="noopener noreferrer" onClick={() => setIsOpen(false)}>IIPE <ArrowUpRight /></a></Button>
           </div>
         </div>
       )}
+      </div>
     </nav>
   );
 };

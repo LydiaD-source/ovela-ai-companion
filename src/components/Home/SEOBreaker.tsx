@@ -17,9 +17,9 @@ export const SEOBreaker: React.FC = () => {
             lineHeight: '1.8',
           }}
         >
-          Ovela creates AI digital employees designed to communicate with visitors, present services, answer questions, and support businesses around the clock.
+          Ovela Interactive is a digital AI solutions company. Our digital employees help your business communicate around the clock. Our Digital Cards help your people stay connected after every meeting.
           <br /><br />
-          Our AI representatives help clinics, real estate agencies, wellness centers, and premium brands automate communication, qualify leads, and convert website traffic into real client interaction.
+          We also build the intelligence behind IIPE — International Intelligent Property Exchange, an independent property ecosystem. Together, our solutions connect businesses with people before, during and after the conversation.
         </p>
       </div>
     </section>

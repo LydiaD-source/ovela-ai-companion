@@ -50,6 +50,14 @@
     --champagne-gold: 45 79% 66%;
     --gold: 45 79% 66%;
     --shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    --solution-background: 230 35% 5%;
+    --solution-surface: 230 24% 9%;
+    --solution-foreground: 0 0% 96%;
+    --solution-muted: 225 10% 70%;
+    --solution-border: 230 16% 22%;
+    --solution-gold: 42 58% 70%;
+    --solution-cyan: 188 65% 65%;
+    --solution-shadow: 0 18px 60px hsl(230 40% 2% / 0.45);
 
     /* Typography Scale */
     --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -118,6 +126,16 @@
 }
 
 @layer components {
+  .solution-menu {
+    box-shadow: var(--solution-shadow);
+    max-height: calc(100dvh - 76px - env(safe-area-inset-bottom, 0px));
+  }
+
+  .solution-dialog {
+    box-shadow: var(--solution-shadow);
+    max-height: calc(100dvh - 32px);
+  }
+
   /* Brand Gradients */
   .gradient-primary {
     background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));

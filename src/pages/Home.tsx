@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import FullWellnessGeniUI from '@/components/Chat/FullWellnessGeniUI';
 import { LookbookCarousel } from '@/components/Home/LookbookCarousel';
 import { AboutSection } from '@/components/Home/AboutSection';
+import { SolutionsSection } from '@/components/Home/SolutionsSection';
 import { ShowcaseSection } from '@/components/Home/ShowcaseSection';
 import { AssessmentsSection, AssessmentLaunchPayload } from '@/components/Home/AssessmentsSection';
 import { SEOBreaker } from '@/components/Home/SEOBreaker';
@@ -481,6 +482,7 @@ const Home = () => {
         {/* Magazine-Style Sections Below Hero */}
         <LookbookCarousel />
         <AboutSection onChatClick={activateChat} />
+        <SolutionsSection />
         <ShowcaseSection
           injectAfter={{
             0: <AssessmentsSection onLaunch={launchAssessment} />,

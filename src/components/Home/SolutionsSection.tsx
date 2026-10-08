@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { DIGITAL_CARD_PLANS } from '@/config/digitalCards';
 import isabellaPortrait from '@/assets/isabella-hero-avatar-new.webp';
-import cardOverview from '@/assets/digital-cards/01-card-overview.png.asset.json';
+import cardOverview from '@/assets/digital-cards/card-thumbnail-close.png.asset.json';
 
 export const IIPE_URL = 'https://iipeexchange.lovable.app/';
 
@@ -45,7 +45,7 @@ export const SolutionsSection = () => {
           </article>
           <article id="digital-cards" className="flex min-w-0 scroll-mt-20 flex-col rounded-lg border border-solution-gold/50 bg-solution-surface p-6">
             <Link to={`${prefix}/digital-cards`} className="mb-5 block overflow-hidden rounded-md border border-solution-border" aria-label={c[10]}>
-              <img src={cardOverview.url} alt="Ovela Digital Card — fictional Dario Engler profile" className="aspect-[16/9] w-full object-cover object-top" loading="lazy" />
+              <img src={cardOverview.url} alt="Ovela Digital Card — fictional Dario Engler profile" className="aspect-[16/9] w-full object-contain" loading="lazy" />
             </Link>
             <p className="mb-2 text-xs text-solution-gold">02 / Ovela Digital Card</p>
             <h3 className="font-playfair text-2xl leading-tight">{c[7]}</h3>

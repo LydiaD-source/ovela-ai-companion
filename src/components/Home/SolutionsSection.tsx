@@ -56,7 +56,7 @@ export const SolutionsSection = () => {
             <h3 className="font-playfair text-2xl leading-tight">{c[7]}</h3>
             <p className="mt-3 text-sm text-solution-gold">{c[8]}</p>
             <p className="mb-5 mt-3 text-sm leading-relaxed text-solution-muted">{c[9]}</p>
-            <div className="mb-5 flex flex-wrap gap-x-5 gap-y-2 border-t border-solution-border pt-4 text-sm"><span>Basic <strong className="text-solution-gold">€{DIGITAL_CARD_PLANS[0].monthlyPrice}</strong>/{c[26]}</span><span>Pro <strong className="text-solution-gold">€{DIGITAL_CARD_PLANS[1].monthlyPrice}</strong>/{c[26]}</span></div>
+            <div className="mb-5 flex flex-wrap gap-x-5 gap-y-2 border-t border-solution-border pt-4 text-sm"><span>Basic <strong className="text-solution-gold">€{DIGITAL_CARD_PLANS[0].monthlyPrice}</strong>/{c[25]}</span><span>Pro <strong className="text-solution-gold">€{DIGITAL_CARD_PLANS[1].monthlyPrice}</strong>/{c[25]}</span></div>
             <Button variant="link" className={`${actionClass} mt-auto`} onClick={() => setOpen(true)}>{c[10]} <ArrowRight /></Button>
           </article>
           <article id="iipe" className="flex min-w-0 scroll-mt-20 flex-col rounded-lg border border-solution-border bg-solution-surface p-6">
@@ -76,8 +76,8 @@ export const SolutionsSection = () => {
             {DIGITAL_CARD_PLANS.map(plan => (
               <article key={plan.id} className="flex flex-col rounded-lg border border-solution-border p-5">
                 <h3 className="text-lg font-medium">{plan.name}</h3>
-                <p className="mt-3"><strong className="font-playfair text-4xl text-solution-gold">€{plan.monthlyPrice}</strong><span className="text-sm text-solution-muted">/{c[26]}</span></p>
-                <p className="mb-5 mt-1 text-sm text-solution-muted">€{plan.yearlyPrice}/{c[27]}</p>
+                <p className="mt-3"><strong className="font-playfair text-4xl text-solution-gold">€{plan.monthlyPrice}</strong><span className="text-sm text-solution-muted">/{c[25]}</span></p>
+                <p className="mb-5 mt-1 text-sm text-solution-muted">€{plan.yearlyPrice}/{c[26]}</p>
                 <ul className="mb-6 space-y-3 text-sm text-solution-muted">
                   {(plan.id === 'basic' ? [c[15], c[16], c[17], `${plan.profileUpdatesPerMonth} ${c[18]}`] : [c[19], `≤ ${plan.smartUpdatesPerMonth} ${c[20]}`, c[21], c[22]]).map(item => <li key={item} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-solution-gold" /><span>{item}</span></li>)}
                 </ul>
@@ -85,7 +85,7 @@ export const SolutionsSection = () => {
               </article>
             ))}
           </div>
-          <p className="text-center text-sm text-solution-muted">{c[29]}</p>
+          <p className="text-center text-sm text-solution-muted">{c[28]}</p>
         </DialogContent>
       </Dialog>
     </section>

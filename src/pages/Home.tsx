@@ -179,6 +179,15 @@ const Home = () => {
       }
     } catch {}
 
+    if (!toolSeed && toolParam === 'digital-card') {
+      const plan = params.get('plan') === 'pro' ? 'Pro' : 'Basic';
+      toolSeed = {
+        tool_context: 'digital_card_enquiry',
+        authority_topic: plan === 'Pro' ? 'digital_card_pro' : 'digital_card_basic',
+        initialPrompt: `I'm interested in the Ovela Digital Card ${plan} option. Please briefly thank me and offer to note my request and email for your team's follow-up, or give me your direct contact email. No sales agreement or long questionnaire.`,
+      };
+    }
+
     // 1b) URL-driven deep link — same effect as a card click
     if (!toolSeed && toolParam && TOOL_DEEPLINKS[toolParam]) {
       toolSeed = TOOL_DEEPLINKS[toolParam];
@@ -191,7 +200,7 @@ const Home = () => {
       // Always start a NEW assessment session — never resume the previous one.
       try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
       window.dispatchEvent(new Event('isabella:reset'));
-      if (toolSeed.tool_context) trackAssessmentStart(toolSeed.tool_context);
+      if (toolSeed.tool_context && toolSeed.tool_context !== 'digital_card_enquiry') trackAssessmentStart(toolSeed.tool_context);
       (window as any).__ISABELLA_CTX__ = {
         tool_context: toolSeed.tool_context,
         authority_topic: toolSeed.authority_topic,

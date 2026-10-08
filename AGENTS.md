@@ -1,5 +1,5 @@
 # Project architecture
 - Keep the homepage solutions summary and dedicated Digital Card product page separate, with shared pricing and limits tested beside their configuration; this keeps the homepage concise and commercial rules consistent.
 - Link Digital Cards to its dedicated product page; use homepage hash links for other solution discovery and preserve localized URL prefixes so navigation remains consistent.
-- Digital Card calls to action lead to the existing contact form, not a payment or card-creation flow; this avoids implying unimplemented provisioning or delivery.
+- Digital Card pricing calls to action open a plan-specific Isabella enquiry via homepage deep links; reuse the existing CRM contact tool, never payment or card provisioning, so the team retains responsibility for agreements and delivery.
 - Resolve Digital Card asset pointers through the shared hostedAssetUrl helper using the public Lovable hosting origin; embedded previews do not always forward CDN paths. Keep the Vite asset proxy for other relative asset references.

@@ -12,6 +12,7 @@ import actions from '@/assets/digital-cards/actions.png.asset.json';
 import film from '@/assets/digital-cards/film.png.asset.json';
 import audience from '@/assets/digital-cards/audience-agency.png.asset.json';
 import complete from '@/assets/digital-cards/00-complete-card.png.asset.json';
+import { hostedAssetUrl } from '@/lib/hostedAssetUrl';
 
 const DigitalCards = () => {
   const { i18n } = useTranslation();
@@ -21,9 +22,9 @@ const DigitalCards = () => {
   const [selected, setSelected] = useState<{ url: string; title: string } | null>(null);
   useSEO({ path: '/digital-cards', title: `Ovela Digital Cards | ${c[7]}`, description: c[9] });
   const screenshots = [
-    { url: actions.url, title: 'Contact & sharing' },
-    { url: audience.url, title: 'Professional introduction' },
-    { url: film.url, title: 'Featured presentation' },
+    { url: hostedAssetUrl(actions), title: 'Contact & sharing' },
+    { url: hostedAssetUrl(audience), title: 'Professional introduction' },
+    { url: hostedAssetUrl(film), title: 'Featured presentation' },
   ];
   return (
     <div className="min-h-screen bg-solution px-6 pb-16 pt-28 text-solution-foreground">
@@ -38,10 +39,10 @@ const DigitalCards = () => {
         </header>
         <div className="my-10 grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
           <figure className="min-w-0">
-            <Button variant="ghost" className="h-auto w-full overflow-hidden rounded-lg border border-solution-border bg-solution-surface p-0 hover:bg-solution-surface" onClick={() => setSelected({ url: complete.url, title: 'Complete demo card' })} aria-label="View complete demo card">
-              <img src={overview.url} alt="Fictional Dario Engler Digital Card profile and contact actions" className="max-h-[640px] w-full object-contain object-top" />
+            <Button variant="ghost" className="h-auto w-full overflow-hidden rounded-lg border border-solution-border bg-solution-surface p-0 hover:bg-solution-surface" onClick={() => setSelected({ url: hostedAssetUrl(complete), title: 'Complete demo card' })} aria-label="View complete demo card">
+              <img src={hostedAssetUrl(overview)} alt="Fictional Dario Engler Digital Card profile and contact actions" className="max-h-[640px] w-full object-contain object-top" />
             </Button>
-            <figcaption className="mt-3 flex items-center justify-between gap-3 text-xs text-solution-muted"><span>Dario Engler · Fictional demo</span><Button variant="link" className="h-auto p-0 text-xs text-solution-gold" onClick={() => setSelected({ url: complete.url, title: 'Complete demo card' })}>Full card <Expand /></Button></figcaption>
+            <figcaption className="mt-3 flex items-center justify-between gap-3 text-xs text-solution-muted"><span>Dario Engler · Fictional demo</span><Button variant="link" className="h-auto p-0 text-xs text-solution-gold" onClick={() => setSelected({ url: hostedAssetUrl(complete), title: 'Complete demo card' })}>Full card <Expand /></Button></figcaption>
           </figure>
           <section id="plans" className="min-w-0 scroll-mt-24">
             <h2 className="mb-4 font-playfair text-3xl">{c[14]}</h2>

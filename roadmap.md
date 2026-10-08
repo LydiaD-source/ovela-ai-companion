@@ -1,4 +1,5 @@
 # Homepage solutions update
+- [ ] Restore Digital Card image delivery independently of the embedded preview and verify both pages and enlarged screenshots.
 - [x] Add a dedicated Digital Card page with supplied screenshots and current pricing.
 - [x] Replace homepage card illustration with a screenshot and link navigation to the new page.
 - [x] Verify screenshot rendering, pricing and page navigation.

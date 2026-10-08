@@ -68,8 +68,8 @@ class IsabellaAPI {
       } catch { /* storage unavailable */ }
       const uid = userInfo?.user?.id ?? (guestId ? `guest:${guestId}` : 'ovela-guest');
 
-      // Keep only last 10 messages for efficiency
-      const recentHistory = conversationHistory?.slice(-10) || [];
+      // Retain the complete enquiry so all requirements reach the team.
+      const recentHistory = conversationHistory || [];
 
       const { data, error } = await supabase.functions.invoke('ovela-chat', {
         body: {

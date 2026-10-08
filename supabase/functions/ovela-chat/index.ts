@@ -2,6 +2,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { calcReceptionistCost, calcMissedLeads, wellnessAssessmentSuggestion, nutritionAssessment, recoveryResilienceAssessment } from "./_tools.ts";
+import { DIGITAL_CARD_POLICY } from "./digitalCardPolicy.ts";
+import { digitalCardLeadPayload } from "./digitalCardLead.ts";
 
 /**
  * NOTE:
@@ -497,7 +499,7 @@ serve(async (req) => {
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     // If we have a valid external WellnessGeni URL, proxy to it (useful when you have a hosted WellnessGeni)
-    if (proxiedUrl && ovelaApiKey) {
+    if (proxiedUrl && ovelaApiKey && toolContext !== 'digital_card_enquiry') {
       try {
         const res = await fetch(proxiedUrl, {
           method: "POST",
@@ -674,6 +676,7 @@ SPEAKING STYLE (you are spoken aloud — write to be heard, not read):
 After any tool call, present results conversationally (1 short paragraph + key bullet figures), then ask one follow-up question.`;
 
       aiMessages.push({ role: "system", content: isabellaSystemPrompt });
+      aiMessages.push({ role: "system", content: DIGITAL_CARD_POLICY });
 
       
       // Add conversation history for context (this is critical!)
@@ -1084,20 +1087,20 @@ After any tool call, present results conversationally (1 short paragraph + key b
               const contactDetails = JSON.parse(toolCall.function.arguments);
               console.log('📋 Contact details extracted by Isabella:', contactDetails);
               
-              submitLeadToCRM({
+              const leadPayload = {
                 name: contactDetails.name,
                 email: contactDetails.email,
                 inquiry_type: contactDetails.inquiry_type,
                 message: contactDetails.message,
                 source: 'isabella-chat'
-              }).then(success => {
-                console.log(success ? '✅ Lead submitted to CRM successfully' : '⚠️ CRM submission failed');
-              }).catch(err => {
-                console.error('❌ Async CRM submission error:', err);
-              });
-
-              crmSubmitted = true;
-              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: true, message: "Lead submitted successfully" }) });
+              };
+              const success = await submitLeadToCRM(toolContext === 'digital_card_enquiry'
+                ? digitalCardLeadPayload(leadPayload, authorityTopic)
+                : leadPayload);
+              crmSubmitted = crmSubmitted || success;
+              toolResults.push({ id: toolCall.id, content: JSON.stringify({ success, message: success
+                ? "Request saved for the team's follow-up. Email delivery is not verified."
+                : "Request could not be saved. Offer direct contact at ovelainteractive@gmail.com; do not claim the team was notified." }) });
             } catch (parseError) {
               console.error('❌ Error parsing tool call arguments:', parseError);
               toolResults.push({ id: toolCall.id, content: JSON.stringify({ success: false, message: "Parse error" }) });
@@ -1308,7 +1311,9 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
           if (!finalMessage) {
             if (crmSubmitted) {
-              finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
+              finalMessage = toolContext === 'digital_card_enquiry'
+                ? "Thank you. Your request has been saved for my team to review and get in touch to work out the details."
+                : "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
             } else if (videoSuggestion) {
               finalMessage = "Here are some examples of my recent work — take a look!";
             }

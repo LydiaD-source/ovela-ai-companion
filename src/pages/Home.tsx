@@ -17,6 +17,7 @@ import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, pr
 import '@/styles/HeroSection.css';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { trackAssessmentStart } from '@/lib/usageBeacon';
+import { digitalCardEnquirySeed } from '@/config/digitalCardEnquiry';
 
 // Isabella avatar URLs - centralized constants
 // Desktop: full-body glamour shot. Mobile: face close-up portrait so the D-ID
@@ -179,6 +180,10 @@ const Home = () => {
       }
     } catch {}
 
+    if (!toolSeed && toolParam === 'digital-card') {
+      toolSeed = digitalCardEnquirySeed(params.get('plan'));
+    }
+
     // 1b) URL-driven deep link — same effect as a card click
     if (!toolSeed && toolParam && TOOL_DEEPLINKS[toolParam]) {
       toolSeed = TOOL_DEEPLINKS[toolParam];
@@ -191,7 +196,7 @@ const Home = () => {
       // Always start a NEW assessment session — never resume the previous one.
       try { localStorage.removeItem('ovela_chat_session_v1'); } catch {}
       window.dispatchEvent(new Event('isabella:reset'));
-      if (toolSeed.tool_context) trackAssessmentStart(toolSeed.tool_context);
+      if (toolSeed.tool_context && toolSeed.tool_context !== 'digital_card_enquiry') trackAssessmentStart(toolSeed.tool_context);
       (window as any).__ISABELLA_CTX__ = {
         tool_context: toolSeed.tool_context,
         authority_topic: toolSeed.authority_topic,

@@ -1311,7 +1311,9 @@ After any tool call, present results conversationally (1 short paragraph + key b
 
           if (!finalMessage) {
             if (crmSubmitted) {
-              finalMessage = "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
+              finalMessage = toolContext === 'digital_card_enquiry'
+                ? "Thank you. Your request has been saved for my team to review and get in touch to work out the details."
+                : "Thank you! I've shared your details with my team — they'll reach out shortly. Is there anything else I can help you with?";
             } else if (videoSuggestion) {
               finalMessage = "Here are some examples of my recent work — take a look!";
             }

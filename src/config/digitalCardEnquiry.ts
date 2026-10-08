@@ -6,5 +6,5 @@ export const digitalCardEnquiryPath = (prefix: string, plan: 'basic' | 'pro') =>
 export const digitalCardEnquirySeed = (plan: string | null) => ({
   tool_context: 'digital_card_enquiry',
   authority_topic: plan === 'pro' ? 'digital_card_pro' : 'digital_card_basic',
-  initialPrompt: `I'm interested in the Ovela Digital Card ${plan === 'pro' ? 'Pro' : 'Basic'} option. Please briefly thank me and offer to note my request and email for your team's follow-up, or give me your direct contact email. No sales agreement or long questionnaire.`,
+  initialPrompt: `I'm interested in the Ovela Digital Card ${plan === 'pro' ? 'Pro' : 'Basic'} option.`,
 });

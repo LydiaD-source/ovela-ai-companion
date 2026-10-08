@@ -17,6 +17,7 @@ import { useStructuredData, organizationSchema, websiteSchema, serviceSchema, pr
 import '@/styles/HeroSection.css';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { trackAssessmentStart } from '@/lib/usageBeacon';
+import { digitalCardEnquirySeed } from '@/config/digitalCardEnquiry';
 
 // Isabella avatar URLs - centralized constants
 // Desktop: full-body glamour shot. Mobile: face close-up portrait so the D-ID
@@ -180,12 +181,7 @@ const Home = () => {
     } catch {}
 
     if (!toolSeed && toolParam === 'digital-card') {
-      const plan = params.get('plan') === 'pro' ? 'Pro' : 'Basic';
-      toolSeed = {
-        tool_context: 'digital_card_enquiry',
-        authority_topic: plan === 'Pro' ? 'digital_card_pro' : 'digital_card_basic',
-        initialPrompt: `I'm interested in the Ovela Digital Card ${plan} option. Please briefly thank me and offer to note my request and email for your team's follow-up, or give me your direct contact email. No sales agreement or long questionnaire.`,
-      };
+      toolSeed = digitalCardEnquirySeed(params.get('plan'));
     }
 
     // 1b) URL-driven deep link — same effect as a card click

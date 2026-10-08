@@ -53,11 +53,11 @@ const DigitalCards = () => {
                 <h3 className="text-lg font-medium">{plan.name}</h3>
                 <p className="mt-4"><strong className="font-playfair text-4xl text-solution-gold">€{plan.monthlyPrice}</strong><span className="text-sm text-solution-muted">/{c[25]}</span></p>
                 <p className="mb-6 mt-1 text-sm text-solution-muted">€{plan.yearlyPrice}/{c[26]} · per person</p>
-                <ul className="mb-6 space-y-3 text-sm text-solution-muted">{(plan.id === 'basic' ? [c[15], c[16], c[17], `${plan.profileUpdatesPerMonth} ${c[18]}`] : [c[19], `≤ ${plan.smartUpdatesPerMonth} ${c[20]}`, c[21], c[22]]).map(item => <li key={item} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-solution-gold" /><span>{item}</span></li>)}</ul>
+                <ul className="mb-6 space-y-3 text-sm text-solution-muted">{(plan.id === 'basic' ? [c[15], c[16], c[17], language === 'en' ? '1 update per month — contact details or a message' : `${plan.profileUpdatesPerMonth} ${c[18]}`] : [c[19], `≤ ${plan.smartUpdatesPerMonth} ${c[20]}`, c[21], c[22], 'Company-level card and link analytics', 'Push notices to saved-card recipients*']).map(item => <li key={item} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-solution-gold" /><span>{item}</span></li>)}</ul>
                 <Button asChild variant="outline" className="mt-auto h-auto whitespace-normal border-solution-gold/50 bg-transparent py-3 text-solution-gold hover:bg-solution-gold hover:text-solution"><Link to={digitalCardEnquiryPath(prefix, plan.id)}>{c[23]} <ArrowRight /></Link></Button>
               </article>)}
             </div>
-            <p className="mt-5 text-sm leading-relaxed text-solution-muted">Demo screenshots show the existing card. Contact details are fictional; the concierge uses prewritten replies. Smart Updates are planned Pro features, not demonstrated or live in this demo.</p>
+            <p className="mt-5 text-sm leading-relaxed text-solution-muted">Demo screenshots show the existing card. Contact details are fictional; the demo concierge uses prewritten replies. Smart Updates, analytics and push notices are Pro capabilities planned for delivery, not demonstrated live here. *Push notices require permission and supported devices. Isabella can note your enquiry; the team will confirm availability and work out the details.</p>
           </section>
         </div>
         <DigitalCardBenefits />

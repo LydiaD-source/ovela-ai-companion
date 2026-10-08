@@ -51,7 +51,7 @@ export const SolutionsSection = () => {
             <p className="mb-2 text-xs text-solution-gold">02 / Ovela Digital Card</p>
             <h3 className="font-playfair text-2xl leading-tight">{c[7]}</h3>
             <p className="mt-3 text-sm text-solution-gold">{c[8]}</p>
-            <p className="mb-5 mt-3 text-sm leading-relaxed text-solution-muted">{c[9]}</p>
+            <p className="mb-5 mt-3 text-sm leading-relaxed text-solution-muted">{language === 'en' ? 'Share anywhere. Keep details current without reprinting. Pro adds Smart Updates and company-level insights — a lasting marketing connection, with less paper.' : c[9]}</p>
             <div className="mb-5 flex flex-wrap gap-x-5 gap-y-2 border-t border-solution-border pt-4 text-sm"><span>Basic <strong className="text-solution-gold">€{DIGITAL_CARD_PLANS[0].monthlyPrice}</strong>/{c[25]}</span><span>Pro <strong className="text-solution-gold">€{DIGITAL_CARD_PLANS[1].monthlyPrice}</strong>/{c[25]}</span></div>
             <Button asChild variant="link" className={`${actionClass} mt-auto`}><Link to={`${prefix}/digital-cards`}>{c[10]} <ArrowRight /></Link></Button>
           </article>

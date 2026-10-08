@@ -1,4 +1,7 @@
 # Homepage solutions update
+- [ ] Connect both Digital Card pricing enquiries to a brief Isabella concierge intake.
+- [ ] Add paper-to-digital benefits and clarify Basic updates and Pro marketing/analytics.
+- [ ] Verify enquiry handoff and explain current team communication channels.
 - [x] Restore Digital Card image delivery independently of the embedded preview and verify both pages and enlarged screenshots.
 - [x] Add a dedicated Digital Card page with supplied screenshots and current pricing.
 - [x] Replace homepage card illustration with a screenshot and link navigation to the new page.

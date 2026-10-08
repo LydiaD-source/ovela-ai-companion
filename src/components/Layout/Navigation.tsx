@@ -35,7 +35,7 @@ const Navigation = () => {
   const labels = solutionLabels[lang] ?? solutionLabels.en;
   const solutions = [
     { name: labels[1], path: `${langPrefix}/#meet-team` },
-    { name: labels[2], path: `${langPrefix}/#digital-cards` },
+    { name: labels[2], path: `${langPrefix}/digital-cards` },
     { name: labels[3], path: `${langPrefix}/#solutions` },
     { name: labels[4], path: `${langPrefix}/projects` },
   ];

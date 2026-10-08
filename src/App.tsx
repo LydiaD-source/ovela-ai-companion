@@ -8,6 +8,7 @@ import Navigation from "@/components/Layout/Navigation";
 import ScrollToTop from "@/components/Layout/ScrollToTop";
 import LangLayout from "@/components/Layout/LangLayout";
 import Home from "./pages/Home";
+import DigitalCards from "./pages/DigitalCards";
 import About from "./pages/About";
 import Projects from "./pages/Projects";
 import WellnessGeni from "./pages/WellnessGeni";
@@ -39,6 +40,7 @@ const LANG_PREFIXES = ['fr', 'es', 'de', 'pt', 'ca'] as const;
 const SiteRoutes = () => (
   <>
     <Route index element={<Home />} />
+    <Route path="digital-cards" element={<DigitalCards />} />
     <Route path="interactive" element={<Interactive />} />
     <Route path="ecosystem" element={<Ecosystem />} />
     <Route path="about" element={<About />} />

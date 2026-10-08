@@ -1,4 +1,5 @@
 # Project architecture
-- Keep the homepage solutions and Digital Card plan comparison in a dedicated presentation module, with pricing and limits in a shared configuration tested beside it; this avoids duplicating commercial rules.
-- Use homepage hash links for solution navigation and preserve localized URL prefixes; this keeps solution discovery concise without adding unnecessary pages.
+- Keep the homepage solutions summary and dedicated Digital Card product page separate, with shared pricing and limits tested beside their configuration; this keeps the homepage concise and commercial rules consistent.
+- Link Digital Cards to its dedicated product page; use homepage hash links for other solution discovery and preserve localized URL prefixes so navigation remains consistent.
 - Digital Card calls to action lead to the existing contact form, not a payment or card-creation flow; this avoids implying unimplemented provisioning or delivery.
+- Proxy Lovable asset paths to the hosted preview in Vite development; the CDN is served by hosting rather than the local dev server.

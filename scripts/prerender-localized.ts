@@ -124,7 +124,8 @@ function main() {
       if (!content) continue;
       const html = patchHtml(baseHtml, lang, page.path, content);
       const prefix = lang === 'en' ? '' : lang;
-      const outPath = resolve(DIST, `${prefix}${page.path}/index.html`.replace(/^\//, ''));
+      const relativePath = [prefix, page.path.replace(/^\/+|\/+$/g, ''), 'index.html'].filter(Boolean).join('/');
+      const outPath = resolve(DIST, relativePath);
       mkdirSync(dirname(outPath), { recursive: true });
       writeFileSync(outPath, html);
       count++;

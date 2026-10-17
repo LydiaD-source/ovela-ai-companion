@@ -1,4 +1,5 @@
 # Homepage solutions update
+- [x] Prepare the card-first reorganisation plan using the briefs and confirmed comparison-first action, unchanged prices and compact Solutions introduction.
 - [x] Connect both Digital Card pricing enquiries to a brief Isabella concierge intake.
 - [x] Add paper-to-digital benefits and clarify Basic updates and Pro marketing/analytics.
 - [x] Verify enquiry handoff and explain current team communication channels.

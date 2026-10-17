@@ -1,4 +1,8 @@
 # Homepage solutions update
+- [ ] Stage 1: Preserve Isabella’s abilities in one compact floating chat and simplify navigation.
+- [ ] Stage 2: Refocus Home on Digital Cards and move employee galleries/tools to Solutions.
+- [ ] Stage 3: Improve card discovery and inspect Google Search Console indexing issues.
+- [ ] Verify the card enquiry journey, moved tools, responsive layouts and SEO corrections.
 - [x] Prepare the card-first reorganisation plan using the briefs and confirmed comparison-first action, unchanged prices and compact Solutions introduction.
 - [x] Connect both Digital Card pricing enquiries to a brief Isabella concierge intake.
 - [x] Add paper-to-digital benefits and clarify Basic updates and Pro marketing/analytics.

@@ -361,3 +361,30 @@
   will-change: auto !important;
   filter: none !important;
 }
+
+/* Card-first product presentation and shared Isabella dock. */
+:root {
+  --phone-shell: 220 8% 12%;
+  --phone-edge: 220 5% 42%;
+  --phone-shadow: 0 24px 60px hsl(var(--solution-background) / .7);
+}
+.card-primary-action { background: hsl(var(--solution-gold)); color: hsl(var(--solution-background)); }
+.card-primary-action:hover { background: hsl(var(--solution-gold) / .85); }
+.card-first-hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: center; gap: 48px; max-width: 1280px; margin: auto; padding: 112px 48px 48px; min-height: 660px; }
+.card-hero-product { display: flex; flex-direction: column; align-items: center; }
+.product-phone { position: relative; width: 270px; padding: 10px; border: 2px solid hsl(var(--phone-edge)); border-radius: 40px; background: hsl(var(--phone-shell)); box-shadow: var(--phone-shadow); }
+.phone-screen { display: block; width: 100%; height: 490px; object-fit: cover; object-position: top; border-radius: 29px; }
+.phone-camera { position: absolute; z-index: 2; width: 66px; height: 17px; top: 13px; left: calc(50% - 33px); border-radius: 20px; background: hsl(var(--phone-shell)); }
+.isabella-dock-portrait { position: fixed; right: 24px; width: 72px; height: 72px; z-index: 90; border: 2px solid hsl(var(--solution-gold)); border-radius: 50%; overflow: hidden; background: hsl(var(--solution-surface)); box-shadow: var(--solution-shadow); }
+.isabella-dock-portrait canvas { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; object-fit: cover; pointer-events: none; }
+.isabella-dock-source { opacity: 0; pointer-events: none; }
+.isabella-dock-panel { position: fixed; z-index: 95; right: 24px; top: 88px; width: 470px; max-width: calc(100vw - 48px); height: min(720px, calc(100dvh - 112px)); display: flex; flex-direction: column; overflow: hidden; border: 1px solid hsl(var(--solution-border)); border-radius: 8px; background: hsl(var(--solution-background)); color: hsl(var(--solution-foreground)); box-shadow: var(--solution-shadow); }
+.isabella-dock-panel.hidden { display: none; }
+@media (max-width: 767px) {
+  .card-first-hero { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 108px 24px 32px; min-height: 0; }
+  .product-phone { width: 220px; border-radius: 33px; }
+  .phone-screen { height: 370px; border-radius: 23px; }
+  .isabella-dock-portrait { right: 16px; width: 64px; height: 64px; }
+  .isabella-dock-panel { top: 0; right: 0; width: 100vw; max-width: 100vw; height: 100dvh; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

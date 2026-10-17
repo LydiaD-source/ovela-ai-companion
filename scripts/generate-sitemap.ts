@@ -19,10 +19,11 @@ function isoToSec(iso: string): number {
 
 const BASE_URL = 'https://www.ovelainteractive.com';
 const LANGS = ['en', 'es', 'fr', 'de', 'pt', 'ca'] as const;
-const TODAY = new Date().toISOString().slice(0, 10);
 
 const STATIC_PATHS: Array<{ path: string; changefreq: string; priority: string; englishOnly?: boolean }> = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
+  { path: '/digital-cards', changefreq: 'monthly', priority: '0.95' },
+  { path: '/solutions', changefreq: 'monthly', priority: '0.8' },
   { path: '/about', changefreq: 'monthly', priority: '0.8' },
   { path: '/ecosystem', changefreq: 'monthly', priority: '0.8' },
   { path: '/projects', changefreq: 'weekly', priority: '0.9' },
@@ -111,7 +112,6 @@ function makeUrlsetXml(): string {
       return [
         '  <url>',
         `    <loc>${loc}</loc>`,
-        `    <lastmod>${TODAY}</lastmod>`,
         `    <changefreq>${entry.changefreq}</changefreq>`,
         `    <priority>${entry.priority}</priority>`,
         alternates,

@@ -464,7 +464,7 @@ const FullWellnessGeniUI: React.FC<FullWellnessGeniUIProps> = ({
               would confuse users and (when it mirrors the D-ID stream) makes
               the page feel like two competing avatars. */}
           <div
-            className={`md:hidden relative h-20 w-20 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+            className={`relative h-12 w-12 rounded-full overflow-hidden border-2 transition-all duration-300 ${
               headerIsSpeaking
                 ? 'border-champagne-gold shadow-[0_0_22px_rgba(212,175,55,0.7)]'
                 : 'border-champagne-gold/50'

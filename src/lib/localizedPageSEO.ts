@@ -1,3 +1,4 @@
+import { cardFirstCopy } from '../config/cardFirstSite';
 /**
  * Shared per-language SEO strings for pages that are also emitted
  * as static prerendered HTML (see scripts/prerender-localized.ts).
@@ -24,7 +25,17 @@ export interface PageDef {
   byLang: Record<Lang, PageContent>;
 }
 
+const CARD_FIRST_PAGES: PageDef[] = ['/', '/digital-cards', '/solutions'].map(path => ({
+  path,
+  byLang: Object.fromEntries(Object.entries(cardFirstCopy).map(([lang, c]) => [lang, {
+    title: `${path === '/solutions' ? c.solutions : 'Ovela Digital Cards'} | Ovela Interactive`,
+    description: path === '/solutions' ? c.solutionsIntro : c.intro,
+    h1: path === '/solutions' ? c.solutionsTitle : path === '/digital-cards' ? 'Ovela Digital Card' : c.headline,
+    intro: path === '/solutions' ? c.solutionsIntro : c.intro,
+  }])) as Record<Lang, PageContent>,
+}));
 export const LOCALIZED_PAGES: PageDef[] = [
+  ...CARD_FIRST_PAGES,
   {
     path: '/about',
     byLang: {

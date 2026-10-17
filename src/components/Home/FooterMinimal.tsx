@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Instagram, Youtube, Mail } from 'lucide-react';
+import { Instagram, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import LegalDocumentModal from '@/components/UI/LegalDocumentModal';
+import { localizedPrefix } from '@/config/cardFirstSite';
 
 export const FooterMinimal = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const prefix = localizedPrefix(i18n.language);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
 
@@ -36,17 +38,12 @@ export const FooterMinimal = () => {
             {/* Contact Button - Left */}
             <div className="order-1 md:order-1">
               <Button
-                variant="outline"
+                variant="link"
                 size="sm"
-                className="font-semibold tracking-wide hover:bg-white/10"
-                style={{
-                  borderColor: 'rgba(232, 207, 169, 0.35)',
-                  color: '#E8CFA9'
-                }}
+                className="border-0 bg-transparent px-0 font-semibold text-solution-gold hover:bg-transparent"
                 asChild
               >
-                <Link to="/contact">
-                  <Mail className="mr-2 h-4 w-4" />
+                <Link to={`${prefix}/contact`}>
                   {t('footer.contact')}
                 </Link>
               </Button>

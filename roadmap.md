@@ -1,4 +1,7 @@
 # Homepage solutions update
+- [ ] Resolve reported Solutions 404 and verify menu and homepage links.
+- [ ] Remove the logo's white background, enlarge it and make Contact a plain dark-background link.
+- [ ] Restore visitor access to Videos without crowding the main menu.
 - [x] Stage 1: Preserve Isabella’s abilities in one compact floating chat and simplify navigation.
 - [x] Stage 2: Refocus Home on Digital Cards and move employee galleries/tools to Solutions.
 - [x] Stage 3: Improve card discovery and inspect Google Search Console indexing issues.

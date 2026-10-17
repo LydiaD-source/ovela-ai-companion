@@ -29,6 +29,7 @@ export const CookieConsentBanner = () => {
 
   return (
     <div
+      data-cookie-banner
       role="dialog"
       aria-live="polite"
       aria-label={t('cookies.title', 'Cookie preferences')}

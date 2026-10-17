@@ -106,6 +106,7 @@ function patchHtml(html: string, job: PageJob): string {
   out = out.replace(/<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:title" content="${title}" />`);
   out = out.replace(/<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:description" content="${desc}" />`);
 
+  out = out.replace(/<link\s+rel="canonical"[^>]*>/gi, '').replace(/<link\s+rel="alternate"[^>]*hreflang[^>]*>/gi, '');
   const head: string[] = [`    <link rel="canonical" href="${canonicalUrl}" />`];
   if (job.canonical === 'self') {
     for (const l of ALL_LANGS) {
@@ -115,8 +116,8 @@ function patchHtml(html: string, job: PageJob): string {
   }
   out = out.replace(/<\/head>/i, `${head.join('\n')}\n  </head>`);
 
-  const snippet = `<div data-prerender="${job.lang}" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;"><h1>${escapeHtml(job.h1)}</h1><p>${escapeHtml(job.intro)}</p></div>`;
-  out = out.replace(/<div id="root">\s*<\/div>/, `<div id="root">${snippet}</div>`);
+  const snippet = `<div data-prerender="${job.lang}"><h1>${escapeHtml(job.h1)}</h1><p>${escapeHtml(job.intro)}</p></div>`;
+  out = out.replace(/<div id="root">[\s\S]*?<\/div>\s*(?=<script|<\/body>)/, `<div id="root">${snippet}</div>`);
 
   return out;
 }

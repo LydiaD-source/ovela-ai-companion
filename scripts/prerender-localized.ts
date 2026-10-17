@@ -52,7 +52,7 @@ const PAGES = LOCALIZED_PAGES.filter((p) => p.path !== '/topics');
 
 function buildUrl(lang: 'en' | Lang, path: string): string {
   const prefix = lang === 'en' ? '' : `/${lang}`;
-  return `${BASE_URL}${prefix}${path}`;
+  return `${BASE_URL}${prefix}${path === '/' ? (prefix ? '' : '/') : path}`;
 }
 
 function escapeHtml(s: string): string {
@@ -92,6 +92,7 @@ function patchHtml(html: string, lang: 'en' | Lang, path: string, c: PageContent
   const alternates = ALL_LANGS.map(
     (l) => `    <link rel="alternate" hreflang="${l}" href="${buildUrl(l, path)}" />`,
   ).join('\n');
+  out = out.replace(/<link\s+rel="canonical"[^>]*>/gi, '').replace(/<link\s+rel="alternate"[^>]*hreflang[^>]*>/gi, '');
   const seoBlock = [
     `    <link rel="canonical" href="${canonical}" />`,
     alternates,
@@ -103,7 +104,7 @@ function patchHtml(html: string, lang: 'en' | Lang, path: string, c: PageContent
   //    text per language before React hydrates. createRoot wipes this
   //    on mount — no hydration mismatch warning (we use createRoot,
   //    not hydrateRoot, in src/main.tsx).
-  const snippet = `<div data-prerender="${lang}" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;"><h1>${safeH1}</h1><p>${safeIntro}</p></div>`;
+  const snippet = `<div data-prerender="${lang}"><h1>${safeH1}</h1><p>${safeIntro}</p></div>`;
   out = out.replace(/<div id="root">\s*<\/div>/, `<div id="root">${snippet}</div>`);
 
   return out;
@@ -118,11 +119,13 @@ function main() {
   let count = 0;
 
   for (const page of PAGES) {
-    for (const lang of LANGS) {
+    for (const lang of ALL_LANGS) {
       const content = page.byLang[lang];
       if (!content) continue;
       const html = patchHtml(baseHtml, lang, page.path, content);
-      const outPath = resolve(DIST, `${lang}${page.path}/index.html`.replace(/^\//, ''));
+      const prefix = lang === 'en' ? '' : lang;
+      const relativePath = [prefix, page.path.replace(/^\/+|\/+$/g, ''), 'index.html'].filter(Boolean).join('/');
+      const outPath = resolve(DIST, relativePath);
       mkdirSync(dirname(outPath), { recursive: true });
       writeFileSync(outPath, html);
       count++;

@@ -7,7 +7,7 @@ import isabellaPortrait from '@/assets/isabella-hero-avatar-new.webp';
 import cardOverview from '@/assets/digital-cards/card-thumbnail-close.png.asset.json';
 import { hostedAssetUrl } from '@/lib/hostedAssetUrl';
 
-export const IIPE_URL = 'https://iipeexchange.lovable.app/';
+export const IIPE_URL = 'https://iipe.exchange/';
 
 export const digitalSolutionsCopy = {
   en: ['Our solutions', 'Digital intelligence. Real connections.', 'Ovela Interactive is a digital AI solutions company connecting businesses with people — before, during and after the conversation.', 'Digital Employees', 'Your business. Communicating 24/7.', 'AI representatives that answer questions, present services and connect visitors with your business.', 'Meet the digital team', 'Your Business Card. Always Current.', 'Meet someone once. Stay connected.', 'Your details in one place. Update your card without printing another. With Pro, share news with people who have saved it.', 'Explore Ovela Digital Cards', 'International Intelligent Property Exchange', 'An independent property ecosystem connecting people, property and intelligent communication. Built by Ovela.', 'Explore IIPE', 'Choose your card', 'Your professional profile, saved directly to their phone.', 'Phone, WhatsApp, email and website', 'Company, job title and company information', 'profile update per month', 'Everything in Digital Card', 'Smart Updates per month', 'Events, products, services and company news', 'Links and calls to action', 'Get Your Digital Card', 'Make Your Card Work Harder', 'month', 'year', 'Smart Updates', 'Your card keeps working after the meeting.', 'View card plans'],

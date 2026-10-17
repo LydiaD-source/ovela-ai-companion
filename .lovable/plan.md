@@ -1,58 +1,97 @@
-## Why only one row exists in `assessment_trial`
+# Ovela: Card-first website reorganisation
 
-Two real bugs in `supabase/functions/ovela-chat/index.ts`:
+## Direction and confirmed choices
 
-1. **`checkAndRecordTrial` is only called inside the nutrition branch** — recovery/resilience, biological-age, and the business calculators never write a row.
-2. **All guest sessions used to share the same `user_key`** (`ovela_client_001::ovela-guest`). Today's row literally is that shared key with `assessment_count = 5`, which is why the WG admin sees "1 row, many users". We already switched the frontend to a per-browser `guest:<uuid>` for chat, but legacy sessions and any non-chat entry points still collapse to `ovela-guest`.
+Refocus the existing website, not rebuild it from scratch. Digital Cards become Ovela’s primary commercial product. Digital Employees and tools demonstrate its wider business capabilities. IIPE is independent Ovela-developed IP, with its own website and sales.
 
-WG's RLS GRANT is their side; on our side we just need to make sure writes happen and are uniquely keyed.
+- **Get Your Digital Card:** opens the existing Basic/Pro comparison; choosing a plan then opens Isabella’s enquiry.
+- **Keep prices:** Basic €2/month or €24/year; Pro €3/month or €36/year, per person. Existing allowances and team-arranged delivery stay unchanged.
+- **Other solutions:** one compact homepage introduction, without demo tools in the homepage flow.
+- **IIPE:** link to https://iipe.exchange/ as a partner and independent platform developed by Ovela.
 
-## Plan
+## 1. Premium card-first homepage
 
-### 1. Track every assessment, not just nutrition
+Keep Ovela’s logo, dark premium identity, gold accents and typography. Replace the large Isabella composition with a crisp, realistic phone frame showing the actual supplied Ovela card screenshot. No generated interface text, imaginary analytics or unrelated stock imagery. Keep the screen readable, motion restrained and the opening unframed, with a glimpse of the next section.
 
-- Extract `recordTrial(userKey, assessmentType, language)` from the existing `checkAndRecordTrial` (keep the 7-day expiry gate **only** for nutrition — that's the product rule).
-- Call `recordTrial(...)` from every assessment branch: `nutrition_assessment`, `recovery_resilience_assessment`, `biological_age_assessment`, `receptionist_cost`, `missed_calls`.
-- Build `userKey` as `${clientId}::${userId || `guest:${anonId}`}` and stop falling back to the literal `ovela-guest` string.
+Use the second document’s starting copy:
+- Eyebrow: **OVELA INTERACTIVE**; make **Ovela Digital Cards** prominent in the first screen as well.
+- Headline: **Make Every Business Connection Go Further.**
+- Supporting text: **Your business card should do more than share your details. Create a digital business card that stays current as your business evolves.**
+- Two actions only: **Get Your Digital Card** and **Explore Solutions**.
 
-### 2. Migration on `public.assessment_trial`
+### Short homepage sequence
+1. Card-first opening and phone visual.
+2. Product demonstration: sharing, keeping details current and staying connected, using actual screenshots and three concise benefits.
+3. Compact Basic/Pro comparison, with full details on the existing card page.
+4. Short use-case row: professionals, consultants, sales teams and networking—not another long section.
+5. One compact **More from Ovela** introduction linking to Solutions.
+6. Brief, distinct **IIPE — developed by Ovela** introduction linking out.
+7. Clean footer without another repeated sales pitch.
 
-Add two nullable columns so WG's dashboard can slice usage:
+## 2. What moves or is reduced
 
-- `assessment_type text` (nutrition / recovery / biological_age / receptionist_cost / missed_calls)
-- `language text` (en, es, fr, de, ca, pt)
+Create one **Solutions** page rather than scattering existing material across many new pages.
 
-Backfill nothing — existing row keeps NULLs. No RLS changes from our side (WG owns the admin GRANT).
+| Current material | Proposed destination |
+| --- | --- |
+| Digital Employee portraits, information and carousel | Solutions: Digital Employees; preserve images and useful interactions, adapting presentation to this destination |
+| Reception cost and missed-call tools | Solutions: Business Tools |
+| Nutrition, recovery/resilience and other assessments, sample reports | Solutions: Specialist Applications, retaining limitations and disclaimers |
+| Detailed business showcases and industry examples | Solutions, linking to existing project/industry pages |
+| Long company introduction | About; retain only a concise company signal on Home |
+| Repeated employee sales messaging and generic closing pitches | Remove from Home; retain useful material on Solutions or existing pages |
+| Videos and topics | Keep existing pages and discoverable links; do not delete search-relevant content |
 
-### 3. PDFs in the user's chat language
+**Recommendation:** remove the long showcase/tool sequence and repeated “website as a team” pitches from Home completely. Do not delete functioning tools, assets or established pages. Saved tool links must still launch the same experience.
 
-The 1854-line `src/lib/assessmentReport.ts` has English chrome (section titles, table headers, footer disclaimer) plus dynamic narrative that already comes from Gemini in the user's language thanks to the LANGUAGE OVERRIDE in the edge function.
+## 3. Smaller Isabella, same abilities
 
-Approach:
+Use IIPE’s compact avatar presentation as a reference: a small circular portrait at the lower right, closed by default. Opening it reveals Isabella’s existing conversation with minimise/close controls. On mobile, retain the full-screen conversation treatment.
 
-- Add a `language` field to `AssessmentReport` and thread `selectedLanguage` through `ChatMessages` → `downloadAssessmentReport` / email button.
-- Introduce a single `LABELS: Record<Lang, Record<Key, string>>` dict covering the ~40 fixed chrome strings (header title, section titles, score row labels, footer disclaimer, "Page X of Y").
-- Replace literal strings in `header`, `footer`, `sectionTitle`, `scoreRow`, and the section builders (`buildNutrition`, `buildRecoveryResilience`, `buildBusinessCalculator`, `buildMissedCalls`) with `t(key, lang)`.
-- Translations covered: en, es, fr, de, ca, pt (matches `i18n/locales/`).
-- Email subject/filename in `email-assessment-report` already use a generic title — pass the localized title from the client.
+Preserve text, voice, animation, languages, attachments, assessments, reports, card enquiries, contact capture and conversation continuity. Keep one Isabella session across main-site navigation, not a second simplified chat.
 
-Dynamic narrative text from Gemini is already localized, so we don't need to translate per-paragraph copy generated by the model.
+- Existing card-plan, tool and chat links still open the right conversation immediately.
+- Normal page visits do not automatically open chat or activate microphone/voice activity.
+- Keep the avatar clear of cookie controls, navigation and important actions.
+- Leave `/welcome` and `/welcome/qr` standalone without the global launcher.
+- Reuse Ovela’s working chat/streaming experience; IIPE is a visual reference, not replacement chat logic.
 
-### 4. Verification
+## 4. Navigation and Digital Cards page
 
-- After deploy, fire two test assessments (nutrition + recovery) from one browser → confirm two rows with `assessment_type` set and `language='en'`/etc.
-- Generate one PDF in Spanish and one in French → confirm header/footer/section titles render in the chosen language while narrative stays in that language.
+Simplify navigation to **Digital Cards · Solutions · IIPE · About**, plus a prominent **Get Your Digital Card** action. Keep Contact, Projects, Videos, Topics and legal pages discoverable through Solutions/About/footer. Ensure the full mobile menu is visible.
 
-## Files touched
+Retain `/digital-cards`, its real screenshots, pricing and paper-to-digital benefits. Improve scanning and add a short factual FAQ covering sharing, monthly changes, Basic versus Pro and what happens after an enquiry.
 
-- `supabase/migrations/<new>.sql` — add `assessment_type`, `language` columns
-- `supabase/functions/ovela-chat/index.ts` — rename + call `recordTrial` from all branches, stable guest key, pass type+language
-- `src/lib/assessmentReport.ts` — `LABELS` dict + `t()` helper, swap all chrome strings, accept `language` on report
-- `src/lib/isabellaAPI.ts` — pass `language` into the structured `assessmentReport` returned from the function
-- `src/components/Chat/FullWellnessGeniUI.tsx` and/or `ChatMessages.tsx` — thread `selectedLanguage` into the report at download/email time
-- `supabase/functions/email-assessment-report/index.ts` — accept localized title from client (minor)
+No instant-purchase or checkout claims: Isabella collects the request; the team agrees delivery details. Continue distinguishing Pro Smart Updates, push notices and analytics from functionality demonstrated by the screenshots. Do not claim planned delivery is already working.
 
-## Out of scope (intentionally)
+## 5. Visibility and traffic
 
-- Changing WG's admin RLS / dashboard — they own that migration.
-- Translating the dynamic narrative paragraphs (already in user's language via Gemini).
+**Verified discovery gap:** `/digital-cards` has browser-updated SEO information but is missing from the inspected sitemap and pre-rendered page coverage. Correct this during the refocus.
+
+- Give Home, Digital Cards and Solutions distinct search-relevant titles/descriptions, readable headings and strong internal links.
+- Include Digital Cards and Solutions in sitemap/pre-rendered coverage, preserving the canonical www domain. Maintain consistent language handling; translate maintained public copy and metadata together rather than adding misleading language alternates.
+- Preserve established video/topic/industry URLs and their discovery value. Keep existing structured-data restrictions; no new Product/Offer schemas.
+- Measure card-page visits, plan comparisons, selected-plan enquiry clicks, Solutions visits and IIPE clicks using existing consent-aware analytics. A click is not a completed enquiry.
+- Keep screenshots lightweight, avoid loading the full gallery at the opening and defer chat work until needed without breaking continuity.
+
+**After publication:** submit the updated sitemap and request card-page indexing in Search Console, then review search impressions and enquiry clicks. Organisation and SEO improve discovery opportunities but cannot guarantee traffic. Targeted card use-case articles or campaigns are a sensible later phase, not part of this redesign.
+
+## Technical approach
+
+- Reuse React/Vite, design tokens, the locale system, pricing configuration and hosted asset helper. No new CMS or service.
+- Separate homepage copy, destinations and visual references from layout through the existing translation/configuration pattern.
+- Extract Home’s existing Isabella launch/stream coordination into one shared main-site host, retaining the current chat UI and launch contracts. Leave backend, persona and CRM rules unchanged.
+- Reuse current homepage sections on `/solutions` and localized equivalents. Preserve localized prefixes and compatibility for old homepage hashes and tool deep links.
+- Update architecture rules for the new Solutions destination and shared Isabella placement.
+
+## Implementation order and acceptance checks
+
+1. Establish the shared Isabella host; verify existing launch paths before removing the old hero placement.
+2. Build Solutions from existing material, then refocus Home and navigation.
+3. Refine card comparison, search discovery coverage and relevant analytics.
+4. Check desktop, tablet and mobile: readable product screens, no overlap/overflow, complete menus, cookie controls and reduced-motion behaviour.
+5. Exercise Home → comparison → Basic/Pro enquiry → Isabella response, plus direct-email and team-follow-up paths. Do not claim inbox delivery from configuration alone.
+6. Check voice/animated portrait, attachments, language choice, representative tool/report flows and continuity across navigation. Run existing pricing/policy tests and add focused tests for changed launch rules.
+7. Check titles, canonicals, sitemap output, important existing URLs and preview errors. Publish only when explicitly requested.
+
+**Not included:** payment/account flows, price changes, backend changes, rebuilding IIPE, deleting tools, or an invented product demo/video. Existing screenshots are sufficient for the phone visual.

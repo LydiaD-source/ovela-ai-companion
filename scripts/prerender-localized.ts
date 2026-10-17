@@ -123,7 +123,8 @@ function main() {
       const content = page.byLang[lang];
       if (!content) continue;
       const html = patchHtml(baseHtml, lang, page.path, content);
-      const outPath = resolve(DIST, `${lang}${page.path}/index.html`.replace(/^\//, ''));
+      const prefix = lang === 'en' ? '' : lang;
+      const outPath = resolve(DIST, `${prefix}${page.path}/index.html`.replace(/^\//, ''));
       mkdirSync(dirname(outPath), { recursive: true });
       writeFileSync(outPath, html);
       count++;

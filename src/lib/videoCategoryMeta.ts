@@ -24,8 +24,8 @@ export const CATEGORY_META: CategoryMeta[] = [
   {
     slug: 'interactive-marketing',
     key: 'interactive_marketing',
-    seoTitle: 'Interactive Marketing Videos — AI Brand Ambassadors | Ovela Interactive',
-    seoDescription: 'Watch how AI digital ambassadors transform luxury marketing, brand storytelling, and digital campaigns into live, multilingual conversations that convert.',
+    seoTitle: 'AI Brand Ambassador Demos — Interactive Marketing That Converts | Ovela',
+    seoDescription: 'Watch real AI brand ambassadors turn static campaigns into live, multilingual conversations that capture leads — demos from luxury, retail and lifestyle deployments.',
     h1: 'Interactive Marketing With AI Digital Ambassadors',
     intro: 'See how brands are replacing static campaigns with always-on AI ambassadors — voice, video, and chat that respond in any language, on any device, around the clock.',
     longIntro:
@@ -39,8 +39,8 @@ export const CATEGORY_META: CategoryMeta[] = [
   {
     slug: 'wellness-spa',
     key: 'wellness_spa',
-    seoTitle: 'AI Concierge For Wellness, Spa & Hospitality Videos | Ovela Interactive',
-    seoDescription: 'Demos of multilingual AI concierges for spas, wellness centres, hotels, and clinics — handling bookings, FAQs, and treatment guidance 24/7.',
+    seoTitle: 'AI Concierge Demos for Spas, Wellness & Hotels — Watch Live | Ovela',
+    seoDescription: 'Watch multilingual AI concierges handle bookings, answer guest questions and recommend treatments 24/7 — real demos for spas, wellness centres, hotels and clinics.',
     h1: 'AI Concierges For Wellness, Spa & Hospitality',
     intro: 'Most wellness and hospitality bookings are lost after hours, on weekends, or in languages your front desk does not speak. An AI concierge fixes all three.',
     longIntro:
@@ -54,8 +54,8 @@ export const CATEGORY_META: CategoryMeta[] = [
   {
     slug: 'real-estate',
     key: 'real_estate',
-    seoTitle: 'AI Property Presenter Videos For Real Estate | Ovela Interactive',
-    seoDescription: 'Watch AI property presenters qualify leads, present listings, and speak every buyer\'s language — 24/7 demos for real estate agencies.',
+    seoTitle: 'AI Property Presenter Demos — 24/7 Multilingual Agents in Action | Ovela',
+    seoDescription: 'Watch AI property presenters walk buyers through listings, answer questions and qualify leads in every language — real 24/7 demos for real estate agencies.',
     h1: 'AI Property Presenters For Real Estate Agencies',
     intro: 'International buyers and after-hours enquiries are the two leads agencies lose most often. An AI property presenter captures both — interactively, in any language.',
     longIntro:
@@ -69,8 +69,8 @@ export const CATEGORY_META: CategoryMeta[] = [
   {
     slug: 'ai-ambassador',
     key: 'ai_ambassador',
-    seoTitle: 'AI Brand Ambassador Demos — Isabella By Ovela Interactive',
-    seoDescription: 'Meet Isabella and other AI brand ambassadors: voice, video, and multilingual chat for any website. See real-time digital human demos.',
+    seoTitle: 'Meet Isabella — AI Brand Ambassador Demos by Ovela Interactive',
+    seoDescription: 'Watch Isabella and other AI brand ambassadors hold real conversations — voice, video and multilingual chat for any website. Real-time digital human demos.',
     h1: 'AI Brand Ambassadors — Voice, Video & Multilingual Chat',
     intro: 'An AI brand ambassador is the modern front door of a website — greeting every visitor, in every language, at every hour, without a script.',
     longIntro:
@@ -84,8 +84,8 @@ export const CATEGORY_META: CategoryMeta[] = [
   {
     slug: 'studio-overview',
     key: 'studio_intro',
-    seoTitle: 'Ovela Interactive Studio Overview — AI Digital Employee Portfolio',
-    seoDescription: 'Studio overview from Ovela Interactive: portfolio demos across real estate, wellness, hospitality, and luxury retail AI ambassadors.',
+    seoTitle: 'Ovela Studio Portfolio — Watch AI Digital Employee Demos | Ovela Interactive',
+    seoDescription: 'A fast tour of the Ovela Interactive portfolio: AI ambassadors, property presenters and spa concierges — watch real demos across real estate, wellness, hospitality and luxury retail.',
     h1: 'Ovela Interactive — Studio Overview',
     intro: 'A condensed look at what Ovela Interactive builds: AI digital employees that represent brands the way a top human host would, only available 24/7 in every language.',
     longIntro:

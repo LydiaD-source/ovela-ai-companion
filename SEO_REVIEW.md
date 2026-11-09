@@ -1,5 +1,17 @@
 # Card-first SEO review — 17 October 2026
 
+## Redirect validation review — 9 November 2026
+- Live Search Console connection: wellnespirt; freshly listed verified property sc-domain:ovelainteractive.com, sole matching property.
+- Apex homepage: Page with redirect; Google selects https://www.ovelainteractive.com/. This is intentional domain consolidation, not a page to make indexable.
+- www homepage: Submitted and indexed, matching canonical, last crawl 8 November 2026.
+- /digital-cards and /solutions: Submitted and indexed with matching canonicals.
+- Both www sitemaps and the old apex sitemap submission have zero errors/warnings. Main sitemap downloaded 9 November; 345 submitted URLs is not an indexed count.
+- Public HTTP audit: all 345 main sitemap addresses return success without redirecting. This does not establish that every page is indexed.
+- Confirmed separate defect: English topic and video-category HTML inherits the homepage canonical because the static prerender only generated translated hubs. Added English jobs for all 11 topics and five categories with their own metadata and self-canonicals; aligned static video-library metadata with the existing improved runtime version.
+- /ca/videos still has Google's old 5 July duplicate result; current public HTML correctly consolidates to /videos. Await recrawl rather than forcing duplicate indexing.
+- The API cannot retrieve the complete Page indexing validation example list, request indexing, or restart validation. The user must supply the affected URL export/screenshot for exhaustive diagnosis of that email.
+- Source corrections need deployment on the actual www host, followed by raw HTML verification on /topics/ai-receptionist and /videos/category/wellness-spa. Preserve the intentional apex redirect. No sitemap contents changed, so do not resubmit unchanged sitemaps.
+
 ## Live Search Console evidence
 Connection: wellnespirt. Selected verified property: sc-domain:ovelainteractive.com (sole match).
 - Homepage: Submitted and indexed, both canonicals https://www.ovelainteractive.com/; last crawl 11 October 2026.

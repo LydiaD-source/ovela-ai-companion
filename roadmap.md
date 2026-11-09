@@ -1,4 +1,8 @@
 # Homepage solutions update
+- [x] Inspect Google's redirect warning and live sitemap: the apex homepage intentionally redirects; all 345 sitemap URLs return success without redirects; main commercial pages are indexed.
+- [x] Correct missing English topic/category prerender jobs and verify all 20 SEO/card regression tests pass.
+- [ ] Deploy English topic/category canonical corrections on the www host and verify live HTML; blocked on that host's publication workflow.
+- [ ] Diagnose every URL in Google's failed redirect validation; blocked on the affected-URL export or screenshot from Search Console.
 - [x] Verify Solutions links: preview and canonical website work; the older published lovable.app site returns the app's 404 and awaits publication of current changes.
 - [x] Remove the logo's white background, enlarge it and make Contact a plain dark-background link.
 - [x] Restore visitor access to Videos without crowding the main menu.
@@ -6,7 +10,7 @@
 - [x] Stage 2: Refocus Home on Digital Cards and move employee galleries/tools to Solutions.
 - [x] Stage 3: Improve card discovery and inspect Google Search Console indexing issues.
 - [x] Verify the card enquiry journey, moved tools, responsive layouts and SEO corrections.
-- [ ] Publish to the canonical host, verify live card HTML and submit the changed sitemap once; blocked on publication, then Google recrawl/indexing.
+- [x] Verify published card HTML and Google's fresh sitemap: Digital Cards is indexed, and Google downloaded the 345-URL sitemap on 9 November with no errors; no unchanged sitemap resubmission needed.
 - [x] Prepare the card-first reorganisation plan using the briefs and confirmed comparison-first action, unchanged prices and compact Solutions introduction.
 - [x] Connect both Digital Card pricing enquiries to a brief Isabella concierge intake.
 - [x] Add paper-to-digital benefits and clarify Basic updates and Pro marketing/analytics.

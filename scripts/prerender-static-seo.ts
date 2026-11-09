@@ -21,7 +21,9 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { CATEGORY_META } from '../src/lib/videoCategoryMeta';
+import { TOPIC_HUBS } from '../src/lib/topicHubsContent';
 
 const DIST = resolve('dist');
 const SRC_HTML = resolve(DIST, 'index.html');
@@ -124,8 +126,24 @@ function patchHtml(html: string, job: PageJob): string {
 
 // --------------------------------------------------------------- page builder
 
-function buildJobs(): PageJob[] {
+export function buildJobs(): PageJob[] {
   const jobs: PageJob[] = [];
+
+  // English hubs need static HTML too; otherwise they inherit the homepage canonical.
+  for (const hub of TOPIC_HUBS) {
+    jobs.push({
+      path: `/topics/${hub.slug}`, lang: 'en', title: hub.seoTitle,
+      description: hub.seoDescription, h1: hub.h1, intro: hub.heroIntro,
+      canonical: 'self', ogType: 'article',
+    });
+  }
+  for (const meta of CATEGORY_META) {
+    jobs.push({
+      path: `/videos/category/${meta.slug}`, lang: 'en', title: meta.seoTitle,
+      description: meta.seoDescription, h1: meta.h1, intro: meta.intro,
+      canonical: 'self',
+    });
+  }
 
   // 1) Topic hubs — genuinely translated → self canonical + hreflang.
   for (const [slug, byLang] of Object.entries(localized.hubs || {})) {
@@ -166,9 +184,9 @@ function buildJobs(): PageJob[] {
   const englishOnly: Array<{ path: string; title: string; description: string; h1: string; intro: string; ogType?: string }> = [
     {
       path: '/videos',
-      title: 'AI Digital Employee Video Library | Ovela Interactive',
+      title: 'Watch AI Digital Employees at Work — Live Video Demos | Ovela Interactive',
       description:
-        'Hundreds of real demos of AI digital employees, AI receptionists, and multilingual AI representatives across clinics, real estate, wellness, hospitality, and more — updated weekly.',
+        'See real AI digital employees greet visitors, answer questions and book appointments in any language — live demos for clinics, real estate, wellness and hospitality. New demos every week.',
       h1: 'AI Digital Employee Video Library',
       intro:
         'Browse real demonstrations of AI digital employees at work across clinics, real estate, wellness, hospitality, and luxury retail.',
@@ -235,4 +253,4 @@ function main() {
   console.log(`[prerender-static] wrote ${count} HTML files`);
 }
 
-main();
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

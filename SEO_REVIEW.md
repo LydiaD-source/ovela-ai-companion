@@ -1,6 +1,9 @@
 # Card-first SEO review — 17 October 2026
 
 ## Redirect validation review — 9 November 2026
+- User-provided report totals: 197 Alternate page with proper canonical tag; 157 Page with redirect; 131 Crawled - currently not indexed. All show failed validation. Counts alone do not identify affected URLs or establish that every exclusion is a defect.
+- Additional URL inspections: /topics/ai-receptionist and /videos/category/wellness-spa both report Crawled - currently not indexed (July crawls), indexing allowed, matching stored canonicals. Their current raw HTML defect was independently confirmed; do not claim it caused Google's historical exclusion or guarantee indexing after correction.
+- Verification: 20 regression tests pass; isolated static output verifies one correct canonical on English topic/category pages, a French topic and the English-consolidated Catalan library. Preview build reports OK. Production deployment remains pending.
 - Live Search Console connection: wellnespirt; freshly listed verified property sc-domain:ovelainteractive.com, sole matching property.
 - Apex homepage: Page with redirect; Google selects https://www.ovelainteractive.com/. This is intentional domain consolidation, not a page to make indexable.
 - www homepage: Submitted and indexed, matching canonical, last crawl 8 November 2026.

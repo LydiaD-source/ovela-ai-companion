@@ -1,4 +1,5 @@
 # Homepage solutions update
+- [ ] Investigate Google's failed redirect validation, correct confirmed sitemap/link defects, and verify the live canonical pages.
 - [x] Verify Solutions links: preview and canonical website work; the older published lovable.app site returns the app's 404 and awaits publication of current changes.
 - [x] Remove the logo's white background, enlarge it and make Contact a plain dark-background link.
 - [x] Restore visitor access to Videos without crowding the main menu.

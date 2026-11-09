@@ -5,4 +5,4 @@
 - Resolve Digital Card asset pointers through the shared hostedAssetUrl helper using the public Lovable hosting origin; embedded previews do not always forward CDN paths. Keep the Vite asset proxy for other relative asset references.
 - Keep Digital Card enquiry launch configuration and concierge policy in focused modules; card enquiries use the local tool-enabled chat path and await CRM results so external chat settings cannot bypass the intake rules or falsely report submission success.
 - Mount a single Isabella dock in the main site layout and launch existing chat via events or URL seeds; one orchestration owner preserves voice, attachments, assessment and enquiry behaviour across navigation.
-- Share card-first page copy and route metadata with static prerendering; sitemap entries must match canonical policy and omit build-time lastmod values.
+- Share page copy and route metadata with static prerendering, including English topic and category pages; sitemap entries must match canonical policy and omit build-time lastmod values so crawlers never inherit homepage canonicals for distinct pages.
